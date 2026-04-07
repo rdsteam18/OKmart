@@ -1,0 +1,43 @@
+{
+  "dairy": [
+    {
+      "name": "Amul Milk",
+      "price": 50,
+      "image": "https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/1c44f728-7e7e-4f59-9248-5569a3b36672/Amul-Gold-Full-Cream-Fresh-Milk-Pouch.jpeg"
+    },
+    {
+      "name": "Paneer",
+      "price": 80,
+      "image": "https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/1c44f728-7e7e-4f59-9248-5569a3b36672/Amul-Gold-Full-Cream-Fresh-Milk-Pouch.jpeg"
+    },
+    {
+      "name": "Curd",
+      "price": 40,
+      "image": "https://via.placeholder.com/80"
+    }
+  ],
+  "snacks": [
+    {
+      "name": "Chips",
+      "price": 20,
+      "image": "https://via.placeholder.com/80"
+    },
+    {
+      "name": "Biscuits",
+      "price": 30,
+      "image": "https://via.placeholder.com/80"
+    }
+  ],
+  "grocery": [
+    {
+      "name": "Rice",
+      "price": 60,
+      "image": "https://via.placeholder.com/80"
+    },
+    {
+      "name": "Sugar",
+      "price": 45,
+      "image": "https://via.placeholder.com/80"
+    }
+  ]
+}

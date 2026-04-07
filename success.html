@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Success - OK Mart</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.container {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:90vh;
+}
+
+.card {
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    width:300px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>OK Mart</div>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>✅ Order Placed!</h2>
+
+        <p>We will contact you shortly 📞</p>
+
+        <button onclick="goHome()">Continue Shopping</button>
+
+        <br><br>
+
+        <button onclick="repeatOrder()">Repeat Order</button>
+
+    </div>
+
+</div>
+
+<script src="js/main.js"></script>
+
+<script>
+function goHome(){
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

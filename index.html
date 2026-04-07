@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OK Mart</title>
+
+<!-- CSS -->
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+    <div>OK Mart</div>
+
+    <div class="cart" onclick="window.location.href='cart.html'">
+        🛒 <span id="cartCount">0</span>
+    </div>
+</header>
+
+<!-- ================= SEARCH ================= -->
+<div class="search-box">
+    <input type="text" id="search" placeholder="Search for products..." onkeyup="searchProduct()">
+</div>
+
+<!-- ================= REPEAT ORDER ================= -->
+<button style="margin:10px;width:90%" onclick="repeatOrder()">
+    Repeat Last Order
+</button>
+
+<!-- ================= CATEGORIES ================= -->
+<div class="categories">
+    <div class="category-btn" onclick="filterCategory('all')">All</div>
+    <div class="category-btn" onclick="filterCategory('dairy')">Dairy</div>
+    <div class="category-btn" onclick="filterCategory('snacks')">Snacks</div>
+    <div class="category-btn" onclick="filterCategory('grocery')">Grocery</div>
+</div>
+
+<!-- ================= PRODUCTS ================= -->
+<div class="products" id="productList"></div>
+
+<!-- ================= WHATSAPP BUTTON ================= -->
+<a href="https://wa.me/9982239821" 
+   style="position:fixed;bottom:20px;right:20px;
+   background:#25D366;color:white;padding:12px;
+   border-radius:50%;text-decoration:none;">
+   💬
+</a>
+
+<!-- JS -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart - OK Mart</title>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+    <div>🛒 Your Cart</div>
+</header>
+
+<!-- CART ITEMS -->
+<div id="cartItems" style="padding:10px;"></div>
+
+<!-- TOTAL -->
+<div style="padding:10px;">
+    <h3 id="total"></h3>
+    <button onclick="goCheckout()">Proceed to Checkout</button>
+</div>
+
+<!-- JS -->
+<script src="js/main.js"></script>
+<script src="js/cart.js"></script>
+
+<script>
+
+/* =========================
+   LOAD CART
+========================= */
+function loadCartUI() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let container = document.getElementById("cartItems");
+
+    container.innerHTML = "";
+
+    let total = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = "<p>Cart is empty ❌</p>";
+        return;
+    }
+
+    cart.forEach((item, i) => {
+
+        total += item.price * item.qty;
+
+        container.innerHTML += `
+        <div class="product">
+            <h4>${item.name}</h4>
+            <p>₹${item.price} x ${item.qty}</p>
+
+            <button onclick="changeQty(${i},1)">+</button>
+            <button onclick="changeQty(${i},-1)">-</button>
+        </div>
+        `;
+    });
+
+    // Delivery logic
+    let delivery = total >= 300 ? 0 : 20;
+    let grandTotal = total + delivery;
+
+    document.getElementById("total").innerText =
+        "Total: ₹" + grandTotal + " (Delivery ₹" + delivery + ")";
+}
+
+/* =========================
+   GO TO CHECKOUT
+========================= */
+function goCheckout() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (cart.length === 0) {
+        alert("Cart empty ❌");
+        return;
+    }
+
+    let total = 0;
+    cart.forEach(i => total += i.price * i.qty);
+
+    if (total < 100) {
+        alert("Minimum order ₹100 required ❌");
+        return;
+    }
+
+    window.location.href = "checkout.html";
+}
+
+/* =========================
+   INIT
+========================= */
+loadCartUI();
+
+</script>
+
+</body>
+</html>
