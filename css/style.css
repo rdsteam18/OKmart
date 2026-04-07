@@ -31,15 +31,15 @@ header {
 /* PRODUCTS */
 .products {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
     padding: 10px;
 }
 
 .product {
     background: white;
-    padding: 10px;
-    border-radius: 12px;
+    padding: 12px;
+    border-radius: 14px;
     text-align: center;
 }
 
