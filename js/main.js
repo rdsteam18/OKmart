@@ -111,3 +111,39 @@ function repeatOrder() {
     localStorage.setItem("cart", JSON.stringify(last));
     updateCartCount();
 }
+/* =========================
+   BOTTOM CART BAR
+========================= */
+function updateBottomBar() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    let bar = document.getElementById("bottomBar");
+    let totalEl = document.getElementById("bottomTotal");
+
+    if (!bar || !totalEl) return;
+
+    if (cart.length === 0) {
+        bar.style.display = "none";
+        return;
+    }
+
+    let total = 0;
+
+    cart.forEach(i => {
+        total += i.price * i.qty;
+    });
+
+    bar.style.display = "flex";
+    totalEl.innerText = "₹" + total;
+}
+
+/* call this after cart update */
+const oldAddToCart = addToCart;
+
+addToCart = function(name, price) {
+    oldAddToCart(name, price);
+    updateBottomBar();
+};
+
+/* on load */
+window.addEventListener("load", updateBottomBar);
