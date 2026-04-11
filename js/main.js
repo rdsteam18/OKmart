@@ -82,6 +82,19 @@ function addToCart(name, price) {
     localStorage.setItem("cart", JSON.stringify(cart));
 
     updateCartCount();
+   /* animation trigger */
+event.target.classList.add("animate-btn");
+
+let card = event.target.closest(".product");
+if (card) {
+    card.classList.add("animate-card");
+}
+
+/* remove after animation */
+setTimeout(() => {
+    event.target.classList.remove("animate-btn");
+    if (card) card.classList.remove("animate-card");
+}, 300);
 }
 
 /* =========================
