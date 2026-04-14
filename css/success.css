@@ -1,0 +1,361 @@
+/* ===== OK MART - SUCCESS PAGE STYLES ===== */
+
+.success-main {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.success-header {
+  background: transparent;
+  box-shadow: none;
+  border-bottom: none;
+}
+
+.success-header .logo-link {
+  margin: 0 auto;
+}
+
+/* Success Card */
+.success-card {
+  background: white;
+  border-radius: 32px;
+  padding: 40px 24px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border-light);
+  width: 100%;
+  margin-bottom: 24px;
+  animation: cardSlideUp 0.5s ease-out;
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animated Success Icon */
+.success-icon-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+}
+
+.success-icon {
+  font-size: 4rem;
+  position: relative;
+  z-index: 2;
+  animation: iconPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
+
+.success-rings span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid var(--primary);
+  opacity: 0;
+  animation: ringExpand 2s ease-out infinite;
+}
+
+.success-rings span:nth-child(1) {
+  width: 100%;
+  height: 100%;
+  animation-delay: 0s;
+}
+
+.success-rings span:nth-child(2) {
+  width: 100%;
+  height: 100%;
+  animation-delay: 0.3s;
+}
+
+.success-rings span:nth-child(3) {
+  width: 100%;
+  height: 100%;
+  animation-delay: 0.6s;
+}
+
+@keyframes ringExpand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.6;
+  }
+  100% {
+    width: 180%;
+    height: 180%;
+    opacity: 0;
+  }
+}
+
+/* Text Styles */
+.success-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.success-message {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.contact-message {
+  font-size: 0.9rem;
+  color: var(--primary-dark);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+/* Order Reference */
+.order-reference {
+  background: var(--bg-light);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin: 16px 0;
+  display: inline-block;
+}
+
+.order-id {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  letter-spacing: 1px;
+}
+
+/* Delivery Estimate */
+.delivery-estimate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(46, 204, 113, 0.08);
+  border-radius: 40px;
+}
+
+.estimate-icon {
+  font-size: 1.2rem;
+}
+
+.estimate-text {
+  font-weight: 500;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.continue-shopping-btn {
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  padding: 16px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
+}
+
+.continue-shopping-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 204, 113, 0.35);
+}
+
+.repeat-order-btn {
+  background: white;
+  color: var(--text-dark);
+  border: 1.5px solid var(--border-light);
+  padding: 16px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.repeat-order-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.repeat-order-btn:active {
+  transform: translateY(0);
+}
+
+.repeat-order-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Help Section */
+.help-section {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.help-card {
+  background: white;
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.help-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.help-content {
+  flex: 1;
+}
+
+.help-content h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.help-content p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.help-contact-btn {
+  background: #25D366;
+  color: white;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 40px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.help-contact-btn:hover {
+  background: #128C7E;
+  transform: scale(1.02);
+}
+
+/* Footer */
+.success-footer {
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+}
+
+.footer-text {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Toast Message */
+.toast-message {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text-dark);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.toast-message.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-message.success {
+  background: var(--primary-dark);
+}
+
+.toast-message.error {
+  background: #ef4444;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .success-main {
+    padding: 40px 20px;
+  }
+  
+  .success-card {
+    padding: 48px 32px;
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+  }
+  
+  .continue-shopping-btn,
+  .repeat-order-btn {
+    flex: 1;
+  }
+}
