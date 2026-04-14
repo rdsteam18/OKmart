@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Dairy & Eggs · OK Mart</title>
   
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="../css/category.css">
+  <!-- CSS - Using absolute paths -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/category.css">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,14 +19,14 @@
   <header class="app-header category-header">
     <div class="header-container">
       <div class="header-left">
-        <a href="../index.html" class="back-button" aria-label="back to home">
+        <a href="/index.html" class="back-button" aria-label="back to home">
           <span class="back-icon">←</span>
         </a>
-        <a href="../index.html" class="logo-link">
+        <a href="/index.html" class="logo-link">
           <span class="logo-text">🛒 OK Mart</span>
         </a>
       </div>
-      <a href="../cart.html" class="cart-icon-link" aria-label="cart">
+      <a href="/cart.html" class="cart-icon-link" aria-label="cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
       </a>
@@ -41,7 +41,7 @@
       <p class="category-description" id="categoryDescription">Fresh milk, butter, paneer & more</p>
     </div>
 
-    <!-- Search Bar (optional, within category) -->
+    <!-- Search Bar -->
     <div class="search-container">
       <div class="search-wrapper">
         <span class="search-icon">🔍</span>
@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <!-- Sort Dropdown (hidden by default) -->
+    <!-- Sort Dropdown -->
     <div class="sort-dropdown" id="sortDropdown" style="display: none;">
       <button class="sort-option" data-sort="popular">🔥 Popular First</button>
       <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
@@ -90,11 +90,16 @@
     </div>
   </div>
 
-  <!-- SCRIPTS -->
-  <script src="../js/common.js"></script>
-  <script src="../js/category.js"></script>
+  <!-- Floating Call Button -->
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+    <span class="call-icon">📞</span>
+  </a>
+
+  <!-- SCRIPTS - Using absolute paths -->
+  <script src="/js/common.js"></script>
+  <script src="/js/category.js"></script>
   <script>
-    // Set category configuration for this page
+    // EXACT CATEGORY MATCH - "dairy" (lowercase)
     window.__OKMART_CATEGORY_CONFIG = {
       slug: 'dairy',
       displayName: 'Dairy & Eggs',
