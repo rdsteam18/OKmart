@@ -702,7 +702,15 @@
         existingBar.style.display = 'none';
       }
     }
-    
+
+    // Add to common.js - Manual PWA install trigger
+window.OKMart.installApp = function() {
+  if (window.installPWA) {
+    window.installPWA();
+  } else {
+    alert('To install the app, use the "Add to Home Screen" option in your browser menu.');
+  }
+};
     addGlobalStyles();
   });
   
