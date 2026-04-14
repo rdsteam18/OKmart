@@ -1,5 +1,5 @@
 // ===== OK MART - CHECKOUT.JS =====
-// Checkout with validation, pincode check, and WhatsApp order
+// Checkout with validation, pincode check, WhatsApp order, and order tracking integration
 
 (function() {
   'use strict';
@@ -51,7 +51,7 @@
     
     // If cart is empty, redirect to home
     if (cartItems.length === 0) {
-      window.location.href = 'index.html';
+      window.location.href = '/index.html';
       return;
     }
     
@@ -59,7 +59,7 @@
     return cartItems;
   }
   
-  // Calculate totals
+  // Calculate totals with offers
   function calculateTotals() {
     let mrpTotal = 0;
     let sellingTotal = 0;
@@ -69,18 +69,34 @@
       sellingTotal += item.price * item.quantity;
     });
     
-    const discount = mrpTotal - sellingTotal;
-    const subtotal = sellingTotal;
-    const deliveryCharge = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-    const total = subtotal + deliveryCharge;
+    const itemDiscount = mrpTotal - sellingTotal;
+    let subtotal = sellingTotal;
+    
+    // Apply ₹20 off on orders above ₹500
+    let additionalDiscount = 0;
+    const DISCOUNT_500_THRESHOLD = 500;
+    const DISCOUNT_500_AMOUNT = 20;
+    
+    if (subtotal >= DISCOUNT_500_THRESHOLD) {
+      additionalDiscount = DISCOUNT_500_AMOUNT;
+    }
+    
+    const subtotalAfterDiscount = subtotal - additionalDiscount;
+    const deliveryCharge = subtotalAfterDiscount >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+    const finalTotal = Math.max(0, subtotalAfterDiscount + deliveryCharge);
     
     cartTotals = {
       mrpTotal,
       sellingTotal,
-      discount,
+      itemDiscount,
+      additionalDiscount,
+      totalDiscount: itemDiscount + additionalDiscount,
       subtotal,
+      subtotalAfterDiscount,
       deliveryCharge,
-      total
+      finalTotal,
+      hasFreeDelivery: deliveryCharge === 0,
+      hasExtraDiscount: additionalDiscount > 0
     };
     
     return cartTotals;
@@ -98,7 +114,7 @@
         const itemEl = document.createElement('div');
         itemEl.className = 'order-item-compact';
         itemEl.innerHTML = `
-          <img src="${item.image}" alt="${item.name}" class="order-item-image">
+          <img src="${item.image}" alt="${item.name}" class="order-item-image" loading="lazy">
           <div class="order-item-details">
             <div>
               <div class="order-item-name">${item.name}</div>
@@ -122,15 +138,16 @@
         checkoutDelivery.style.color = '#10b981';
       } else {
         checkoutDelivery.textContent = `₹${cartTotals.deliveryCharge}`;
+        checkoutDelivery.style.color = '';
       }
     }
     
     if (checkoutTotal) {
-      checkoutTotal.textContent = `₹${cartTotals.total}`;
+      checkoutTotal.textContent = `₹${cartTotals.finalTotal}`;
     }
     
     if (stickyCheckoutTotal) {
-      stickyCheckoutTotal.textContent = `₹${cartTotals.total}`;
+      stickyCheckoutTotal.textContent = `₹${cartTotals.finalTotal}`;
     }
   }
   
@@ -160,7 +177,6 @@
         if (customerAddress) customerAddress.value = userData.address || '';
         if (customerPincode) {
           customerPincode.value = userData.pincode || '';
-          // Validate pincode after loading
           validatePincode(userData.pincode);
         }
         if (deliverySlot) deliverySlot.value = userData.deliverySlot || 'morning';
@@ -188,84 +204,67 @@
   
   // ---------- VALIDATION ----------
   
-  // Enhanced pincode validation with real-time feedback
-
-function validatePincode(pincode) {
-  const pincodeStr = pincode?.toString().trim() || '';
-  const isValidFormat = /^[0-9]{6}$/.test(pincodeStr);
-  const isAllowed = ALLOWED_PINCODES.includes(pincodeStr);
-  
-  isPincodeValid = isValidFormat && isAllowed;
-  
-  if (pincodeStatus) {
-    if (pincodeStr.length === 0) {
-      pincodeStatus.style.display = 'none';
-      pincodeStatus.className = 'pincode-status';
-    } else if (!isValidFormat) {
-      pincodeStatus.textContent = '⚠️ Please enter a valid 6-digit pincode';
-      pincodeStatus.className = 'pincode-status unavailable';
-      pincodeStatus.style.display = 'block';
-    } else if (isValidFormat && isAllowed) {
-      pincodeStatus.textContent = '✅ Delivery available in your area!';
-      pincodeStatus.className = 'pincode-status available';
-      pincodeStatus.style.display = 'block';
-      
-      // Add success animation
-      pincodeStatus.style.animation = 'none';
-      setTimeout(() => {
-        pincodeStatus.style.animation = 'pulse 0.3s ease-out';
-      }, 10);
-    } else if (isValidFormat && !isAllowed) {
-      pincodeStatus.textContent = '❌ Sorry, delivery not available in your area';
-      pincodeStatus.className = 'pincode-status unavailable';
-      pincodeStatus.style.display = 'block';
-      
-      // Suggest alternative message
-      const suggestion = document.createElement('div');
-      suggestion.style.fontSize = '0.75rem';
-      suggestion.style.marginTop = '4px';
-      suggestion.style.color = 'var(--text-muted)';
-      
-      // Clear existing suggestion
-      const existingSuggestion = pincodeStatus.querySelector('.suggestion');
-      if (existingSuggestion) existingSuggestion.remove();
-      
-      const suggestionEl = document.createElement('div');
-      suggestionEl.className = 'suggestion';
-      suggestionEl.textContent = 'Try: 380026, 382418, or 380058';
-      pincodeStatus.appendChild(suggestionEl);
-    }
+  function validatePincode(pincode) {
+    const pincodeStr = pincode?.toString().trim() || '';
+    const isValidFormat = /^[0-9]{6}$/.test(pincodeStr);
+    const isAllowed = ALLOWED_PINCODES.includes(pincodeStr);
     
-    // Update input border color
-    if (customerPincode) {
-      if (isValidFormat && isAllowed) {
-        customerPincode.style.borderColor = 'var(--primary)';
-      } else if (pincodeStr.length > 0) {
-        customerPincode.style.borderColor = '#ef4444';
-      } else {
-        customerPincode.style.borderColor = 'var(--border-light)';
+    isPincodeValid = isValidFormat && isAllowed;
+    
+    if (pincodeStatus) {
+      if (pincodeStr.length === 0) {
+        pincodeStatus.style.display = 'none';
+        pincodeStatus.className = 'pincode-status';
+      } else if (!isValidFormat) {
+        pincodeStatus.textContent = '⚠️ Please enter a valid 6-digit pincode';
+        pincodeStatus.className = 'pincode-status unavailable';
+        pincodeStatus.style.display = 'block';
+      } else if (isValidFormat && isAllowed) {
+        pincodeStatus.textContent = '✅ Delivery available in your area!';
+        pincodeStatus.className = 'pincode-status available';
+        pincodeStatus.style.display = 'block';
+        
+        // Clear any existing suggestion
+        const existingSuggestion = pincodeStatus.querySelector('.suggestion');
+        if (existingSuggestion) existingSuggestion.remove();
+      } else if (isValidFormat && !isAllowed) {
+        pincodeStatus.textContent = '❌ Sorry, delivery not available in your area';
+        pincodeStatus.className = 'pincode-status unavailable';
+        pincodeStatus.style.display = 'block';
+        
+        // Add suggestion
+        const existingSuggestion = pincodeStatus.querySelector('.suggestion');
+        if (existingSuggestion) existingSuggestion.remove();
+        
+        const suggestionEl = document.createElement('div');
+        suggestionEl.className = 'suggestion';
+        suggestionEl.style.cssText = 'font-size:0.75rem;margin-top:4px;color:#64748b';
+        suggestionEl.textContent = 'Try: 380026, 382418, or 380058';
+        pincodeStatus.appendChild(suggestionEl);
+      }
+      
+      // Update input border color
+      if (customerPincode) {
+        if (isValidFormat && isAllowed) {
+          customerPincode.style.borderColor = '#2ecc71';
+        } else if (pincodeStr.length > 0) {
+          customerPincode.style.borderColor = '#ef4444';
+        } else {
+          customerPincode.style.borderColor = '#e2e8f0';
+        }
       }
     }
+    
+    return isPincodeValid;
   }
-  
-  return isPincodeValid;
-}
-
-// Add pulse animation to CSS
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-`;
-document.head.appendChild(style);
   
   function validateName(name) {
     const isValid = name && name.trim().length >= 2;
     if (nameError) {
       nameError.textContent = isValid ? '' : 'Please enter your full name';
+    }
+    if (customerName) {
+      customerName.style.borderColor = isValid ? '#e2e8f0' : '#ef4444';
     }
     return isValid;
   }
@@ -275,6 +274,9 @@ document.head.appendChild(style);
     if (phoneError) {
       phoneError.textContent = isValid ? '' : 'Please enter a valid 10-digit number';
     }
+    if (customerPhone) {
+      customerPhone.style.borderColor = isValid ? '#e2e8f0' : '#ef4444';
+    }
     return isValid;
   }
   
@@ -282,6 +284,9 @@ document.head.appendChild(style);
     const isValid = address && address.trim().length >= 5;
     if (addressError) {
       addressError.textContent = isValid ? '' : 'Please enter your complete address';
+    }
+    if (customerAddress) {
+      customerAddress.style.borderColor = isValid ? '#e2e8f0' : '#ef4444';
     }
     return isValid;
   }
@@ -297,7 +302,13 @@ document.head.appendChild(style);
   
   // ---------- WHATSAPP ORDER ----------
   
-  function generateOrderMessage() {
+  function generateOrderId() {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `OKM-${timestamp}-${random}`;
+  }
+  
+  function generateOrderMessage(orderId) {
     const name = customerName.value.trim();
     const phone = customerPhone.value.trim();
     const address = customerAddress.value.trim();
@@ -313,6 +324,7 @@ document.head.appendChild(style);
     };
     
     let message = `🛒 *OK Mart Order*\n\n`;
+    message += `📋 *Order ID:* ${orderId}\n\n`;
     message += `👤 *Name:* ${name}\n`;
     message += `📱 *Phone:* ${phone}\n`;
     message += `🏠 *Address:* ${address}\n`;
@@ -330,39 +342,61 @@ document.head.appendChild(style);
       message += `  • ${item.name} x${item.quantity} - ₹${itemTotal}\n`;
     });
     
-    message += `\n💰 *Total:* ₹${cartTotals.total}`;
+    message += `\n💰 *Subtotal:* ₹${cartTotals.subtotal}\n`;
     
-    if (cartTotals.deliveryCharge === 0) {
-      message += ` (Free Delivery 🎉)`;
+    if (cartTotals.additionalDiscount > 0) {
+      message += `🏷️ *Discount:* -₹${cartTotals.additionalDiscount}\n`;
     }
     
+    if (cartTotals.deliveryCharge > 0) {
+      message += `🚚 *Delivery:* ₹${cartTotals.deliveryCharge}\n`;
+    } else {
+      message += `🚚 *Delivery:* FREE 🎉\n`;
+    }
+    
+    message += `\n💵 *Total:* ₹${cartTotals.finalTotal}`;
+    message += `\n💳 *Payment:* Cash on Delivery`;
+    
     message += `\n\n✅ Please confirm this order.`;
+    message += `\n\n📦 Track your order: https://okmart.netlify.app/track.html?phone=${phone}`;
     
     return message;
   }
   
   function sendWhatsAppOrder() {
-    const message = generateOrderMessage();
+    const orderId = generateOrderId();
+    const message = generateOrderMessage(orderId);
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
     
-    // Save order to localStorage before redirecting
+    // Save order to localStorage for tracking
     const orderData = {
-      items: cartItems,
+      orderId: orderId,
+      items: cartItems.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      })),
       totals: cartTotals,
       customer: {
-        name: customerName.value,
-        phone: customerPhone.value,
-        address: customerAddress.value,
-        pincode: customerPincode.value,
+        name: customerName.value.trim(),
+        phone: customerPhone.value.trim().replace(/\D/g, ''),
+        address: customerAddress.value.trim(),
+        pincode: customerPincode.value.trim(),
         slot: deliverySlot.value,
-        instructions: specialInstructions.value
+        instructions: specialInstructions.value.trim()
       },
-      orderTime: new Date().toISOString(),
-      orderId: 'OKM-' + Date.now().toString(36).toUpperCase()
+      orderDate: new Date().toISOString(),
+      status: 'received',
+      estimatedDelivery: '20-25 mins',
+      paymentMethod: 'Cash on Delivery'
     };
     
+    // Save to last order (for success page)
     localStorage.setItem('okmart_last_order', JSON.stringify(orderData));
+    
+    // Save to orders list for tracking
+    saveOrderToTrackingSystem(orderData);
     
     // Open WhatsApp
     window.open(whatsappUrl, '_blank');
@@ -372,8 +406,39 @@ document.head.appendChild(style);
     
     // Redirect to success page after short delay
     setTimeout(() => {
-      window.location.href = 'success.html';
+      window.location.href = '/success.html';
     }, 500);
+  }
+  
+  // Save order to tracking system
+  function saveOrderToTrackingSystem(orderData) {
+    const ORDERS_STORAGE_KEY = 'okmart_orders';
+    
+    try {
+      const existingOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
+      const orders = existingOrders ? JSON.parse(existingOrders) : [];
+      
+      orders.push({
+        orderId: orderData.orderId,
+        phone: orderData.customer.phone,
+        customerName: orderData.customer.name,
+        customerAddress: orderData.customer.address,
+        items: orderData.items,
+        total: orderData.totals.finalTotal,
+        paymentMethod: orderData.paymentMethod,
+        status: orderData.status,
+        orderDate: orderData.orderDate,
+        estimatedDelivery: orderData.estimatedDelivery,
+        deliverySlot: orderData.customer.slot,
+        instructions: orderData.customer.instructions
+      });
+      
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+      console.log('✅ Order saved to tracking system:', orderData.orderId);
+      
+    } catch (e) {
+      console.error('Failed to save order to tracking:', e);
+    }
   }
   
   // ---------- FORM SUBMISSION ----------
@@ -393,7 +458,58 @@ document.head.appendChild(style);
       if (firstError) {
         firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      
+      // Show error summary
+      showToast('Please fill all required fields correctly', 'error');
     }
+  }
+  
+  // ---------- TOAST NOTIFICATION ----------
+  
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-message ${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: ${type === 'error' ? '#ef4444' : '#1e2a2e'};
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideUpFade 0.3s ease-out;
+      white-space: nowrap;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideDownFade 0.3s ease-in';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+  
+  // Add toast animation styles
+  function addToastStyles() {
+    if (document.getElementById('toastStyles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'toastStyles';
+    style.textContent = `
+      @keyframes slideUpFade {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes slideDownFade {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+    `;
+    document.head.appendChild(style);
   }
   
   // ---------- REAL-TIME VALIDATION ----------
@@ -405,7 +521,10 @@ document.head.appendChild(style);
     }
     
     if (customerPhone) {
-      customerPhone.addEventListener('input', () => validatePhone(customerPhone.value));
+      customerPhone.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '');
+        validatePhone(e.target.value);
+      });
       customerPhone.addEventListener('blur', () => validatePhone(customerPhone.value));
     }
     
@@ -415,8 +534,9 @@ document.head.appendChild(style);
     }
     
     if (customerPincode) {
-      customerPincode.addEventListener('input', () => {
-        const pincode = customerPincode.value;
+      customerPincode.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '');
+        const pincode = e.target.value;
         if (pincode.length === 6) {
           validatePincode(pincode);
         }
@@ -428,6 +548,9 @@ document.head.appendChild(style);
   // ---------- INITIALIZATION ----------
   
   function init() {
+    // Add toast styles
+    addToastStyles();
+    
     // Load cart
     loadCart();
     
@@ -448,12 +571,25 @@ document.head.appendChild(style);
       checkoutForm.addEventListener('submit', handleSubmit);
     }
     
+    // Update cart badge
+    if (window.OKMart && window.OKMart.getCartItems) {
+      const cart = window.OKMart.getCartItems();
+      const badges = document.querySelectorAll('.cart-badge');
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      badges.forEach(badge => {
+        if (badge) badge.textContent = totalItems;
+      });
+    }
+    
     // Expose for debugging
     window.OKMartCheckout = {
       validateForm,
       getCartTotals: () => cartTotals,
-      getAllowedPincodes: () => ALLOWED_PINCODES
+      getAllowedPincodes: () => ALLOWED_PINCODES,
+      refresh: init
     };
+    
+    console.log('✅ Checkout initialized');
   }
   
   init();
