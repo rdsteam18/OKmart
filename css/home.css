@@ -574,3 +574,30 @@
 .category-emoji {
   font-size: 28px;
 }
+
+.search-submit-btn {
+  position: absolute;
+  right: 48px;
+  background: var(--primary);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.search-submit-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.clear-search.visible ~ .search-submit-btn {
+  right: 48px;
+}
