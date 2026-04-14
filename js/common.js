@@ -199,3 +199,69 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badge) badge.textContent = totalItems;
   });
 });
+
+
+// Add to common.js - Enhanced Add to Cart with visual feedback
+
+// Show floating notification when item added to cart
+window.OKMart.showAddToCartFeedback = (productName) => {
+  // Create floating element
+  const feedback = document.createElement('div');
+  feedback.className = 'cart-feedback-toast';
+  feedback.innerHTML = `
+    <span>🛒</span>
+    <span>${productName} added to cart!</span>
+  `;
+  feedback.style.cssText = `
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-dark);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    animation: slideUpFade 0.3s ease-out;
+    white-space: nowrap;
+  `;
+  
+  document.body.appendChild(feedback);
+  
+  setTimeout(() => {
+    feedback.style.animation = 'slideDownFade 0.3s ease-in';
+    setTimeout(() => feedback.remove(), 300);
+  }, 2000);
+};
+
+// Add animation styles dynamically
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideUpFade {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes slideDownFade {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  }
+`;
+document.head.appendChild(style);
+
+// Override addToCart to include feedback
+const originalAddToCart = window.OKMart.addToCart;
+window.OKMart.addToCart = (product, quantity = 1) => {
+  originalAddToCart(product, quantity);
+  window.OKMart.showAddToCartFeedback(product.name);
+};
+
+// Listen to add-to-cart event for feedback
+window.addEventListener('okmart:add-to-cart', (e) => {
+  window.OKMart.showAddToCartFeedback(e.detail.name);
+});
