@@ -9,10 +9,19 @@
   const CACHE_KEY = 'okmart_products_cache';
   const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
   
+  // Pages where sticky cart bar should NOT appear
+  const HIDE_STICKY_CART_PAGES = ['cart.html', 'checkout.html', 'success.html'];
+  
   // ---------- GLOBAL STATE ----------
   window.OKMart = window.OKMart || {};
   
   let cachedProducts = null;
+  
+  // ---------- HELPER: Check if current page should show sticky cart ----------
+  function shouldShowStickyCart() {
+    const currentPath = window.location.pathname.toLowerCase();
+    return !HIDE_STICKY_CART_PAGES.some(page => currentPath.includes(page));
+  }
   
   // ---------- PRODUCT FETCHING (WITH CACHING) ----------
   async function fetchProducts() {
@@ -259,11 +268,14 @@
     }, 2000);
   }
   
-  // ---------- STICKY CART BAR ----------
+  // ---------- STICKY CART BAR (HIDDEN ON CART/CHECKOUT/SUCCESS PAGES) ----------
   let stickyCartBar = null;
   
   function createStickyCartBar() {
     if (document.getElementById('stickyCartBar')) return;
+    
+    // Don't create on excluded pages
+    if (!shouldShowStickyCart()) return;
     
     const bar = document.createElement('div');
     bar.className = 'sticky-cart-bar';
@@ -283,6 +295,14 @@
   }
   
   function updateStickyCartBar() {
+    // Don't show on excluded pages
+    if (!shouldShowStickyCart()) {
+      if (stickyCartBar) {
+        stickyCartBar.classList.remove('visible');
+      }
+      return;
+    }
+    
     const cart = getCart();
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -299,9 +319,20 @@
       if (totalEl) totalEl.textContent = `₹${subtotal}`;
       
       setTimeout(() => stickyCartBar.classList.add('visible'), 10);
+      
+      // Hide original bottom bar if it exists
+      const originalBottomBar = document.querySelector('.sticky-bottom-bar');
+      if (originalBottomBar) {
+        originalBottomBar.style.display = 'none';
+      }
     } else {
       if (stickyCartBar) {
         stickyCartBar.classList.remove('visible');
+      }
+      // Show original bottom bar again
+      const originalBottomBar = document.querySelector('.sticky-bottom-bar');
+      if (originalBottomBar) {
+        originalBottomBar.style.display = 'block';
       }
     }
   }
@@ -394,7 +425,18 @@
   // ---------- INITIALIZATION ----------
   document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
-    updateStickyCartBar();
+    
+    // Only initialize sticky cart on appropriate pages
+    if (shouldShowStickyCart()) {
+      updateStickyCartBar();
+    } else {
+      // Hide any existing sticky cart bar
+      const existingBar = document.getElementById('stickyCartBar');
+      if (existingBar) {
+        existingBar.style.display = 'none';
+      }
+    }
+    
     addGlobalStyles();
   });
   
