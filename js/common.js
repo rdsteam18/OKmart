@@ -169,3 +169,33 @@
   // initial badge update
   document.addEventListener('DOMContentLoaded', updateCartBadge);
 })();
+
+// Add to common.js (append to existing cart section)
+
+// Get cart item count
+window.OKMart.getCartCount = () => {
+  const cart = getCart();
+  return cart.reduce((sum, item) => sum + item.quantity, 0);
+};
+
+// Check if product is in cart
+window.OKMart.isInCart = (productId) => {
+  const cart = getCart();
+  return cart.some(item => item.id === productId);
+};
+
+// Get cart subtotal
+window.OKMart.getCartSubtotal = () => {
+  const cart = getCart();
+  return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+};
+
+// Update cart badge immediately
+document.addEventListener('DOMContentLoaded', () => {
+  const cart = getCart();
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const badges = document.querySelectorAll('#cartCountPlaceholder, .cart-badge');
+  badges.forEach(badge => {
+    if (badge) badge.textContent = totalItems;
+  });
+});
