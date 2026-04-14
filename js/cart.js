@@ -5,12 +5,14 @@
   'use strict';
   
   // ---------- OFFER RULES ----------
-  const OFFER_RULES = {
-    FREE_DELIVERY_THRESHOLD: 300,
-    DELIVERY_CHARGE: 20,
-    DISCOUNT_500_THRESHOLD: 500,
-    DISCOUNT_500_AMOUNT: 20
-  };
+ // Updated offer rules in cart.js
+const OFFER_RULES = {
+  FREE_DELIVERY_THRESHOLD: 199,  // Changed to ₹199
+  DELIVERY_CHARGE: 20,
+  COUPON_CODE: 'SAVE20',
+  COUPON_MIN_ORDER: 250,
+  COUPON_DISCOUNT: 20
+};
   
   // ---------- STATE ----------
   let cartItems = [];
