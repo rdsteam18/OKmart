@@ -3,16 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Cart · OK Mart</title>
+  <title>Your Cart · OK Mart</title>
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/cart.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header" id="mainHeader">
+  <!-- HEADER -->
+  <header class="app-header cart-page-header">
     <div class="header-container">
-      <a href="index.html" class="logo-link">
-        <span class="logo-text">🛒 OK Mart</span>
-      </a>
+      <div class="header-left">
+        <a href="index.html" class="back-button" aria-label="back to home">
+          <span class="back-icon">←</span>
+        </a>
+        <h1 class="page-title">Your Cart</h1>
+      </div>
       <a href="cart.html" class="cart-icon-link" aria-label="cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
@@ -21,25 +32,90 @@
   </header>
 
   <main class="cart-main">
-    <h1 class="page-title">your basket</h1>
+    <!-- Cart Summary Header -->
+    <div class="cart-summary-header" id="cartSummaryHeader">
+      <div class="summary-left">
+        <span class="basket-icon">🛒</span>
+        <span class="basket-title">Quick Basket</span>
+        <span class="item-count-badge" id="itemCountBadge">0 items</span>
+      </div>
+      <div class="summary-right">
+        <span class="total-label">Total:</span>
+        <span class="total-amount" id="headerTotalAmount">₹0</span>
+      </div>
+    </div>
+
+    <!-- Free Delivery Banner -->
+    <div class="free-delivery-banner" id="freeDeliveryBanner">
+      <div class="banner-content">
+        <span class="banner-icon">🎉</span>
+        <span class="banner-text">Yay! You get FREE delivery on this order</span>
+        <span class="banner-icon">🎉</span>
+      </div>
+    </div>
+
+    <!-- Cart Items Container -->
     <div class="cart-items-container" id="cartItemsContainer">
-      <!-- cart items will be rendered by cart.js -->
+      <!-- Items will be dynamically rendered here -->
     </div>
-    <div class="cart-summary" id="cartSummary">
-      <!-- subtotal, delivery etc -->
+
+    <!-- Empty Cart State (hidden by default) -->
+    <div class="empty-cart-state" id="emptyCartState" style="display: none;">
+      <div class="empty-cart-icon">🛒</div>
+      <h2 class="empty-cart-title">Your cart is empty</h2>
+      <p class="empty-cart-message">Looks like you haven't added anything yet.</p>
+      <a href="index.html" class="start-shopping-btn">Start Shopping →</a>
     </div>
-    <div class="cart-actions">
-      <a href="checkout.html" class="btn-primary checkout-btn">proceed to checkout →</a>
+
+    <!-- Price Summary Section -->
+    <div class="price-summary-section" id="priceSummarySection">
+      <h3 class="summary-title">Bill Details</h3>
+      
+      <div class="summary-row">
+        <span class="summary-label">MRP Total</span>
+        <span class="summary-value" id="mrpTotal">₹0</span>
+      </div>
+      
+      <div class="summary-row">
+        <span class="summary-label">Discount</span>
+        <span class="summary-value discount-value" id="discountAmount">-₹0</span>
+      </div>
+      
+      <div class="summary-row">
+        <span class="summary-label">Delivery Charges</span>
+        <span class="summary-value" id="deliveryCharge">₹0</span>
+      </div>
+      
+      <div class="summary-divider"></div>
+      
+      <div class="summary-row total-row">
+        <span class="summary-label">Final Total</span>
+        <span class="summary-value final-total" id="finalTotal">₹0</span>
+      </div>
+      
+      <div class="savings-message" id="savingsMessage">
+        You're saving ₹0 on this order!
+      </div>
     </div>
+
+    <!-- Bottom Spacer for Sticky Bar -->
+    <div class="bottom-spacer"></div>
   </main>
 
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <span class="delivery-message">🚀 delivery in 10 mins</span>
-      <span class="min-order">min order ₹99</span>
+  <!-- STICKY BOTTOM CHECKOUT BAR -->
+  <div class="sticky-checkout-bar" id="stickyCheckoutBar">
+    <div class="checkout-bar-inner">
+      <div class="checkout-total">
+        <span class="total-label-small">Total</span>
+        <span class="total-amount-large" id="stickyTotalAmount">₹0</span>
+      </div>
+      <button class="place-order-btn" id="placeOrderBtn">
+        Place Order →
+      </button>
     </div>
   </div>
 
+  <!-- SCRIPTS -->
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
 </body>
