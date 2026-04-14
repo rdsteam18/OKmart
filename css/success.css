@@ -359,3 +359,20 @@
     flex: 1;
   }
 }
+
+.track-order-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 12px 24px;
+  background: var(--bg-light);
+  border-radius: 40px;
+  transition: all 0.2s;
+}
+
+.track-order-link:hover {
+  background: var(--primary);
+  color: white;
+}
