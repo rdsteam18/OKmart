@@ -1,43 +1,184 @@
 {
-  "dairy": [
+  "products": [
     {
-      "name": "Amul Milk",
-      "price": 50,
-      "image": "https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/1c44f728-7e7e-4f59-9248-5569a3b36672/Amul-Gold-Full-Cream-Fresh-Milk-Pouch.jpeg"
+      "id": "d1",
+      "name": "Amul Taaza Milk",
+      "category": "dairy",
+      "price": 26,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "500 ml",
+      "popular": true
     },
     {
-      "name": "Paneer",
-      "price": 80,
-      "image": "https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/1c44f728-7e7e-4f59-9248-5569a3b36672/Amul-Gold-Full-Cream-Fresh-Milk-Pouch.jpeg"
+      "id": "d2",
+      "name": "Amul Butter",
+      "category": "dairy",
+      "price": 54,
+      "mrp": 60,
+      "image": "https://images.pexels.com/photos/1291712/pexels-photo-1291712.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "100 g",
+      "popular": true
     },
     {
-      "name": "Curd",
+      "id": "d3",
+      "name": "Mother Dairy Paneer",
+      "category": "dairy",
+      "price": 85,
+      "mrp": 95,
+      "image": "https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g",
+      "popular": false
+    },
+    {
+      "id": "d4",
+      "name": "Amul Cheese Slices",
+      "category": "dairy",
+      "price": 95,
+      "mrp": 110,
+      "image": "https://images.pexels.com/photos/773253/pexels-photo-773253.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g (10 slices)",
+      "popular": true
+    },
+    {
+      "id": "d5",
+      "name": "Epigamia Greek Yogurt",
+      "category": "dairy",
       "price": 40,
-      "image": "https://via.placeholder.com/80"
-    }
-  ],
-  "snacks": [
+      "mrp": 45,
+      "image": "https://images.pexels.com/photos/1162361/pexels-photo-1162361.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "90 g",
+      "popular": false
+    },
     {
-      "name": "Chips",
+      "id": "d6",
+      "name": "Amul Fresh Cream",
+      "category": "dairy",
+      "price": 52,
+      "mrp": 58,
+      "image": "https://images.pexels.com/photos/5946761/pexels-photo-5946761.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 ml",
+      "popular": false
+    },
+    {
+      "id": "s1",
+      "name": "Lay's Classic Salted",
+      "category": "snacks",
       "price": 20,
-      "image": "https://via.placeholder.com/80"
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/4791269/pexels-photo-4791269.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "52 g",
+      "popular": true
     },
     {
-      "name": "Biscuits",
+      "id": "s2",
+      "name": "Kurkure Masala Munch",
+      "category": "snacks",
+      "price": 20,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "75 g",
+      "popular": true
+    },
+    {
+      "id": "s3",
+      "name": "Haldiram's Aloo Bhujia",
+      "category": "snacks",
+      "price": 55,
+      "mrp": 65,
+      "image": "https://images.pexels.com/photos/372882/pexels-photo-372882.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g",
+      "popular": false
+    },
+    {
+      "id": "s4",
+      "name": "Parle-G Biscuits",
+      "category": "snacks",
+      "price": 5,
+      "mrp": 5,
+      "image": "https://images.pexels.com/photos/239578/pexels-photo-239578.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "55 g",
+      "popular": true
+    },
+    {
+      "id": "s5",
+      "name": "Oreo Chocolate",
+      "category": "snacks",
       "price": 30,
-      "image": "https://via.placeholder.com/80"
-    }
-  ],
-  "grocery": [
-    {
-      "name": "Rice",
-      "price": 60,
-      "image": "https://via.placeholder.com/80"
+      "mrp": 35,
+      "image": "https://images.pexels.com/photos/1292294/pexels-photo-1292294.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "120 g",
+      "popular": false
     },
     {
-      "name": "Sugar",
-      "price": 45,
-      "image": "https://via.placeholder.com/80"
+      "id": "s6",
+      "name": "Britannia Good Day",
+      "category": "snacks",
+      "price": 10,
+      "mrp": 10,
+      "image": "https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "50 g",
+      "popular": false
+    },
+    {
+      "id": "g1",
+      "name": "Fortune Sunflower Oil",
+      "category": "grocery",
+      "price": 115,
+      "mrp": 135,
+      "image": "https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 L",
+      "popular": true
+    },
+    {
+      "id": "g2",
+      "name": "Tata Sampann Toor Dal",
+      "category": "grocery",
+      "price": 150,
+      "mrp": 170,
+      "image": "https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": true
+    },
+    {
+      "id": "g3",
+      "name": "Aashirvaad Atta",
+      "category": "grocery",
+      "price": 270,
+      "mrp": 300,
+      "image": "https://images.pexels.com/photos/209482/pexels-photo-209482.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "5 kg",
+      "popular": true
+    },
+    {
+      "id": "g4",
+      "name": "India Gate Basmati Rice",
+      "category": "grocery",
+      "price": 199,
+      "mrp": 230,
+      "image": "https://images.pexels.com/photos/4110257/pexels-photo-4110257.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": false
+    },
+    {
+      "id": "g5",
+      "name": "Tata Salt",
+      "category": "grocery",
+      "price": 22,
+      "mrp": 25,
+      "image": "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": false
+    },
+    {
+      "id": "g6",
+      "name": "Everest Garam Masala",
+      "category": "grocery",
+      "price": 55,
+      "mrp": 65,
+      "image": "https://images.pexels.com/photos/4198024/pexels-photo-4198024.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "50 g",
+      "popular": false
     }
   ]
 }
