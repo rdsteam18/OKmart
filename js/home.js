@@ -618,7 +618,204 @@
     `;
     document.head.appendChild(style);
   }
+
+
+
+  // ===== CATEGORY NAVIGATION SYSTEM =====
+
+// Category configuration with icons and links
+const categoryConfig = {
+  // Fruits & Vegetables Group
+  fruitsVeg: [
+    { id: 'fresh-fruits', name: 'Fresh Fruits', icon: '🍎', link: 'categories/fruits.html', count: 0 },
+    { id: 'fresh-vegetables', name: 'Fresh Vegetables', icon: '🥕', link: 'categories/vegetables.html', count: 0 },
+    { id: 'exotic-fruits', name: 'Exotic Fruits', icon: '🥝', link: 'categories/fruits.html', count: 0 },
+    { id: 'cut-veggies', name: 'Cut Veggies', icon: '🥗', link: 'categories/vegetables.html', count: 0 }
+  ],
   
+  // Dairy & Bakery Group
+  dairyBakery: [
+    { id: 'milk', name: 'Milk', icon: '🥛', link: 'categories/dairy.html', count: 0 },
+    { id: 'bread', name: 'Bread', icon: '🍞', link: 'categories/bakery.html', count: 0 },
+    { id: 'eggs', name: 'Eggs', icon: '🥚', link: 'categories/dairy.html', count: 0 },
+    { id: 'butter-cheese', name: 'Butter & Cheese', icon: '🧀', link: 'categories/dairy.html', count: 0 },
+    { id: 'paneer-tofu', name: 'Paneer & Tofu', icon: '🧈', link: 'categories/dairy.html', count: 0 },
+    { id: 'yogurt', name: 'Yogurt', icon: '🍶', link: 'categories/dairy.html', count: 0 },
+    { id: 'bakery', name: 'Bakery', icon: '🥐', link: 'categories/bakery.html', count: 0 },
+    { id: 'cakes', name: 'Cakes', icon: '🎂', link: 'categories/bakery.html', count: 0 }
+  ],
+  
+  // Snacks & Packaged Foods
+  snacksPackaged: [
+    { id: 'chips', name: 'Chips & Crisps', icon: '🍟', link: 'categories/snacks.html', count: 0 },
+    { id: 'biscuits', name: 'Biscuits', icon: '🍪', link: 'categories/snacks.html', count: 0 },
+    { id: 'namkeen', name: 'Namkeen', icon: '🥨', link: 'categories/snacks.html', count: 0 },
+    { id: 'chocolates', name: 'Chocolates', icon: '🍫', link: 'categories/snacks.html', count: 0 },
+    { id: 'instant-noodles', name: 'Noodles', icon: '🍜', link: 'categories/snacks.html', count: 0 },
+    { id: 'ready-to-eat', name: 'Ready to Eat', icon: '🍲', link: 'categories/snacks.html', count: 0 },
+    { id: 'frozen-food', name: 'Frozen Food', icon: '❄️', link: 'categories/frozen.html', count: 0 },
+    { id: 'ice-cream', name: 'Ice Cream', icon: '🍦', link: 'categories/frozen.html', count: 0 }
+  ],
+  
+  // Grocery Staples
+  groceryStaples: [
+    { id: 'atta-flours', name: 'Atta & Flours', icon: '🌾', link: 'categories/grocery.html', count: 0 },
+    { id: 'rice', name: 'Rice', icon: '🍚', link: 'categories/grocery.html', count: 0 },
+    { id: 'dals-pulses', name: 'Dals & Pulses', icon: '🫘', link: 'categories/grocery.html', count: 0 },
+    { id: 'oils-ghee', name: 'Oils & Ghee', icon: '🫒', link: 'categories/grocery.html', count: 0 },
+    { id: 'spices', name: 'Spices', icon: '🌶️', link: 'categories/grocery.html', count: 0 },
+    { id: 'salt-sugar', name: 'Salt & Sugar', icon: '🧂', link: 'categories/grocery.html', count: 0 },
+    { id: 'dry-fruits', name: 'Dry Fruits', icon: '🥜', link: 'categories/dryfruits.html', count: 0 },
+    { id: 'tea-coffee', name: 'Tea & Coffee', icon: '☕', link: 'categories/beverages.html', count: 0 }
+  ]
+};
+
+// Update category counts based on available products
+function updateCategoryCounts() {
+  if (!allProducts || allProducts.length === 0) return;
+  
+  // Helper to count products matching keywords
+  const countProducts = (keywords, categoryName) => {
+    return allProducts.filter(p => {
+      const nameLower = p.name.toLowerCase();
+      const catLower = p.category.toLowerCase();
+      return keywords.some(kw => nameLower.includes(kw) || catLower.includes(kw));
+    }).length;
+  };
+  
+  // Update counts for each category
+  const keywordMap = {
+    'fresh-fruits': ['fruit', 'apple', 'banana', 'mango', 'grape', 'orange'],
+    'fresh-vegetables': ['vegetable', 'potato', 'tomato', 'onion', 'carrot'],
+    'exotic-fruits': ['kiwi', 'avocado', 'dragon', 'berry'],
+    'cut-veggies': ['cut', 'chopped', 'peeled'],
+    'milk': ['milk', 'dairy'],
+    'bread': ['bread', 'bun', 'pav'],
+    'eggs': ['egg'],
+    'butter-cheese': ['butter', 'cheese'],
+    'paneer-tofu': ['paneer', 'tofu'],
+    'yogurt': ['yogurt', 'curd', 'dahi'],
+    'bakery': ['cake', 'pastry', 'cookie', 'biscuit'],
+    'cakes': ['cake', 'pastry'],
+    'chips': ['chips', 'crisps', 'lays', 'kurkure'],
+    'biscuits': ['biscuit', 'cookie', 'parle', 'britannia'],
+    'namkeen': ['namkeen', 'bhujia', 'sev'],
+    'chocolates': ['chocolate', 'candy', 'sweet'],
+    'instant-noodles': ['noodle', 'maggie', 'pasta'],
+    'ready-to-eat': ['ready', 'instant', 'meal'],
+    'frozen-food': ['frozen', 'freeze'],
+    'ice-cream': ['ice cream', 'icecream', 'kulfi'],
+    'atta-flours': ['atta', 'flour', 'maida', 'wheat'],
+    'rice': ['rice', 'basmati'],
+    'dals-pulses': ['dal', 'pulse', 'lentil'],
+    'oils-ghee': ['oil', 'ghee', 'sunflower'],
+    'spices': ['spice', 'masala', 'turmeric', 'chilli'],
+    'salt-sugar': ['salt', 'sugar'],
+    'dry-fruits': ['dry fruit', 'almond', 'cashew', 'raisin'],
+    'tea-coffee': ['tea', 'coffee', 'chai']
+  };
+  
+  // Update all category groups
+  Object.keys(categoryConfig).forEach(groupKey => {
+    categoryConfig[groupKey].forEach(cat => {
+      const keywords = keywordMap[cat.id] || [cat.name.toLowerCase()];
+      cat.count = countProducts(keywords, cat.name);
+    });
+  });
+}
+
+// Render a single category card
+function renderCategoryCard(category) {
+  const card = document.createElement('a');
+  card.href = category.link;
+  card.className = 'category-card';
+  card.setAttribute('data-category-id', category.id);
+  
+  card.innerHTML = `
+    <div class="category-icon">
+      <span>${category.icon}</span>
+    </div>
+    <div class="category-name">${category.name}</div>
+    <div class="category-count">${category.count > 0 ? category.count + ' items' : 'Coming soon'}</div>
+  `;
+  
+  return card;
+}
+
+// Render all category groups
+function renderCategoryNavigation() {
+  // Update counts first
+  updateCategoryCounts();
+  
+  // Render Fruits & Vegetables
+  const fruitsVegGrid = document.getElementById('fruitsVegGrid');
+  if (fruitsVegGrid) {
+    fruitsVegGrid.innerHTML = '';
+    categoryConfig.fruitsVeg.forEach(cat => {
+      fruitsVegGrid.appendChild(renderCategoryCard(cat));
+    });
+  }
+  
+  // Render Dairy & Bakery
+  const dairyBakeryGrid = document.getElementById('dairyBakeryGrid');
+  if (dairyBakeryGrid) {
+    dairyBakeryGrid.innerHTML = '';
+    categoryConfig.dairyBakery.forEach(cat => {
+      dairyBakeryGrid.appendChild(renderCategoryCard(cat));
+    });
+  }
+  
+  // Render Snacks & Packaged
+  const snacksPackagedGrid = document.getElementById('snacksPackagedGrid');
+  if (snacksPackagedGrid) {
+    snacksPackagedGrid.innerHTML = '';
+    categoryConfig.snacksPackaged.forEach(cat => {
+      snacksPackagedGrid.appendChild(renderCategoryCard(cat));
+    });
+  }
+  
+  // Render Grocery Staples
+  const groceryStaplesGrid = document.getElementById('groceryStaplesGrid');
+  if (groceryStaplesGrid) {
+    groceryStaplesGrid.innerHTML = '';
+    categoryConfig.groceryStaples.forEach(cat => {
+      groceryStaplesGrid.appendChild(renderCategoryCard(cat));
+    });
+  }
+}
+
+// Filter products by category from navigation
+function filterByCategory(categoryId) {
+  // Map category ID to actual category filter
+  const categoryMapping = {
+    'fresh-fruits': 'fruits',
+    'fresh-vegetables': 'vegetables',
+    'milk': 'dairy',
+    'bread': 'bakery',
+    'eggs': 'dairy',
+    'butter-cheese': 'dairy',
+    'chips': 'snacks',
+    'biscuits': 'snacks',
+    'namkeen': 'snacks',
+    'atta-flours': 'grocery',
+    'rice': 'grocery',
+    'dals-pulses': 'grocery',
+    'oils-ghee': 'grocery',
+    'spices': 'grocery'
+  };
+  
+  const mappedCategory = categoryMapping[categoryId];
+  if (mappedCategory) {
+    activeCategory = mappedCategory;
+    renderProducts();
+    
+    // Scroll to products
+    document.querySelector('.product-grid')?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }
+}
   // ---------- INITIALIZATION ----------
   
   async function init() {
