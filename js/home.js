@@ -1106,3 +1106,13 @@ if (searchInput) {
     }
   });
 }
+// Search submit button
+const searchSubmitBtn = document.getElementById('searchSubmitBtn');
+if (searchSubmitBtn) {
+  searchSubmitBtn.addEventListener('click', () => {
+    const query = searchInput?.value.trim();
+    if (query) {
+      window.location.href = `search.html?query=${encodeURIComponent(query)}`;
+    }
+  });
+}
