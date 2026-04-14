@@ -142,43 +142,42 @@
   }
   
   // Render category buttons dynamically
-  function renderCategoryFilters() {
-    if (!categoryContainer) return;
-    
-    // Get unique categories from products
-    const categories = ['all', ...new Set(allProducts.map(p => p.category))];
-    
-    categoryContainer.innerHTML = '';
-    
-    categories.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'category-btn';
-      if (cat === activeCategory) {
-        btn.classList.add('active');
-      }
-      btn.textContent = categoryDisplayNames[cat] || cat;
-      btn.dataset.category = cat;
-      
-      btn.addEventListener('click', () => {
-        // Update active category
-        activeCategory = cat;
-        
-        // Update UI
-        document.querySelectorAll('.category-btn').forEach(b => {
-          b.classList.remove('active');
-        });
-        btn.classList.add('active');
-        
-        // Re-render products
-        renderProducts();
-        
-        // Scroll category into view
-        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      });
-      
-      categoryContainer.appendChild(btn);
-    });
-  }
+function renderCategoryFilters() {
+  if (!categoryContainer) return;
+
+  const categories = ['all', ...new Set(allProducts.map(p => p.category))];
+
+  categoryContainer.innerHTML = '';
+
+  categories.forEach(cat => {
+    const link = document.createElement('a');
+
+    // 👉 IMPORTANT: link to category page
+    link.href = cat === 'all' ? 'index.html' : `categories/${cat}.html`;
+
+    // same styling class reuse
+    link.className = 'category-btn';
+
+    // optional inline styling (premium look)
+    link.style.cssText = `
+      display: inline-block;
+      background: white;
+      padding: 10px 20px;
+      border-radius: 40px;
+      margin: 0 6px 6px 0;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--border-light);
+      transition: all 0.2s;
+    `;
+
+    link.textContent = categoryDisplayNames[cat] || cat;
+
+    categoryContainer.appendChild(link);
+  });
+}
   
   // Reset all filters
   function resetAllFilters() {
