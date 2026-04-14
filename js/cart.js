@@ -1,12 +1,16 @@
 // ===== OK MART - CART.JS =====
-// Complete cart functionality with quantity updates and pricing
+// Complete cart functionality with quantity updates, pricing, and offers
 
 (function() {
   'use strict';
   
-  // ---------- CONSTANTS ----------
-  const FREE_DELIVERY_THRESHOLD = 300;
-  const DELIVERY_CHARGE = 20;
+  // ---------- OFFER RULES ----------
+  const OFFER_RULES = {
+    FREE_DELIVERY_THRESHOLD: 300,
+    DELIVERY_CHARGE: 20,
+    DISCOUNT_500_THRESHOLD: 500,
+    DISCOUNT_500_AMOUNT: 20
+  };
   
   // ---------- STATE ----------
   let cartItems = [];
@@ -29,32 +33,33 @@
   const finalTotalEl = document.getElementById('finalTotal');
   const stickyTotalAmount = document.getElementById('stickyTotalAmount');
   const savingsMessage = document.getElementById('savingsMessage');
-  const cartBadges = document.querySelectorAll('.cart-badge');
   
-  // ---------- HELPER FUNCTIONS ----------
-  
-  // Load cart from localStorage
+  // ---------- CART FUNCTIONS ----------
   function loadCart() {
     const stored = localStorage.getItem('okmart_cart');
     cartItems = stored ? JSON.parse(stored) : [];
     return cartItems;
   }
   
-  // Save cart to localStorage
   function saveCart() {
     localStorage.setItem('okmart_cart', JSON.stringify(cartItems));
     updateCartBadges();
+    
+    // Update sticky bar if exists
+    if (window.OKMart && window.OKMart.updateStickyCartBar) {
+      window.OKMart.updateStickyCartBar();
+    }
   }
   
-  // Update all cart badges
   function updateCartBadges() {
     const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    cartBadges.forEach(badge => {
+    const badges = document.querySelectorAll('.cart-badge, #cartCountPlaceholder');
+    badges.forEach(badge => {
       if (badge) badge.textContent = totalItems;
     });
   }
   
-  // Calculate cart totals
+  // ---------- CALCULATE TOTALS WITH OFFERS ----------
   function calculateTotals() {
     let mrpTotal = 0;
     let sellingTotal = 0;
@@ -66,23 +71,36 @@
       totalItems += item.quantity;
     });
     
-    const discount = mrpTotal - sellingTotal;
-    const subtotal = sellingTotal;
-    const deliveryCharge = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-    const finalTotal = subtotal + deliveryCharge;
+    const itemDiscount = mrpTotal - sellingTotal;
+    let subtotal = sellingTotal;
+    
+    // Apply ₹20 off on orders above ₹500
+    let additionalDiscount = 0;
+    if (subtotal >= OFFER_RULES.DISCOUNT_500_THRESHOLD) {
+      additionalDiscount = OFFER_RULES.DISCOUNT_500_AMOUNT;
+    }
+    
+    const subtotalAfterDiscount = subtotal - additionalDiscount;
+    const deliveryCharge = subtotalAfterDiscount >= OFFER_RULES.FREE_DELIVERY_THRESHOLD ? 0 : OFFER_RULES.DELIVERY_CHARGE;
+    const finalTotal = Math.max(0, subtotalAfterDiscount + deliveryCharge);
     
     return {
       mrpTotal,
       sellingTotal,
-      discount,
+      itemDiscount,
+      additionalDiscount,
+      totalDiscount: itemDiscount + additionalDiscount,
       subtotal,
+      subtotalAfterDiscount,
       deliveryCharge,
       finalTotal,
-      totalItems
+      totalItems,
+      hasFreeDelivery: deliveryCharge === 0,
+      hasExtraDiscount: additionalDiscount > 0
     };
   }
   
-  // Update all UI elements with current totals
+  // ---------- UI UPDATES ----------
   function updateUI() {
     const totals = calculateTotals();
     
@@ -102,7 +120,7 @@
     }
     
     if (discountAmountEl) {
-      discountAmountEl.textContent = `-₹${totals.discount}`;
+      discountAmountEl.textContent = `-₹${totals.totalDiscount}`;
     }
     
     if (deliveryChargeEl) {
@@ -125,8 +143,8 @@
     
     // Update savings message
     if (savingsMessage) {
-      if (totals.discount > 0) {
-        savingsMessage.textContent = `🎉 You're saving ₹${totals.discount} on this order!`;
+      if (totals.totalDiscount > 0) {
+        savingsMessage.textContent = `🎉 You're saving ₹${totals.totalDiscount} on this order!`;
         savingsMessage.style.display = 'block';
       } else {
         savingsMessage.style.display = 'none';
@@ -136,29 +154,80 @@
     // Update free delivery banner
     updateFreeDeliveryBanner(totals);
     
+    // Update offer tag
+    updateOfferTag(totals);
+    
     // Enable/disable place order button
     if (placeOrderBtn) {
       placeOrderBtn.disabled = cartItems.length === 0;
     }
   }
   
-  // Update free delivery banner
   function updateFreeDeliveryBanner(totals) {
     if (!freeDeliveryBanner) return;
     
     const bannerText = freeDeliveryBanner.querySelector('.banner-text');
     
-    if (totals.deliveryCharge === 0) {
-      freeDeliveryBanner.style.background = 'linear-gradient(135deg, #d4fcdf 0%, #e8f5e9 100%)';
-      bannerText.textContent = '🎉 Yay! You get FREE delivery on this order! 🎉';
+    let message = '';
+    let bgGradient = '';
+    
+    if (totals.hasExtraDiscount && totals.hasFreeDelivery) {
+      message = '🎉 FREE delivery + ₹20 off applied! 🎉';
+      bgGradient = 'linear-gradient(135deg, #d4fcdf 0%, #a8e6cf 100%)';
+    } else if (totals.hasExtraDiscount) {
+      message = '🎉 ₹20 off on orders above ₹500 applied!';
+      bgGradient = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
+    } else if (totals.hasFreeDelivery) {
+      message = '🎉 FREE delivery applied!';
+      bgGradient = 'linear-gradient(135deg, #d4fcdf 0%, #e8f5e9 100%)';
     } else {
-      const remaining = FREE_DELIVERY_THRESHOLD - totals.subtotal;
-      freeDeliveryBanner.style.background = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
-      bannerText.textContent = `Add ₹${remaining} more for FREE delivery!`;
+      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotalAfterDiscount;
+      message = `Add ₹${remaining} more for FREE delivery!`;
+      bgGradient = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
+    }
+    
+    freeDeliveryBanner.style.background = bgGradient;
+    bannerText.textContent = message;
+  }
+  
+  function updateOfferTag(totals) {
+    const summarySection = document.querySelector('.price-summary-section');
+    if (!summarySection) return;
+    
+    let offerTag = document.querySelector('.offer-tag');
+    if (!offerTag) {
+      offerTag = document.createElement('div');
+      offerTag.className = 'offer-tag';
+      offerTag.style.cssText = `
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+        text-align: center;
+      `;
+      summarySection.insertBefore(offerTag, summarySection.firstChild);
+    }
+    
+    if (totals.hasExtraDiscount) {
+      offerTag.innerHTML = '🏷️ ₹20 off applied!';
+      offerTag.style.display = 'block';
+    } else if (totals.subtotal >= 400 && totals.subtotal < 500) {
+      const remaining = 500 - totals.subtotal;
+      offerTag.innerHTML = `🏷️ Add ₹${remaining} more to get ₹20 off!`;
+      offerTag.style.display = 'block';
+    } else if (totals.subtotal < OFFER_RULES.FREE_DELIVERY_THRESHOLD) {
+      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotalAfterDiscount;
+      offerTag.innerHTML = `🚚 Add ₹${remaining} for FREE delivery`;
+      offerTag.style.display = 'block';
+      offerTag.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    } else {
+      offerTag.style.display = 'none';
     }
   }
   
-  // Show/hide empty state
   function toggleEmptyState() {
     const isEmpty = cartItems.length === 0;
     
@@ -187,7 +256,7 @@
     }
   }
   
-  // Render a single cart item
+  // ---------- RENDER CART ITEMS ----------
   function renderCartItem(item) {
     const discount = item.mrp ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
     const itemTotal = item.price * item.quantity;
@@ -238,7 +307,6 @@
     return card;
   }
   
-  // Render all cart items
   function renderCart() {
     loadCart();
     
@@ -255,7 +323,7 @@
     updateCartBadges();
   }
   
-  // Update item quantity
+  // ---------- CART ACTIONS ----------
   function updateQuantity(productId, change) {
     const item = cartItems.find(item => item.id === productId);
     if (!item) return;
@@ -271,28 +339,21 @@
     }
   }
   
-  // Remove item from cart
   function removeItem(productId) {
     cartItems = cartItems.filter(item => item.id !== productId);
     saveCart();
     renderCart();
-    
-    // Show feedback (optional)
-    console.log(`Item ${productId} removed from cart`);
   }
   
-  // Clear entire cart
   function clearCart() {
     cartItems = [];
     saveCart();
     renderCart();
   }
   
-  // Handle place order
   function handlePlaceOrder() {
     if (cartItems.length === 0) return;
     
-    // Save cart summary to session storage for checkout
     const totals = calculateTotals();
     const orderSummary = {
       items: cartItems,
@@ -301,24 +362,18 @@
     };
     
     sessionStorage.setItem('okmart_order_summary', JSON.stringify(orderSummary));
-    
-    // Navigate to checkout
     window.location.href = 'checkout.html';
   }
   
   // ---------- EVENT LISTENERS ----------
-  
-  // Place order button
   if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', handlePlaceOrder);
   }
   
-  // Listen for cart updates from other pages
   window.addEventListener('okmart:cart-updated', () => {
     renderCart();
   });
   
-  // Listen for storage changes (if cart updated in another tab)
   window.addEventListener('storage', (e) => {
     if (e.key === 'okmart_cart') {
       renderCart();
@@ -329,7 +384,6 @@
   function init() {
     renderCart();
     
-    // Expose functions for debugging
     window.OKMartCart = {
       render: renderCart,
       clear: clearCart,
