@@ -3,16 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Dairy · OK Mart</title>
+  <title>Dairy & Eggs · OK Mart</title>
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/category.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header" id="mainHeader">
+  <!-- HEADER WITH BACK BUTTON -->
+  <header class="app-header category-header">
     <div class="header-container">
-      <a href="../index.html" class="logo-link">
-        <span class="logo-text">🛒 OK Mart</span>
-      </a>
+      <div class="header-left">
+        <a href="../index.html" class="back-button" aria-label="back to home">
+          <span class="back-icon">←</span>
+        </a>
+        <a href="../index.html" class="logo-link">
+          <span class="logo-text">🛒 OK Mart</span>
+        </a>
+      </div>
       <a href="../cart.html" class="cart-icon-link" aria-label="cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
@@ -20,16 +33,56 @@
     </div>
   </header>
 
-  <main class="category-page">
-    <div class="category-header">
-      <h1 class="category-title">🥛 dairy & eggs</h1>
-      <p class="category-description">fresh milk, paneer, curd & more</p>
+  <main class="category-main">
+    <!-- Category Hero -->
+    <div class="category-hero">
+      <div class="category-icon">🥛</div>
+      <h1 class="category-title" id="categoryTitle">Dairy & Eggs</h1>
+      <p class="category-description" id="categoryDescription">Fresh milk, butter, paneer & more</p>
     </div>
+
+    <!-- Search Bar (optional, within category) -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="categorySearchInput" 
+          class="search-input" 
+          placeholder="Search in dairy..."
+          autocomplete="off"
+        >
+        <button class="clear-search" id="clearCategorySearch" aria-label="clear search">✕</button>
+      </div>
+    </div>
+
+    <!-- Results Info -->
+    <div class="results-info">
+      <span class="results-count" id="categoryResultsCount">0 items</span>
+      <button class="sort-btn" id="sortToggleBtn" aria-label="sort">
+        <span>📊 Sort</span>
+      </button>
+    </div>
+
+    <!-- Product Grid -->
     <div class="product-grid category-grid" id="categoryProductGrid">
-      <!-- injected by category.js based on category -->
+      <!-- Loading state -->
+      <div class="loading-state" id="categoryLoadingState">
+        <div class="loading-spinner"></div>
+        <p>Loading fresh products...</p>
+      </div>
+    </div>
+
+    <!-- Sort Dropdown (hidden by default) -->
+    <div class="sort-dropdown" id="sortDropdown" style="display: none;">
+      <button class="sort-option" data-sort="popular">🔥 Popular First</button>
+      <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
+      <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
+      <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
     </div>
   </main>
 
+  <!-- STICKY BOTTOM BAR -->
   <div class="sticky-bottom-bar">
     <div class="bottom-bar-inner">
       <span class="delivery-message">🚀 delivery in 10 mins</span>
@@ -37,11 +90,17 @@
     </div>
   </div>
 
+  <!-- SCRIPTS -->
   <script src="../js/common.js"></script>
   <script src="../js/category.js"></script>
   <script>
-    // set category slug for dynamic loading
-    window.__OKMART_CATEGORY = 'dairy';
+    // Set category configuration for this page
+    window.__OKMART_CATEGORY_CONFIG = {
+      slug: 'dairy',
+      displayName: 'Dairy & Eggs',
+      description: 'Fresh milk, butter, paneer & more',
+      icon: '🥛'
+    };
   </script>
 </body>
 </html>
