@@ -197,3 +197,29 @@ input, textarea {
         grid-template-columns: repeat(4, 1fr);
     }
 }
+/* =========================
+   ADD TO CART ANIMATION
+========================= */
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes flash {
+  0% { box-shadow: 0 0 0px rgba(46, 204, 113, 0.5); }
+  50% { box-shadow: 0 0 12px rgba(46, 204, 113, 0.8); }
+  100% { box-shadow: 0 0 0px rgba(46, 204, 113, 0); }
+}
+
+/* Button click animation */
+.animate-btn {
+  animation: bounce 0.3s ease;
+}
+
+/* Card highlight animation */
+.animate-card {
+  animation: flash 0.4s ease;
+}
+
