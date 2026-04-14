@@ -3,113 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>OK Mart · 10 min grocery delivery</title>
+  
+  <!-- SEO Meta Tags -->
+  <title>OK Mart | Online Grocery Delivery in India | Fresh & Fast Delivery</title>
+  <meta name="description" content="Order fresh groceries, dairy, snacks, and daily essentials online from OK Mart. Fast delivery in 10 minutes. Free delivery on orders above ₹300.">
+  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, snacks delivery, grocery store near me, kirana store online, fresh vegetables delivery, dairy products online, OK Mart">
+  <meta name="author" content="OK Mart">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/">
+  <meta property="og:title" content="OK Mart | Online Grocery Delivery | Fresh & Fast">
+  <meta property="og:description" content="Order fresh groceries, dairy, snacks online. Fast delivery in 10 minutes. Free delivery on orders above ₹300.">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/og-image.jpg">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://okmart.netlify.app/">
+  <meta property="twitter:title" content="OK Mart | Online Grocery Delivery">
+  <meta property="twitter:description" content="Fresh groceries delivered in 10 minutes. Order now!">
+  <meta property="twitter:image" content="https://okmart.netlify.app/assets/images/og-image.jpg">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://okmart.netlify.app/">
+  
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE_HERE">
   
   <!-- CSS -->
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/home.css">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+  
+  <!-- Structured Data / Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GroceryStore",
+    "name": "OK Mart",
+    "image": "https://okmart.netlify.app/assets/images/logo.png",
+    "@id": "https://okmart.netlify.app/",
+    "url": "https://okmart.netlify.app/",
+    "telephone": "+919982239821",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Your Street Address",
+      "addressLocality": "Your City",
+      "postalCode": "380026",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "23.0225",
+      "longitude": "72.5714"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+      ],
+      "opens": "08:00",
+      "closes": "22:00"
+    },
+    "sameAs": [
+      "https://www.instagram.com/okmart",
+      "https://wa.me/919982239821"
+    ],
+    "priceRange": "₹",
+    "currenciesAccepted": "INR",
+    "paymentAccepted": "Cash, UPI, Card",
+    "areaServed": "Your City, Your Area",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Grocery Delivery Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Free Delivery"
+          },
+          "description": "Free delivery on orders above ₹300"
+        }
+      ]
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- STICKY HEADER -->
   <header class="app-header" id="mainHeader">
     <div class="header-container">
-      <a href="index.html" class="logo-link">
+      <a href="/index.html" class="logo-link" aria-label="OK Mart Home">
         <span class="logo-text">🛒 OK Mart</span>
       </a>
-      <!-- Update cart icon in all pages -->
-<a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="cart">
-  <span class="cart-icon">🛍️</span>
-  <span class="cart-badge" id="cartCountPlaceholder">0</span>
-</a>
+      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
     </div>
   </header>
 
   <!-- MAIN CONTENT -->
   <main class="home-main">
     <!-- Search Bar -->
-    <!-- Update search wrapper in index.html -->
-<div class="search-wrapper">
-  <span class="search-icon">🔍</span>
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="search-input" 
-    placeholder="Search for milk, snacks, atta..."
-    autocomplete="off"
-  >
-  <button class="clear-search" id="clearSearchBtn" aria-label="clear search">✕</button>
-  <button class="search-submit-btn" id="searchSubmitBtn" aria-label="search">→</button>
-</div>
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search for milk, snacks, atta..."
+          autocomplete="off"
+          aria-label="Search products"
+        >
+        <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
+      </div>
+    </div>
 
-    <!-- ===== CATEGORY NAVIGATION GRID (NEW) ===== -->
-    <section class="category-nav-section">
+    <!-- Category Navigation Grid -->
+    <section class="category-nav-section" aria-label="Shop by category">
       <!-- Group 1: Fruits & Vegetables -->
       <div class="category-group">
         <div class="group-header">
           <h2 class="group-title">🍎 Fruits & Vegetables</h2>
           <a href="#" class="view-all-link" data-category="fruits">View All →</a>
         </div>
-        <div class="category-grid" id="fruitsVegGrid">
-          <!-- Category cards will be dynamically populated -->
-        </div>
+        <div class="category-grid" id="fruitsVegGrid"></div>
       </div>
 
       <!-- Group 2: Dairy & Bakery -->
       <div class="category-group">
         <div class="group-header">
           <h2 class="group-title">🥛 Dairy & Bakery</h2>
-          <a href="categories/dairy.html" class="view-all-link">View All →</a>
+          <a href="/categories/dairy.html" class="view-all-link">View All →</a>
         </div>
-        <div class="category-grid" id="dairyBakeryGrid">
-          <!-- Category cards will be dynamically populated -->
-        </div>
+        <div class="category-grid" id="dairyBakeryGrid"></div>
       </div>
 
-      <!-- Group 3: Snacks & Packaged Foods -->
+      <!-- Group 3: Snacks & Packaged -->
       <div class="category-group">
         <div class="group-header">
           <h2 class="group-title">🍿 Snacks & Packaged</h2>
-          <a href="categories/snacks.html" class="view-all-link">View All →</a>
+          <a href="/categories/snacks.html" class="view-all-link">View All →</a>
         </div>
-        <div class="category-grid" id="snacksPackagedGrid">
-          <!-- Category cards will be dynamically populated -->
-        </div>
+        <div class="category-grid" id="snacksPackagedGrid"></div>
       </div>
 
       <!-- Group 4: Grocery Staples -->
       <div class="category-group">
         <div class="group-header">
           <h2 class="group-title">🧺 Grocery Staples</h2>
-          <a href="categories/grocery.html" class="view-all-link">View All →</a>
+          <a href="/categories/grocery.html" class="view-all-link">View All →</a>
         </div>
-        <div class="category-grid" id="groceryStaplesGrid">
-          <!-- Category cards will be dynamically populated -->
-        </div>
+        <div class="category-grid" id="groceryStaplesGrid"></div>
       </div>
     </section>
 
-    <!-- Quick Order / Daily Essentials -->
-    <section class="quick-order-section">
+    <!-- Quick Order Section -->
+    <section class="quick-order-section" aria-label="Daily essentials quick order">
       <div class="section-header">
         <h2 class="section-title">⚡ Daily Essentials</h2>
         <span class="quick-badge">Quick Add</span>
       </div>
-      <div class="quick-order-grid" id="quickOrderGrid">
-        <!-- Dynamically populated from JSON -->
-      </div>
+      <div class="quick-order-grid" id="quickOrderGrid"></div>
     </section>
-
-    <!-- Category Filter - Horizontal Scroll (Original) -->
-    <div class="category-filter-section">
-      <div class="category-scroll" id="categoryFilterContainer">
-        <!-- Category buttons will be injected dynamically -->
-      </div>
-    </div>
 
     <!-- Results Info -->
     <div class="results-info" id="resultsInfo">
@@ -119,9 +190,8 @@
 
     <!-- Product Grid -->
     <div class="product-grid" id="productGrid">
-      <!-- Loading state -->
       <div class="loading-state" id="loadingState">
-        <div class="loading-spinner"></div>
+        <div class="loading-spinner" role="status"></div>
         <p>Loading fresh groceries...</p>
       </div>
     </div>
@@ -136,12 +206,11 @@
   </div>
 
   <!-- Floating Call Button -->
-  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call OK Mart for support">
     <span class="call-icon">📞</span>
   </a>
 
-  <!-- SCRIPTS -->
-  <script src="js/common.js"></script>
-  <script src="js/home.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/home.js"></script>
 </body>
 </html>
