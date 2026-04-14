@@ -389,20 +389,29 @@
       `;
       
       const addBtn = card.querySelector('.quick-add-btn');
-      addBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        OKMart.addToCart(product);
-        
-        addBtn.textContent = '✓ Added';
-        addBtn.style.background = '#2ecc71';
-        addBtn.style.color = 'white';
-        
-        setTimeout(() => {
-          addBtn.textContent = '+ Add';
-          addBtn.style.background = 'white';
-          addBtn.style.color = '#27ae60';
-        }, 1000);
-      });
+      // Inside renderQuickOrder function in home.js, update the addBtn click handler:
+
+addBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  
+  // Trigger fly animation from quick order card
+  const productImage = card.querySelector('.quick-item-image');
+  if (productImage && window.OKMart && window.OKMart.flyToCart) {
+    window.OKMart.flyToCart(productImage, product.image, product.name);
+  }
+  
+  OKMart.addToCart(product);
+  
+  addBtn.textContent = '✓ Added';
+  addBtn.style.background = '#2ecc71';
+  addBtn.style.color = 'white';
+  
+  setTimeout(() => {
+    addBtn.textContent = '+ Add';
+    addBtn.style.background = 'white';
+    addBtn.style.color = '#27ae60';
+  }, 1000);
+});
       
       quickGrid.appendChild(card);
     });
