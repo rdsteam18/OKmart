@@ -1029,4 +1029,68 @@
     document.head.appendChild(style);
   }
   
-  // ---------- INITIAL
+  // ---------- INITIALIZATION ----------
+  
+  async function init() {
+    try {
+      if (loadingState) {
+        loadingState.style.display = 'flex';
+      }
+      
+      // Fetch products
+      allProducts = await OKMart.getProducts();
+      
+      if (!allProducts.length) {
+        throw new Error('No products loaded');
+      }
+      
+      // Add styles
+      addHomeStyles();
+      
+      // Render all sections in correct order
+      renderCategoryNavigation();  // Category navigation grid (NEW)
+      renderCategoryFilters();     // Original horizontal filter (hidden by CSS)
+      renderQuickOrder();          // Daily essentials
+      renderPopularSection();      // Popular products
+      renderProducts();            // Main product grid
+      
+      // Preload images for better performance
+      allProducts.slice(0, 12).forEach(p => {
+        const img = new Image();
+        img.src = p.image;
+      });
+      
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      if (productGrid) {
+        productGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3>Failed to load products</h3>
+            <p>Please check your connection and refresh</p>
+            <button class="reset-search-btn" onclick="location.reload()">Retry</button>
+          </div>
+        `;
+      }
+      if (loadingState) {
+        loadingState.style.display = 'none';
+      }
+    }
+  }
+  
+  // Start the app
+  init();
+  
+  // Expose for debugging
+  window.OKMartHome = {
+    resetFilters: resetAllFilters,
+    getState: () => ({ 
+      activeCategory, 
+      searchQuery, 
+      productCount: filteredProducts.length,
+      allProductsCount: allProducts.length
+    }),
+    refresh: init
+  };
+  
+})();
