@@ -1,13 +1,18 @@
 // ===== OK MART - CHECKOUT.JS =====
-// Checkout with validation, pincode check, WhatsApp order, and order tracking integration
+// Checkout with validation, pincode check, WhatsApp order, coupon system, and order tracking
 
 (function() {
   'use strict';
   
   // ---------- CONFIGURATION ----------
   const WHATSAPP_NUMBER = '9982239821'; // Your WhatsApp number
-  const FREE_DELIVERY_THRESHOLD = 300;
+  const FREE_DELIVERY_THRESHOLD = 199;  // Changed to ₹199
   const DELIVERY_CHARGE = 20;
+  
+  // Coupon configuration
+  const COUPON_CODE = 'SAVE20';
+  const COUPON_DISCOUNT = 20;
+  const COUPON_MIN_ORDER = 250;
   
   // Allowed pincodes for delivery
   const ALLOWED_PINCODES = ['380026', '382418', '380058', '110001', '400001', '560001'];
@@ -16,6 +21,8 @@
   let cartItems = [];
   let cartTotals = null;
   let isPincodeValid = false;
+  let couponApplied = false;
+  let couponDiscount = 0;
   
   // DOM Elements
   const orderItemsList = document.getElementById('orderItemsList');
@@ -42,14 +49,22 @@
   
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   
+  // Coupon elements
+  const couponSection = document.getElementById('couponSection');
+  const couponInput = document.getElementById('couponInput');
+  const applyCouponBtn = document.getElementById('applyCouponBtn');
+  const couponMessage = document.getElementById('couponMessage');
+  const appliedCouponDisplay = document.getElementById('appliedCouponDisplay');
+  const removeCouponBtn = document.getElementById('removeCouponBtn');
+  const couponDiscountRow = document.getElementById('couponDiscountRow');
+  const couponDiscountAmount = document.getElementById('couponDiscountAmount');
+  
   // ---------- CART FUNCTIONS ----------
   
-  // Load cart from localStorage
   function loadCart() {
     const stored = localStorage.getItem('okmart_cart');
     cartItems = stored ? JSON.parse(stored) : [];
     
-    // If cart is empty, redirect to home
     if (cartItems.length === 0) {
       window.location.href = '/index.html';
       return;
@@ -59,7 +74,6 @@
     return cartItems;
   }
   
-  // Calculate totals with offers
   function calculateTotals() {
     let mrpTotal = 0;
     let sellingTotal = 0;
@@ -70,41 +84,38 @@
     });
     
     const itemDiscount = mrpTotal - sellingTotal;
-    let subtotal = sellingTotal;
+    const subtotal = sellingTotal;
     
-    // Apply ₹20 off on orders above ₹500
-    let additionalDiscount = 0;
-    const DISCOUNT_500_THRESHOLD = 500;
-    const DISCOUNT_500_AMOUNT = 20;
-    
-    if (subtotal >= DISCOUNT_500_THRESHOLD) {
-      additionalDiscount = DISCOUNT_500_AMOUNT;
+    // Apply coupon discount if valid
+    let appliedCouponDiscount = 0;
+    if (couponApplied && subtotal >= COUPON_MIN_ORDER) {
+      appliedCouponDiscount = COUPON_DISCOUNT;
     }
     
-    const subtotalAfterDiscount = subtotal - additionalDiscount;
-    const deliveryCharge = subtotalAfterDiscount >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-    const finalTotal = Math.max(0, subtotalAfterDiscount + deliveryCharge);
+    const subtotalAfterCoupon = subtotal - appliedCouponDiscount;
+    
+    // Delivery charge: FREE on orders above ₹199, else ₹20
+    const deliveryCharge = subtotalAfterCoupon >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+    const finalTotal = Math.max(0, subtotalAfterCoupon + deliveryCharge);
     
     cartTotals = {
       mrpTotal,
       sellingTotal,
       itemDiscount,
-      additionalDiscount,
-      totalDiscount: itemDiscount + additionalDiscount,
+      couponDiscount: appliedCouponDiscount,
+      totalDiscount: itemDiscount + appliedCouponDiscount,
       subtotal,
-      subtotalAfterDiscount,
+      subtotalAfterCoupon,
       deliveryCharge,
       finalTotal,
       hasFreeDelivery: deliveryCharge === 0,
-      hasExtraDiscount: additionalDiscount > 0
+      couponApplied: appliedCouponDiscount > 0
     };
     
     return cartTotals;
   }
   
-  // Render order summary
   function renderOrderSummary() {
-    // Render items list
     if (orderItemsList) {
       orderItemsList.innerHTML = '';
       
@@ -127,9 +138,24 @@
       });
     }
     
-    // Update totals
+    updateTotalsDisplay();
+  }
+  
+  function updateTotalsDisplay() {
     if (checkoutSubtotal) {
       checkoutSubtotal.textContent = `₹${cartTotals.subtotal}`;
+    }
+    
+    // Show/hide coupon discount row
+    if (couponDiscountRow) {
+      if (cartTotals.couponDiscount > 0) {
+        couponDiscountRow.style.display = 'flex';
+        if (couponDiscountAmount) {
+          couponDiscountAmount.textContent = `-₹${cartTotals.couponDiscount}`;
+        }
+      } else {
+        couponDiscountRow.style.display = 'none';
+      }
     }
     
     if (checkoutDelivery) {
@@ -149,9 +175,25 @@
     if (stickyCheckoutTotal) {
       stickyCheckoutTotal.textContent = `₹${cartTotals.finalTotal}`;
     }
+    
+    // Update delivery message
+    updateDeliveryMessage();
   }
   
-  // Toggle items visibility
+  function updateDeliveryMessage() {
+    const deliveryMessageEl = document.querySelector('.delivery-offer-message');
+    if (deliveryMessageEl) {
+      if (cartTotals.hasFreeDelivery) {
+        deliveryMessageEl.innerHTML = '🎉 FREE Delivery Applied!';
+        deliveryMessageEl.style.color = '#10b981';
+      } else {
+        const remaining = FREE_DELIVERY_THRESHOLD - cartTotals.subtotalAfterCoupon;
+        deliveryMessageEl.innerHTML = `🚚 Add ₹${remaining} more for FREE delivery!`;
+        deliveryMessageEl.style.color = '#f59e0b';
+      }
+    }
+  }
+  
   function setupItemsToggle() {
     if (viewItemsToggle && orderItemsCollapsible) {
       let isVisible = true;
@@ -161,6 +203,105 @@
         orderItemsCollapsible.style.display = isVisible ? 'block' : 'none';
         viewItemsToggle.textContent = isVisible ? 'View Items ▼' : 'View Items ▶';
       });
+    }
+  }
+  
+  // ---------- COUPON FUNCTIONS ----------
+  
+  function applyCoupon() {
+    const code = couponInput?.value.trim().toUpperCase();
+    
+    if (!code) {
+      showCouponMessage('Please enter a coupon code', 'error');
+      return;
+    }
+    
+    if (code !== COUPON_CODE) {
+      showCouponMessage('Invalid coupon code', 'error');
+      return;
+    }
+    
+    if (couponApplied) {
+      showCouponMessage('Coupon already applied', 'error');
+      return;
+    }
+    
+    if (cartTotals.subtotal < COUPON_MIN_ORDER) {
+      const remaining = COUPON_MIN_ORDER - cartTotals.subtotal;
+      showCouponMessage(`Add ₹${remaining} more to apply this coupon`, 'error');
+      return;
+    }
+    
+    // Apply coupon
+    couponApplied = true;
+    calculateTotals();
+    updateTotalsDisplay();
+    
+    // Show applied coupon display
+    if (appliedCouponDisplay) {
+      appliedCouponDisplay.style.display = 'flex';
+      document.getElementById('appliedCouponCode').textContent = COUPON_CODE;
+      document.getElementById('appliedCouponValue').textContent = `-₹${COUPON_DISCOUNT}`;
+    }
+    
+    // Hide coupon input section
+    if (couponSection) {
+      couponSection.style.display = 'none';
+    }
+    
+    showCouponMessage(`🎉 Coupon applied! You saved ₹${COUPON_DISCOUNT}!`, 'success');
+    showToast(`₹${COUPON_DISCOUNT} off applied!`, 'success');
+  }
+  
+  function removeCoupon() {
+    couponApplied = false;
+    calculateTotals();
+    updateTotalsDisplay();
+    
+    // Hide applied coupon display
+    if (appliedCouponDisplay) {
+      appliedCouponDisplay.style.display = 'none';
+    }
+    
+    // Show coupon input section
+    if (couponSection) {
+      couponSection.style.display = 'block';
+    }
+    
+    if (couponInput) {
+      couponInput.value = '';
+    }
+    
+    showToast('Coupon removed', 'info');
+  }
+  
+  function showCouponMessage(message, type) {
+    if (couponMessage) {
+      couponMessage.textContent = message;
+      couponMessage.className = `coupon-message ${type}`;
+      couponMessage.style.display = 'block';
+      
+      setTimeout(() => {
+        couponMessage.style.display = 'none';
+      }, 3000);
+    }
+  }
+  
+  function setupCouponListeners() {
+    if (applyCouponBtn) {
+      applyCouponBtn.addEventListener('click', applyCoupon);
+    }
+    
+    if (couponInput) {
+      couponInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          applyCoupon();
+        }
+      });
+    }
+    
+    if (removeCouponBtn) {
+      removeCouponBtn.addEventListener('click', removeCoupon);
     }
   }
   
@@ -224,7 +365,6 @@
         pincodeStatus.className = 'pincode-status available';
         pincodeStatus.style.display = 'block';
         
-        // Clear any existing suggestion
         const existingSuggestion = pincodeStatus.querySelector('.suggestion');
         if (existingSuggestion) existingSuggestion.remove();
       } else if (isValidFormat && !isAllowed) {
@@ -232,7 +372,6 @@
         pincodeStatus.className = 'pincode-status unavailable';
         pincodeStatus.style.display = 'block';
         
-        // Add suggestion
         const existingSuggestion = pincodeStatus.querySelector('.suggestion');
         if (existingSuggestion) existingSuggestion.remove();
         
@@ -243,7 +382,6 @@
         pincodeStatus.appendChild(suggestionEl);
       }
       
-      // Update input border color
       if (customerPincode) {
         if (isValidFormat && isAllowed) {
           customerPincode.style.borderColor = '#2ecc71';
@@ -316,7 +454,6 @@
     const slot = deliverySlot.value;
     const instructions = specialInstructions.value.trim();
     
-    // Format slot for display
     const slotLabels = {
       'morning': '🌅 Morning (8 AM - 12 PM)',
       'evening': '🌆 Evening (4 PM - 8 PM)',
@@ -344,8 +481,8 @@
     
     message += `\n💰 *Subtotal:* ₹${cartTotals.subtotal}\n`;
     
-    if (cartTotals.additionalDiscount > 0) {
-      message += `🏷️ *Discount:* -₹${cartTotals.additionalDiscount}\n`;
+    if (cartTotals.couponDiscount > 0) {
+      message += `🏷️ *Coupon (${COUPON_CODE}):* -₹${cartTotals.couponDiscount}\n`;
     }
     
     if (cartTotals.deliveryCharge > 0) {
@@ -358,7 +495,7 @@
     message += `\n💳 *Payment:* Cash on Delivery`;
     
     message += `\n\n✅ Please confirm this order.`;
-    message += `\n\n📦 Track your order: https://okmart.netlify.app/track.html?phone=${phone}`;
+    message += `\n\n📦 Track: https://okmart.netlify.app/track.html?phone=${phone}`;
     
     return message;
   }
@@ -369,7 +506,6 @@
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
     
-    // Save order to localStorage for tracking
     const orderData = {
       orderId: orderId,
       items: cartItems.map(item => ({
@@ -389,28 +525,21 @@
       orderDate: new Date().toISOString(),
       status: 'received',
       estimatedDelivery: '20-25 mins',
-      paymentMethod: 'Cash on Delivery'
+      paymentMethod: 'Cash on Delivery',
+      couponUsed: couponApplied ? COUPON_CODE : null
     };
     
-    // Save to last order (for success page)
     localStorage.setItem('okmart_last_order', JSON.stringify(orderData));
-    
-    // Save to orders list for tracking
     saveOrderToTrackingSystem(orderData);
     
-    // Open WhatsApp
     window.open(whatsappUrl, '_blank');
-    
-    // Clear cart
     localStorage.removeItem('okmart_cart');
     
-    // Redirect to success page after short delay
     setTimeout(() => {
       window.location.href = '/success.html';
     }, 500);
   }
   
-  // Save order to tracking system
   function saveOrderToTrackingSystem(orderData) {
     const ORDERS_STORAGE_KEY = 'okmart_orders';
     
@@ -430,14 +559,15 @@
         orderDate: orderData.orderDate,
         estimatedDelivery: orderData.estimatedDelivery,
         deliverySlot: orderData.customer.slot,
-        instructions: orderData.customer.instructions
+        instructions: orderData.customer.instructions,
+        couponUsed: orderData.couponUsed
       });
       
       localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
-      console.log('✅ Order saved to tracking system:', orderData.orderId);
+      console.log('✅ Order saved:', orderData.orderId);
       
     } catch (e) {
-      console.error('Failed to save order to tracking:', e);
+      console.error('Failed to save order:', e);
     }
   }
   
@@ -447,19 +577,13 @@
     e.preventDefault();
     
     if (validateForm()) {
-      // Save user data for future use
       saveUserData();
-      
-      // Send WhatsApp order
       sendWhatsAppOrder();
     } else {
-      // Scroll to first error
       const firstError = document.querySelector('.error-message:not(:empty)');
       if (firstError) {
         firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      
-      // Show error summary
       showToast('Please fill all required fields correctly', 'error');
     }
   }
@@ -475,7 +599,7 @@
       bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
-      background: ${type === 'error' ? '#ef4444' : '#1e2a2e'};
+      background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#1e2a2e'};
       color: white;
       padding: 12px 24px;
       border-radius: 40px;
@@ -483,6 +607,7 @@
       z-index: 1000;
       animation: slideUpFade 0.3s ease-out;
       white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     `;
     
     document.body.appendChild(toast);
@@ -493,7 +618,6 @@
     }, 3000);
   }
   
-  // Add toast animation styles
   function addToastStyles() {
     if (document.getElementById('toastStyles')) return;
     
@@ -548,30 +672,18 @@
   // ---------- INITIALIZATION ----------
   
   function init() {
-    // Add toast styles
     addToastStyles();
-    
-    // Load cart
     loadCart();
-    
-    // Render order summary
     renderOrderSummary();
-    
-    // Setup items toggle
     setupItemsToggle();
-    
-    // Load saved user data
     loadSavedUserData();
-    
-    // Setup real-time validation
     setupRealTimeValidation();
+    setupCouponListeners();
     
-    // Setup form submission
     if (checkoutForm) {
       checkoutForm.addEventListener('submit', handleSubmit);
     }
     
-    // Update cart badge
     if (window.OKMart && window.OKMart.getCartItems) {
       const cart = window.OKMart.getCartItems();
       const badges = document.querySelectorAll('.cart-badge');
@@ -581,15 +693,16 @@
       });
     }
     
-    // Expose for debugging
     window.OKMartCheckout = {
       validateForm,
       getCartTotals: () => cartTotals,
       getAllowedPincodes: () => ALLOWED_PINCODES,
+      applyCoupon,
+      removeCoupon,
       refresh: init
     };
     
-    console.log('✅ Checkout initialized');
+    console.log('✅ Checkout initialized | Free delivery above ₹199 | Coupon: SAVE20 (₹20 off on ₹250+)');
   }
   
   init();
