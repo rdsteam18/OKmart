@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Search Results · OK Mart</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/search.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- HEADER WITH BACK BUTTON AND SEARCH -->
+  <header class="app-header search-page-header">
+    <div class="header-container">
+      <div class="header-left">
+        <a href="index.html" class="back-button" aria-label="back to home">
+          <span class="back-icon">←</span>
+        </a>
+      </div>
+      
+      <!-- Search Bar in Header -->
+      <div class="header-search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="headerSearchInput" 
+          class="header-search-input" 
+          placeholder="Search for products..."
+          autocomplete="off"
+        >
+        <button class="clear-header-search" id="clearHeaderSearch" aria-label="clear search">✕</button>
+      </div>
+      
+      <a href="cart.html" class="cart-icon-link" aria-label="cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="search-main">
+    <!-- Loading State -->
+    <div class="loading-state" id="searchLoadingState">
+      <div class="loading-spinner"></div>
+      <p>Searching for products...</p>
+    </div>
+
+    <!-- Results Container (Hidden initially) -->
+    <div class="search-results-container" id="searchResultsContainer" style="display: none;">
+      
+      <!-- Search Result Title -->
+      <div class="search-header">
+        <h1 class="search-title" id="searchResultTitle">Results for ""</h1>
+        <span class="result-count" id="resultCount">0 items found</span>
+      </div>
+
+      <!-- Primary Results Section -->
+      <section class="primary-results-section">
+        <h2 class="section-title" id="primaryResultsTitle">Search Results</h2>
+        <div class="product-grid search-grid" id="primaryResultsGrid">
+          <!-- Primary search results will be rendered here -->
+        </div>
+      </section>
+
+      <!-- Related Products Section -->
+      <section class="related-products-section" id="relatedProductsSection">
+        <h2 class="section-title">You may also like</h2>
+        <div class="product-grid related-grid" id="relatedResultsGrid">
+          <!-- Related/suggested products will be rendered here -->
+        </div>
+      </section>
+
+      <!-- Empty State -->
+      <div class="empty-search-state" id="emptySearchState" style="display: none;">
+        <div class="empty-search-icon">🔍</div>
+        <h2 class="empty-search-title">No products found</h2>
+        <p class="empty-search-message" id="emptySearchMessage">We couldn't find any products matching your search.</p>
+        
+        <!-- Suggested Products When Empty -->
+        <div class="suggested-products-empty">
+          <h3 class="suggested-title">Popular products you might like</h3>
+          <div class="product-grid suggested-grid" id="suggestedEmptyGrid">
+            <!-- Popular products will be rendered here -->
+          </div>
+        </div>
+        
+        <a href="index.html" class="browse-all-btn">Browse All Products →</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- STICKY BOTTOM BAR -->
+  <div class="sticky-bottom-bar">
+    <div class="bottom-bar-inner">
+      <span class="delivery-message">🚀 delivery in 10 mins</span>
+      <span class="min-order">min order ₹99</span>
+    </div>
+  </div>
+
+  <!-- Floating Call Button -->
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+    <span class="call-icon">📞</span>
+  </a>
+
+  <!-- SCRIPTS -->
+  <script src="js/common.js"></script>
+  <script src="js/search.js"></script>
+</body>
+</html>
