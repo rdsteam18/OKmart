@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Grocery · OK Mart</title>
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/category.css">
+</head>
+<body>
+  <header class="app-header" id="mainHeader">
+    <div class="header-container">
+      <a href="../index.html" class="logo-link">
+        <span class="logo-text">🛒 OK Mart</span>
+      </a>
+      <a href="../cart.html" class="cart-icon-link" aria-label="cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="category-page">
+    <div class="category-header">
+      <h1 class="category-title">🧺 grocery staples</h1>
+      <p class="category-description">atta, rice, oils, pulses</p>
+    </div>
+    <div class="product-grid category-grid" id="categoryProductGrid"></div>
+  </main>
+
+  <div class="sticky-bottom-bar">
+    <div class="bottom-bar-inner">
+      <span class="delivery-message">🚀 delivery in 10 mins</span>
+      <span class="min-order">min order ₹99</span>
+    </div>
+  </div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/category.js"></script>
+  <script>
+    window.__OKMART_CATEGORY = 'grocery';
+  </script>
+</body>
+</html>
