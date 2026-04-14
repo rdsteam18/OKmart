@@ -188,29 +188,79 @@
   
   // ---------- VALIDATION ----------
   
-  function validatePincode(pincode) {
-    const pincodeStr = pincode?.toString().trim() || '';
-    const isValidFormat = /^[0-9]{6}$/.test(pincodeStr);
-    const isAllowed = ALLOWED_PINCODES.includes(pincodeStr);
-    
-    isPincodeValid = isValidFormat && isAllowed;
-    
-    if (pincodeStatus) {
-      if (isValidFormat && isAllowed) {
-        pincodeStatus.textContent = '✅ Delivery available in your area!';
-        pincodeStatus.className = 'pincode-status available';
-        pincodeError.textContent = '';
-      } else if (isValidFormat && !isAllowed) {
-        pincodeStatus.textContent = '❌ Delivery not available in your area';
-        pincodeStatus.className = 'pincode-status unavailable';
-        pincodeError.textContent = 'This pincode is not serviceable yet';
-      } else {
-        pincodeStatus.style.display = 'none';
-      }
+  // Enhanced pincode validation with real-time feedback
+
+function validatePincode(pincode) {
+  const pincodeStr = pincode?.toString().trim() || '';
+  const isValidFormat = /^[0-9]{6}$/.test(pincodeStr);
+  const isAllowed = ALLOWED_PINCODES.includes(pincodeStr);
+  
+  isPincodeValid = isValidFormat && isAllowed;
+  
+  if (pincodeStatus) {
+    if (pincodeStr.length === 0) {
+      pincodeStatus.style.display = 'none';
+      pincodeStatus.className = 'pincode-status';
+    } else if (!isValidFormat) {
+      pincodeStatus.textContent = '⚠️ Please enter a valid 6-digit pincode';
+      pincodeStatus.className = 'pincode-status unavailable';
+      pincodeStatus.style.display = 'block';
+    } else if (isValidFormat && isAllowed) {
+      pincodeStatus.textContent = '✅ Delivery available in your area!';
+      pincodeStatus.className = 'pincode-status available';
+      pincodeStatus.style.display = 'block';
+      
+      // Add success animation
+      pincodeStatus.style.animation = 'none';
+      setTimeout(() => {
+        pincodeStatus.style.animation = 'pulse 0.3s ease-out';
+      }, 10);
+    } else if (isValidFormat && !isAllowed) {
+      pincodeStatus.textContent = '❌ Sorry, delivery not available in your area';
+      pincodeStatus.className = 'pincode-status unavailable';
+      pincodeStatus.style.display = 'block';
+      
+      // Suggest alternative message
+      const suggestion = document.createElement('div');
+      suggestion.style.fontSize = '0.75rem';
+      suggestion.style.marginTop = '4px';
+      suggestion.style.color = 'var(--text-muted)';
+      
+      // Clear existing suggestion
+      const existingSuggestion = pincodeStatus.querySelector('.suggestion');
+      if (existingSuggestion) existingSuggestion.remove();
+      
+      const suggestionEl = document.createElement('div');
+      suggestionEl.className = 'suggestion';
+      suggestionEl.textContent = 'Try: 380026, 382418, or 380058';
+      pincodeStatus.appendChild(suggestionEl);
     }
     
-    return isPincodeValid;
+    // Update input border color
+    if (customerPincode) {
+      if (isValidFormat && isAllowed) {
+        customerPincode.style.borderColor = 'var(--primary)';
+      } else if (pincodeStr.length > 0) {
+        customerPincode.style.borderColor = '#ef4444';
+      } else {
+        customerPincode.style.borderColor = 'var(--border-light)';
+      }
+    }
   }
+  
+  return isPincodeValid;
+}
+
+// Add pulse animation to CSS
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+`;
+document.head.appendChild(style);
   
   function validateName(name) {
     const isValid = name && name.trim().length >= 2;
