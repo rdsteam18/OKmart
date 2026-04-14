@@ -1,54 +1,96 @@
 // ===== OK MART - COMMON.JS =====
-// reusable utilities & product data management
+// Reusable utilities, product data management, and cart functions
 
 (function() {
+  'use strict';
+  
+  // ---------- CONFIGURATION ----------
+  const CART_KEY = 'okmart_cart';
+  const CACHE_KEY = 'okmart_products_cache';
+  const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
+  
   // ---------- GLOBAL STATE ----------
   window.OKMart = window.OKMart || {};
   
-  // cached products
   let cachedProducts = null;
   
-  // cart (simple localStorage)
-  const CART_KEY = 'okmart_cart';
-  
-  // ---------- FETCH PRODUCTS (cached) ----------
+  // ---------- PRODUCT FETCHING (WITH CACHING) ----------
   async function fetchProducts() {
+    // Check memory cache first
     if (cachedProducts) {
       return cachedProducts;
     }
+    
+    // Check sessionStorage cache
     try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) {
+          console.log('✅ Using cached products');
+          cachedProducts = data;
+          return cachedProducts;
+        }
+      }
+    } catch (e) {
+      console.warn('Cache read error:', e);
+    }
+    
+    // Fetch from network
+    try {
+      console.log('🌐 Fetching products from network');
       const response = await fetch('/data/products.json');
       if (!response.ok) throw new Error('Failed to load products');
       const data = await response.json();
       cachedProducts = data.products;
+      
+      // Save to sessionStorage
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: cachedProducts,
+          timestamp: Date.now()
+        }));
+      } catch (e) {
+        console.warn('Cache save error:', e);
+      }
+      
       return cachedProducts;
     } catch (error) {
       console.error('Error loading products:', error);
+      
+      // Try to return stale cache if network fails
+      try {
+        const cached = sessionStorage.getItem(CACHE_KEY);
+        if (cached) {
+          console.log('⚠️ Using stale cache');
+          return JSON.parse(cached).data;
+        }
+      } catch (e) {}
+      
       return [];
     }
   }
   
   window.OKMart.getProducts = fetchProducts;
   
-  // ---------- GET PRODUCTS BY CATEGORY ----------
+  // ---------- CATEGORY FILTERING ----------
   window.OKMart.getProductsByCategory = async (categorySlug) => {
     const products = await fetchProducts();
     return products.filter(p => p.category === categorySlug);
   };
   
-  // ---------- GET POPULAR PRODUCTS ----------
   window.OKMart.getPopularProducts = async () => {
     const products = await fetchProducts();
     return products.filter(p => p.popular === true);
   };
   
-  // ---------- CALCULATE DISCOUNT ----------
+  // ---------- DISCOUNT CALCULATION ----------
   window.OKMart.calculateDiscount = (price, mrp) => {
-    if (mrp <= price) return 0;
+    if (!mrp || mrp <= price) return 0;
     return Math.round(((mrp - price) / mrp) * 100);
   };
   
-  // ---------- RENDER PRODUCT CARD (reusable) ----------
+  // ---------- PRODUCT CARD RENDERING ----------
   window.OKMart.renderProductCard = (product) => {
     const discount = window.OKMart.calculateDiscount(product.price, product.mrp);
     
@@ -56,24 +98,24 @@
     card.className = 'product-card';
     card.dataset.productId = product.id;
     
-    // image
+    // Image
     const img = document.createElement('img');
     img.src = product.image;
     img.alt = product.name;
     img.className = 'product-image';
     img.loading = 'lazy';
     
-    // name
+    // Name
     const name = document.createElement('h3');
     name.className = 'product-name';
     name.textContent = product.name;
     
-    // unit
+    // Unit
     const unitSpan = document.createElement('span');
     unitSpan.className = 'product-unit';
     unitSpan.textContent = product.unit || '';
     
-    // price container
+    // Price container
     const priceDiv = document.createElement('div');
     priceDiv.className = 'price-container';
     
@@ -83,10 +125,12 @@
     
     const mrpSpan = document.createElement('span');
     mrpSpan.className = 'mrp-price';
-    mrpSpan.textContent = `₹${product.mrp}`;
+    mrpSpan.textContent = product.mrp ? `₹${product.mrp}` : '';
     
     priceDiv.appendChild(currPrice);
-    priceDiv.appendChild(mrpSpan);
+    if (product.mrp && product.mrp > product.price) {
+      priceDiv.appendChild(mrpSpan);
+    }
     
     if (discount > 0) {
       const discountBadge = document.createElement('span');
@@ -95,16 +139,15 @@
       priceDiv.appendChild(discountBadge);
     }
     
-    // button
+    // Button
     const btn = document.createElement('button');
     btn.className = 'add-to-cart-btn';
     btn.textContent = 'Add to cart';
     btn.setAttribute('aria-label', `Add ${product.name} to cart`);
     
-    // (cart logic will be added by cart.js, but we attach product id)
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      // dispatch custom event for cart addition
+      e.stopPropagation();
       window.dispatchEvent(new CustomEvent('okmart:add-to-cart', { detail: product }));
     });
     
@@ -117,7 +160,7 @@
     return card;
   };
   
-  // ---------- CART UTILS (simple) ----------
+  // ---------- CART FUNCTIONS ----------
   function getCart() {
     const stored = localStorage.getItem(CART_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -126,6 +169,8 @@
   function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
     updateCartBadge();
+    updateStickyCartBar();
+    window.dispatchEvent(new CustomEvent('okmart:cart-updated'));
   }
   
   function updateCartBadge() {
@@ -140,6 +185,7 @@
   window.OKMart.addToCart = (product, quantity = 1) => {
     const cart = getCart();
     const existing = cart.find(item => item.id === product.id);
+    
     if (existing) {
       existing.quantity += quantity;
     } else {
@@ -147,183 +193,209 @@
         id: product.id,
         name: product.name,
         price: product.price,
+        mrp: product.mrp,
         image: product.image,
         unit: product.unit,
         quantity
       });
     }
+    
     saveCart(cart);
+    showAddToCartFeedback(product.name);
   };
   
   window.OKMart.getCartItems = getCart;
+  
+  window.OKMart.getCartCount = () => {
+    const cart = getCart();
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  };
+  
+  window.OKMart.getCartSubtotal = () => {
+    const cart = getCart();
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  };
+  
   window.OKMart.clearCart = () => {
     localStorage.removeItem(CART_KEY);
     updateCartBadge();
+    updateStickyCartBar();
+    window.dispatchEvent(new CustomEvent('okmart:cart-updated'));
   };
   
-  // Listen to add-to-cart event
+  // ---------- ADD TO CART FEEDBACK ----------
+  function showAddToCartFeedback(productName) {
+    const feedback = document.createElement('div');
+    feedback.className = 'cart-feedback-toast';
+    feedback.innerHTML = `
+      <span>🛒</span>
+      <span>${productName} added to cart!</span>
+    `;
+    feedback.style.cssText = `
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e2a2e;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      animation: slideUpFade 0.3s ease-out;
+      white-space: nowrap;
+    `;
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+      feedback.style.animation = 'slideDownFade 0.3s ease-in';
+      setTimeout(() => feedback.remove(), 300);
+    }, 2000);
+  }
+  
+  // ---------- STICKY CART BAR ----------
+  let stickyCartBar = null;
+  
+  function createStickyCartBar() {
+    if (document.getElementById('stickyCartBar')) return;
+    
+    const bar = document.createElement('div');
+    bar.className = 'sticky-cart-bar';
+    bar.id = 'stickyCartBar';
+    bar.innerHTML = `
+      <div class="cart-bar-inner">
+        <div class="sticky-cart-info">
+          <span class="cart-item-count-small" id="stickyCartCount">0</span>
+          <span class="cart-total-small" id="stickyCartTotal">₹0</span>
+        </div>
+        <a href="cart.html" class="view-cart-btn">View Cart →</a>
+      </div>
+    `;
+    
+    document.body.appendChild(bar);
+    return bar;
+  }
+  
+  function updateStickyCartBar() {
+    const cart = getCart();
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    if (totalItems > 0) {
+      if (!stickyCartBar) {
+        stickyCartBar = createStickyCartBar();
+      }
+      
+      const countEl = document.getElementById('stickyCartCount');
+      const totalEl = document.getElementById('stickyCartTotal');
+      
+      if (countEl) countEl.textContent = totalItems;
+      if (totalEl) totalEl.textContent = `₹${subtotal}`;
+      
+      setTimeout(() => stickyCartBar.classList.add('visible'), 10);
+    } else {
+      if (stickyCartBar) {
+        stickyCartBar.classList.remove('visible');
+      }
+    }
+  }
+  
+  window.OKMart.updateStickyCartBar = updateStickyCartBar;
+  
+  // ---------- EVENT LISTENERS ----------
   window.addEventListener('okmart:add-to-cart', (e) => {
     window.OKMart.addToCart(e.detail);
   });
   
-  // initial badge update
-  document.addEventListener('DOMContentLoaded', updateCartBadge);
-})();
-
-// Add to common.js (append to existing cart section)
-
-// Get cart item count
-window.OKMart.getCartCount = () => {
-  const cart = getCart();
-  return cart.reduce((sum, item) => sum + item.quantity, 0);
-};
-
-// Check if product is in cart
-window.OKMart.isInCart = (productId) => {
-  const cart = getCart();
-  return cart.some(item => item.id === productId);
-};
-
-// Get cart subtotal
-window.OKMart.getCartSubtotal = () => {
-  const cart = getCart();
-  return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-};
-
-// Update cart badge immediately
-document.addEventListener('DOMContentLoaded', () => {
-  const cart = getCart();
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const badges = document.querySelectorAll('#cartCountPlaceholder, .cart-badge');
-  badges.forEach(badge => {
-    if (badge) badge.textContent = totalItems;
+  // ---------- ADD ANIMATION STYLES ----------
+  function addGlobalStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideUpFade {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes slideDownFade {
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+      
+      .sticky-cart-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 12px 16px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        z-index: 200;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-top: 2px solid #2ecc71;
+      }
+      
+      .sticky-cart-bar.visible {
+        transform: translateY(0);
+      }
+      
+      .sticky-cart-bar .cart-bar-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      
+      .sticky-cart-info {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      
+      .cart-item-count-small {
+        background: #2ecc71;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      
+      .cart-total-small {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      
+      .view-cart-btn {
+        background: #2ecc71;
+        color: white;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+      }
+      
+      .view-cart-btn:active {
+        transform: scale(0.95);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // ---------- INITIALIZATION ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    updateCartBadge();
+    updateStickyCartBar();
+    addGlobalStyles();
   });
-});
-
-
-// Add to common.js - Enhanced Add to Cart with visual feedback
-
-// Show floating notification when item added to cart
-window.OKMart.showAddToCartFeedback = (productName) => {
-  // Create floating element
-  const feedback = document.createElement('div');
-  feedback.className = 'cart-feedback-toast';
-  feedback.innerHTML = `
-    <span>🛒</span>
-    <span>${productName} added to cart!</span>
-  `;
-  feedback.style.cssText = `
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--text-dark);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 40px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    animation: slideUpFade 0.3s ease-out;
-    white-space: nowrap;
-  `;
   
-  document.body.appendChild(feedback);
-  
-  setTimeout(() => {
-    feedback.style.animation = 'slideDownFade 0.3s ease-in';
-    setTimeout(() => feedback.remove(), 300);
-  }, 2000);
-};
-
-// Add animation styles dynamically
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideUpFade {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-  @keyframes slideDownFade {
-    from { opacity: 1; transform: translateX(-50%) translateY(0); }
-    to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  }
-`;
-document.head.appendChild(style);
-
-// Override addToCart to include feedback
-const originalAddToCart = window.OKMart.addToCart;
-window.OKMart.addToCart = (product, quantity = 1) => {
-  originalAddToCart(product, quantity);
-  window.OKMart.showAddToCartFeedback(product.name);
-};
-
-// Listen to add-to-cart event for feedback
-window.addEventListener('okmart:add-to-cart', (e) => {
-  window.OKMart.showAddToCartFeedback(e.detail.name);
-});
-
-
-// ===== STICKY CART BAR =====
-
-// Create sticky cart bar element
-function createStickyCartBar() {
-  if (document.querySelector('.sticky-cart-bar')) return;
-  
-  const bar = document.createElement('div');
-  bar.className = 'sticky-cart-bar';
-  bar.id = 'stickyCartBar';
-  bar.innerHTML = `
-    <div class="cart-bar-inner">
-      <div class="sticky-cart-info">
-        <span class="cart-item-count-small" id="stickyCartCount">0</span>
-        <span class="cart-total-small" id="stickyCartTotal">₹0</span>
-      </div>
-      <a href="cart.html" class="view-cart-btn">View Cart →</a>
-    </div>
-  `;
-  
-  document.body.appendChild(bar);
-  return bar;
-}
-
-// Update sticky cart bar visibility and content
-function updateStickyCartBar() {
-  const cart = OKMart.getCartItems();
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
-  let bar = document.getElementById('stickyCartBar');
-  
-  if (totalItems > 0) {
-    if (!bar) {
-      bar = createStickyCartBar();
-    }
-    
-    // Update content
-    const countEl = document.getElementById('stickyCartCount');
-    const totalEl = document.getElementById('stickyCartTotal');
-    
-    if (countEl) countEl.textContent = totalItems;
-    if (totalEl) totalEl.textContent = `₹${subtotal}`;
-    
-    // Show bar with animation
-    setTimeout(() => bar.classList.add('visible'), 10);
-  } else {
-    if (bar) {
-      bar.classList.remove('visible');
-    }
-  }
-}
-
-// Listen to cart updates
-window.addEventListener('okmart:cart-updated', updateStickyCartBar);
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(updateStickyCartBar, 100);
-});
-
-// Export function
-window.OKMart.updateStickyCartBar = updateStickyCartBar;
+})();
