@@ -1,61 +1,88 @@
+<!-- success.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Success - OK Mart</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<style>
-.container {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:90vh;
-}
-
-.card {
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    text-align:center;
-    width:300px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed · OK Mart</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    /* minimal success page inline (per modular approach, but isolated) */
+    /* we'll link a separate file as requested, but this page uses common.css + simple */
+  </style>
+  <link rel="stylesheet" href="css/common.css">
+  <!-- success page specific -->
+  <style>
+    .success-container {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+    .success-icon {
+      font-size: 4.5rem;
+      background: #e8f5e9;
+      width: 100px;
+      height: 100px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: #2e7d32;
+    }
+    .success-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #1e1e1e;
+    }
+    .order-id {
+      background: #f1f8e9;
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+    .btn-home {
+      margin-top: 2rem;
+      background: #2e7d32;
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: 0.2s;
+    }
+  </style>
 </head>
-
 <body>
-
-<header>
-    <div>OK Mart</div>
-</header>
-
-<div class="container">
-
-    <div class="card">
-
-        <h2>✅ Order Placed!</h2>
-
-        <p>We will contact you shortly 📞</p>
-
-        <button onclick="goHome()">Continue Shopping</button>
-
-        <br><br>
-
-        <button onclick="repeatOrder()">Repeat Order</button>
-
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">OK MART</span>
+      </div>
     </div>
+  </header>
 
-</div>
+  <main class="page-content">
+    <div class="success-container">
+      <div class="success-icon">✅</div>
+      <h1 class="success-title">Order placed!</h1>
+      <p>Thanks for shopping with OK Mart.</p>
+      <div class="order-id">Order #OK2412X</div>
+      <p class="delivery-estimate">⏱️ Delivery in 18 minutes</p>
+      <a href="index.html" class="btn-home">Continue shopping</a>
+    </div>
+  </main>
 
-<script src="js/main.js"></script>
-
-<script>
-function goHome(){
-    window.location.href = "index.html";
-}
-</script>
-
+  <footer class="app-footer">
+    <p class="footer-text">© 2026 OK Mart</p>
+  </footer>
 </body>
 </html>
