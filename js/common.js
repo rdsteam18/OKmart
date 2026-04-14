@@ -265,3 +265,65 @@ window.OKMart.addToCart = (product, quantity = 1) => {
 window.addEventListener('okmart:add-to-cart', (e) => {
   window.OKMart.showAddToCartFeedback(e.detail.name);
 });
+
+
+// ===== STICKY CART BAR =====
+
+// Create sticky cart bar element
+function createStickyCartBar() {
+  if (document.querySelector('.sticky-cart-bar')) return;
+  
+  const bar = document.createElement('div');
+  bar.className = 'sticky-cart-bar';
+  bar.id = 'stickyCartBar';
+  bar.innerHTML = `
+    <div class="cart-bar-inner">
+      <div class="sticky-cart-info">
+        <span class="cart-item-count-small" id="stickyCartCount">0</span>
+        <span class="cart-total-small" id="stickyCartTotal">₹0</span>
+      </div>
+      <a href="cart.html" class="view-cart-btn">View Cart →</a>
+    </div>
+  `;
+  
+  document.body.appendChild(bar);
+  return bar;
+}
+
+// Update sticky cart bar visibility and content
+function updateStickyCartBar() {
+  const cart = OKMart.getCartItems();
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  let bar = document.getElementById('stickyCartBar');
+  
+  if (totalItems > 0) {
+    if (!bar) {
+      bar = createStickyCartBar();
+    }
+    
+    // Update content
+    const countEl = document.getElementById('stickyCartCount');
+    const totalEl = document.getElementById('stickyCartTotal');
+    
+    if (countEl) countEl.textContent = totalItems;
+    if (totalEl) totalEl.textContent = `₹${subtotal}`;
+    
+    // Show bar with animation
+    setTimeout(() => bar.classList.add('visible'), 10);
+  } else {
+    if (bar) {
+      bar.classList.remove('visible');
+    }
+  }
+}
+
+// Listen to cart updates
+window.addEventListener('okmart:cart-updated', updateStickyCartBar);
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(updateStickyCartBar, 100);
+});
+
+// Export function
+window.OKMart.updateStickyCartBar = updateStickyCartBar;
