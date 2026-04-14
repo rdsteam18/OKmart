@@ -1,0 +1,17 @@
+# OK Mart - Robots.txt
+# Allow all search engines to crawl the website
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://okmart.netlify.app/sitemap.xml
+
+# Crawl delay (polite crawling)
+Crawl-delay: 5
+
+# Disallow admin/cart/checkout from indexing (but allow crawling for functionality)
+# These are handled via meta robots tags
+
+# Host
+Host: https://okmart.netlify.app
