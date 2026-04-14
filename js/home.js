@@ -1094,3 +1094,15 @@
   };
   
 })();
+
+// Add to home.js - Search input Enter key handler
+if (searchInput) {
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query) {
+        window.location.href = `search.html?query=${encodeURIComponent(query)}`;
+      }
+    }
+  });
+}
