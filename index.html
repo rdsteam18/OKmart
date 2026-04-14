@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/home.css">
   
-  <!-- Google Fonts (optional but clean) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,19 +44,66 @@
         <button class="clear-search" id="clearSearchBtn" aria-label="clear search">✕</button>
       </div>
     </div>
-    <!-- Add after search bar, before category section -->
-<!-- Quick Order / Daily Essentials -->
-<section class="quick-order-section">
-  <div class="section-header">
-    <h2 class="section-title">⚡ Daily Essentials</h2>
-    <span class="quick-badge">Quick Add</span>
-  </div>
-  <div class="quick-order-grid" id="quickOrderGrid">
-    <!-- Dynamically populated from JSON -->
-  </div>
-</section>
 
-    <!-- Category Filter - Horizontal Scroll -->
+    <!-- ===== CATEGORY NAVIGATION GRID (NEW) ===== -->
+    <section class="category-nav-section">
+      <!-- Group 1: Fruits & Vegetables -->
+      <div class="category-group">
+        <div class="group-header">
+          <h2 class="group-title">🍎 Fruits & Vegetables</h2>
+          <a href="#" class="view-all-link" data-category="fruits">View All →</a>
+        </div>
+        <div class="category-grid" id="fruitsVegGrid">
+          <!-- Category cards will be dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Group 2: Dairy & Bakery -->
+      <div class="category-group">
+        <div class="group-header">
+          <h2 class="group-title">🥛 Dairy & Bakery</h2>
+          <a href="categories/dairy.html" class="view-all-link">View All →</a>
+        </div>
+        <div class="category-grid" id="dairyBakeryGrid">
+          <!-- Category cards will be dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Group 3: Snacks & Packaged Foods -->
+      <div class="category-group">
+        <div class="group-header">
+          <h2 class="group-title">🍿 Snacks & Packaged</h2>
+          <a href="categories/snacks.html" class="view-all-link">View All →</a>
+        </div>
+        <div class="category-grid" id="snacksPackagedGrid">
+          <!-- Category cards will be dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Group 4: Grocery Staples -->
+      <div class="category-group">
+        <div class="group-header">
+          <h2 class="group-title">🧺 Grocery Staples</h2>
+          <a href="categories/grocery.html" class="view-all-link">View All →</a>
+        </div>
+        <div class="category-grid" id="groceryStaplesGrid">
+          <!-- Category cards will be dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Order / Daily Essentials -->
+    <section class="quick-order-section">
+      <div class="section-header">
+        <h2 class="section-title">⚡ Daily Essentials</h2>
+        <span class="quick-badge">Quick Add</span>
+      </div>
+      <div class="quick-order-grid" id="quickOrderGrid">
+        <!-- Dynamically populated from JSON -->
+      </div>
+    </section>
+
+    <!-- Category Filter - Horizontal Scroll (Original) -->
     <div class="category-filter-section">
       <div class="category-scroll" id="categoryFilterContainer">
         <!-- Category buttons will be injected dynamically -->
@@ -87,12 +134,13 @@
     </div>
   </div>
 
+  <!-- Floating Call Button -->
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+    <span class="call-icon">📞</span>
+  </a>
+
   <!-- SCRIPTS -->
   <script src="js/common.js"></script>
   <script src="js/home.js"></script>
-  <!-- Floating Call Button -->
-<a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
-  <span class="call-icon">📞</span>
-</a>
 </body>
 </html>
