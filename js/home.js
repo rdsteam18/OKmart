@@ -278,3 +278,82 @@ function renderCategoryFilters() {
   };
   
 })();
+
+// Add to home.js - Quick Order Section
+
+// Daily essentials keywords to match
+const DAILY_ESSENTIALS_KEYWORDS = ['milk', 'bread', 'eggs', 'butter'];
+
+// Find daily essentials from products
+function getDailyEssentials() {
+  const essentials = [];
+  const foundNames = new Set();
+  
+  // First try to match by keywords in name
+  allProducts.forEach(product => {
+    const nameLower = product.name.toLowerCase();
+    if (DAILY_ESSENTIALS_KEYWORDS.some(keyword => nameLower.includes(keyword))) {
+      if (!foundNames.has(product.name)) {
+        essentials.push(product);
+        foundNames.add(product.name);
+      }
+    }
+  });
+  
+  // If less than 3 items, add popular items
+  if (essentials.length < 3) {
+    allProducts
+      .filter(p => p.popular && !foundNames.has(p.name))
+      .slice(0, 3 - essentials.length)
+      .forEach(p => {
+        essentials.push(p);
+        foundNames.add(p.name);
+      });
+  }
+  
+  // Limit to 3 items
+  return essentials.slice(0, 3);
+}
+
+// Render quick order section
+function renderQuickOrder() {
+  const quickGrid = document.getElementById('quickOrderGrid');
+  if (!quickGrid) return;
+  
+  const essentials = getDailyEssentials();
+  
+  quickGrid.innerHTML = '';
+  
+  essentials.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'quick-item-card';
+    card.innerHTML = `
+      <img src="${product.image}" alt="${product.name}" class="quick-item-image" loading="lazy">
+      <div class="quick-item-name">${product.name.split(' ').slice(0, 2).join(' ')}</div>
+      <div class="quick-item-price">₹${product.price}</div>
+      <button class="quick-add-btn" data-id="${product.id}">+ Add</button>
+    `;
+    
+    const addBtn = card.querySelector('.quick-add-btn');
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      OKMart.addToCart(product);
+      
+      // Visual feedback
+      addBtn.textContent = '✓ Added';
+      addBtn.style.background = 'var(--primary)';
+      addBtn.style.color = 'white';
+      
+      setTimeout(() => {
+        addBtn.textContent = '+ Add';
+        addBtn.style.background = 'white';
+        addBtn.style.color = 'var(--primary-dark)';
+      }, 1000);
+    });
+    
+    quickGrid.appendChild(card);
+  });
+}
+
+// Call in init() after loading products
+// Add: renderQuickOrder();
