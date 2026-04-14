@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Grocery Staples · OK Mart</title>
   
-  <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="../css/category.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/category.css">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,14 +16,14 @@
   <header class="app-header category-header">
     <div class="header-container">
       <div class="header-left">
-        <a href="../index.html" class="back-button" aria-label="back to home">
+        <a href="/index.html" class="back-button" aria-label="back to home">
           <span class="back-icon">←</span>
         </a>
-        <a href="../index.html" class="logo-link">
+        <a href="/index.html" class="logo-link">
           <span class="logo-text">🛒 OK Mart</span>
         </a>
       </div>
-      <a href="../cart.html" class="cart-icon-link" aria-label="cart">
+      <a href="/cart.html" class="cart-icon-link" aria-label="cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
       </a>
@@ -80,9 +80,14 @@
     </div>
   </div>
 
-  <script src="../js/common.js"></script>
-  <script src="../js/category.js"></script>
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+    <span class="call-icon">📞</span>
+  </a>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/category.js"></script>
   <script>
+    // EXACT CATEGORY MATCH - "grocery" (lowercase)
     window.__OKMART_CATEGORY_CONFIG = {
       slug: 'grocery',
       displayName: 'Grocery Staples',
