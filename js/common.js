@@ -1,5 +1,6 @@
 // ===== OK MART - COMMON.JS =====
 // Reusable utilities, product data management, and cart functions
+// UPDATED: All navigation paths now use absolute paths from root
 
 (function() {
   'use strict';
@@ -10,7 +11,7 @@
   const CACHE_EXPIRY = 30 * 60 * 1000; // 30 minutes
   
   // Pages where sticky cart bar should NOT appear
-  const HIDE_STICKY_CART_PAGES = ['cart.html', 'checkout.html', 'success.html'];
+  const HIDE_STICKY_CART_PAGES = ['cart.html', 'checkout.html', 'success.html', 'search.html'];
   
   // ---------- GLOBAL STATE ----------
   window.OKMart = window.OKMart || {};
@@ -45,7 +46,7 @@
       console.warn('Cache read error:', e);
     }
     
-    // Fetch from network
+    // Fetch from network - USING ABSOLUTE PATH
     try {
       console.log('🌐 Fetching products from network');
       const response = await fetch('/data/products.json');
@@ -85,6 +86,7 @@
   // ---------- CATEGORY FILTERING ----------
   window.OKMart.getProductsByCategory = async (categorySlug) => {
     const products = await fetchProducts();
+    // EXACT MATCH - case sensitive as per requirement
     return products.filter(p => p.category === categorySlug);
   };
   
@@ -286,7 +288,7 @@
           <span class="cart-item-count-small" id="stickyCartCount">0</span>
           <span class="cart-total-small" id="stickyCartTotal">₹0</span>
         </div>
-        <a href="cart.html" class="view-cart-btn">View Cart →</a>
+        <a href="/cart.html" class="view-cart-btn">View Cart →</a>
       </div>
     `;
     
@@ -346,7 +348,11 @@
   
   // ---------- ADD ANIMATION STYLES ----------
   function addGlobalStyles() {
+    // Check if styles already exist
+    if (document.getElementById('okmartGlobalStyles')) return;
+    
     const style = document.createElement('style');
+    style.id = 'okmartGlobalStyles';
     style.textContent = `
       @keyframes slideUpFade {
         from { opacity: 0; transform: translateX(-50%) translateY(20px); }
