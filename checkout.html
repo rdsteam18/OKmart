@@ -4,73 +4,223 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Checkout · OK Mart</title>
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/checkout.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header" id="mainHeader">
+  <!-- HEADER -->
+  <header class="app-header checkout-header">
     <div class="header-container">
-      <a href="index.html" class="logo-link">
-        <span class="logo-text">🛒 OK Mart</span>
-      </a>
-      <a href="cart.html" class="cart-icon-link" aria-label="cart">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge" id="cartCountPlaceholder">0</span>
-      </a>
+      <div class="header-left">
+        <a href="cart.html" class="back-button" aria-label="back to cart">
+          <span class="back-icon">←</span>
+        </a>
+        <h1 class="page-title">Checkout</h1>
+      </div>
+      <div class="header-right-placeholder"></div>
     </div>
   </header>
 
   <main class="checkout-main">
-    <h1 class="page-title">checkout</h1>
-    <!-- delivery form + payment placeholder -->
-    <form id="checkoutForm" class="checkout-form">
-      <fieldset class="address-fieldset">
-        <legend>📍 delivery address</legend>
-        <div class="input-group">
-          <label for="fullName">full name</label>
-          <input type="text" id="fullName" placeholder="e.g., Riya Sharma" required>
-        </div>
-        <div class="input-group">
-          <label for="mobile">mobile number</label>
-          <input type="tel" id="mobile" placeholder="9876543210" required>
-        </div>
-        <div class="input-group">
-          <label for="address">street / locality</label>
-          <textarea id="address" rows="2" placeholder="house no, area" required></textarea>
-        </div>
-        <div class="input-group">
-          <label for="pincode">pincode</label>
-          <input type="text" id="pincode" placeholder="110001" required>
-        </div>
-      </fieldset>
+    <!-- Progress Indicator -->
+    <div class="checkout-progress">
+      <div class="progress-step active">
+        <span class="step-icon">1</span>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step">
+        <span class="step-icon">2</span>
+        <span class="step-label">Confirm</span>
+      </div>
+    </div>
 
-      <div class="payment-section">
-        <h3 class="payment-heading">💳 payment method</h3>
-        <div class="payment-options">
-          <label class="radio-card">
-            <input type="radio" name="payment" value="cod" checked> cash on delivery
+    <!-- Order Summary -->
+    <div class="order-summary-section">
+      <div class="section-header">
+        <h2 class="section-title">📋 Order Summary</h2>
+        <button class="view-items-btn" id="viewItemsToggle">View Items ▼</button>
+      </div>
+      
+      <div class="order-items-collapsible" id="orderItemsCollapsible">
+        <div class="order-items-list" id="orderItemsList">
+          <!-- Items will be rendered here -->
+        </div>
+      </div>
+      
+      <div class="order-total-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="checkoutSubtotal">₹0</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery</span>
+          <span id="checkoutDelivery">₹0</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span id="checkoutTotal">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Details Form -->
+    <form class="checkout-form" id="checkoutForm">
+      <div class="form-section">
+        <h2 class="section-title">📍 Delivery Details</h2>
+        
+        <!-- Name Field -->
+        <div class="form-group">
+          <label for="customerName" class="form-label">
+            <span class="label-icon">👤</span>
+            Full Name
           </label>
-          <label class="radio-card">
-            <input type="radio" name="payment" value="upi"> UPI / card (demo)
+          <input 
+            type="text" 
+            id="customerName" 
+            name="name" 
+            class="form-input" 
+            placeholder="Enter your full name"
+            required
+            autocomplete="name"
+          >
+          <span class="error-message" id="nameError"></span>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label for="customerPhone" class="form-label">
+            <span class="label-icon">📱</span>
+            Phone Number
           </label>
+          <input 
+            type="tel" 
+            id="customerPhone" 
+            name="phone" 
+            class="form-input" 
+            placeholder="10-digit mobile number"
+            pattern="[0-9]{10}"
+            maxlength="10"
+            required
+            autocomplete="tel"
+          >
+          <span class="error-message" id="phoneError"></span>
+        </div>
+
+        <!-- Address Field -->
+        <div class="form-group">
+          <label for="customerAddress" class="form-label">
+            <span class="label-icon">🏠</span>
+            Delivery Address
+          </label>
+          <textarea 
+            id="customerAddress" 
+            name="address" 
+            class="form-input" 
+            rows="3"
+            placeholder="House/Flat No., Street, Area"
+            required
+            autocomplete="street-address"
+          ></textarea>
+          <span class="error-message" id="addressError"></span>
+        </div>
+
+        <!-- Pincode Field -->
+        <div class="form-group">
+          <label for="customerPincode" class="form-label">
+            <span class="label-icon">📮</span>
+            Pincode
+          </label>
+          <input 
+            type="text" 
+            id="customerPincode" 
+            name="pincode" 
+            class="form-input" 
+            placeholder="6-digit pincode"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            required
+            autocomplete="postal-code"
+          >
+          <span class="error-message" id="pincodeError"></span>
+          <div class="pincode-status" id="pincodeStatus"></div>
         </div>
       </div>
 
-      <div class="order-summary-mini" id="checkoutSummary">
-        <!-- summary injected by checkout.js -->
+      <!-- Optional Fields -->
+      <div class="form-section">
+        <h2 class="section-title">⏰ Additional Preferences</h2>
+        
+        <!-- Delivery Time Slot -->
+        <div class="form-group">
+          <label for="deliverySlot" class="form-label">
+            <span class="label-icon">🕐</span>
+            Preferred Delivery Time
+          </label>
+          <select id="deliverySlot" name="deliverySlot" class="form-input form-select">
+            <option value="morning">🌅 Morning (8 AM - 12 PM)</option>
+            <option value="evening">🌆 Evening (4 PM - 8 PM)</option>
+            <option value="urgent">⚡ Urgent (within 30 mins)</option>
+          </select>
+        </div>
+
+        <!-- Special Instructions -->
+        <div class="form-group">
+          <label for="specialInstructions" class="form-label">
+            <span class="label-icon">💬</span>
+            Special Instructions (Optional)
+          </label>
+          <textarea 
+            id="specialInstructions" 
+            name="instructions" 
+            class="form-input" 
+            rows="2"
+            placeholder="e.g., Leave at door, Call before delivery"
+          ></textarea>
+        </div>
       </div>
 
-      <button type="submit" class="btn-primary place-order-btn">place order →</button>
+      <!-- Payment Method (Simplified) -->
+      <div class="form-section">
+        <h2 class="section-title">💳 Payment Method</h2>
+        <div class="payment-option">
+          <input type="radio" id="cod" name="payment" value="cod" checked>
+          <label for="cod" class="payment-label">
+            <span class="payment-icon">💵</span>
+            <div class="payment-details">
+              <strong>Cash on Delivery</strong>
+              <small>Pay when you receive</small>
+            </div>
+          </label>
+        </div>
+      </div>
     </form>
+
+    <!-- Bottom Spacer for Sticky Button -->
+    <div class="bottom-spacer"></div>
   </main>
 
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <span class="delivery-message">🚀 delivery in 10 mins</span>
-      <span class="min-order">min order ₹99</span>
+  <!-- STICKY PLACE ORDER BAR -->
+  <div class="sticky-order-bar" id="stickyOrderBar">
+    <div class="order-bar-inner">
+      <div class="order-total-compact">
+        <span class="total-label">Total</span>
+        <span class="total-value" id="stickyCheckoutTotal">₹0</span>
+      </div>
+      <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">
+        Place Order via WhatsApp →
+      </button>
     </div>
   </div>
 
+  <!-- SCRIPTS -->
   <script src="js/common.js"></script>
   <script src="js/checkout.js"></script>
 </body>
