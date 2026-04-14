@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Snacks · OK Mart</title>
+  <title>Snacks & Munchies · OK Mart</title>
+  
   <link rel="stylesheet" href="../css/common.css">
   <link rel="stylesheet" href="../css/category.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header" id="mainHeader">
+  <header class="app-header category-header">
     <div class="header-container">
-      <a href="../index.html" class="logo-link">
-        <span class="logo-text">🛒 OK Mart</span>
-      </a>
+      <div class="header-left">
+        <a href="../index.html" class="back-button" aria-label="back to home">
+          <span class="back-icon">←</span>
+        </a>
+        <a href="../index.html" class="logo-link">
+          <span class="logo-text">🛒 OK Mart</span>
+        </a>
+      </div>
       <a href="../cart.html" class="cart-icon-link" aria-label="cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
@@ -20,12 +30,47 @@
     </div>
   </header>
 
-  <main class="category-page">
-    <div class="category-header">
-      <h1 class="category-title">🍿 snacks & munchies</h1>
-      <p class="category-description">chips, namkeen, biscuits & more</p>
+  <main class="category-main">
+    <div class="category-hero">
+      <div class="category-icon">🍿</div>
+      <h1 class="category-title" id="categoryTitle">Snacks & Munchies</h1>
+      <p class="category-description" id="categoryDescription">Chips, namkeen, biscuits & more</p>
     </div>
-    <div class="product-grid category-grid" id="categoryProductGrid"></div>
+
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="categorySearchInput" 
+          class="search-input" 
+          placeholder="Search in snacks..."
+          autocomplete="off"
+        >
+        <button class="clear-search" id="clearCategorySearch" aria-label="clear search">✕</button>
+      </div>
+    </div>
+
+    <div class="results-info">
+      <span class="results-count" id="categoryResultsCount">0 items</span>
+      <button class="sort-btn" id="sortToggleBtn" aria-label="sort">
+        <span>📊 Sort</span>
+      </button>
+    </div>
+
+    <div class="product-grid category-grid" id="categoryProductGrid">
+      <div class="loading-state" id="categoryLoadingState">
+        <div class="loading-spinner"></div>
+        <p>Loading fresh products...</p>
+      </div>
+    </div>
+
+    <div class="sort-dropdown" id="sortDropdown" style="display: none;">
+      <button class="sort-option" data-sort="popular">🔥 Popular First</button>
+      <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
+      <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
+      <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
+    </div>
   </main>
 
   <div class="sticky-bottom-bar">
@@ -38,7 +83,12 @@
   <script src="../js/common.js"></script>
   <script src="../js/category.js"></script>
   <script>
-    window.__OKMART_CATEGORY = 'snacks';
+    window.__OKMART_CATEGORY_CONFIG = {
+      slug: 'snacks',
+      displayName: 'Snacks & Munchies',
+      description: 'Chips, namkeen, biscuits & more',
+      icon: '🍿'
+    };
   </script>
 </body>
 </html>
