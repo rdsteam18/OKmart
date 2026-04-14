@@ -1,6 +1,5 @@
 // ===== OK MART - COMMON.JS =====
-// Reusable utilities, product data management, and cart functions
-// UPDATED: All navigation paths now use absolute paths from root
+// Reusable utilities, product data management, cart functions, and fly animation
 
 (function() {
   'use strict';
@@ -13,10 +12,15 @@
   // Pages where sticky cart bar should NOT appear
   const HIDE_STICKY_CART_PAGES = ['cart.html', 'checkout.html', 'success.html', 'search.html'];
   
+  // Animation settings
+  const FLY_ANIMATION_DURATION = 600; // ms
+  const FLY_ANIMATION_EASING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+  
   // ---------- GLOBAL STATE ----------
   window.OKMart = window.OKMart || {};
   
   let cachedProducts = null;
+  let isAnimating = false;
   
   // ---------- HELPER: Check if current page should show sticky cart ----------
   function shouldShowStickyCart() {
@@ -26,12 +30,10 @@
   
   // ---------- PRODUCT FETCHING (WITH CACHING) ----------
   async function fetchProducts() {
-    // Check memory cache first
     if (cachedProducts) {
       return cachedProducts;
     }
     
-    // Check sessionStorage cache
     try {
       const cached = sessionStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -46,7 +48,6 @@
       console.warn('Cache read error:', e);
     }
     
-    // Fetch from network - USING ABSOLUTE PATH
     try {
       console.log('🌐 Fetching products from network');
       const response = await fetch('/data/products.json');
@@ -54,7 +55,6 @@
       const data = await response.json();
       cachedProducts = data.products;
       
-      // Save to sessionStorage
       try {
         sessionStorage.setItem(CACHE_KEY, JSON.stringify({
           data: cachedProducts,
@@ -68,7 +68,6 @@
     } catch (error) {
       console.error('Error loading products:', error);
       
-      // Try to return stale cache if network fails
       try {
         const cached = sessionStorage.getItem(CACHE_KEY);
         if (cached) {
@@ -83,10 +82,8 @@
   
   window.OKMart.getProducts = fetchProducts;
   
-  // ---------- CATEGORY FILTERING ----------
   window.OKMart.getProductsByCategory = async (categorySlug) => {
     const products = await fetchProducts();
-    // EXACT MATCH - case sensitive as per requirement
     return products.filter(p => p.category === categorySlug);
   };
   
@@ -95,11 +92,204 @@
     return products.filter(p => p.popular === true);
   };
   
-  // ---------- DISCOUNT CALCULATION ----------
   window.OKMart.calculateDiscount = (price, mrp) => {
     if (!mrp || mrp <= price) return 0;
     return Math.round(((mrp - price) / mrp) * 100);
   };
+  
+  // ---------- FLY TO CART ANIMATION ----------
+  
+  /**
+   * Get cart icon element position
+   */
+  function getCartIconPosition() {
+    const cartIcon = document.querySelector('.cart-icon-link') || 
+                     document.querySelector('#cartIcon') ||
+                     document.querySelector('[aria-label="cart"]');
+    
+    if (!cartIcon) return null;
+    
+    const rect = cartIcon.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+      width: rect.width,
+      height: rect.height
+    };
+  }
+  
+  /**
+   * Create flying clone of product image
+   */
+  function createFlyingClone(sourceImage, productName) {
+    const clone = document.createElement('div');
+    clone.className = 'fly-to-cart-clone';
+    
+    // Get source image src
+    let imgSrc = '';
+    if (typeof sourceImage === 'string') {
+      imgSrc = sourceImage;
+    } else if (sourceImage && sourceImage.src) {
+      imgSrc = sourceImage.src;
+    }
+    
+    clone.innerHTML = `<img src="${imgSrc}" alt="${productName || 'Product'}">`;
+    
+    // Apply base styles
+    clone.style.cssText = `
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      will-change: transform, opacity;
+      transition: all ${FLY_ANIMATION_DURATION}ms ${FLY_ANIMATION_EASING};
+      opacity: 1;
+    `;
+    
+    return clone;
+  }
+  
+  /**
+   * Position clone at source element
+   */
+  function positionCloneAtSource(clone, sourceElement) {
+    const rect = sourceElement.getBoundingClientRect();
+    const size = Math.min(rect.width, rect.height) * 0.8;
+    
+    clone.style.width = `${size}px`;
+    clone.style.height = `${size}px`;
+    clone.style.left = `${rect.left + rect.width / 2 - size / 2}px`;
+    clone.style.top = `${rect.top + rect.height / 2 - size / 2}px`;
+    clone.style.transform = 'scale(1)';
+    clone.style.opacity = '0.95';
+    clone.style.borderRadius = '12px';
+    clone.style.overflow = 'hidden';
+    clone.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+    
+    const img = clone.querySelector('img');
+    if (img) {
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.display = 'block';
+    }
+  }
+  
+  /**
+   * Animate clone to cart
+   */
+  function animateCloneToCart(clone, startRect, endPosition) {
+    return new Promise((resolve) => {
+      // Force reflow
+      clone.offsetHeight;
+      
+      const targetSize = 30; // Final size in px
+      const deltaX = endPosition.x - (startRect.left + startRect.width / 2);
+      const deltaY = endPosition.y - (startRect.top + startRect.height / 2);
+      
+      clone.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.2)`;
+      clone.style.opacity = '0.6';
+      clone.style.width = `${targetSize}px`;
+      clone.style.height = `${targetSize}px`;
+      clone.style.borderRadius = '50%';
+      
+      setTimeout(() => {
+        clone.style.opacity = '0';
+        setTimeout(() => {
+          if (clone.parentNode) {
+            clone.parentNode.removeChild(clone);
+          }
+          resolve();
+        }, 100);
+      }, FLY_ANIMATION_DURATION - 100);
+    });
+  }
+  
+  /**
+   * Cart icon bounce animation
+   */
+  function animateCartBounce() {
+    const cartIcon = document.querySelector('.cart-icon-link') || 
+                     document.querySelector('[aria-label="cart"]');
+    
+    if (!cartIcon) return;
+    
+    cartIcon.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    cartIcon.style.transform = 'scale(1.2)';
+    
+    setTimeout(() => {
+      cartIcon.style.transform = 'scale(1)';
+    }, 150);
+    
+    setTimeout(() => {
+      cartIcon.style.transition = '';
+    }, 300);
+  }
+  
+  /**
+   * Main fly to cart animation function
+   */
+  async function flyToCart(sourceImageElement, productImageSrc, productName) {
+    // Prevent multiple animations
+    if (isAnimating) {
+      console.log('Animation already in progress');
+      return;
+    }
+    
+    isAnimating = true;
+    
+    try {
+      const cartPosition = getCartIconPosition();
+      if (!cartPosition) {
+        console.warn('Cart icon not found');
+        isAnimating = false;
+        return;
+      }
+      
+      // Determine source element
+      let sourceElement = sourceImageElement;
+      if (!sourceElement || !sourceElement.getBoundingClientRect) {
+        sourceElement = document.querySelector('.product-card img') || document.body;
+      }
+      
+      const startRect = sourceElement.getBoundingClientRect();
+      
+      // Create and position clone
+      const clone = createFlyingClone(productImageSrc || sourceElement.src, productName);
+      document.body.appendChild(clone);
+      
+      positionCloneAtSource(clone, sourceElement);
+      
+      // Animate to cart
+      await animateCloneToCart(clone, startRect, cartPosition);
+      
+      // Bounce cart icon
+      animateCartBounce();
+      
+    } catch (error) {
+      console.error('Fly animation error:', error);
+    } finally {
+      isAnimating = false;
+    }
+  }
+  
+  /**
+   * Find product image from event target
+   */
+  function findProductImageFromEvent(event) {
+    const target = event.target;
+    let productCard = target.closest('.product-card');
+    
+    if (!productCard) {
+      productCard = target.closest('.quick-item-card');
+    }
+    
+    if (productCard) {
+      const img = productCard.querySelector('img');
+      return img;
+    }
+    
+    return null;
+  }
   
   // ---------- PRODUCT CARD RENDERING ----------
   window.OKMart.renderProductCard = (product) => {
@@ -108,6 +298,8 @@
     const card = document.createElement('div');
     card.className = 'product-card';
     card.dataset.productId = product.id;
+    card.dataset.productImage = product.image;
+    card.dataset.productName = product.name;
     
     // Image
     const img = document.createElement('img');
@@ -159,6 +351,14 @@
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      
+      // Trigger fly animation
+      const productImage = card.querySelector('.product-image');
+      if (productImage) {
+        flyToCart(productImage, product.image, product.name);
+      }
+      
+      // Dispatch add to cart event
       window.dispatchEvent(new CustomEvent('okmart:add-to-cart', { detail: product }));
     });
     
@@ -253,7 +453,7 @@
       border-radius: 40px;
       font-weight: 500;
       font-size: 0.9rem;
-      z-index: 1000;
+      z-index: 10000;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -270,13 +470,11 @@
     }, 2000);
   }
   
-  // ---------- STICKY CART BAR (HIDDEN ON CART/CHECKOUT/SUCCESS PAGES) ----------
+  // ---------- STICKY CART BAR ----------
   let stickyCartBar = null;
   
   function createStickyCartBar() {
     if (document.getElementById('stickyCartBar')) return;
-    
-    // Don't create on excluded pages
     if (!shouldShowStickyCart()) return;
     
     const bar = document.createElement('div');
@@ -297,7 +495,6 @@
   }
   
   function updateStickyCartBar() {
-    // Don't show on excluded pages
     if (!shouldShowStickyCart()) {
       if (stickyCartBar) {
         stickyCartBar.classList.remove('visible');
@@ -322,7 +519,6 @@
       
       setTimeout(() => stickyCartBar.classList.add('visible'), 10);
       
-      // Hide original bottom bar if it exists
       const originalBottomBar = document.querySelector('.sticky-bottom-bar');
       if (originalBottomBar) {
         originalBottomBar.style.display = 'none';
@@ -331,7 +527,6 @@
       if (stickyCartBar) {
         stickyCartBar.classList.remove('visible');
       }
-      // Show original bottom bar again
       const originalBottomBar = document.querySelector('.sticky-bottom-bar');
       if (originalBottomBar) {
         originalBottomBar.style.display = 'block';
@@ -341,6 +536,9 @@
   
   window.OKMart.updateStickyCartBar = updateStickyCartBar;
   
+  // Expose fly animation for manual use
+  window.OKMart.flyToCart = flyToCart;
+  
   // ---------- EVENT LISTENERS ----------
   window.addEventListener('okmart:add-to-cart', (e) => {
     window.OKMart.addToCart(e.detail);
@@ -348,7 +546,6 @@
   
   // ---------- ADD ANIMATION STYLES ----------
   function addGlobalStyles() {
-    // Check if styles already exist
     if (document.getElementById('okmartGlobalStyles')) return;
     
     const style = document.createElement('style');
@@ -358,9 +555,36 @@
         from { opacity: 0; transform: translateX(-50%) translateY(20px); }
         to { opacity: 1; transform: translateX(-50%) translateY(0); }
       }
+      
       @keyframes slideDownFade {
         from { opacity: 1; transform: translateX(-50%) translateY(0); }
         to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      }
+      
+      /* Fly to cart clone styles */
+      .fly-to-cart-clone {
+        position: fixed;
+        z-index: 9999;
+        pointer-events: none;
+        will-change: transform, opacity, width, height;
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        opacity: 1;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+      
+      .fly-to-cart-clone img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      
+      /* Cart icon ready for animation */
+      .cart-icon-link {
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        will-change: transform;
       }
       
       .sticky-cart-bar {
@@ -424,6 +648,44 @@
       .view-cart-btn:active {
         transform: scale(0.95);
       }
+      
+      /* Floating Call Button */
+      .floating-call-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        background: #25D366;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        z-index: 150;
+        transition: all 0.3s;
+        text-decoration: none;
+        animation: pulse-call 2s infinite;
+      }
+      
+      .floating-call-btn:hover {
+        transform: scale(1.1);
+      }
+      
+      .call-icon {
+        font-size: 28px;
+      }
+      
+      @keyframes pulse-call {
+        0%, 100% { box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3); }
+        50% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5); }
+      }
+      
+      @media (max-width: 640px) {
+        .sticky-cart-bar.visible ~ .floating-call-btn {
+          bottom: 100px;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
@@ -432,11 +694,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
     
-    // Only initialize sticky cart on appropriate pages
     if (shouldShowStickyCart()) {
       updateStickyCartBar();
     } else {
-      // Hide any existing sticky cart bar
       const existingBar = document.getElementById('stickyCartBar');
       if (existingBar) {
         existingBar.style.display = 'none';
