@@ -1,120 +1,44 @@
-<!-- cart.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>Your Cart · OK Mart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Cart · OK Mart</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/cart.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header">
+  <header class="app-header" id="mainHeader">
     <div class="header-container">
-      <div class="logo-area">
-        <a href="index.html" class="back-home-link" aria-label="Back to home">
-          <span class="back-arrow">←</span>
-        </a>
-        <span class="logo-text">My Cart</span>
-      </div>
-      <a href="cart.html" class="cart-link" aria-current="page">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge js-cart-count-indicator">2</span>
+      <a href="index.html" class="logo-link">
+        <span class="logo-text">🛒 OK Mart</span>
       </a>
-    </div>
-    <!-- optional search bar (same as common) -->
-    <div class="search-wrapper">
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="search" placeholder="Search products" class="search-input">
-      </div>
+      <a href="cart.html" class="cart-icon-link" aria-label="cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
     </div>
   </header>
 
-  <main class="page-content cart-page">
-    <!-- delivery address chip (clean) -->
-    <div class="delivery-chip">
-      <span class="delivery-label">📍 Delivering to</span>
-      <span class="delivery-address">Home · Sector 14, Gurugram</span>
-      <button class="btn-change">Change</button>
+  <main class="cart-main">
+    <h1 class="page-title">your basket</h1>
+    <div class="cart-items-container" id="cartItemsContainer">
+      <!-- cart items will be rendered by cart.js -->
     </div>
-
-    <!-- Cart items list -->
-    <section class="cart-items-section">
-      <h2 class="sr-only">Items in your cart</h2>
-      
-      <!-- cart item card 1 -->
-      <div class="cart-item-card">
-        <img src="assets/images/placeholder.svg" alt="Apple Fuji" class="cart-item-img" loading="lazy">
-        <div class="cart-item-details">
-          <h3 class="cart-item-title">Apple Fuji</h3>
-          <p class="cart-item-weight">1 kg</p>
-          <div class="cart-item-price">₹149</div>
-        </div>
-        <div class="cart-item-actions">
-          <div class="quantity-control">
-            <button class="qty-btn" aria-label="decrease">−</button>
-            <span class="qty-value">1</span>
-            <button class="qty-btn" aria-label="increase">+</button>
-          </div>
-          <button class="btn-remove" aria-label="remove">🗑️</button>
-        </div>
-      </div>
-
-      <!-- cart item 2 -->
-      <div class="cart-item-card">
-        <img src="assets/images/placeholder.svg" alt="Amul Taaza" class="cart-item-img" loading="lazy">
-        <div class="cart-item-details">
-          <h3 class="cart-item-title">Amul Taaza Milk</h3>
-          <p class="cart-item-weight">500 ml</p>
-          <div class="cart-item-price">₹28</div>
-        </div>
-        <div class="cart-item-actions">
-          <div class="quantity-control">
-            <button class="qty-btn" aria-label="decrease">−</button>
-            <span class="qty-value">2</span>
-            <button class="qty-btn" aria-label="increase">+</button>
-          </div>
-          <button class="btn-remove" aria-label="remove">🗑️</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- bill details -->
-    <section class="bill-summary">
-      <h3 class="bill-title">Bill details</h3>
-      <div class="bill-row">
-        <span>Item total</span>
-        <span>₹205</span>
-      </div>
-      <div class="bill-row">
-        <span>Delivery fee</span>
-        <span class="free-delivery">FREE</span>
-      </div>
-      <div class="bill-row bill-total">
-        <span>To pay</span>
-        <span>₹205</span>
-      </div>
-    </section>
+    <div class="cart-summary" id="cartSummary">
+      <!-- subtotal, delivery etc -->
+    </div>
+    <div class="cart-actions">
+      <a href="checkout.html" class="btn-primary checkout-btn">proceed to checkout →</a>
+    </div>
   </main>
 
-  <!-- sticky bottom checkout bar -->
   <div class="sticky-bottom-bar">
-    <div class="bottom-bar-content">
-      <div class="cart-summary">
-        <span class="summary-label">Total</span>
-        <span class="summary-total">₹205</span>
-      </div>
-      <a href="checkout.html" class="btn-primary btn-checkout">
-        Checkout <span class="arrow">→</span>
-      </a>
+    <div class="bottom-bar-inner">
+      <span class="delivery-message">🚀 delivery in 10 mins</span>
+      <span class="min-order">min order ₹99</span>
     </div>
   </div>
-
-  <footer class="app-footer">
-    <p class="footer-text">© 2026 OK Mart</p>
-  </footer>
 
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
