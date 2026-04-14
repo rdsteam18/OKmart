@@ -5,14 +5,13 @@
   'use strict';
   
   // ---------- OFFER RULES ----------
- // Updated offer rules in cart.js
-const OFFER_RULES = {
-  FREE_DELIVERY_THRESHOLD: 199,  // Changed to ₹199
-  DELIVERY_CHARGE: 20,
-  COUPON_CODE: 'SAVE20',
-  COUPON_MIN_ORDER: 250,
-  COUPON_DISCOUNT: 20
-};
+  const OFFER_RULES = {
+    FREE_DELIVERY_THRESHOLD: 199,  // Changed to ₹199
+    DELIVERY_CHARGE: 20,
+    COUPON_CODE: 'SAVE20',
+    COUPON_MIN_ORDER: 250,
+    COUPON_DISCOUNT: 20
+  };
   
   // ---------- STATE ----------
   let cartItems = [];
@@ -47,7 +46,6 @@ const OFFER_RULES = {
     localStorage.setItem('okmart_cart', JSON.stringify(cartItems));
     updateCartBadges();
     
-    // Update sticky bar if exists
     if (window.OKMart && window.OKMart.updateStickyCartBar) {
       window.OKMart.updateStickyCartBar();
     }
@@ -74,31 +72,22 @@ const OFFER_RULES = {
     });
     
     const itemDiscount = mrpTotal - sellingTotal;
-    let subtotal = sellingTotal;
+    const subtotal = sellingTotal;
     
-    // Apply ₹20 off on orders above ₹500
-    let additionalDiscount = 0;
-    if (subtotal >= OFFER_RULES.DISCOUNT_500_THRESHOLD) {
-      additionalDiscount = OFFER_RULES.DISCOUNT_500_AMOUNT;
-    }
-    
-    const subtotalAfterDiscount = subtotal - additionalDiscount;
-    const deliveryCharge = subtotalAfterDiscount >= OFFER_RULES.FREE_DELIVERY_THRESHOLD ? 0 : OFFER_RULES.DELIVERY_CHARGE;
-    const finalTotal = Math.max(0, subtotalAfterDiscount + deliveryCharge);
+    // Delivery charge: FREE on orders above ₹199, else ₹20
+    const deliveryCharge = subtotal >= OFFER_RULES.FREE_DELIVERY_THRESHOLD ? 0 : OFFER_RULES.DELIVERY_CHARGE;
+    const finalTotal = subtotal + deliveryCharge;
     
     return {
       mrpTotal,
       sellingTotal,
       itemDiscount,
-      additionalDiscount,
-      totalDiscount: itemDiscount + additionalDiscount,
+      totalDiscount: itemDiscount,
       subtotal,
-      subtotalAfterDiscount,
       deliveryCharge,
       finalTotal,
       totalItems,
-      hasFreeDelivery: deliveryCharge === 0,
-      hasExtraDiscount: additionalDiscount > 0
+      hasFreeDelivery: deliveryCharge === 0
     };
   }
   
@@ -165,6 +154,7 @@ const OFFER_RULES = {
     }
   }
   
+  // THIS IS WHERE THE FUNCTION GOES - Inside cart.js, before it's called
   function updateFreeDeliveryBanner(totals) {
     if (!freeDeliveryBanner) return;
     
@@ -173,17 +163,11 @@ const OFFER_RULES = {
     let message = '';
     let bgGradient = '';
     
-    if (totals.hasExtraDiscount && totals.hasFreeDelivery) {
-      message = '🎉 FREE delivery + ₹20 off applied! 🎉';
-      bgGradient = 'linear-gradient(135deg, #d4fcdf 0%, #a8e6cf 100%)';
-    } else if (totals.hasExtraDiscount) {
-      message = '🎉 ₹20 off on orders above ₹500 applied!';
-      bgGradient = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
-    } else if (totals.hasFreeDelivery) {
-      message = '🎉 FREE delivery applied!';
+    if (totals.hasFreeDelivery) {
+      message = '🎉 FREE delivery applied! (Orders above ₹199)';
       bgGradient = 'linear-gradient(135deg, #d4fcdf 0%, #e8f5e9 100%)';
     } else {
-      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotalAfterDiscount;
+      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotal;
       message = `Add ₹${remaining} more for FREE delivery!`;
       bgGradient = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
     }
@@ -213,16 +197,18 @@ const OFFER_RULES = {
       summarySection.insertBefore(offerTag, summarySection.firstChild);
     }
     
-    if (totals.hasExtraDiscount) {
-      offerTag.innerHTML = '🏷️ ₹20 off applied!';
+    if (!totals.hasFreeDelivery) {
+      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotal;
+      offerTag.innerHTML = `🚚 Add ₹${remaining} for FREE delivery!`;
       offerTag.style.display = 'block';
-    } else if (totals.subtotal >= 400 && totals.subtotal < 500) {
-      const remaining = 500 - totals.subtotal;
-      offerTag.innerHTML = `🏷️ Add ₹${remaining} more to get ₹20 off!`;
+      offerTag.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+    } else if (totals.subtotal >= OFFER_RULES.COUPON_MIN_ORDER) {
+      offerTag.innerHTML = `🏷️ Use code ${OFFER_RULES.COUPON_CODE} for ₹${OFFER_RULES.COUPON_DISCOUNT} OFF!`;
       offerTag.style.display = 'block';
-    } else if (totals.subtotal < OFFER_RULES.FREE_DELIVERY_THRESHOLD) {
-      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotalAfterDiscount;
-      offerTag.innerHTML = `🚚 Add ₹${remaining} for FREE delivery`;
+      offerTag.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    } else if (totals.subtotal < OFFER_RULES.COUPON_MIN_ORDER && totals.subtotal >= OFFER_RULES.FREE_DELIVERY_THRESHOLD) {
+      const remainingForCoupon = OFFER_RULES.COUPON_MIN_ORDER - totals.subtotal;
+      offerTag.innerHTML = `🏷️ Add ₹${remainingForCoupon} more to get ₹20 OFF!`;
       offerTag.style.display = 'block';
       offerTag.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
     } else {
@@ -297,7 +283,6 @@ const OFFER_RULES = {
       <div class="item-total">₹${itemTotal}</div>
     `;
     
-    // Add event listeners
     const minusBtn = card.querySelector('.minus-btn');
     const plusBtn = card.querySelector('.plus-btn');
     const removeBtn = card.querySelector('.remove-btn');
@@ -364,7 +349,7 @@ const OFFER_RULES = {
     };
     
     sessionStorage.setItem('okmart_order_summary', JSON.stringify(orderSummary));
-    window.location.href = 'checkout.html';
+    window.location.href = '/checkout.html';
   }
   
   // ---------- EVENT LISTENERS ----------
@@ -390,8 +375,11 @@ const OFFER_RULES = {
       render: renderCart,
       clear: clearCart,
       getItems: () => cartItems,
-      getTotals: calculateTotals
+      getTotals: calculateTotals,
+      getOfferRules: () => OFFER_RULES
     };
+    
+    console.log('✅ Cart initialized | Free delivery above ₹199');
   }
   
   init();
