@@ -1,5 +1,5 @@
 // ===== OK MART - HOME.JS =====
-// Dynamic home page with search, categories, quick order, and popular sections
+// Dynamic home page with search, categories, quick order, popular sections, and category navigation grid
 
 (function() {
   'use strict';
@@ -12,7 +12,12 @@
     'all': 'All',
     'dairy': '🥛 Dairy',
     'snacks': '🍿 Snacks',
-    'grocery': '🧺 Grocery'
+    'grocery': '🧺 Grocery',
+    'fruits': '🍎 Fruits',
+    'vegetables': '🥕 Vegetables',
+    'bakery': '🥐 Bakery',
+    'beverages': '🥤 Beverages',
+    'frozen': '❄️ Frozen'
   };
   
   // ---------- STATE ----------
@@ -31,6 +36,85 @@
   const categoryContainer = document.getElementById('categoryFilterContainer');
   const resultsCount = document.getElementById('resultsCount');
   const activeFilterBadge = document.getElementById('activeFilterBadge');
+  
+  // ---------- CATEGORY NAVIGATION CONFIGURATION ----------
+  const categoryConfig = {
+    // Fruits & Vegetables Group
+    fruitsVeg: [
+      { id: 'fresh-fruits', name: 'Fresh Fruits', icon: '🍎', link: 'categories/fruits.html', count: 0 },
+      { id: 'fresh-vegetables', name: 'Fresh Vegetables', icon: '🥕', link: 'categories/vegetables.html', count: 0 },
+      { id: 'exotic-fruits', name: 'Exotic Fruits', icon: '🥝', link: 'categories/fruits.html', count: 0 },
+      { id: 'cut-veggies', name: 'Cut Veggies', icon: '🥗', link: 'categories/vegetables.html', count: 0 }
+    ],
+    
+    // Dairy & Bakery Group
+    dairyBakery: [
+      { id: 'milk', name: 'Milk', icon: '🥛', link: 'categories/dairy.html', count: 0 },
+      { id: 'bread', name: 'Bread', icon: '🍞', link: 'categories/bakery.html', count: 0 },
+      { id: 'eggs', name: 'Eggs', icon: '🥚', link: 'categories/dairy.html', count: 0 },
+      { id: 'butter-cheese', name: 'Butter & Cheese', icon: '🧀', link: 'categories/dairy.html', count: 0 },
+      { id: 'paneer-tofu', name: 'Paneer & Tofu', icon: '🧈', link: 'categories/dairy.html', count: 0 },
+      { id: 'yogurt', name: 'Yogurt', icon: '🍶', link: 'categories/dairy.html', count: 0 },
+      { id: 'bakery', name: 'Bakery', icon: '🥐', link: 'categories/bakery.html', count: 0 },
+      { id: 'cakes', name: 'Cakes', icon: '🎂', link: 'categories/bakery.html', count: 0 }
+    ],
+    
+    // Snacks & Packaged Foods
+    snacksPackaged: [
+      { id: 'chips', name: 'Chips & Crisps', icon: '🍟', link: 'categories/snacks.html', count: 0 },
+      { id: 'biscuits', name: 'Biscuits', icon: '🍪', link: 'categories/snacks.html', count: 0 },
+      { id: 'namkeen', name: 'Namkeen', icon: '🥨', link: 'categories/snacks.html', count: 0 },
+      { id: 'chocolates', name: 'Chocolates', icon: '🍫', link: 'categories/snacks.html', count: 0 },
+      { id: 'instant-noodles', name: 'Noodles', icon: '🍜', link: 'categories/snacks.html', count: 0 },
+      { id: 'ready-to-eat', name: 'Ready to Eat', icon: '🍲', link: 'categories/snacks.html', count: 0 },
+      { id: 'frozen-food', name: 'Frozen Food', icon: '❄️', link: 'categories/frozen.html', count: 0 },
+      { id: 'ice-cream', name: 'Ice Cream', icon: '🍦', link: 'categories/frozen.html', count: 0 }
+    ],
+    
+    // Grocery Staples
+    groceryStaples: [
+      { id: 'atta-flours', name: 'Atta & Flours', icon: '🌾', link: 'categories/grocery.html', count: 0 },
+      { id: 'rice', name: 'Rice', icon: '🍚', link: 'categories/grocery.html', count: 0 },
+      { id: 'dals-pulses', name: 'Dals & Pulses', icon: '🫘', link: 'categories/grocery.html', count: 0 },
+      { id: 'oils-ghee', name: 'Oils & Ghee', icon: '🫒', link: 'categories/grocery.html', count: 0 },
+      { id: 'spices', name: 'Spices', icon: '🌶️', link: 'categories/grocery.html', count: 0 },
+      { id: 'salt-sugar', name: 'Salt & Sugar', icon: '🧂', link: 'categories/grocery.html', count: 0 },
+      { id: 'dry-fruits', name: 'Dry Fruits', icon: '🥜', link: 'categories/dryfruits.html', count: 0 },
+      { id: 'tea-coffee', name: 'Tea & Coffee', icon: '☕', link: 'categories/beverages.html', count: 0 }
+    ]
+  };
+  
+  // Keyword mapping for counting products
+  const keywordMap = {
+    'fresh-fruits': ['fruit', 'apple', 'banana', 'mango', 'grape', 'orange'],
+    'fresh-vegetables': ['vegetable', 'potato', 'tomato', 'onion', 'carrot'],
+    'exotic-fruits': ['kiwi', 'avocado', 'dragon', 'berry'],
+    'cut-veggies': ['cut', 'chopped', 'peeled'],
+    'milk': ['milk', 'dairy'],
+    'bread': ['bread', 'bun', 'pav'],
+    'eggs': ['egg'],
+    'butter-cheese': ['butter', 'cheese'],
+    'paneer-tofu': ['paneer', 'tofu'],
+    'yogurt': ['yogurt', 'curd', 'dahi'],
+    'bakery': ['cake', 'pastry', 'cookie', 'biscuit'],
+    'cakes': ['cake', 'pastry'],
+    'chips': ['chips', 'crisps', 'lays', 'kurkure'],
+    'biscuits': ['biscuit', 'cookie', 'parle', 'britannia'],
+    'namkeen': ['namkeen', 'bhujia', 'sev'],
+    'chocolates': ['chocolate', 'candy', 'sweet'],
+    'instant-noodles': ['noodle', 'maggie', 'pasta'],
+    'ready-to-eat': ['ready', 'instant', 'meal'],
+    'frozen-food': ['frozen', 'freeze'],
+    'ice-cream': ['ice cream', 'icecream', 'kulfi'],
+    'atta-flours': ['atta', 'flour', 'maida', 'wheat'],
+    'rice': ['rice', 'basmati'],
+    'dals-pulses': ['dal', 'pulse', 'lentil'],
+    'oils-ghee': ['oil', 'ghee', 'sunflower'],
+    'spices': ['spice', 'masala', 'turmeric', 'chilli'],
+    'salt-sugar': ['salt', 'sugar'],
+    'dry-fruits': ['dry fruit', 'almond', 'cashew', 'raisin'],
+    'tea-coffee': ['tea', 'coffee', 'chai']
+  };
   
   // ---------- HELPER FUNCTIONS ----------
   
@@ -170,7 +254,91 @@
       btn.classList.toggle('active', btn.dataset.category === 'all');
     });
     
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    if (suggestionsContainer) {
+      suggestionsContainer.style.display = 'none';
+    }
+    
     renderProducts();
+  }
+  
+  // ---------- CATEGORY NAVIGATION FUNCTIONS ----------
+  
+  function updateCategoryCounts() {
+    if (!allProducts || allProducts.length === 0) return;
+    
+    const countProducts = (keywords) => {
+      return allProducts.filter(p => {
+        const nameLower = p.name.toLowerCase();
+        const catLower = p.category.toLowerCase();
+        return keywords.some(kw => nameLower.includes(kw) || catLower.includes(kw));
+      }).length;
+    };
+    
+    // Update all category groups
+    Object.keys(categoryConfig).forEach(groupKey => {
+      categoryConfig[groupKey].forEach(cat => {
+        const keywords = keywordMap[cat.id] || [cat.name.toLowerCase()];
+        cat.count = countProducts(keywords);
+      });
+    });
+  }
+  
+  function renderCategoryCard(category) {
+    const card = document.createElement('a');
+    card.href = category.link;
+    card.className = 'category-card';
+    card.setAttribute('data-category-id', category.id);
+    
+    card.innerHTML = `
+      <div class="category-icon">
+        <span>${category.icon}</span>
+      </div>
+      <div class="category-name">${category.name}</div>
+      <div class="category-count">${category.count > 0 ? category.count + ' items' : 'Coming soon'}</div>
+    `;
+    
+    return card;
+  }
+  
+  function renderCategoryNavigation() {
+    updateCategoryCounts();
+    
+    // Render Fruits & Vegetables
+    const fruitsVegGrid = document.getElementById('fruitsVegGrid');
+    if (fruitsVegGrid) {
+      fruitsVegGrid.innerHTML = '';
+      categoryConfig.fruitsVeg.forEach(cat => {
+        fruitsVegGrid.appendChild(renderCategoryCard(cat));
+      });
+    }
+    
+    // Render Dairy & Bakery
+    const dairyBakeryGrid = document.getElementById('dairyBakeryGrid');
+    if (dairyBakeryGrid) {
+      dairyBakeryGrid.innerHTML = '';
+      categoryConfig.dairyBakery.slice(0, 8).forEach(cat => {
+        dairyBakeryGrid.appendChild(renderCategoryCard(cat));
+      });
+    }
+    
+    // Render Snacks & Packaged
+    const snacksPackagedGrid = document.getElementById('snacksPackagedGrid');
+    if (snacksPackagedGrid) {
+      snacksPackagedGrid.innerHTML = '';
+      categoryConfig.snacksPackaged.slice(0, 8).forEach(cat => {
+        snacksPackagedGrid.appendChild(renderCategoryCard(cat));
+      });
+    }
+    
+    // Render Grocery Staples
+    const groceryStaplesGrid = document.getElementById('groceryStaplesGrid');
+    if (groceryStaplesGrid) {
+      groceryStaplesGrid.innerHTML = '';
+      categoryConfig.groceryStaples.slice(0, 8).forEach(cat => {
+        groceryStaplesGrid.appendChild(renderCategoryCard(cat));
+      });
+    }
   }
   
   // ---------- QUICK ORDER SECTION (DAILY ESSENTIALS) ----------
@@ -179,7 +347,6 @@
     const essentials = [];
     const foundNames = new Set();
     
-    // First try to match by keywords
     allProducts.forEach(product => {
       const nameLower = product.name.toLowerCase();
       if (DAILY_ESSENTIALS_KEYWORDS.some(keyword => nameLower.includes(keyword))) {
@@ -190,7 +357,6 @@
       }
     });
     
-    // If less than 3 items, add popular items
     if (essentials.length < 3) {
       allProducts
         .filter(p => p.popular && !foundNames.has(p.name))
@@ -266,7 +432,6 @@
         <div class="popular-grid" id="popularGrid"></div>
       `;
       
-      // Insert after quick order section
       if (quickSection) {
         quickSection.insertAdjacentElement('afterend', popularSection);
       } else {
@@ -399,6 +564,7 @@
         item.addEventListener('click', () => {
           searchInput.value = suggestion.name;
           searchQuery = suggestion.name;
+          clearSearchBtn?.classList.add('visible');
           renderProducts();
           container.style.display = 'none';
         });
@@ -414,6 +580,7 @@
           activeCategory = suggestion.name;
           searchQuery = '';
           searchInput.value = '';
+          clearSearchBtn?.classList.remove('visible');
           
           document.querySelectorAll('.category-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.category === suggestion.name);
@@ -466,6 +633,13 @@
         renderSuggestions(suggestions);
       }
     });
+    
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const container = document.getElementById('searchSuggestions');
+        if (container) container.style.display = 'none';
+      }
+    });
   }
   
   if (clearSearchBtn) {
@@ -476,20 +650,163 @@
         searchInput.focus();
       }
       clearSearchBtn.classList.remove('visible');
+      
+      const container = document.getElementById('searchSuggestions');
+      if (container) container.style.display = 'none';
+      
       renderProducts();
     });
   }
   
+  // Close suggestions when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrapper')) {
+      const container = document.getElementById('searchSuggestions');
+      if (container) container.style.display = 'none';
+    }
+  });
+  
   // ---------- ADD STYLES ----------
   
   function addHomeStyles() {
+    // Check if styles already exist
+    if (document.getElementById('homeDynamicStyles')) return;
+    
     const style = document.createElement('style');
+    style.id = 'homeDynamicStyles';
     style.textContent = `
+      /* Category Navigation Grid */
+      .category-nav-section {
+        padding: 8px 0;
+        background: #f7fdf9;
+      }
+      
+      .category-group {
+        background: white;
+        margin-bottom: 12px;
+        padding: 16px 0 8px;
+        border-radius: 20px 20px 0 0;
+      }
+      
+      .group-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px 12px;
+      }
+      
+      .group-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e2a2e;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      
+      .view-all-link {
+        color: #2ecc71;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 6px 12px;
+        background: rgba(46, 204, 113, 0.1);
+        border-radius: 40px;
+        transition: all 0.2s;
+      }
+      
+      .view-all-link:hover {
+        background: rgba(46, 204, 113, 0.2);
+      }
+      
+      .view-all-link:active {
+        transform: scale(0.95);
+      }
+      
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        padding: 0 12px;
+      }
+      
+      .category-card {
+        background: #f7fdf9;
+        border-radius: 12px;
+        padding: 12px 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #e2e8f0;
+        text-decoration: none;
+        display: block;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      .category-card:hover {
+        background: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+        border-color: #2ecc71;
+      }
+      
+      .category-card:active {
+        transform: scale(0.95);
+        background: #e8f5e9;
+      }
+      
+      .category-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 8px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+      }
+      
+      .category-card:hover .category-icon {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        background: #2ecc71;
+      }
+      
+      .category-card:hover .category-icon span {
+        filter: brightness(0) invert(1);
+      }
+      
+      .category-icon span {
+        font-size: 28px;
+        transition: filter 0.2s;
+      }
+      
+      .category-name {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #1e2a2e;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 2px;
+      }
+      
+      .category-count {
+        font-size: 0.65rem;
+        color: #64748b;
+        font-weight: 400;
+      }
+      
+      /* Quick Order Section */
       .quick-order-section {
         padding: 8px 16px 16px;
         background: white;
-        margin: 0 0 8px;
-        border-radius: 0 0 20px 20px;
+        margin: 8px 0;
+        border-radius: 20px 20px 0 0;
       }
       
       .quick-order-section .section-header {
@@ -564,8 +881,19 @@
         width: 100%;
       }
       
+      /* Popular Section */
       .popular-section {
         padding: 16px 0;
+        background: white;
+        margin: 8px 0;
+        border-radius: 20px 20px 0 0;
+      }
+      
+      .popular-section .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px 12px;
       }
       
       .popular-badge {
@@ -597,7 +925,70 @@
         z-index: 2;
       }
       
-      @media (min-width: 640px) {
+      /* Hide horizontal category filter */
+      .category-filter-section {
+        display: none;
+      }
+      
+      /* Floating Call Button */
+      .floating-call-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        background: #25D366;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        z-index: 150;
+        transition: all 0.3s;
+        text-decoration: none;
+        animation: pulse-call 2s infinite;
+      }
+      
+      .floating-call-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
+      }
+      
+      .floating-call-btn:active {
+        transform: scale(0.95);
+      }
+      
+      .call-icon {
+        font-size: 28px;
+      }
+      
+      @keyframes pulse-call {
+        0%, 100% {
+          box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+        }
+        50% {
+          box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+        }
+      }
+      
+      /* Responsive */
+      @media (min-width: 600px) {
+        .category-grid {
+          grid-template-columns: repeat(5, 1fr);
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        
+        .category-icon {
+          width: 64px;
+          height: 64px;
+          font-size: 32px;
+        }
+        
+        .category-name {
+          font-size: 0.8rem;
+        }
+        
         .quick-order-grid {
           max-width: 600px;
           margin: 0 auto;
@@ -610,267 +1001,32 @@
         }
       }
       
+      @media (min-width: 900px) {
+        .category-grid {
+          grid-template-columns: repeat(6, 1fr);
+          max-width: 1000px;
+        }
+        
+        .category-group {
+          max-width: 1200px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+      
       @media (min-width: 1024px) {
         .popular-grid {
           grid-template-columns: repeat(4, 1fr);
         }
       }
+      
+      @media (max-width: 640px) {
+        .sticky-cart-bar.visible ~ .floating-call-btn {
+          bottom: 100px;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
-
-
-
-  // ===== CATEGORY NAVIGATION SYSTEM =====
-
-// Category configuration with icons and links
-const categoryConfig = {
-  // Fruits & Vegetables Group
-  fruitsVeg: [
-    { id: 'fresh-fruits', name: 'Fresh Fruits', icon: '🍎', link: 'categories/fruits.html', count: 0 },
-    { id: 'fresh-vegetables', name: 'Fresh Vegetables', icon: '🥕', link: 'categories/vegetables.html', count: 0 },
-    { id: 'exotic-fruits', name: 'Exotic Fruits', icon: '🥝', link: 'categories/fruits.html', count: 0 },
-    { id: 'cut-veggies', name: 'Cut Veggies', icon: '🥗', link: 'categories/vegetables.html', count: 0 }
-  ],
   
-  // Dairy & Bakery Group
-  dairyBakery: [
-    { id: 'milk', name: 'Milk', icon: '🥛', link: 'categories/dairy.html', count: 0 },
-    { id: 'bread', name: 'Bread', icon: '🍞', link: 'categories/bakery.html', count: 0 },
-    { id: 'eggs', name: 'Eggs', icon: '🥚', link: 'categories/dairy.html', count: 0 },
-    { id: 'butter-cheese', name: 'Butter & Cheese', icon: '🧀', link: 'categories/dairy.html', count: 0 },
-    { id: 'paneer-tofu', name: 'Paneer & Tofu', icon: '🧈', link: 'categories/dairy.html', count: 0 },
-    { id: 'yogurt', name: 'Yogurt', icon: '🍶', link: 'categories/dairy.html', count: 0 },
-    { id: 'bakery', name: 'Bakery', icon: '🥐', link: 'categories/bakery.html', count: 0 },
-    { id: 'cakes', name: 'Cakes', icon: '🎂', link: 'categories/bakery.html', count: 0 }
-  ],
-  
-  // Snacks & Packaged Foods
-  snacksPackaged: [
-    { id: 'chips', name: 'Chips & Crisps', icon: '🍟', link: 'categories/snacks.html', count: 0 },
-    { id: 'biscuits', name: 'Biscuits', icon: '🍪', link: 'categories/snacks.html', count: 0 },
-    { id: 'namkeen', name: 'Namkeen', icon: '🥨', link: 'categories/snacks.html', count: 0 },
-    { id: 'chocolates', name: 'Chocolates', icon: '🍫', link: 'categories/snacks.html', count: 0 },
-    { id: 'instant-noodles', name: 'Noodles', icon: '🍜', link: 'categories/snacks.html', count: 0 },
-    { id: 'ready-to-eat', name: 'Ready to Eat', icon: '🍲', link: 'categories/snacks.html', count: 0 },
-    { id: 'frozen-food', name: 'Frozen Food', icon: '❄️', link: 'categories/frozen.html', count: 0 },
-    { id: 'ice-cream', name: 'Ice Cream', icon: '🍦', link: 'categories/frozen.html', count: 0 }
-  ],
-  
-  // Grocery Staples
-  groceryStaples: [
-    { id: 'atta-flours', name: 'Atta & Flours', icon: '🌾', link: 'categories/grocery.html', count: 0 },
-    { id: 'rice', name: 'Rice', icon: '🍚', link: 'categories/grocery.html', count: 0 },
-    { id: 'dals-pulses', name: 'Dals & Pulses', icon: '🫘', link: 'categories/grocery.html', count: 0 },
-    { id: 'oils-ghee', name: 'Oils & Ghee', icon: '🫒', link: 'categories/grocery.html', count: 0 },
-    { id: 'spices', name: 'Spices', icon: '🌶️', link: 'categories/grocery.html', count: 0 },
-    { id: 'salt-sugar', name: 'Salt & Sugar', icon: '🧂', link: 'categories/grocery.html', count: 0 },
-    { id: 'dry-fruits', name: 'Dry Fruits', icon: '🥜', link: 'categories/dryfruits.html', count: 0 },
-    { id: 'tea-coffee', name: 'Tea & Coffee', icon: '☕', link: 'categories/beverages.html', count: 0 }
-  ]
-};
-
-// Update category counts based on available products
-function updateCategoryCounts() {
-  if (!allProducts || allProducts.length === 0) return;
-  
-  // Helper to count products matching keywords
-  const countProducts = (keywords, categoryName) => {
-    return allProducts.filter(p => {
-      const nameLower = p.name.toLowerCase();
-      const catLower = p.category.toLowerCase();
-      return keywords.some(kw => nameLower.includes(kw) || catLower.includes(kw));
-    }).length;
-  };
-  
-  // Update counts for each category
-  const keywordMap = {
-    'fresh-fruits': ['fruit', 'apple', 'banana', 'mango', 'grape', 'orange'],
-    'fresh-vegetables': ['vegetable', 'potato', 'tomato', 'onion', 'carrot'],
-    'exotic-fruits': ['kiwi', 'avocado', 'dragon', 'berry'],
-    'cut-veggies': ['cut', 'chopped', 'peeled'],
-    'milk': ['milk', 'dairy'],
-    'bread': ['bread', 'bun', 'pav'],
-    'eggs': ['egg'],
-    'butter-cheese': ['butter', 'cheese'],
-    'paneer-tofu': ['paneer', 'tofu'],
-    'yogurt': ['yogurt', 'curd', 'dahi'],
-    'bakery': ['cake', 'pastry', 'cookie', 'biscuit'],
-    'cakes': ['cake', 'pastry'],
-    'chips': ['chips', 'crisps', 'lays', 'kurkure'],
-    'biscuits': ['biscuit', 'cookie', 'parle', 'britannia'],
-    'namkeen': ['namkeen', 'bhujia', 'sev'],
-    'chocolates': ['chocolate', 'candy', 'sweet'],
-    'instant-noodles': ['noodle', 'maggie', 'pasta'],
-    'ready-to-eat': ['ready', 'instant', 'meal'],
-    'frozen-food': ['frozen', 'freeze'],
-    'ice-cream': ['ice cream', 'icecream', 'kulfi'],
-    'atta-flours': ['atta', 'flour', 'maida', 'wheat'],
-    'rice': ['rice', 'basmati'],
-    'dals-pulses': ['dal', 'pulse', 'lentil'],
-    'oils-ghee': ['oil', 'ghee', 'sunflower'],
-    'spices': ['spice', 'masala', 'turmeric', 'chilli'],
-    'salt-sugar': ['salt', 'sugar'],
-    'dry-fruits': ['dry fruit', 'almond', 'cashew', 'raisin'],
-    'tea-coffee': ['tea', 'coffee', 'chai']
-  };
-  
-  // Update all category groups
-  Object.keys(categoryConfig).forEach(groupKey => {
-    categoryConfig[groupKey].forEach(cat => {
-      const keywords = keywordMap[cat.id] || [cat.name.toLowerCase()];
-      cat.count = countProducts(keywords, cat.name);
-    });
-  });
-}
-
-// Render a single category card
-function renderCategoryCard(category) {
-  const card = document.createElement('a');
-  card.href = category.link;
-  card.className = 'category-card';
-  card.setAttribute('data-category-id', category.id);
-  
-  card.innerHTML = `
-    <div class="category-icon">
-      <span>${category.icon}</span>
-    </div>
-    <div class="category-name">${category.name}</div>
-    <div class="category-count">${category.count > 0 ? category.count + ' items' : 'Coming soon'}</div>
-  `;
-  
-  return card;
-}
-
-// Render all category groups
-function renderCategoryNavigation() {
-  // Update counts first
-  updateCategoryCounts();
-  
-  // Render Fruits & Vegetables
-  const fruitsVegGrid = document.getElementById('fruitsVegGrid');
-  if (fruitsVegGrid) {
-    fruitsVegGrid.innerHTML = '';
-    categoryConfig.fruitsVeg.forEach(cat => {
-      fruitsVegGrid.appendChild(renderCategoryCard(cat));
-    });
-  }
-  
-  // Render Dairy & Bakery
-  const dairyBakeryGrid = document.getElementById('dairyBakeryGrid');
-  if (dairyBakeryGrid) {
-    dairyBakeryGrid.innerHTML = '';
-    categoryConfig.dairyBakery.forEach(cat => {
-      dairyBakeryGrid.appendChild(renderCategoryCard(cat));
-    });
-  }
-  
-  // Render Snacks & Packaged
-  const snacksPackagedGrid = document.getElementById('snacksPackagedGrid');
-  if (snacksPackagedGrid) {
-    snacksPackagedGrid.innerHTML = '';
-    categoryConfig.snacksPackaged.forEach(cat => {
-      snacksPackagedGrid.appendChild(renderCategoryCard(cat));
-    });
-  }
-  
-  // Render Grocery Staples
-  const groceryStaplesGrid = document.getElementById('groceryStaplesGrid');
-  if (groceryStaplesGrid) {
-    groceryStaplesGrid.innerHTML = '';
-    categoryConfig.groceryStaples.forEach(cat => {
-      groceryStaplesGrid.appendChild(renderCategoryCard(cat));
-    });
-  }
-}
-
-// Filter products by category from navigation
-function filterByCategory(categoryId) {
-  // Map category ID to actual category filter
-  const categoryMapping = {
-    'fresh-fruits': 'fruits',
-    'fresh-vegetables': 'vegetables',
-    'milk': 'dairy',
-    'bread': 'bakery',
-    'eggs': 'dairy',
-    'butter-cheese': 'dairy',
-    'chips': 'snacks',
-    'biscuits': 'snacks',
-    'namkeen': 'snacks',
-    'atta-flours': 'grocery',
-    'rice': 'grocery',
-    'dals-pulses': 'grocery',
-    'oils-ghee': 'grocery',
-    'spices': 'grocery'
-  };
-  
-  const mappedCategory = categoryMapping[categoryId];
-  if (mappedCategory) {
-    activeCategory = mappedCategory;
-    renderProducts();
-    
-    // Scroll to products
-    document.querySelector('.product-grid')?.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
-    });
-  }
-}
-  // ---------- INITIALIZATION ----------
-  
-  async function init() {
-    try {
-      if (loadingState) {
-        loadingState.style.display = 'flex';
-      }
-      
-      // Fetch products
-      allProducts = await OKMart.getProducts();
-      
-      if (!allProducts.length) {
-        throw new Error('No products loaded');
-      }
-      
-      // Add styles
-      addHomeStyles();
-      
-      // Render all sections
-      renderCategoryFilters();
-      renderQuickOrder();
-      renderPopularSection();
-      renderProducts();
-      
-      // Preload images for better performance
-      allProducts.slice(0, 12).forEach(p => {
-        const img = new Image();
-        img.src = p.image;
-      });
-      
-    } catch (error) {
-      console.error('Failed to load products:', error);
-      if (productGrid) {
-        productGrid.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">⚠️</div>
-            <h3>Failed to load products</h3>
-            <p>Please check your connection and refresh</p>
-            <button class="reset-search-btn" onclick="location.reload()">Retry</button>
-          </div>
-        `;
-      }
-      if (loadingState) {
-        loadingState.style.display = 'none';
-      }
-    }
-  }
-  
-  // Start the app
-  init();
-  
-  // Expose for debugging
-  window.OKMartHome = {
-    resetFilters: resetAllFilters,
-    getState: () => ({ activeCategory, searchQuery, productCount: filteredProducts.length })
-  };
-  
-})();
+  // ---------- INITIAL
