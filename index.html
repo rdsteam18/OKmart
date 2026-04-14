@@ -2,193 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>OK Mart · fresh groceries</title>
-  <!-- common + home styles (modular, mobile-first) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>OK Mart · fresh grocery</title>
+  <!-- CSS (modular, no inline styles) -->
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/home.css">
-  <!-- Preconnect for faster image loading (optional) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- ===== HEADER (common component) ===== -->
-  <header class="app-header">
+  <!-- HEADER (reusable component – will be styled via common.css) -->
+  <header class="app-header" id="mainHeader">
     <div class="header-container">
-      <div class="logo-area">
-        <span class="logo-icon">🛒</span>
-        <span class="logo-text">OK MART</span>
-      </div>
-      <a href="cart.html" class="cart-link" aria-label="View cart">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge js-cart-count-indicator" aria-hidden="true">0</span>
+      <a href="index.html" class="logo-link">
+        <span class="logo-text">🛒 OK Mart</span>
       </a>
-    </div>
-    <!-- Search bar (global component) -->
-    <div class="search-wrapper">
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="search" placeholder="Search for atta, milk, snacks..." class="search-input" aria-label="Search groceries">
-      </div>
+      <a href="cart.html" class="cart-icon-link" aria-label="cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
     </div>
   </header>
 
-  <!-- MAIN CONTENT: HOME PAGE (category & product grid) -->
-  <main class="page-content">
-    <!-- Category chips (horizontal scroll, thumb-friendly) -->
-    <section class="category-strip">
-      <h2 class="sr-only">Shop by category</h2>
-      <div class="category-scroll">
-        <button class="category-chip active">All</button>
-        <button class="category-chip">Fruits & Veg</button>
-        <button class="category-chip">Dairy & Bread</button>
-        <button class="category-chip">Atta & Rice</button>
-        <button class="category-chip">Snacks</button>
-        <button class="category-chip">Beverages</button>
+  <!-- MAIN CONTENT (home page specific) -->
+  <main class="home-main">
+    <!-- welcome / category quick links (static structure) -->
+    <section class="category-pills-section">
+      <h2 class="section-title">shop by category</h2>
+      <div class="category-pills" id="categoryPillsContainer">
+        <!-- will be populated from products.json via home.js -->
       </div>
     </section>
 
-    <!-- Offer banner (placeholder, scalable) -->
-    <div class="offer-banner">
-      <div class="banner-card">
-        <span>✨ 20% off on first order · code OK20</span>
-      </div>
-    </div>
-
-    <!-- Product grid (reusable product card pattern) -->
+    <!-- product grid (2-col mobile, 3-4 desktop) -->
     <section class="product-grid-section">
       <div class="section-header">
-        <h2 class="section-title">Fresh picks for you</h2>
-        <a href="#" class="see-all-link">See all</a>
+        <h2 class="section-title">✨ trending groceries</h2>
       </div>
-      
-      <div class="product-grid">
-        <!-- product card 1 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Fresh Apple" loading="lazy" width="120" height="120">
-            <span class="product-badge">-15%</span>
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Apple Fuji</h3>
-            <p class="product-weight">1 kg</p>
-            <div class="product-price-row">
-              <span class="current-price">₹149</span>
-              <span class="mrp-price">₹175</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
-        <!-- product card 2 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Banana" loading="lazy" width="120" height="120">
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Banana Robusta</h3>
-            <p class="product-weight">6 pcs (approx 1kg)</p>
-            <div class="product-price-row">
-              <span class="current-price">₹39</span>
-              <span class="mrp-price">₹48</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
-        <!-- product card 3 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Amul Milk" loading="lazy" width="120" height="120">
-            <span class="product-badge">bestseller</span>
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Amul Taaza</h3>
-            <p class="product-weight">500 ml</p>
-            <div class="product-price-row">
-              <span class="current-price">₹28</span>
-              <span class="mrp-price">₹30</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
-        <!-- product card 4 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Whole Wheat Atta" loading="lazy" width="120" height="120">
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Aashirvaad Atta</h3>
-            <p class="product-weight">5 kg</p>
-            <div class="product-price-row">
-              <span class="current-price">₹220</span>
-              <span class="mrp-price">₹270</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
-        <!-- product card 5 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Potato" loading="lazy" width="120" height="120">
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Potato (Jyoti)</h3>
-            <p class="product-weight">1 kg</p>
-            <div class="product-price-row">
-              <span class="current-price">₹32</span>
-              <span class="mrp-price">₹40</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
-        <!-- product card 6 -->
-        <article class="product-card">
-          <div class="product-media">
-            <img src="assets/images/placeholder.svg" alt="Tomato" loading="lazy" width="120" height="120">
-          </div>
-          <div class="product-info">
-            <h3 class="product-title">Tomato Hybrid</h3>
-            <p class="product-weight">500 g</p>
-            <div class="product-price-row">
-              <span class="current-price">₹25</span>
-              <span class="mrp-price">₹32</span>
-            </div>
-            <button class="btn-add-to-cart">Add</button>
-          </div>
-        </article>
+      <div class="product-grid" id="productGrid">
+        <!-- all product cards injected from home.js (using data/products.json) -->
       </div>
     </section>
   </main>
 
-  <!-- STICKY BOTTOM BAR (common cart/checkout trigger) -->
+  <!-- STICKY BOTTOM BAR (common component) -->
   <div class="sticky-bottom-bar">
-    <div class="bottom-bar-content">
-      <div class="cart-summary">
-        <span class="summary-label">Your cart</span>
-        <span class="summary-items js-cart-item-count">0 items</span>
-      </div>
-      <a href="cart.html" class="btn-view-cart">
-        View cart <span class="arrow">→</span>
-      </a>
+    <div class="bottom-bar-inner">
+      <span class="delivery-message">🚀 delivery in 10 mins</span>
+      <span class="min-order">min order ₹99</span>
     </div>
   </div>
 
-  <!-- footer (minimal) -->
-  <footer class="app-footer">
-    <p class="footer-text">© 2026 OK Mart · fresh, fast & local</p>
-  </footer>
-
-  <!-- scripts (modular) -->
+  <!-- SCRIPTS (common + page-specific) -->
   <script src="js/common.js"></script>
   <script src="js/home.js"></script>
-  <!-- tiny placeholder to sync cart badge (dummy data) -->
-  <script>
-    // Lightweight demo sync (no business logic, just UI consistency)
-    (function(){
-      if (typeof window.updateAllCartIndicators === 'function') {
-        window.updateAllCartIndicators();
-      }
-    })();
-  </script>
 </body>
 </html>
