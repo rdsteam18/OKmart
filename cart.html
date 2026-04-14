@@ -15,23 +15,58 @@
     <div>🛒 Your Cart</div>
 </header>
 
-<!-- CART ITEMS -->
-<div id="cartItems" style="padding:10px;"></div>
-
-<!-- TOTAL -->
-<div style="padding:10px;">
-    <h3 id="total"></h3>
-    <button onclick="goCheckout()">Proceed to Checkout</button>
+<!-- TOP SUMMARY -->
+<div class="cart-top">
+    <h3>Quick Basket (<span id="itemCount">0</span>)</h3>
+    <h3 id="topTotal">₹0</h3>
 </div>
 
-<!-- JS -->
+<!-- FREE DELIVERY -->
+<div class="free-box">
+    Yay! You get Free delivery with this Basket
+</div>
+
+<!-- CART ITEMS -->
+<div id="cartItems" class="cart-container"></div>
+
+<!-- PAYMENT SUMMARY -->
+<div class="summary">
+    <h3>Payment Details</h3>
+
+    <div class="row">
+        <span>MRP Total</span>
+        <span id="mrp"></span>
+    </div>
+
+    <div class="row">
+        <span>Discount</span>
+        <span id="discount" class="green"></span>
+    </div>
+
+    <div class="row">
+        <span>Delivery</span>
+        <span id="delivery"></span>
+    </div>
+
+    <div class="row total">
+        <span>Total</span>
+        <span id="grandTotal"></span>
+    </div>
+</div>
+
+<!-- STICKY BOTTOM BAR -->
+<div class="checkout-bar">
+    <span id="bottomTotal">₹0</span>
+    <button onclick="goCheckout()">Place Order</button>
+</div>
+
 <script src="js/main.js"></script>
 <script src="js/cart.js"></script>
 
 <script>
 
 /* =========================
-   LOAD CART
+   LOAD CART UI
 ========================= */
 function loadCartUI() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -42,7 +77,7 @@ function loadCartUI() {
     let total = 0;
 
     if (cart.length === 0) {
-        container.innerHTML = "<p>Cart is empty ❌</p>";
+        container.innerHTML = "<p>Cart empty ❌</p>";
         return;
     }
 
@@ -51,44 +86,36 @@ function loadCartUI() {
         total += item.price * item.qty;
 
         container.innerHTML += `
-        <div class="product">
-            <h4>${item.name}</h4>
-            <p>₹${item.price} x ${item.qty}</p>
+        <div class="cart-card">
+            
+            <img src="https://via.placeholder.com/80">
 
-            <button onclick="changeQty(${i},1)">+</button>
-            <button onclick="changeQty(${i},-1)">-</button>
+            <div class="cart-info">
+                <h4>${item.name}</h4>
+                <p>₹${item.price}</p>
+
+                <div class="qty-box">
+                    <button onclick="changeQty(${i},-1)">-</button>
+                    <span>${item.qty}</span>
+                    <button onclick="changeQty(${i},1)">+</button>
+                </div>
+            </div>
+
         </div>
         `;
     });
 
-    // Delivery logic
+    // calculations
     let delivery = total >= 300 ? 0 : 20;
-    let grandTotal = total + delivery;
+    let discount = total >= 300 ? 20 : 0;
 
-    document.getElementById("total").innerText =
-        "Total: ₹" + grandTotal + " (Delivery ₹" + delivery + ")";
-}
-
-/* =========================
-   GO TO CHECKOUT
-========================= */
-function goCheckout() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    if (cart.length === 0) {
-        alert("Cart empty ❌");
-        return;
-    }
-
-    let total = 0;
-    cart.forEach(i => total += i.price * i.qty);
-
-    if (total < 100) {
-        alert("Minimum order ₹100 required ❌");
-        return;
-    }
-
-    window.location.href = "checkout.html";
+    document.getElementById("itemCount").innerText = cart.length;
+    document.getElementById("topTotal").innerText = "₹" + total;
+    document.getElementById("mrp").innerText = "₹" + (total + discount);
+    document.getElementById("discount").innerText = "-₹" + discount;
+    document.getElementById("delivery").innerText = delivery === 0 ? "FREE" : "₹20";
+    document.getElementById("grandTotal").innerText = "₹" + (total + delivery);
+    document.getElementById("bottomTotal").innerText = "₹" + (total + delivery);
 }
 
 /* =========================
