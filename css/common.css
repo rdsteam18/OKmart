@@ -484,3 +484,53 @@ a:focus:not(:focus-visible) {
 .sticky-cart-bar.visible ~ .sticky-bottom-bar {
   display: none;
 }
+
+
+
+/* ===== FLOATING CALL BUTTON ===== */
+.floating-call-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+  z-index: 150;
+  transition: all 0.3s;
+  text-decoration: none;
+  animation: pulse-call 2s infinite;
+}
+
+.floating-call-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
+}
+
+.floating-call-btn:active {
+  transform: scale(0.95);
+}
+
+.call-icon {
+  font-size: 28px;
+}
+
+@keyframes pulse-call {
+  0%, 100% {
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+  }
+}
+
+/* Hide when sticky cart is visible on mobile */
+@media (max-width: 640px) {
+  .sticky-cart-bar.visible ~ .floating-call-btn {
+    bottom: 100px;
+  }
+}
