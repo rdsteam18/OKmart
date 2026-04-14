@@ -1,5 +1,6 @@
 // ===== OK MART - CATEGORY.JS =====
 // Dynamic category page with filtering and sorting
+// UPDATED: Exact category matching with debug logging
 
 (function() {
   'use strict';
@@ -16,7 +17,7 @@
   let allCategoryProducts = [];
   let filteredProducts = [];
   let searchQuery = '';
-  let currentSort = 'popular'; // popular, price-low, price-high, discount
+  let currentSort = 'popular';
   let isSortDropdownOpen = false;
   
   // DOM Elements
@@ -33,7 +34,6 @@
   
   // ---------- HELPER FUNCTIONS ----------
   
-  // Update category header
   function updateCategoryHeader() {
     if (categoryTitle) {
       categoryTitle.textContent = config.displayName;
@@ -44,23 +44,19 @@
     if (categoryIcon) {
       categoryIcon.textContent = config.icon;
     }
-    // Update page title
     document.title = `${config.displayName} · OK Mart`;
   }
   
-  // Filter products by search
   function filterBySearch(products) {
     if (!searchQuery.trim()) return products;
     
     const query = searchQuery.toLowerCase().trim();
     return products.filter(p => 
       p.name.toLowerCase().includes(query) ||
-      p.unit?.toLowerCase().includes(query) ||
-      p.category.toLowerCase().includes(query)
+      (p.unit && p.unit.toLowerCase().includes(query))
     );
   }
   
-  // Sort products
   function sortProducts(products) {
     const sorted = [...products];
     
@@ -90,26 +86,24 @@
     }
   }
   
-  // Main filter and sort function
   function processProducts() {
     let processed = filterBySearch(allCategoryProducts);
     processed = sortProducts(processed);
     return processed;
   }
   
-  // Render product grid
   function renderProducts() {
     filteredProducts = processProducts();
     
-    // Hide loading
+    // DEBUG LOG - Check if products are filtered correctly
+    console.log(`[Category: ${config.slug}] Total products: ${allCategoryProducts.length}, Filtered: ${filteredProducts.length}`);
+    
     if (loadingState) {
       loadingState.style.display = 'none';
     }
     
-    // Update results count
     updateResultsInfo();
     
-    // Clear grid
     if (productGrid) {
       productGrid.innerHTML = '';
     }
@@ -119,63 +113,45 @@
       return;
     }
     
-    // Render each product
-    filteredProducts.forEach((product, index) => {
+    filteredProducts.forEach(product => {
       const card = OKMart.renderProductCard(product);
       
-      // Add popular badge
       if (product.popular) {
         const badge = document.createElement('span');
         badge.className = 'product-badge';
         badge.textContent = '🔥 Popular';
+        badge.style.cssText = `
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          background: #27ae60;
+          color: white;
+          padding: 4px 10px;
+          border-radius: 40px;
+          font-size: 0.65rem;
+          font-weight: 600;
+          z-index: 2;
+        `;
         card.style.position = 'relative';
         card.insertBefore(badge, card.firstChild);
       }
-      
-      // Add stock badge (optional)
-      const stockBadge = document.createElement('span');
-      stockBadge.className = 'stock-badge';
-      stockBadge.textContent = 'In Stock';
-      card.style.position = 'relative';
-      card.appendChild(stockBadge);
       
       productGrid.appendChild(card);
     });
   }
   
-  // Empty state
   function renderEmptyState() {
     const emptyDiv = document.createElement('div');
     emptyDiv.className = 'empty-category-state';
-    
-    const icon = document.createElement('div');
-    icon.className = 'empty-category-icon';
-    icon.textContent = config.icon;
-    
-    const title = document.createElement('h3');
-    title.textContent = searchQuery 
-      ? `No "${searchQuery}" found` 
-      : `No products available`;
-    
-    const message = document.createElement('p');
-    message.textContent = searchQuery 
-      ? 'Try a different search term' 
-      : `Check back soon for ${config.displayName.toLowerCase()}`;
-    
-    const browseBtn = document.createElement('a');
-    browseBtn.className = 'browse-other-btn';
-    browseBtn.href = '../index.html';
-    browseBtn.textContent = 'Browse all products';
-    
-    emptyDiv.appendChild(icon);
-    emptyDiv.appendChild(title);
-    emptyDiv.appendChild(message);
-    emptyDiv.appendChild(browseBtn);
-    
+    emptyDiv.innerHTML = `
+      <div class="empty-category-icon">${config.icon}</div>
+      <h3>${searchQuery ? `No "${searchQuery}" found` : `No products available`}</h3>
+      <p>${searchQuery ? 'Try a different search term' : `Check back soon for ${config.displayName.toLowerCase()}`}</p>
+      <a href="/index.html" class="browse-other-btn">Browse all products</a>
+    `;
     productGrid.appendChild(emptyDiv);
   }
   
-  // Update results count
   function updateResultsInfo() {
     if (resultsCount) {
       const count = filteredProducts.length;
@@ -183,14 +159,11 @@
     }
   }
   
-  // Update sort UI
   function updateSortUI() {
-    // Update dropdown active state
     document.querySelectorAll('.sort-option').forEach(opt => {
       opt.classList.toggle('active', opt.dataset.sort === currentSort);
     });
     
-    // Update button text
     if (sortToggleBtn) {
       const sortLabels = {
         'popular': '🔥 Popular',
@@ -205,7 +178,6 @@
     }
   }
   
-  // Toggle sort dropdown
   function toggleSortDropdown() {
     isSortDropdownOpen = !isSortDropdownOpen;
     if (sortDropdown) {
@@ -214,7 +186,6 @@
     sortToggleBtn?.classList.toggle('active', isSortDropdownOpen);
   }
   
-  // Close dropdown when clicking outside
   function handleClickOutside(event) {
     if (isSortDropdownOpen && 
         !sortDropdown?.contains(event.target) && 
@@ -227,7 +198,6 @@
   
   // ---------- EVENT LISTENERS ----------
   
-  // Search input
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value;
@@ -235,11 +205,9 @@
       renderProducts();
     });
     
-    // Set placeholder
     searchInput.placeholder = `Search in ${config.displayName.toLowerCase()}...`;
   }
   
-  // Clear search
   if (clearSearchBtn) {
     clearSearchBtn.addEventListener('click', () => {
       searchQuery = '';
@@ -252,7 +220,6 @@
     });
   }
   
-  // Sort toggle
   if (sortToggleBtn) {
     sortToggleBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -260,7 +227,6 @@
     });
   }
   
-  // Sort options
   document.querySelectorAll('.sort-option').forEach(option => {
     option.addEventListener('click', (e) => {
       const sortType = option.dataset.sort;
@@ -268,29 +234,35 @@
         currentSort = sortType;
         updateSortUI();
         renderProducts();
-        toggleSortDropdown(); // Close dropdown
+        toggleSortDropdown();
       }
     });
   });
   
-  // Click outside to close dropdown
   document.addEventListener('click', handleClickOutside);
   
   // ---------- INITIALIZATION ----------
   async function init() {
     try {
-      // Update header
       updateCategoryHeader();
       
-      // Show loading
       if (loadingState) {
         loadingState.style.display = 'flex';
       }
       
-      // Fetch products for this category
+      // Fetch products for this category with EXACT MATCH
+      console.log(`[Category] Loading products for category: "${config.slug}"`);
       allCategoryProducts = await OKMart.getProductsByCategory(config.slug);
       
-      // Initial render
+      // DEBUG LOG
+      console.log(`[Category] Found ${allCategoryProducts.length} products for category "${config.slug}"`);
+      
+      if (allCategoryProducts.length === 0) {
+        console.warn(`[Category] No products found for category "${config.slug}". Check if category name matches exactly.`);
+        console.log('[Category] Available categories in products:', 
+          [...new Set((await OKMart.getProducts()).map(p => p.category))]);
+      }
+      
       renderProducts();
       updateSortUI();
       
@@ -302,7 +274,7 @@
             <div class="empty-category-icon">⚠️</div>
             <h3>Failed to load products</h3>
             <p>Please check your connection and refresh</p>
-            <button class="browse-other-btn" onclick="location.reload()">Retry</button>
+            <a href="/index.html" class="browse-other-btn">Go Home</a>
           </div>
         `;
       }
@@ -312,10 +284,8 @@
     }
   }
   
-  // Start
   init();
   
-  // Expose for debugging
   window.OKMartCategory = {
     getState: () => ({ 
       category: config.slug, 
@@ -326,4 +296,4 @@
     refresh: init
   };
   
-})();s
+})();
