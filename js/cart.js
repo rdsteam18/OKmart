@@ -1,28 +1,27 @@
-function loadCart() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let container = document.getElementById("cartItems");
-
-    container.innerHTML = "";
-
-    cart.forEach((item, i) => {
-        container.innerHTML += `
-        <div>
-            <p>${item.name} - ₹${item.price} x ${item.qty}</p>
-            <button onclick="changeQty(${i},1)">+</button>
-            <button onclick="changeQty(${i},-1)">-</button>
-        </div>
-        `;
+// js/cart.js – cart page UI (quantity/remove placeholders)
+(function(){
+  document.addEventListener('DOMContentLoaded', function() {
+    // quantity plus/minus demo (no real logic)
+    const qtyBtns = document.querySelectorAll('.qty-btn');
+    qtyBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const control = this.closest('.quantity-control');
+        const valueSpan = control.querySelector('.qty-value');
+        let val = parseInt(valueSpan.textContent) || 1;
+        if (this.textContent.includes('+')) val++;
+        else if (this.textContent.includes('−') && val > 1) val--;
+        valueSpan.textContent = val;
+        // (no price recalculation, just UI)
+      });
     });
-}
 
-function changeQty(i, val) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    cart[i].qty += val;
-
-    if (cart[i].qty <= 0) cart.splice(i,1);
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    loadCart();
-}
+    // remove button dummy
+    document.querySelectorAll('.btn-remove').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const card = this.closest('.cart-item-card');
+        if (card) card.style.opacity = '0.5';
+        setTimeout(() => card?.remove(), 150);
+      });
+    });
+  });
+})();
