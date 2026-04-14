@@ -3,78 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Dairy & Eggs · OK Mart</title>
   
-  <!-- CSS - Using absolute paths -->
+  <!-- SEO Meta Tags -->
+  <title>Buy Dairy Products Online | Fresh Milk, Butter, Paneer | OK Mart</title>
+  <meta name="description" content="Order fresh dairy products online - milk, butter, cheese, paneer, yogurt, and eggs. Fast delivery from OK Mart. Best prices on Amul, Mother Dairy products.">
+  <meta name="keywords" content="dairy products online, milk delivery, buy milk online, fresh paneer delivery, butter online, cheese delivery, eggs delivery, dairy store near me, Amul milk, Mother Dairy">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/categories/dairy.html">
+  <meta property="og:title" content="Buy Dairy Products Online | Fresh Milk, Butter, Paneer | OK Mart">
+  <meta property="og:description" content="Order fresh dairy products online - milk, butter, cheese, paneer. Fast delivery from OK Mart.">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/dairy-og.jpg">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Dairy Products Online | OK Mart">
+  <meta property="twitter:description" content="Fresh milk, butter, paneer delivered fast.">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://okmart.netlify.app/categories/dairy.html">
+  
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
   
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Dairy Products",
+    "description": "Fresh dairy products including milk, butter, cheese, paneer, and eggs",
+    "url": "https://okmart.netlify.app/categories/dairy.html",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "OK Mart",
+      "url": "https://okmart.netlify.app/"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Dairy Products"
+    }
+  }
+  </script>
 </head>
 <body>
-  <!-- HEADER WITH BACK BUTTON -->
   <header class="app-header category-header">
     <div class="header-container">
       <div class="header-left">
-        <a href="/index.html" class="back-button" aria-label="back to home">
+        <a href="/index.html" class="back-button" aria-label="Back to home">
           <span class="back-icon">←</span>
         </a>
         <a href="/index.html" class="logo-link">
           <span class="logo-text">🛒 OK Mart</span>
         </a>
       </div>
-      <!-- Update cart icon in all pages -->
-<a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="cart">
-  <span class="cart-icon">🛍️</span>
-  <span class="cart-badge" id="cartCountPlaceholder">0</span>
-</a>
+      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
     </div>
   </header>
 
   <main class="category-main">
-    <!-- Category Hero -->
     <div class="category-hero">
-      <div class="category-icon">🥛</div>
-      <h1 class="category-title" id="categoryTitle">Dairy & Eggs</h1>
-      <p class="category-description" id="categoryDescription">Fresh milk, butter, paneer & more</p>
+      <div class="category-icon" aria-hidden="true">🥛</div>
+      <h1 class="category-title">Dairy & Eggs</h1>
+      <p class="category-description">Fresh milk, butter, paneer & more delivered to your doorstep</p>
     </div>
 
-    <!-- Search Bar -->
     <div class="search-container">
       <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon" aria-hidden="true">🔍</span>
         <input 
           type="text" 
           id="categorySearchInput" 
           class="search-input" 
           placeholder="Search in dairy..."
           autocomplete="off"
+          aria-label="Search dairy products"
         >
-        <button class="clear-search" id="clearCategorySearch" aria-label="clear search">✕</button>
+        <button class="clear-search" id="clearCategorySearch" aria-label="Clear search">✕</button>
       </div>
     </div>
 
-    <!-- Results Info -->
     <div class="results-info">
       <span class="results-count" id="categoryResultsCount">0 items</span>
-      <button class="sort-btn" id="sortToggleBtn" aria-label="sort">
+      <button class="sort-btn" id="sortToggleBtn" aria-label="Sort products">
         <span>📊 Sort</span>
       </button>
     </div>
 
-    <!-- Product Grid -->
     <div class="product-grid category-grid" id="categoryProductGrid">
-      <!-- Loading state -->
       <div class="loading-state" id="categoryLoadingState">
-        <div class="loading-spinner"></div>
-        <p>Loading fresh products...</p>
+        <div class="loading-spinner" role="status"></div>
+        <p>Loading fresh dairy products...</p>
       </div>
     </div>
 
-    <!-- Sort Dropdown -->
     <div class="sort-dropdown" id="sortDropdown" style="display: none;">
       <button class="sort-option" data-sort="popular">🔥 Popular First</button>
       <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
@@ -83,7 +115,6 @@
     </div>
   </main>
 
-  <!-- STICKY BOTTOM BAR -->
   <div class="sticky-bottom-bar">
     <div class="bottom-bar-inner">
       <span class="delivery-message">🚀 delivery in 10 mins</span>
@@ -91,16 +122,13 @@
     </div>
   </div>
 
-  <!-- Floating Call Button -->
-  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
+  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call OK Mart">
     <span class="call-icon">📞</span>
   </a>
 
-  <!-- SCRIPTS - Using absolute paths -->
   <script src="/js/common.js"></script>
   <script src="/js/category.js"></script>
   <script>
-    // EXACT CATEGORY MATCH - "dairy" (lowercase)
     window.__OKMART_CATEGORY_CONFIG = {
       slug: 'dairy',
       displayName: 'Dairy & Eggs',
