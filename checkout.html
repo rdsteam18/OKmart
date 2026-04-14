@@ -1,134 +1,102 @@
+<!-- checkout.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout - OK Mart</title>
-
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Checkout · OK Mart</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/checkout.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </head>
-
 <body>
+  <header class="app-header checkout-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <a href="cart.html" class="back-home-link" aria-label="Back to cart">
+          <span class="back-arrow">←</span>
+        </a>
+        <span class="logo-text">Checkout</span>
+      </div>
+      <div class="secure-badge">🔒 secure</div>
+    </div>
+  </header>
 
-<header>
-    <div>Checkout</div>
-</header>
+  <main class="page-content checkout-page">
+    <!-- address summary card -->
+    <div class="checkout-card address-card">
+      <div class="card-header">
+        <span class="card-title">Delivery address</span>
+        <button class="btn-text">Change</button>
+      </div>
+      <div class="address-detail">
+        <p class="address-name">Rahul Mehta</p>
+        <p>B-204, Greenfield Apartments, Sector 14, Gurugram, Haryana - 122001</p>
+        <p class="address-phone">+91 98765 43210</p>
+      </div>
+    </div>
 
-<div style="padding:10px;">
+    <!-- order summary -->
+    <div class="checkout-card">
+      <h3 class="card-title">Order summary</h3>
+      <div class="order-items-compact">
+        <div class="order-item-row">
+          <span>Apple Fuji (1kg) x1</span>
+          <span>₹149</span>
+        </div>
+        <div class="order-item-row">
+          <span>Amul Taaza (500ml) x2</span>
+          <span>₹56</span>
+        </div>
+      </div>
+      <hr class="divider" />
+      <div class="price-breakdown">
+        <div class="breakdown-row"><span>Subtotal</span><span>₹205</span></div>
+        <div class="breakdown-row"><span>Delivery</span><span class="free">FREE</span></div>
+        <div class="breakdown-row total-row"><span>Total</span><span>₹205</span></div>
+      </div>
+    </div>
 
-    <!-- USER INPUT -->
-    <input id="name" placeholder="Name"><br><br>
-    <input id="phone" placeholder="Phone"><br><br>
-    <textarea id="address" placeholder="Address"></textarea><br><br>
-    <input id="pincode" placeholder="Pincode"><br><br>
+    <!-- payment options (placeholder) -->
+    <div class="checkout-card payment-card">
+      <h3 class="card-title">Payment method</h3>
+      <div class="payment-option selected">
+        <span>💳 Credit / Debit Card</span>
+        <span class="checkmark">✓</span>
+      </div>
+      <div class="payment-option">
+        <span>📱 UPI / Google Pay</span>
+      </div>
+      <div class="payment-option">
+        <span>💰 Cash on Delivery</span>
+      </div>
+    </div>
 
-    <button onclick="placeOrder()">Place Order</button>
+    <!-- coupon input (UI only) -->
+    <div class="coupon-wrapper">
+      <input type="text" placeholder="Have a coupon? Enter code" class="coupon-input">
+      <button class="btn-secondary">Apply</button>
+    </div>
+  </main>
 
-</div>
+  <!-- sticky place order bar -->
+  <div class="sticky-bottom-bar">
+    <div class="bottom-bar-content">
+      <div class="cart-summary">
+        <span class="summary-label">Payable</span>
+        <span class="summary-total">₹205</span>
+      </div>
+      <a href="success.html" class="btn-primary btn-place-order">
+        Place order <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
 
-<script src="js/main.js"></script>
-<script src="js/checkout.js"></script>
+  <footer class="app-footer">
+    <p class="footer-text">OK Mart · freshness delivered</p>
+  </footer>
 
-<script>
-
-/* =========================
-   AUTO FILL USER DATA
-========================= */
-window.onload = function () {
-    let user = JSON.parse(localStorage.getItem("user"));
-
-    if (user) {
-        document.getElementById("name").value = user.name;
-        document.getElementById("phone").value = user.phone;
-        document.getElementById("address").value = user.address;
-        document.getElementById("pincode").value = user.pincode;
-    }
-};
-
-/* =========================
-   PLACE ORDER (MAIN LOGIC)
-========================= */
-
-function placeOrder() {
-
-    let name = document.getElementById("name").value;
-    let phone = document.getElementById("phone").value;
-    let address = document.getElementById("address").value;
-    let pincode = document.getElementById("pincode").value;
-
-    // Basic validation
-    if (!name || !phone || !address || !pincode) {
-        alert("Fill all details ❌");
-        return;
-    }
-
-    // PIN CHECK
-    const allowed = ["400052","400051"];
-
-    if (!allowed.includes(pincode)) {
-        alert("Delivery not available ❌");
-        return;
-    }
-
-    // SAVE USER
-    let user = {name, phone, address, pincode};
-    localStorage.setItem("user", JSON.stringify(user));
-
-    // GET CART
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    if (cart.length === 0) {
-        alert("Cart empty ❌");
-        return;
-    }
-
-    // CALCULATE TOTAL
-    let total = 0;
-    let itemsText = "";
-
-    cart.forEach(item => {
-        total += item.price * item.qty;
-        itemsText += `${item.name} x${item.qty}\n`;
-    });
-
-    let delivery = total >= 300 ? 0 : 20;
-    let grandTotal = total + delivery;
-
-    // SAVE LAST ORDER
-    localStorage.setItem("lastOrder", JSON.stringify(cart));
-
-    /* =========================
-       WHATSAPP
-    ========================= */
-
-    let msg = `🛒 OK Mart Order
-
-Name: ${name}
-Phone: ${phone}
-Address: ${address}
-Pincode: ${pincode}
-
-Items:
-${itemsText}
-
-Total: ₹${grandTotal}`;
-
-    let url = `https://wa.me/9982239821?text=${encodeURIComponent(msg)}`;
-
-    window.open(url, "_blank");
-
-    /* =========================
-       SUCCESS
-    ========================= */
-
-    alert("Order placed ✅");
-
-    localStorage.removeItem("cart");
-
-    window.location.href = "success.html";
-}
-
-</script>
-
+  <script src="js/common.js"></script>
+  <script src="js/checkout.js"></script>
 </body>
 </html>
