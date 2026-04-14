@@ -70,7 +70,45 @@
         </div>
       </div>
     </div>
+<!-- Add after order total summary, before user details form -->
 
+<!-- Coupon Section -->
+<div class="coupon-section" id="couponSection">
+  <div class="coupon-header">
+    <span class="coupon-icon">🏷️</span>
+    <span class="coupon-title">Apply Coupon</span>
+  </div>
+  <div class="coupon-input-group">
+    <input 
+      type="text" 
+      id="couponInput" 
+      class="coupon-input" 
+      placeholder="Enter coupon code"
+      autocomplete="off"
+    >
+    <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
+  </div>
+  <div class="coupon-message" id="couponMessage"></div>
+  <div class="coupon-hint">Try: SAVE20 (₹20 off on orders above ₹250)</div>
+</div>
+
+<!-- Applied Coupon Display -->
+<div class="applied-coupon-display" id="appliedCouponDisplay" style="display: none;">
+  <div class="applied-coupon-info">
+    <span class="applied-icon">✅</span>
+    <div class="applied-details">
+      <span class="applied-code" id="appliedCouponCode">SAVE20</span>
+      <span class="applied-discount" id="appliedCouponValue">-₹20</span>
+    </div>
+    <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
+  </div>
+</div>
+
+<!-- Delivery Offer Message -->
+<div class="delivery-offer-message" id="deliveryOfferMessage">
+  🚚 Free delivery on orders above ₹199!
+</div>
+    
     <!-- User Details Form -->
     <form class="checkout-form" id="checkoutForm">
       <div class="form-section">
