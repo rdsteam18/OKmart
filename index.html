@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>OK Mart · fresh grocery</title>
-  <!-- CSS (modular, no inline styles) -->
+  <title>OK Mart · 10 min grocery delivery</title>
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/home.css">
+  
+  <!-- Google Fonts (optional but clean) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- HEADER (reusable component – will be styled via common.css) -->
+  <!-- STICKY HEADER -->
   <header class="app-header" id="mainHeader">
     <div class="header-container">
       <a href="index.html" class="logo-link">
@@ -22,28 +28,47 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT (home page specific) -->
+  <!-- MAIN CONTENT -->
   <main class="home-main">
-    <!-- welcome / category quick links (static structure) -->
-    <section class="category-pills-section">
-      <h2 class="section-title">shop by category</h2>
-      <div class="category-pills" id="categoryPillsContainer">
-        <!-- will be populated from products.json via home.js -->
+    <!-- Search Bar -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search for milk, snacks, atta..."
+          autocomplete="off"
+        >
+        <button class="clear-search" id="clearSearchBtn" aria-label="clear search">✕</button>
       </div>
-    </section>
+    </div>
 
-    <!-- product grid (2-col mobile, 3-4 desktop) -->
-    <section class="product-grid-section">
-      <div class="section-header">
-        <h2 class="section-title">✨ trending groceries</h2>
+    <!-- Category Filter - Horizontal Scroll -->
+    <div class="category-filter-section">
+      <div class="category-scroll" id="categoryFilterContainer">
+        <!-- Category buttons will be injected dynamically -->
       </div>
-      <div class="product-grid" id="productGrid">
-        <!-- all product cards injected from home.js (using data/products.json) -->
+    </div>
+
+    <!-- Results Info -->
+    <div class="results-info" id="resultsInfo">
+      <span class="results-count" id="resultsCount">0 items</span>
+      <span class="filter-badge" id="activeFilterBadge"></span>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="product-grid" id="productGrid">
+      <!-- Loading state -->
+      <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <p>Loading fresh groceries...</p>
       </div>
-    </section>
+    </div>
   </main>
 
-  <!-- STICKY BOTTOM BAR (common component) -->
+  <!-- STICKY BOTTOM BAR -->
   <div class="sticky-bottom-bar">
     <div class="bottom-bar-inner">
       <span class="delivery-message">🚀 delivery in 10 mins</span>
@@ -51,7 +76,7 @@
     </div>
   </div>
 
-  <!-- SCRIPTS (common + page-specific) -->
+  <!-- SCRIPTS -->
   <script src="js/common.js"></script>
   <script src="js/home.js"></script>
 </body>
