@@ -299,3 +299,29 @@ main {
 .category-pills-section {
   padding: 8px 0;
 }
+/* Add to common.css */
+
+/* Smooth transitions */
+.product-card,
+.category-btn,
+.search-input,
+.add-to-cart-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Touch optimizations */
+button,
+.category-btn,
+.add-to-cart-btn,
+.cart-icon-link {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better focus states */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
