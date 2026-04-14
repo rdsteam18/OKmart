@@ -1,4 +1,3 @@
-<!-- checkout.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,94 +6,70 @@
   <title>Checkout · OK Mart</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/checkout.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header checkout-header">
+  <header class="app-header" id="mainHeader">
     <div class="header-container">
-      <div class="logo-area">
-        <a href="cart.html" class="back-home-link" aria-label="Back to cart">
-          <span class="back-arrow">←</span>
-        </a>
-        <span class="logo-text">Checkout</span>
-      </div>
-      <div class="secure-badge">🔒 secure</div>
+      <a href="index.html" class="logo-link">
+        <span class="logo-text">🛒 OK Mart</span>
+      </a>
+      <a href="cart.html" class="cart-icon-link" aria-label="cart">
+        <span class="cart-icon">🛍️</span>
+        <span class="cart-badge" id="cartCountPlaceholder">0</span>
+      </a>
     </div>
   </header>
 
-  <main class="page-content checkout-page">
-    <!-- address summary card -->
-    <div class="checkout-card address-card">
-      <div class="card-header">
-        <span class="card-title">Delivery address</span>
-        <button class="btn-text">Change</button>
-      </div>
-      <div class="address-detail">
-        <p class="address-name">Rahul Mehta</p>
-        <p>B-204, Greenfield Apartments, Sector 14, Gurugram, Haryana - 122001</p>
-        <p class="address-phone">+91 98765 43210</p>
-      </div>
-    </div>
-
-    <!-- order summary -->
-    <div class="checkout-card">
-      <h3 class="card-title">Order summary</h3>
-      <div class="order-items-compact">
-        <div class="order-item-row">
-          <span>Apple Fuji (1kg) x1</span>
-          <span>₹149</span>
+  <main class="checkout-main">
+    <h1 class="page-title">checkout</h1>
+    <!-- delivery form + payment placeholder -->
+    <form id="checkoutForm" class="checkout-form">
+      <fieldset class="address-fieldset">
+        <legend>📍 delivery address</legend>
+        <div class="input-group">
+          <label for="fullName">full name</label>
+          <input type="text" id="fullName" placeholder="e.g., Riya Sharma" required>
         </div>
-        <div class="order-item-row">
-          <span>Amul Taaza (500ml) x2</span>
-          <span>₹56</span>
+        <div class="input-group">
+          <label for="mobile">mobile number</label>
+          <input type="tel" id="mobile" placeholder="9876543210" required>
+        </div>
+        <div class="input-group">
+          <label for="address">street / locality</label>
+          <textarea id="address" rows="2" placeholder="house no, area" required></textarea>
+        </div>
+        <div class="input-group">
+          <label for="pincode">pincode</label>
+          <input type="text" id="pincode" placeholder="110001" required>
+        </div>
+      </fieldset>
+
+      <div class="payment-section">
+        <h3 class="payment-heading">💳 payment method</h3>
+        <div class="payment-options">
+          <label class="radio-card">
+            <input type="radio" name="payment" value="cod" checked> cash on delivery
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="payment" value="upi"> UPI / card (demo)
+          </label>
         </div>
       </div>
-      <hr class="divider" />
-      <div class="price-breakdown">
-        <div class="breakdown-row"><span>Subtotal</span><span>₹205</span></div>
-        <div class="breakdown-row"><span>Delivery</span><span class="free">FREE</span></div>
-        <div class="breakdown-row total-row"><span>Total</span><span>₹205</span></div>
-      </div>
-    </div>
 
-    <!-- payment options (placeholder) -->
-    <div class="checkout-card payment-card">
-      <h3 class="card-title">Payment method</h3>
-      <div class="payment-option selected">
-        <span>💳 Credit / Debit Card</span>
-        <span class="checkmark">✓</span>
+      <div class="order-summary-mini" id="checkoutSummary">
+        <!-- summary injected by checkout.js -->
       </div>
-      <div class="payment-option">
-        <span>📱 UPI / Google Pay</span>
-      </div>
-      <div class="payment-option">
-        <span>💰 Cash on Delivery</span>
-      </div>
-    </div>
 
-    <!-- coupon input (UI only) -->
-    <div class="coupon-wrapper">
-      <input type="text" placeholder="Have a coupon? Enter code" class="coupon-input">
-      <button class="btn-secondary">Apply</button>
-    </div>
+      <button type="submit" class="btn-primary place-order-btn">place order →</button>
+    </form>
   </main>
 
-  <!-- sticky place order bar -->
   <div class="sticky-bottom-bar">
-    <div class="bottom-bar-content">
-      <div class="cart-summary">
-        <span class="summary-label">Payable</span>
-        <span class="summary-total">₹205</span>
-      </div>
-      <a href="success.html" class="btn-primary btn-place-order">
-        Place order <span class="arrow">→</span>
-      </a>
+    <div class="bottom-bar-inner">
+      <span class="delivery-message">🚀 delivery in 10 mins</span>
+      <span class="min-order">min order ₹99</span>
     </div>
   </div>
-
-  <footer class="app-footer">
-    <p class="footer-text">OK Mart · freshness delivered</p>
-  </footer>
 
   <script src="js/common.js"></script>
   <script src="js/checkout.js"></script>
