@@ -565,3 +565,27 @@ a:focus:not(:focus-visible) {
   user-select: none;
   -webkit-user-drag: none;
 }
+
+
+.offer-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  position: sticky;
+  top: 64px;
+  z-index: 49;
+}
+
+.offer-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.offer-icon {
+  font-size: 1.1rem;
+}
