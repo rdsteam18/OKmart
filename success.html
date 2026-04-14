@@ -3,50 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Order success · OK Mart</title>
+  <title>Order Confirmed · OK Mart</title>
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="css/common.css">
-  <!-- success page uses minimal extra style, included in common + small inline ? no, keep modular: we'll link a lightweight success.css -->
-  <link rel="stylesheet" href="css/checkout.css"> <!-- reuse some checkout styles, plus success specific -->
-  <style>
-    /* small exception: success page uses only this block, no other inline, kept inside a separate style block? 
-       better move to success.css — we'll create a dedicated success.css file and link it. */
-  </style>
   <link rel="stylesheet" href="css/success.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header" id="mainHeader">
+  <!-- SIMPLE HEADER -->
+  <header class="app-header success-header">
     <div class="header-container">
       <a href="index.html" class="logo-link">
         <span class="logo-text">🛒 OK Mart</span>
-      </a>
-      <a href="cart.html" class="cart-icon-link" aria-label="cart">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge" id="cartCountPlaceholder">0</span>
       </a>
     </div>
   </header>
 
   <main class="success-main">
+    <!-- Success Card -->
     <div class="success-card">
-      <div class="success-icon">✅</div>
-      <h1 class="success-title">order confirmed!</h1>
-      <p class="success-message">thank you for shopping with OK Mart.<br>your groceries will arrive soon.</p>
-      <a href="index.html" class="btn-primary continue-shopping">continue shopping</a>
+      <!-- Animated Success Icon -->
+      <div class="success-icon-wrapper">
+        <div class="success-icon">✅</div>
+        <div class="success-rings">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      
+      <!-- Main Message -->
+      <h1 class="success-title">Order Placed Successfully!</h1>
+      <p class="success-message">Thank you for shopping with OK Mart</p>
+      <p class="contact-message">We will contact you shortly for confirmation</p>
+      
+      <!-- Order Details (if available) -->
+      <div class="order-reference" id="orderReference">
+        <!-- Will show order ID if available -->
+      </div>
+      
+      <!-- Estimated Delivery -->
+      <div class="delivery-estimate">
+        <span class="estimate-icon">🚀</span>
+        <span class="estimate-text">Estimated delivery: 10-15 minutes</span>
+      </div>
     </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <a href="index.html" class="btn-primary continue-shopping-btn">
+        ← Continue Shopping
+      </a>
+      
+      <button class="btn-secondary repeat-order-btn" id="repeatOrderBtn">
+        🔄 Repeat Last Order
+      </button>
+    </div>
+
+    <!-- Need Help Section -->
+    <div class="help-section">
+      <div class="help-card">
+        <span class="help-icon">💬</span>
+        <div class="help-content">
+          <h3>Need help with your order?</h3>
+          <p>Contact us on WhatsApp for quick support</p>
+        </div>
+        <a href="https://wa.me/9982239821?text=Hi%2C%20I%20need%20help%20with%20my%20order" class="help-contact-btn" target="_blank">
+          Chat Now →
+        </a>
+      </div>
+    </div>
+
+    <!-- Order Status Message (hidden by default) -->
+    <div class="toast-message" id="toastMessage"></div>
   </main>
 
-  <!-- no sticky bar on success page? still include for consistency but can be hidden -->
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <span class="delivery-message">🚀 delivery in 10 mins</span>
-      <span class="min-order">min order ₹99</span>
-    </div>
-  </div>
+  <!-- Footer -->
+  <footer class="success-footer">
+    <p class="footer-text">⚡ Fresh groceries delivered in minutes</p>
+  </footer>
 
+  <!-- SCRIPTS -->
   <script src="js/common.js"></script>
-  <script>
-    // minimal success script: just clear cart count etc? (optional)
-    // page-specific logic in separate file if needed.
-  </script>
+  <script src="js/success.js"></script>
 </body>
 </html>
