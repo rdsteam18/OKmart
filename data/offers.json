@@ -1,0 +1,55 @@
+{
+  "category": "offers",
+  "displayName": "Today's Deals",
+  "icon": "🏷️",
+  "products": [
+    {
+      "id": "o1",
+      "name": "Amul Milk (Buy 1 Get 1)",
+      "category": "offers",
+      "price": 26,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "500 ml",
+      "popular": true,
+      "offer": "B1G1",
+      "offerTag": "Buy 1 Get 1 Free"
+    },
+    {
+      "id": "o2",
+      "name": "Lay's (30% OFF)",
+      "category": "offers",
+      "price": 20,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/4791269/pexels-photo-4791269.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "52 g",
+      "popular": true,
+      "offer": "30OFF",
+      "offerTag": "30% OFF"
+    },
+    {
+      "id": "o3",
+      "name": "Coca-Cola (Combo Offer)",
+      "category": "offers",
+      "price": 65,
+      "mrp": 80,
+      "image": "https://images.pexels.com/photos/2668300/pexels-photo-2668300.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "2 x 750 ml",
+      "popular": true,
+      "offer": "COMBO",
+      "offerTag": "Buy 2 Save ₹15"
+    },
+    {
+      "id": "o4",
+      "name": "boAt Earphones (Flat 30% OFF)",
+      "category": "offers",
+      "price": 899,
+      "mrp": 1299,
+      "image": "https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Wireless",
+      "popular": true,
+      "offer": "FLAT30",
+      "offerTag": "30% OFF"
+    }
+  ]
+}
