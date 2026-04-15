@@ -1,5 +1,5 @@
 // ===== OK MART - HOME.JS =====
-// Dynamic home page with search, categories, quick order, popular sections, and category navigation grid
+// Dynamic home page with search, categories, quick order, popular sections, offers, and banner
 
 (function() {
   'use strict';
@@ -17,7 +17,9 @@
     'vegetables': '🥕 Vegetables',
     'bakery': '🥐 Bakery',
     'beverages': '🥤 Beverages',
-    'frozen': '❄️ Frozen'
+    'frozen': '❄️ Frozen',
+    'electronics': '📱 Electronics',
+    'offers': '🏷️ Offers'
   };
   
   // ---------- STATE ----------
@@ -33,88 +35,47 @@
   const loadingState = document.getElementById('loadingState');
   const searchInput = document.getElementById('searchInput');
   const clearSearchBtn = document.getElementById('clearSearchBtn');
+  const searchSubmitBtn = document.getElementById('searchSubmitBtn');
   const categoryContainer = document.getElementById('categoryFilterContainer');
   const resultsCount = document.getElementById('resultsCount');
   const activeFilterBadge = document.getElementById('activeFilterBadge');
+  const offersGrid = document.getElementById('offersGrid');
+  const quickOrderGrid = document.getElementById('quickOrderGrid');
   
-  // ---------- CATEGORY NAVIGATION CONFIGURATION ----------
-  const categoryConfig = {
-    // Fruits & Vegetables Group
-    fruitsVeg: [
-      { id: 'fresh-fruits', name: 'Fresh Fruits', icon: '🍎', link: 'categories/fruits.html', count: 0 },
-      { id: 'fresh-vegetables', name: 'Fresh Vegetables', icon: '🥕', link: 'categories/vegetables.html', count: 0 },
-      { id: 'exotic-fruits', name: 'Exotic Fruits', icon: '🥝', link: 'categories/fruits.html', count: 0 },
-      { id: 'cut-veggies', name: 'Cut Veggies', icon: '🥗', link: 'categories/vegetables.html', count: 0 }
-    ],
-    
-    // Dairy & Bakery Group
-    dairyBakery: [
-      { id: 'milk', name: 'Milk', icon: '🥛', link: 'categories/dairy.html', count: 0 },
-      { id: 'bread', name: 'Bread', icon: '🍞', link: 'categories/bakery.html', count: 0 },
-      { id: 'eggs', name: 'Eggs', icon: '🥚', link: 'categories/dairy.html', count: 0 },
-      { id: 'butter-cheese', name: 'Butter & Cheese', icon: '🧀', link: 'categories/dairy.html', count: 0 },
-      { id: 'paneer-tofu', name: 'Paneer & Tofu', icon: '🧈', link: 'categories/dairy.html', count: 0 },
-      { id: 'yogurt', name: 'Yogurt', icon: '🍶', link: 'categories/dairy.html', count: 0 },
-      { id: 'bakery', name: 'Bakery', icon: '🥐', link: 'categories/bakery.html', count: 0 },
-      { id: 'cakes', name: 'Cakes', icon: '🎂', link: 'categories/bakery.html', count: 0 }
-    ],
-    
-    // Snacks & Packaged Foods
-    snacksPackaged: [
-      { id: 'chips', name: 'Chips & Crisps', icon: '🍟', link: 'categories/snacks.html', count: 0 },
-      { id: 'biscuits', name: 'Biscuits', icon: '🍪', link: 'categories/snacks.html', count: 0 },
-      { id: 'namkeen', name: 'Namkeen', icon: '🥨', link: 'categories/snacks.html', count: 0 },
-      { id: 'chocolates', name: 'Chocolates', icon: '🍫', link: 'categories/snacks.html', count: 0 },
-      { id: 'instant-noodles', name: 'Noodles', icon: '🍜', link: 'categories/snacks.html', count: 0 },
-      { id: 'ready-to-eat', name: 'Ready to Eat', icon: '🍲', link: 'categories/snacks.html', count: 0 },
-      { id: 'frozen-food', name: 'Frozen Food', icon: '❄️', link: 'categories/frozen.html', count: 0 },
-      { id: 'ice-cream', name: 'Ice Cream', icon: '🍦', link: 'categories/frozen.html', count: 0 }
-    ],
-    
-    // Grocery Staples
-    groceryStaples: [
-      { id: 'atta-flours', name: 'Atta & Flours', icon: '🌾', link: 'categories/grocery.html', count: 0 },
-      { id: 'rice', name: 'Rice', icon: '🍚', link: 'categories/grocery.html', count: 0 },
-      { id: 'dals-pulses', name: 'Dals & Pulses', icon: '🫘', link: 'categories/grocery.html', count: 0 },
-      { id: 'oils-ghee', name: 'Oils & Ghee', icon: '🫒', link: 'categories/grocery.html', count: 0 },
-      { id: 'spices', name: 'Spices', icon: '🌶️', link: 'categories/grocery.html', count: 0 },
-      { id: 'salt-sugar', name: 'Salt & Sugar', icon: '🧂', link: 'categories/grocery.html', count: 0 },
-      { id: 'dry-fruits', name: 'Dry Fruits', icon: '🥜', link: 'categories/dryfruits.html', count: 0 },
-      { id: 'tea-coffee', name: 'Tea & Coffee', icon: '☕', link: 'categories/beverages.html', count: 0 }
-    ]
-  };
+  // ---------- DATA LOADING ----------
   
-  // Keyword mapping for counting products
-  const keywordMap = {
-    'fresh-fruits': ['fruit', 'apple', 'banana', 'mango', 'grape', 'orange'],
-    'fresh-vegetables': ['vegetable', 'potato', 'tomato', 'onion', 'carrot'],
-    'exotic-fruits': ['kiwi', 'avocado', 'dragon', 'berry'],
-    'cut-veggies': ['cut', 'chopped', 'peeled'],
-    'milk': ['milk', 'dairy'],
-    'bread': ['bread', 'bun', 'pav'],
-    'eggs': ['egg'],
-    'butter-cheese': ['butter', 'cheese'],
-    'paneer-tofu': ['paneer', 'tofu'],
-    'yogurt': ['yogurt', 'curd', 'dahi'],
-    'bakery': ['cake', 'pastry', 'cookie', 'biscuit'],
-    'cakes': ['cake', 'pastry'],
-    'chips': ['chips', 'crisps', 'lays', 'kurkure'],
-    'biscuits': ['biscuit', 'cookie', 'parle', 'britannia'],
-    'namkeen': ['namkeen', 'bhujia', 'sev'],
-    'chocolates': ['chocolate', 'candy', 'sweet'],
-    'instant-noodles': ['noodle', 'maggie', 'pasta'],
-    'ready-to-eat': ['ready', 'instant', 'meal'],
-    'frozen-food': ['frozen', 'freeze'],
-    'ice-cream': ['ice cream', 'icecream', 'kulfi'],
-    'atta-flours': ['atta', 'flour', 'maida', 'wheat'],
-    'rice': ['rice', 'basmati'],
-    'dals-pulses': ['dal', 'pulse', 'lentil'],
-    'oils-ghee': ['oil', 'ghee', 'sunflower'],
-    'spices': ['spice', 'masala', 'turmeric', 'chilli'],
-    'salt-sugar': ['salt', 'sugar'],
-    'dry-fruits': ['dry fruit', 'almond', 'cashew', 'raisin'],
-    'tea-coffee': ['tea', 'coffee', 'chai']
-  };
+  async function loadAllProducts() {
+    const categories = ['fruits', 'dairy', 'snacks', 'beverages', 'electronics', 'grocery', 'offers'];
+    const products = [];
+    
+    for (const cat of categories) {
+      try {
+        const response = await fetch(`/data/${cat}.json`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.products) {
+            products.push(...data.products);
+          }
+        }
+      } catch (e) {
+        console.warn(`Could not load ${cat}.json`);
+      }
+    }
+    
+    console.log(`✅ Loaded ${products.length} products`);
+    return products;
+  }
+  
+  async function loadOffers() {
+    try {
+      const response = await fetch('/data/offers.json');
+      const data = await response.json();
+      return data.products || [];
+    } catch (e) {
+      console.warn('Could not load offers.json');
+      return [];
+    }
+  }
   
   // ---------- HELPER FUNCTIONS ----------
   
@@ -129,7 +90,7 @@
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(query) ||
-        p.category.toLowerCase().includes(query)
+        (p.category && p.category.toLowerCase().includes(query))
       );
     }
     
@@ -161,18 +122,113 @@
       return;
     }
     
-    filteredProducts.forEach(product => {
-      const card = OKMart.renderProductCard(product);
+    filteredProducts.slice(0, 20).forEach(product => {
+      const card = renderProductCard(product);
+      productGrid.appendChild(card);
+    });
+  }
+  
+  function renderProductCard(product) {
+    const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+    
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.dataset.productId = product.id;
+    
+    card.innerHTML = `
+      <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
+      <h3 class="product-name">${product.name}</h3>
+      <span class="product-unit">${product.unit || ''}</span>
+      <div class="price-container">
+        <span class="current-price">₹${product.price}</span>
+        ${product.mrp && product.mrp > product.price ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
+        ${discount > 0 ? `<span class="discount-badge">${discount}% OFF</span>` : ''}
+      </div>
+      <button class="add-to-cart-btn">Add to cart</button>
+    `;
+    
+    if (product.popular) {
+      const badge = document.createElement('span');
+      badge.className = 'product-badge';
+      badge.textContent = '🔥 Popular';
+      badge.style.cssText = 'position:absolute;top:8px;left:8px;background:#27ae60;color:white;padding:4px 10px;border-radius:40px;font-size:0.65rem;font-weight:600;z-index:2;';
+      card.style.position = 'relative';
+      card.insertBefore(badge, card.firstChild);
+    }
+    
+    if (product.offerTag) {
+      const offerBadge = document.createElement('span');
+      offerBadge.className = 'offer-badge';
+      offerBadge.textContent = product.offerTag;
+      offerBadge.style.cssText = 'position:absolute;top:8px;right:8px;background:#ef4444;color:white;padding:4px 10px;border-radius:40px;font-size:0.65rem;font-weight:600;z-index:2;';
+      card.style.position = 'relative';
+      card.appendChild(offerBadge);
+    }
+    
+    const btn = card.querySelector('.add-to-cart-btn');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       
-      if (product.popular) {
-        const badge = document.createElement('span');
-        badge.className = 'product-badge';
-        badge.textContent = '🔥 Popular';
-        card.style.position = 'relative';
-        card.insertBefore(badge, card.firstChild);
+      // Trigger fly animation if available
+      const productImage = card.querySelector('.product-image');
+      if (productImage && window.OKMart && window.OKMart.flyToCart) {
+        window.OKMart.flyToCart(productImage, product.image, product.name);
       }
       
-      productGrid.appendChild(card);
+      // Add to cart
+      if (window.OKMart && window.OKMart.addToCart) {
+        window.OKMart.addToCart(product);
+      } else {
+        addToCartFallback(product);
+      }
+    });
+    
+    return card;
+  }
+  
+  function addToCartFallback(product) {
+    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+    const existing = cart.find(item => item.id === product.id);
+    
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        mrp: product.mrp,
+        image: product.image,
+        unit: product.unit,
+        quantity: 1
+      });
+    }
+    
+    localStorage.setItem('okmart_cart', JSON.stringify(cart));
+    updateCartBadge();
+    showAddToCartFeedback(product.name);
+  }
+  
+  function showAddToCartFeedback(name) {
+    const feedback = document.createElement('div');
+    feedback.innerHTML = `<span>🛒</span><span>${name} added!</span>`;
+    feedback.style.cssText = `
+      position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+      background:#1e2a2e;color:white;padding:12px 24px;border-radius:40px;
+      font-weight:500;z-index:1000;display:flex;gap:8px;white-space:nowrap;
+      animation:slideUp 0.3s ease-out;
+    `;
+    document.body.appendChild(feedback);
+    setTimeout(() => feedback.remove(), 2000);
+  }
+  
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const badges = document.querySelectorAll('.cart-badge, #cartCountPlaceholder');
+    badges.forEach(badge => {
+      if (badge) badge.textContent = totalItems;
     });
   }
   
@@ -209,13 +265,13 @@
   function renderCategoryFilters() {
     if (!categoryContainer) return;
     
-    const categories = ['all', ...new Set(allProducts.map(p => p.category))];
+    const categories = ['all', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
     
     categoryContainer.innerHTML = '';
     
     categories.forEach(cat => {
       const btn = document.createElement('button');
-      btn.className = 'category-btn';
+      btn.className = 'category-filter-btn';
       if (cat === activeCategory) {
         btn.classList.add('active');
       }
@@ -225,7 +281,7 @@
       btn.addEventListener('click', () => {
         activeCategory = cat;
         
-        document.querySelectorAll('.category-btn').forEach(b => {
+        document.querySelectorAll('.category-filter-btn').forEach(b => {
           b.classList.remove('active');
         });
         btn.classList.add('active');
@@ -250,7 +306,7 @@
       clearSearchBtn.classList.remove('visible');
     }
     
-    document.querySelectorAll('.category-btn').forEach(btn => {
+    document.querySelectorAll('.category-filter-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.category === 'all');
     });
     
@@ -262,83 +318,24 @@
     renderProducts();
   }
   
-  // ---------- CATEGORY NAVIGATION FUNCTIONS ----------
+  // ---------- OFFERS SECTION ----------
   
-  function updateCategoryCounts() {
-    if (!allProducts || allProducts.length === 0) return;
+  async function renderOffers() {
+    if (!offersGrid) return;
     
-    const countProducts = (keywords) => {
-      return allProducts.filter(p => {
-        const nameLower = p.name.toLowerCase();
-        const catLower = p.category.toLowerCase();
-        return keywords.some(kw => nameLower.includes(kw) || catLower.includes(kw));
-      }).length;
-    };
+    const offers = await loadOffers();
     
-    // Update all category groups
-    Object.keys(categoryConfig).forEach(groupKey => {
-      categoryConfig[groupKey].forEach(cat => {
-        const keywords = keywordMap[cat.id] || [cat.name.toLowerCase()];
-        cat.count = countProducts(keywords);
-      });
+    offersGrid.innerHTML = '';
+    
+    if (offers.length === 0) {
+      offersGrid.innerHTML = '<div class="loading-placeholder">No offers available</div>';
+      return;
+    }
+    
+    offers.slice(0, 6).forEach(product => {
+      const card = renderProductCard(product);
+      offersGrid.appendChild(card);
     });
-  }
-  
-  function renderCategoryCard(category) {
-    const card = document.createElement('a');
-    card.href = category.link;
-    card.className = 'category-card';
-    card.setAttribute('data-category-id', category.id);
-    
-    card.innerHTML = `
-      <div class="category-icon">
-        <span>${category.icon}</span>
-      </div>
-      <div class="category-name">${category.name}</div>
-      <div class="category-count">${category.count > 0 ? category.count + ' items' : 'Coming soon'}</div>
-    `;
-    
-    return card;
-  }
-  
-  function renderCategoryNavigation() {
-    updateCategoryCounts();
-    
-    // Render Fruits & Vegetables
-    const fruitsVegGrid = document.getElementById('fruitsVegGrid');
-    if (fruitsVegGrid) {
-      fruitsVegGrid.innerHTML = '';
-      categoryConfig.fruitsVeg.forEach(cat => {
-        fruitsVegGrid.appendChild(renderCategoryCard(cat));
-      });
-    }
-    
-    // Render Dairy & Bakery
-    const dairyBakeryGrid = document.getElementById('dairyBakeryGrid');
-    if (dairyBakeryGrid) {
-      dairyBakeryGrid.innerHTML = '';
-      categoryConfig.dairyBakery.slice(0, 8).forEach(cat => {
-        dairyBakeryGrid.appendChild(renderCategoryCard(cat));
-      });
-    }
-    
-    // Render Snacks & Packaged
-    const snacksPackagedGrid = document.getElementById('snacksPackagedGrid');
-    if (snacksPackagedGrid) {
-      snacksPackagedGrid.innerHTML = '';
-      categoryConfig.snacksPackaged.slice(0, 8).forEach(cat => {
-        snacksPackagedGrid.appendChild(renderCategoryCard(cat));
-      });
-    }
-    
-    // Render Grocery Staples
-    const groceryStaplesGrid = document.getElementById('groceryStaplesGrid');
-    if (groceryStaplesGrid) {
-      groceryStaplesGrid.innerHTML = '';
-      categoryConfig.groceryStaples.slice(0, 8).forEach(cat => {
-        groceryStaplesGrid.appendChild(renderCategoryCard(cat));
-      });
-    }
   }
   
   // ---------- QUICK ORDER SECTION (DAILY ESSENTIALS) ----------
@@ -371,12 +368,16 @@
   }
   
   function renderQuickOrder() {
-    const quickGrid = document.getElementById('quickOrderGrid');
-    if (!quickGrid) return;
+    if (!quickOrderGrid) return;
     
     const essentials = getDailyEssentials();
     
-    quickGrid.innerHTML = '';
+    quickOrderGrid.innerHTML = '';
+    
+    if (essentials.length === 0) {
+      quickOrderGrid.innerHTML = '<div class="loading-placeholder">Loading essentials...</div>';
+      return;
+    }
     
     essentials.forEach(product => {
       const card = document.createElement('div');
@@ -389,31 +390,32 @@
       `;
       
       const addBtn = card.querySelector('.quick-add-btn');
-      // Inside renderQuickOrder function in home.js, update the addBtn click handler:
-
-addBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  
-  // Trigger fly animation from quick order card
-  const productImage = card.querySelector('.quick-item-image');
-  if (productImage && window.OKMart && window.OKMart.flyToCart) {
-    window.OKMart.flyToCart(productImage, product.image, product.name);
-  }
-  
-  OKMart.addToCart(product);
-  
-  addBtn.textContent = '✓ Added';
-  addBtn.style.background = '#2ecc71';
-  addBtn.style.color = 'white';
-  
-  setTimeout(() => {
-    addBtn.textContent = '+ Add';
-    addBtn.style.background = 'white';
-    addBtn.style.color = '#27ae60';
-  }, 1000);
-});
+      addBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        const productImage = card.querySelector('.quick-item-image');
+        if (productImage && window.OKMart && window.OKMart.flyToCart) {
+          window.OKMart.flyToCart(productImage, product.image, product.name);
+        }
+        
+        if (window.OKMart && window.OKMart.addToCart) {
+          window.OKMart.addToCart(product);
+        } else {
+          addToCartFallback(product);
+        }
+        
+        addBtn.textContent = '✓ Added';
+        addBtn.style.background = '#2ecc71';
+        addBtn.style.color = 'white';
+        
+        setTimeout(() => {
+          addBtn.textContent = '+ Add';
+          addBtn.style.background = 'white';
+          addBtn.style.color = '#27ae60';
+        }, 1000);
+      });
       
-      quickGrid.appendChild(card);
+      quickOrderGrid.appendChild(card);
     });
   }
   
@@ -443,11 +445,6 @@ addBtn.addEventListener('click', (e) => {
       
       if (quickSection) {
         quickSection.insertAdjacentElement('afterend', popularSection);
-      } else {
-        const categorySection = document.querySelector('.category-filter-section');
-        if (categorySection) {
-          categorySection.insertAdjacentElement('beforebegin', popularSection);
-        }
       }
     }
     
@@ -456,14 +453,7 @@ addBtn.addEventListener('click', (e) => {
       popularGrid.innerHTML = '';
       
       popularProducts.slice(0, 6).forEach(product => {
-        const card = OKMart.renderProductCard(product);
-        
-        const badge = document.createElement('span');
-        badge.className = 'popular-tag';
-        badge.textContent = '🔥 Popular';
-        card.style.position = 'relative';
-        card.insertBefore(badge, card.firstChild);
-        
+        const card = renderProductCard(product);
         popularGrid.appendChild(card);
       });
     }
@@ -493,10 +483,10 @@ addBtn.addEventListener('click', (e) => {
       border: 1px solid #e2e8f0;
     `;
     
-    const searchWrapper = document.querySelector('.search-wrapper');
-    if (searchWrapper) {
-      searchWrapper.style.position = 'relative';
-      searchWrapper.appendChild(container);
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer) {
+      searchContainer.style.position = 'relative';
+      searchContainer.appendChild(container);
     }
     
     suggestionsContainer = container;
@@ -523,18 +513,6 @@ addBtn.addEventListener('click', (e) => {
       }
     });
     
-    const categories = [...new Set(allProducts.map(p => p.category))];
-    categories.forEach(category => {
-      if (category.toLowerCase().includes(queryLower) && !seen.has(category)) {
-        suggestions.push({
-          type: 'category',
-          name: category,
-          displayName: categoryDisplayNames[category] || category
-        });
-        seen.add(category);
-      }
-    });
-    
     return suggestions.slice(0, 8);
   }
   
@@ -550,55 +528,22 @@ addBtn.addEventListener('click', (e) => {
     
     suggestions.forEach(suggestion => {
       const item = document.createElement('div');
-      item.style.cssText = `
-        padding: 12px 16px;
-        cursor: pointer;
-        border-bottom: 1px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transition: background 0.15s;
+      item.className = 'suggestion-item';
+      item.innerHTML = `
+        <span style="font-size:1.2rem">🛒</span>
+        <div style="flex:1">
+          <div style="font-weight:500">${suggestion.name}</div>
+          <div style="font-size:0.75rem;color:#64748b">in ${suggestion.category}</div>
+        </div>
       `;
-      item.addEventListener('mouseenter', () => item.style.background = '#f7fdf9');
-      item.addEventListener('mouseleave', () => item.style.background = 'white');
       
-      if (suggestion.type === 'product') {
-        item.innerHTML = `
-          <span style="font-size:1.2rem">🛒</span>
-          <div style="flex:1">
-            <div style="font-weight:500">${suggestion.name}</div>
-            <div style="font-size:0.75rem;color:#64748b">in ${suggestion.category}</div>
-          </div>
-        `;
-        item.addEventListener('click', () => {
-          searchInput.value = suggestion.name;
-          searchQuery = suggestion.name;
-          clearSearchBtn?.classList.add('visible');
-          renderProducts();
-          container.style.display = 'none';
-        });
-      } else {
-        item.innerHTML = `
-          <span style="font-size:1.2rem">📁</span>
-          <div style="flex:1">
-            <div style="font-weight:500">${suggestion.displayName}</div>
-            <div style="font-size:0.75rem;color:#64748b">Category</div>
-          </div>
-        `;
-        item.addEventListener('click', () => {
-          activeCategory = suggestion.name;
-          searchQuery = '';
-          searchInput.value = '';
-          clearSearchBtn?.classList.remove('visible');
-          
-          document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.category === suggestion.name);
-          });
-          
-          renderProducts();
-          container.style.display = 'none';
-        });
-      }
+      item.addEventListener('click', () => {
+        searchInput.value = suggestion.name;
+        searchQuery = suggestion.name;
+        clearSearchBtn?.classList.add('visible');
+        renderProducts();
+        container.style.display = 'none';
+      });
       
       container.appendChild(item);
     });
@@ -606,9 +551,11 @@ addBtn.addEventListener('click', (e) => {
     container.style.display = 'block';
   }
   
-  // ---------- EVENT LISTENERS ----------
+  // ---------- SEARCH HANDLERS ----------
   
-  if (searchInput) {
+  function setupSearch() {
+    if (!searchInput) return;
+    
     searchInput.addEventListener('input', (e) => {
       const query = e.target.value;
       
@@ -629,6 +576,20 @@ addBtn.addEventListener('click', (e) => {
       renderProducts();
     });
     
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        if (query) {
+          window.location.href = `/search.html?query=${encodeURIComponent(query)}`;
+        }
+      }
+      
+      if (e.key === 'Escape') {
+        const container = document.getElementById('searchSuggestions');
+        if (container) container.style.display = 'none';
+      }
+    });
+    
     searchInput.addEventListener('blur', () => {
       setTimeout(() => {
         const container = document.getElementById('searchSuggestions');
@@ -642,34 +603,40 @@ addBtn.addEventListener('click', (e) => {
         renderSuggestions(suggestions);
       }
     });
-    
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const container = document.getElementById('searchSuggestions');
-        if (container) container.style.display = 'none';
-      }
-    });
   }
   
-  if (clearSearchBtn) {
-    clearSearchBtn.addEventListener('click', () => {
-      searchQuery = '';
-      if (searchInput) {
-        searchInput.value = '';
-        searchInput.focus();
-      }
-      clearSearchBtn.classList.remove('visible');
-      
-      const container = document.getElementById('searchSuggestions');
-      if (container) container.style.display = 'none';
-      
-      renderProducts();
-    });
+  function setupSearchSubmit() {
+    if (searchSubmitBtn) {
+      searchSubmitBtn.addEventListener('click', () => {
+        const query = searchInput?.value.trim();
+        if (query) {
+          window.location.href = `/search.html?query=${encodeURIComponent(query)}`;
+        }
+      });
+    }
+  }
+  
+  function setupClearSearch() {
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', () => {
+        searchQuery = '';
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.focus();
+        }
+        clearSearchBtn.classList.remove('visible');
+        
+        const container = document.getElementById('searchSuggestions');
+        if (container) container.style.display = 'none';
+        
+        renderProducts();
+      });
+    }
   }
   
   // Close suggestions when clicking outside
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-wrapper')) {
+    if (!e.target.closest('.search-container')) {
       const container = document.getElementById('searchSuggestions');
       if (container) container.style.display = 'none';
     }
@@ -678,361 +645,32 @@ addBtn.addEventListener('click', (e) => {
   // ---------- ADD STYLES ----------
   
   function addHomeStyles() {
-    // Check if styles already exist
     if (document.getElementById('homeDynamicStyles')) return;
     
     const style = document.createElement('style');
     style.id = 'homeDynamicStyles';
     style.textContent = `
-      /* Category Navigation Grid */
-      .category-nav-section {
-        padding: 8px 0;
-        background: #f7fdf9;
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
       }
       
-      .category-group {
-        background: white;
-        margin-bottom: 12px;
-        padding: 16px 0 8px;
-        border-radius: 20px 20px 0 0;
-      }
-      
-      .group-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px 12px;
-      }
-      
-      .group-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #1e2a2e;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      
-      .view-all-link {
-        color: #2ecc71;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-decoration: none;
-        padding: 6px 12px;
-        background: rgba(46, 204, 113, 0.1);
-        border-radius: 40px;
-        transition: all 0.2s;
-      }
-      
-      .view-all-link:hover {
-        background: rgba(46, 204, 113, 0.2);
-      }
-      
-      .view-all-link:active {
-        transform: scale(0.95);
-      }
-      
-      .category-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        padding: 0 12px;
-      }
-      
-      .category-card {
-        background: #f7fdf9;
-        border-radius: 12px;
-        padding: 12px 6px;
-        text-align: center;
+      .suggestion-item {
+        padding: 12px 16px;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid #e2e8f0;
-        text-decoration: none;
-        display: block;
-        -webkit-tap-highlight-color: transparent;
-      }
-      
-      .category-card:hover {
-        background: white;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        transform: translateY(-2px);
-        border-color: #2ecc71;
-      }
-      
-      .category-card:active {
-        transform: scale(0.95);
-        background: #e8f5e9;
-      }
-      
-      .category-icon {
-        width: 56px;
-        height: 56px;
-        margin: 0 auto 8px;
-        background: white;
-        border-radius: 50%;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s;
-      }
-      
-      .category-card:hover .category-icon {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        background: #2ecc71;
-      }
-      
-      .category-card:hover .category-icon span {
-        filter: brightness(0) invert(1);
-      }
-      
-      .category-icon span {
-        font-size: 28px;
-        transition: filter 0.2s;
-      }
-      
-      .category-name {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #1e2a2e;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin-bottom: 2px;
-      }
-      
-      .category-count {
-        font-size: 0.65rem;
-        color: #64748b;
-        font-weight: 400;
-      }
-      
-      /* Quick Order Section */
-      .quick-order-section {
-        padding: 8px 16px 16px;
-        background: white;
-        margin: 8px 0;
-        border-radius: 20px 20px 0 0;
-      }
-      
-      .quick-order-section .section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      
-      .quick-badge {
-        background: #2ecc71;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 40px;
-        font-size: 0.7rem;
-        font-weight: 600;
-      }
-      
-      .quick-order-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
         gap: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        transition: background 0.15s;
       }
       
-      .quick-item-card {
+      .suggestion-item:hover {
         background: #f7fdf9;
-        border-radius: 16px;
-        padding: 12px 8px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: 1px solid #e2e8f0;
       }
       
-      .quick-item-card:active {
-        transform: scale(0.95);
-        background: #e8f5e9;
-      }
-      
-      .quick-item-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 12px;
-        margin-bottom: 8px;
-        background: white;
-      }
-      
-      .quick-item-name {
-        font-weight: 600;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-      }
-      
-      .quick-item-price {
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: #27ae60;
-        margin-bottom: 8px;
-      }
-      
-      .quick-add-btn {
-        background: white;
-        border: 1.5px solid #2ecc71;
-        color: #27ae60;
-        padding: 6px 12px;
-        border-radius: 40px;
-        font-weight: 600;
-        font-size: 0.75rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        width: 100%;
-      }
-      
-      /* Popular Section */
-      .popular-section {
-        padding: 16px 0;
-        background: white;
-        margin: 8px 0;
-        border-radius: 20px 20px 0 0;
-      }
-      
-      .popular-section .section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px 12px;
-      }
-      
-      .popular-badge {
-        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-        color: white;
-        padding: 4px 12px;
-        border-radius: 40px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      
-      .popular-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        padding: 8px 16px;
-      }
-      
-      .popular-tag {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-        color: white;
-        padding: 4px 10px;
-        border-radius: 40px;
-        font-size: 0.65rem;
-        font-weight: 600;
-        z-index: 2;
-      }
-      
-      /* Hide horizontal category filter */
-      .category-filter-section {
-        display: none;
-      }
-      
-      /* Floating Call Button */
-      .floating-call-btn {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 56px;
-        height: 56px;
-        background: #25D366;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-        z-index: 150;
-        transition: all 0.3s;
-        text-decoration: none;
-        animation: pulse-call 2s infinite;
-      }
-      
-      .floating-call-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4);
-      }
-      
-      .floating-call-btn:active {
-        transform: scale(0.95);
-      }
-      
-      .call-icon {
-        font-size: 28px;
-      }
-      
-      @keyframes pulse-call {
-        0%, 100% {
-          box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
-        }
-        50% {
-          box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
-        }
-      }
-      
-      /* Responsive */
-      @media (min-width: 600px) {
-        .category-grid {
-          grid-template-columns: repeat(5, 1fr);
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        
-        .category-icon {
-          width: 64px;
-          height: 64px;
-          font-size: 32px;
-        }
-        
-        .category-name {
-          font-size: 0.8rem;
-        }
-        
-        .quick-order-grid {
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        
-        .popular-grid {
-          grid-template-columns: repeat(3, 1fr);
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-      }
-      
-      @media (min-width: 900px) {
-        .category-grid {
-          grid-template-columns: repeat(6, 1fr);
-          max-width: 1000px;
-        }
-        
-        .category-group {
-          max-width: 1200px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-      }
-      
-      @media (min-width: 1024px) {
-        .popular-grid {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-      
-      @media (max-width: 640px) {
-        .sticky-cart-bar.visible ~ .floating-call-btn {
-          bottom: 100px;
-        }
+      .suggestion-item:last-child {
+        border-bottom: none;
       }
     `;
     document.head.appendChild(style);
@@ -1046,28 +684,38 @@ addBtn.addEventListener('click', (e) => {
         loadingState.style.display = 'flex';
       }
       
-      // Fetch products
-      allProducts = await OKMart.getProducts();
+      // Add styles
+      addHomeStyles();
+      
+      // Load all products
+      allProducts = await loadAllProducts();
       
       if (!allProducts.length) {
         throw new Error('No products loaded');
       }
       
-      // Add styles
-      addHomeStyles();
+      // Render sections
+      renderCategoryFilters();
+      await renderOffers();
+      renderQuickOrder();
+      renderPopularSection();
+      renderProducts();
       
-      // Render all sections in correct order
-      renderCategoryNavigation();  // Category navigation grid (NEW)
-      renderCategoryFilters();     // Original horizontal filter (hidden by CSS)
-      renderQuickOrder();          // Daily essentials
-      renderPopularSection();      // Popular products
-      renderProducts();            // Main product grid
+      // Setup search
+      setupSearch();
+      setupSearchSubmit();
+      setupClearSearch();
       
-      // Preload images for better performance
+      // Update cart badge
+      updateCartBadge();
+      
+      // Preload images
       allProducts.slice(0, 12).forEach(p => {
         const img = new Image();
         img.src = p.image;
       });
+      
+      console.log('✅ Home page initialized | Products:', allProducts.length);
       
     } catch (error) {
       console.error('Failed to load products:', error);
@@ -1103,25 +751,3 @@ addBtn.addEventListener('click', (e) => {
   };
   
 })();
-
-// Add to home.js - Search input Enter key handler
-if (searchInput) {
-  searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const query = searchInput.value.trim();
-      if (query) {
-        window.location.href = `search.html?query=${encodeURIComponent(query)}`;
-      }
-    }
-  });
-}
-// Search submit button
-const searchSubmitBtn = document.getElementById('searchSubmitBtn');
-if (searchSubmitBtn) {
-  searchSubmitBtn.addEventListener('click', () => {
-    const query = searchInput?.value.trim();
-    if (query) {
-      window.location.href = `search.html?query=${encodeURIComponent(query)}`;
-    }
-  });
-}
