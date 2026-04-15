@@ -1,0 +1,526 @@
+/* ===== OK MART - OFFERS PAGE STYLES ===== */
+
+.offers-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+  min-height: 100vh;
+}
+
+/* Header */
+.offers-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* Top Banner */
+.offers-banner {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  margin: 8px 16px 16px;
+  padding: 20px 16px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.25);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: white;
+}
+
+.banner-icon {
+  font-size: 2rem;
+}
+
+.banner-text {
+  text-align: center;
+}
+
+.banner-text h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.banner-text p {
+  font-size: 0.9rem;
+  opacity: 0.95;
+}
+
+.banner-text strong {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* Offers Header Info */
+.offers-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.offers-count {
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+.offers-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-light);
+  padding: 4px 12px;
+  border-radius: 40px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Offers Grid */
+.offers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 16px;
+}
+
+/* Offer Card */
+.offer-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.offer-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Offer Badge */
+.offer-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 40px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* Offer Header */
+.offer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-right: 80px;
+}
+
+.offer-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-light);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.offer-title-section {
+  flex: 1;
+}
+
+.offer-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.offer-type {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Offer Description */
+.offer-description {
+  font-size: 1rem;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+/* Offer Details */
+.offer-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg-light);
+  border-radius: 12px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.detail-icon {
+  font-size: 1rem;
+}
+
+/* Coupon Code Section */
+.coupon-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.coupon-code {
+  flex: 1;
+  background: var(--bg-light);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px dashed var(--primary);
+  font-family: monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-align: center;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.coupon-code:hover {
+  background: rgba(46, 204, 113, 0.05);
+}
+
+.coupon-code:active {
+  transform: scale(0.98);
+}
+
+.copy-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copy-btn:hover {
+  background: var(--primary-dark);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+.copy-btn.copied {
+  background: #10b981;
+}
+
+/* Expiry and Terms */
+.offer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.offer-expiry {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.offer-terms {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.offer-terms:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Terms Tooltip */
+.terms-tooltip {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: var(--text-dark);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  max-width: 200px;
+  display: none;
+  z-index: 10;
+}
+
+.offer-terms:hover + .terms-tooltip {
+  display: block;
+}
+
+/* How to Use Section */
+.how-to-use {
+  background: white;
+  margin: 24px 16px;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.how-to-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.steps-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.step-text {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Terms Note */
+.terms-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 0 16px 16px;
+  background: #fff3cd;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #856404;
+}
+
+.terms-icon {
+  font-size: 1.2rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 20px;
+  margin: 16px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+/* Toast Message */
+.toast-message {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text-dark);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+.toast-message.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-message.success {
+  background: #10b981;
+}
+
+/* Bottom Navigation */
+.sticky-bottom-bar .bottom-bar-inner {
+  display: flex;
+  justify-content: space-around;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 40px;
+  transition: all 0.2s;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Floating Call Button */
+.floating-call-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+  z-index: 150;
+  text-decoration: none;
+  animation: pulse-call 2s infinite;
+}
+
+.call-icon {
+  font-size: 28px;
+}
+
+@keyframes pulse-call {
+  0%, 100% { box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3); }
+  50% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5); }
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .offers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .steps-container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .offer-header {
+    padding-right: 70px;
+  }
+  
+  .coupon-section {
+    flex-direction: column;
+  }
+  
+  .copy-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
