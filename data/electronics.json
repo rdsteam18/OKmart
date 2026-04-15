@@ -1,0 +1,67 @@
+{
+  "category": "electronics",
+  "displayName": "Electronics & Accessories",
+  "icon": "📱",
+  "products": [
+    {
+      "id": "e1",
+      "name": "boAt Type-C Charging Cable",
+      "category": "electronics",
+      "price": 199,
+      "mrp": 299,
+      "image": "https://images.pexels.com/photos/4219882/pexels-photo-4219882.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1.5 m",
+      "popular": true
+    },
+    {
+      "id": "e2",
+      "name": "MI 20W Fast Charger",
+      "category": "electronics",
+      "price": 299,
+      "mrp": 399,
+      "image": "https://images.pexels.com/photos/1153369/pexels-photo-1153369.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Type-C",
+      "popular": true
+    },
+    {
+      "id": "e3",
+      "name": "boAt Rockerz Bluetooth Earphones",
+      "category": "electronics",
+      "price": 899,
+      "mrp": 1299,
+      "image": "https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Wireless",
+      "popular": false
+    },
+    {
+      "id": "e4",
+      "name": "Tempered Glass Screen Protector",
+      "category": "electronics",
+      "price": 99,
+      "mrp": 149,
+      "image": "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Universal",
+      "popular": false
+    },
+    {
+      "id": "e5",
+      "name": "Power Bank 10000mAh",
+      "category": "electronics",
+      "price": 699,
+      "mrp": 999,
+      "image": "https://images.pexels.com/photos/3945659/pexels-photo-3945659.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Dual USB",
+      "popular": true
+    },
+    {
+      "id": "e6",
+      "name": "Mobile Holder for Car",
+      "category": "electronics",
+      "price": 149,
+      "mrp": 249,
+      "image": "https://images.pexels.com/photos/2905238/pexels-photo-2905238.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "Adjustable",
+      "popular": false
+    }
+  ]
+}
