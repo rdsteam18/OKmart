@@ -1,0 +1,67 @@
+{
+  "category": "grocery",
+  "displayName": "Grocery Staples",
+  "icon": "🧺",
+  "products": [
+    {
+      "id": "g1",
+      "name": "Fortune Sunflower Oil",
+      "category": "grocery",
+      "price": 115,
+      "mrp": 135,
+      "image": "https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 L",
+      "popular": true
+    },
+    {
+      "id": "g2",
+      "name": "Tata Sampann Toor Dal",
+      "category": "grocery",
+      "price": 150,
+      "mrp": 170,
+      "image": "https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": true
+    },
+    {
+      "id": "g3",
+      "name": "Aashirvaad Atta",
+      "category": "grocery",
+      "price": 270,
+      "mrp": 300,
+      "image": "https://images.pexels.com/photos/209482/pexels-photo-209482.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "5 kg",
+      "popular": true
+    },
+    {
+      "id": "g4",
+      "name": "India Gate Basmati Rice",
+      "category": "grocery",
+      "price": 199,
+      "mrp": 230,
+      "image": "https://images.pexels.com/photos/4110257/pexels-photo-4110257.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": false
+    },
+    {
+      "id": "g5",
+      "name": "Tata Salt",
+      "category": "grocery",
+      "price": 22,
+      "mrp": 25,
+      "image": "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 kg",
+      "popular": false
+    },
+    {
+      "id": "g6",
+      "name": "Everest Garam Masala",
+      "category": "grocery",
+      "price": 55,
+      "mrp": 65,
+      "image": "https://images.pexels.com/photos/4198024/pexels-photo-4198024.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "50 g",
+      "popular": false
+    }
+  ]
+}
