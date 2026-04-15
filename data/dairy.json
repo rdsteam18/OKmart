@@ -1,0 +1,87 @@
+{
+  "category": "dairy",
+  "displayName": "Dairy & Bakery",
+  "icon": "🥛",
+  "products": [
+    {
+      "id": "d1",
+      "name": "Amul Taaza Milk",
+      "category": "dairy",
+      "price": 26,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "500 ml",
+      "popular": true
+    },
+    {
+      "id": "d2",
+      "name": "Amul Butter",
+      "category": "dairy",
+      "price": 54,
+      "mrp": 60,
+      "image": "https://images.pexels.com/photos/1291712/pexels-photo-1291712.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "100 g",
+      "popular": true
+    },
+    {
+      "id": "d3",
+      "name": "Mother Dairy Paneer",
+      "category": "dairy",
+      "price": 85,
+      "mrp": 95,
+      "image": "https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g",
+      "popular": false
+    },
+    {
+      "id": "d4",
+      "name": "Amul Cheese Slices",
+      "category": "dairy",
+      "price": 95,
+      "mrp": 110,
+      "image": "https://images.pexels.com/photos/773253/pexels-photo-773253.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g (10 slices)",
+      "popular": true
+    },
+    {
+      "id": "d5",
+      "name": "Epigamia Greek Yogurt",
+      "category": "dairy",
+      "price": 40,
+      "mrp": 45,
+      "image": "https://images.pexels.com/photos/1162361/pexels-photo-1162361.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "90 g",
+      "popular": false
+    },
+    {
+      "id": "d6",
+      "name": "Amul Fresh Cream",
+      "category": "dairy",
+      "price": 52,
+      "mrp": 58,
+      "image": "https://images.pexels.com/photos/5946761/pexels-photo-5946761.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 ml",
+      "popular": false
+    },
+    {
+      "id": "d7",
+      "name": "Britannia Brown Bread",
+      "category": "dairy",
+      "price": 40,
+      "mrp": 45,
+      "image": "https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "400 g",
+      "popular": true
+    },
+    {
+      "id": "d8",
+      "name": "Eggs (Farm Fresh)",
+      "category": "dairy",
+      "price": 84,
+      "mrp": 96,
+      "image": "https://images.pexels.com/photos/162712/egg-white-food-protein-162712.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "6 pcs",
+      "popular": true
+    }
+  ]
+}
