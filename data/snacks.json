@@ -1,0 +1,67 @@
+{
+  "category": "snacks",
+  "displayName": "Snacks & Munchies",
+  "icon": "🍿",
+  "products": [
+    {
+      "id": "s1",
+      "name": "Lay's Classic Salted",
+      "category": "snacks",
+      "price": 20,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/4791269/pexels-photo-4791269.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "52 g",
+      "popular": true
+    },
+    {
+      "id": "s2",
+      "name": "Kurkure Masala Munch",
+      "category": "snacks",
+      "price": 20,
+      "mrp": 30,
+      "image": "https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "75 g",
+      "popular": true
+    },
+    {
+      "id": "s3",
+      "name": "Haldiram's Aloo Bhujia",
+      "category": "snacks",
+      "price": 55,
+      "mrp": 65,
+      "image": "https://images.pexels.com/photos/372882/pexels-photo-372882.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "200 g",
+      "popular": false
+    },
+    {
+      "id": "s4",
+      "name": "Parle-G Biscuits",
+      "category": "snacks",
+      "price": 5,
+      "mrp": 5,
+      "image": "https://images.pexels.com/photos/239578/pexels-photo-239578.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "55 g",
+      "popular": true
+    },
+    {
+      "id": "s5",
+      "name": "Oreo Chocolate",
+      "category": "snacks",
+      "price": 30,
+      "mrp": 35,
+      "image": "https://images.pexels.com/photos/1292294/pexels-photo-1292294.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "120 g",
+      "popular": false
+    },
+    {
+      "id": "s6",
+      "name": "Maggi Noodles",
+      "category": "snacks",
+      "price": 14,
+      "mrp": 15,
+      "image": "https://images.pexels.com/photos/2664216/pexels-photo-2664216.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "70 g",
+      "popular": true
+    }
+  ]
+}
