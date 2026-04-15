@@ -1,0 +1,67 @@
+{
+  "category": "fruits",
+  "displayName": "Fresh Fruits",
+  "icon": "🍎",
+  "products": [
+    {
+      "id": "f1",
+      "name": "Fresh Apple (Royal Gala)",
+      "category": "fruits",
+      "price": 120,
+      "mrp": 150,
+      "image": "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "4 pcs (approx 500g)",
+      "popular": true
+    },
+    {
+      "id": "f2",
+      "name": "Banana (Yelakki)",
+      "category": "fruits",
+      "price": 40,
+      "mrp": 50,
+      "image": "https://images.pexels.com/photos/1093038/pexels-photo-1093038.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "6 pcs",
+      "popular": true
+    },
+    {
+      "id": "f3",
+      "name": "Fresh Orange (Nagpur)",
+      "category": "fruits",
+      "price": 80,
+      "mrp": 100,
+      "image": "https://images.pexels.com/photos/161559/background-bitter-breakfast-bright-161559.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "4 pcs",
+      "popular": false
+    },
+    {
+      "id": "f4",
+      "name": "Green Grapes (Seedless)",
+      "category": "fruits",
+      "price": 90,
+      "mrp": 120,
+      "image": "https://images.pexels.com/photos/708777/pexels-photo-708777.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "500g",
+      "popular": true
+    },
+    {
+      "id": "f5",
+      "name": "Pomegranate",
+      "category": "fruits",
+      "price": 110,
+      "mrp": 140,
+      "image": "https://images.pexels.com/photos/209339/pexels-photo-209339.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "2 pcs (approx 500g)",
+      "popular": false
+    },
+    {
+      "id": "f6",
+      "name": "Mango (Alphonso)",
+      "category": "fruits",
+      "price": 250,
+      "mrp": 300,
+      "image": "https://images.pexels.com/photos/2294471/pexels-photo-2294471.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "3 pcs",
+      "popular": true
+    }
+  ]
+}
