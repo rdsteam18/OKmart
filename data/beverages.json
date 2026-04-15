@@ -1,0 +1,67 @@
+{
+  "category": "beverages",
+  "displayName": "Beverages",
+  "icon": "🥤",
+  "products": [
+    {
+      "id": "b1",
+      "name": "Coca-Cola",
+      "category": "beverages",
+      "price": 35,
+      "mrp": 40,
+      "image": "https://images.pexels.com/photos/2668300/pexels-photo-2668300.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "750 ml",
+      "popular": true
+    },
+    {
+      "id": "b2",
+      "name": "Sprite",
+      "category": "beverages",
+      "price": 35,
+      "mrp": 40,
+      "image": "https://images.pexels.com/photos/2668300/pexels-photo-2668300.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "750 ml",
+      "popular": true
+    },
+    {
+      "id": "b3",
+      "name": "Red Bull Energy Drink",
+      "category": "beverages",
+      "price": 110,
+      "mrp": 125,
+      "image": "https://images.pexels.com/photos/3326364/pexels-photo-3326364.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "250 ml",
+      "popular": false
+    },
+    {
+      "id": "b4",
+      "name": "Tata Tea Gold",
+      "category": "beverages",
+      "price": 130,
+      "mrp": 150,
+      "image": "https://images.pexels.com/photos/1417945/pexels-photo-1417945.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "250 g",
+      "popular": true
+    },
+    {
+      "id": "b5",
+      "name": "Nescafe Classic Coffee",
+      "category": "beverages",
+      "price": 145,
+      "mrp": 160,
+      "image": "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "50 g",
+      "popular": true
+    },
+    {
+      "id": "b6",
+      "name": "Real Fruit Juice (Mixed)",
+      "category": "beverages",
+      "price": 95,
+      "mrp": 110,
+      "image": "https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=200",
+      "unit": "1 L",
+      "popular": false
+    }
+  ]
+}
