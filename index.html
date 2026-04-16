@@ -4,25 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   
-  <title>OK Mart | Fresh Grocery Delivery</title>
-  <meta name="description" content="Fresh groceries delivered in 10 minutes">
+  <!-- Google Site Verification -->
+  <meta name="google-site-verification" content="d1uLLcwbDH99lepVNG6a_KEpVP24yjo1DqHN4aKhWk8" />
+  
+  <!-- SEO Meta Tags -->
+  <title>OK Mart | Online Grocery Delivery | Fresh & Fast</title>
+  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes. Free delivery on orders above ₹199.">
+  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits delivery, vegetables, snacks, dairy products, OK Mart">
+  <meta name="author" content="OK Mart">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
   <meta name="theme-color" content="#2ecc71">
   
+  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Mart">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/">
+  <meta property="og:title" content="OK Mart | Online Grocery Delivery">
+  <meta property="og:description" content="Fresh groceries delivered in 10 minutes. Order now!">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/og-image.jpg">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://okmart.netlify.app/">
+  <meta property="twitter:title" content="OK Mart | Online Grocery Delivery">
+  <meta property="twitter:description" content="Fresh groceries delivered in 10 minutes.">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://okmart.netlify.app/">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
   
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 </head>
 <body>
   <!-- Sticky Header -->
   <header class="app-header">
     <div class="header-container">
-      <a href="/index.html" class="logo-link">
+      <a href="/index.html" class="logo-link" aria-label="OK Mart Home">
         <span class="logo-text">🛒 OK Mart</span>
         <span class="delivery-tag">10 min</span>
       </a>
-      <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
+      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
       </a>
@@ -33,46 +70,68 @@
     <!-- Search Bar -->
     <div class="search-container">
       <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, snacks..." autocomplete="off">
-        <button class="clear-search" id="clearSearchBtn">✕</button>
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search for milk, bread, snacks..."
+          autocomplete="off"
+          aria-label="Search products"
+        >
+        <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
       </div>
+      <!-- Search Suggestions Dropdown -->
+      <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
     </div>
 
     <!-- Banner -->
     <div class="banner-container">
       <a href="/offers.html" class="banner-link">
-        <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Special Offers" class="banner-image">
+        <img 
+          src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" 
+          alt="Special Offers - Up to 30% OFF" 
+          class="banner-image"
+          loading="eager"
+        >
         <div class="banner-overlay">
-          <span class="banner-tag">Limited Time</span>
+          <span class="banner-tag">🔥 Limited Time</span>
           <span class="banner-text">Up to 30% OFF</span>
         </div>
       </a>
     </div>
 
     <!-- Category Grid -->
-    <section class="category-section">
-      <h2 class="section-title">Shop by Category</h2>
+    <section class="category-section" aria-label="Shop by Category">
+      <h2 class="section-title">📂 Shop by Category</h2>
       <div class="category-grid">
         <a href="/categories/fruits.html" class="category-item">
           <span class="category-emoji">🍎</span>
           <span class="category-label">Fruits</span>
         </a>
+        <a href="/categories/vegetables.html" class="category-item">
+          <span class="category-emoji">🥕</span>
+          <span class="category-label">Vegetables</span>
+        </a>
         <a href="/categories/dairy.html" class="category-item">
           <span class="category-emoji">🥛</span>
           <span class="category-label">Dairy</span>
+        </a>
+        <a href="/categories/bakery.html" class="category-item">
+          <span class="category-emoji">🥐</span>
+          <span class="category-label">Bakery</span>
         </a>
         <a href="/categories/snacks.html" class="category-item">
           <span class="category-emoji">🍿</span>
           <span class="category-label">Snacks</span>
         </a>
-        <a href="/categories/grocery.html" class="category-item">
-          <span class="category-emoji">🧺</span>
-          <span class="category-label">Grocery</span>
-        </a>
         <a href="/categories/beverages.html" class="category-item">
           <span class="category-emoji">🥤</span>
           <span class="category-label">Drinks</span>
+        </a>
+        <a href="/categories/grocery.html" class="category-item">
+          <span class="category-emoji">🧺</span>
+          <span class="category-label">Grocery</span>
         </a>
         <a href="/categories/electronics.html" class="category-item">
           <span class="category-emoji">📱</span>
@@ -82,47 +141,68 @@
           <span class="category-emoji">🧴</span>
           <span class="category-label">Personal</span>
         </a>
-        <a href="/offers.html" class="category-item">
+        <a href="/categories/household.html" class="category-item">
+          <span class="category-emoji">🧹</span>
+          <span class="category-label">Household</span>
+        </a>
+        <a href="/offers.html" class="category-item highlight">
           <span class="category-emoji">🏷️</span>
           <span class="category-label">Offers</span>
+        </a>
+        <a href="/track.html" class="category-item">
+          <span class="category-emoji">📦</span>
+          <span class="category-label">Track</span>
         </a>
       </div>
     </section>
 
-    <!-- Offers Section -->
-    <section class="offers-section">
+    <!-- Today's Deals / Offers Section -->
+    <section class="offers-section" aria-label="Today's Deals">
       <div class="section-header">
-        <h2 class="section-title">Today's Deals</h2>
+        <h2 class="section-title">🏷️ Today's Deals</h2>
         <a href="/offers.html" class="view-all">View All →</a>
       </div>
       <div class="offers-scroll" id="offersGrid">
-        <div class="loading-placeholder">Loading offers...</div>
+        <div class="loading-placeholder">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
       </div>
     </section>
 
-    <!-- Quick Order -->
-    <section class="quick-section">
-      <h2 class="section-title">⚡ Daily Essentials</h2>
-      <div class="quick-grid" id="quickOrderGrid">
-        <div class="loading-placeholder">Loading...</div>
-      </div>
-    </section>
-
-    <!-- Product Grid -->
-    <section class="products-section">
+    <!-- Daily Essentials / Quick Order -->
+    <section class="quick-section" aria-label="Daily Essentials">
       <div class="section-header">
-        <h2 class="section-title">All Products</h2>
-        <div class="filter-scroll" id="categoryFilterContainer"></div>
+        <h2 class="section-title">⚡ Daily Essentials</h2>
+        <span class="quick-badge">Quick Add</span>
+      </div>
+      <div class="quick-grid" id="quickOrderGrid">
+        <div class="loading-placeholder">Loading essentials...</div>
+      </div>
+    </section>
+
+    <!-- Main Product Grid -->
+    <section class="products-section" aria-label="All Products">
+      <div class="section-header">
+        <h2 class="section-title">🛒 All Products</h2>
       </div>
       
+      <!-- Category Filter Pills -->
+      <div class="filter-scroll" id="categoryFilterContainer">
+        <button class="category-filter-btn active">All</button>
+      </div>
+      
+      <!-- Results Info -->
       <div class="results-info">
         <span id="resultsCount">0 items</span>
       </div>
       
+      <!-- Product Grid -->
       <div class="product-grid" id="productGrid">
         <div class="loading-state" id="loadingState">
           <div class="spinner"></div>
-          <p>Loading products...</p>
+          <p>Loading fresh products...</p>
         </div>
       </div>
     </section>
@@ -130,20 +210,50 @@
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <a href="/index.html" class="nav-item active">🏠<span>Home</span></a>
-    <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
-    <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
-    <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    <a href="/index.html" class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="/search.html" class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="/offers.html" class="nav-item">
+      <span class="nav-icon">🏷️</span>
+      <span class="nav-label">Offers</span>
+    </a>
+    <a href="/track.html" class="nav-item">
+      <span class="nav-icon">📦</span>
+      <span class="nav-label">Track</span>
+    </a>
+    <a href="/cart.html" class="nav-item">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Cart</span>
+    </a>
   </nav>
 
-  <!-- WhatsApp Button -->
-  <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
+  <!-- Floating WhatsApp Button -->
+  <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <span>💬</span>
+  </a>
 
+  <!-- Floating Call Button -->
+  <a href="tel:+919982239821" class="fab-call" aria-label="Call for support">
+    <span>📞</span>
+  </a>
+
+  <!-- Scripts -->
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
+  
+  <!-- PWA Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[SW] Registered'))
+          .catch(err => console.log('[SW] Failed:', err));
+      });
     }
   </script>
 </body>
