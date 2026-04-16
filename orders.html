@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <!-- SEO Meta Tags -->
+  <title>My Orders | OK Mart Grocery Delivery</title>
+  <meta name="description" content="View your order history and track past grocery orders from OK Mart.">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/orders.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header orders-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">My Orders</h1>
+        </div>
+        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="view cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="orders-main">
+      <!-- Loading State -->
+      <div class="loading-state" id="ordersLoadingState">
+        <div class="spinner"></div>
+        <p>Loading your orders...</p>
+      </div>
+
+      <!-- Orders List Container -->
+      <div class="orders-container" id="ordersContainer" style="display: none;">
+        <div class="orders-list" id="ordersList">
+          <!-- Orders will be dynamically rendered here -->
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-orders-state" id="emptyOrdersState" style="display: none;">
+        <div class="empty-icon">📦</div>
+        <h2 class="empty-title">No orders yet</h2>
+        <p class="empty-message">Looks like you haven't placed any orders yet.</p>
+        <a href="/index.html" class="start-shopping-btn">Start Shopping →</a>
+      </div>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div class="order-modal-overlay" id="orderModalOverlay">
+      <div class="order-modal" id="orderModal">
+        <div class="modal-drag-handle"></div>
+        
+        <div class="modal-header">
+          <h2 class="modal-title">Order Details</h2>
+          <button class="modal-close" id="modalCloseBtn" aria-label="Close">✕</button>
+        </div>
+        
+        <div class="modal-content">
+          <!-- Order Info -->
+          <div class="order-info-section">
+            <div class="order-info-row">
+              <span class="info-label">Order ID</span>
+              <span class="info-value" id="modalOrderId">#OKM001</span>
+            </div>
+            <div class="order-info-row">
+              <span class="info-label">Date</span>
+              <span class="info-value" id="modalOrderDate">17 Apr 2026</span>
+            </div>
+            <div class="order-info-row">
+              <span class="info-label">Status</span>
+              <span class="status-badge" id="modalOrderStatus">Delivered</span>
+            </div>
+          </div>
+          
+          <!-- Items List -->
+          <div class="order-items-section">
+            <h3 class="items-title">Items</h3>
+            <div class="order-items-list" id="modalOrderItems">
+              <!-- Items will be populated here -->
+            </div>
+          </div>
+          
+          <!-- Price Summary -->
+          <div class="order-summary-section">
+            <div class="summary-row">
+              <span class="summary-label">Subtotal</span>
+              <span class="summary-value" id="modalSubtotal">₹0</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">Delivery</span>
+              <span class="summary-value" id="modalDelivery">₹0</span>
+            </div>
+            <div class="summary-row total-row">
+              <span class="summary-label">Total</span>
+              <span class="summary-value" id="modalTotal">₹0</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button class="order-again-btn" id="orderAgainBtn">
+            <span>🔄</span> Order Again
+          </button>
+          <button class="track-order-btn" id="trackOrderBtn">
+            <span>📦</span> Track Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div><!-- End app-container -->
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="/search.html" class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="/offers.html" class="nav-item">
+      <span class="nav-icon">🏷️</span>
+      <span class="nav-label">Offers</span>
+    </a>
+    <a href="/orders.html" class="nav-item active">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Orders</span>
+    </a>
+    <a href="/cart.html" class="nav-item">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Cart</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/common.js"></script>
+  <script src="/js/orders.js"></script>
+  
+  <!-- Demo Orders (for testing - remove in production) -->
+  <script>
+    // Initialize demo orders if none exist
+    (function() {
+      const existingOrders = localStorage.getItem('okmart_orders');
+      if (!existingOrders) {
+        const demoOrders = [
+          {
+            orderId: 'OKM-2024-001',
+            date: '2026-04-15',
+            time: '10:30 AM',
+            total: 231,
+            deliveryCharge: 0,
+            subtotal: 231,
+            status: 'delivered',
+            paymentMethod: 'Cash on Delivery',
+            items: [
+              { name: 'Amul Taaza Milk', quantity: 2, price: 26, image: 'https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Amul Butter', quantity: 1, price: 54, image: 'https://images.pexels.com/photos/1291712/pexels-photo-1291712.jpeg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Mother Dairy Paneer', quantity: 1, price: 85, image: 'https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Lay\'s Classic Salted', quantity: 2, price: 20, image: 'https://images.pexels.com/photos/4791269/pexels-photo-4791269.jpeg?auto=compress&cs=tinysrgb&w=200' }
+            ]
+          },
+          {
+            orderId: 'OKM-2024-002',
+            date: '2026-04-10',
+            time: '08:15 PM',
+            total: 265,
+            deliveryCharge: 20,
+            subtotal: 245,
+            status: 'delivered',
+            paymentMethod: 'UPI',
+            items: [
+              { name: 'Fortune Sunflower Oil', quantity: 1, price: 115, image: 'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Tata Sampann Toor Dal', quantity: 1, price: 150, image: 'https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?auto=compress&cs=tinysrgb&w=200' }
+            ]
+          },
+          {
+            orderId: 'OKM-2024-003',
+            date: '2026-04-17',
+            time: '09:45 AM',
+            total: 186,
+            deliveryCharge: 0,
+            subtotal: 186,
+            status: 'preparing',
+            paymentMethod: 'Cash on Delivery',
+            items: [
+              { name: 'Fresh Apple (Royal Gala)', quantity: 1, price: 120, image: 'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Banana (Yelakki)', quantity: 1, price: 40, image: 'https://images.pexels.com/photos/1093038/pexels-photo-1093038.jpeg?auto=compress&cs=tinysrgb&w=200' },
+              { name: 'Parle-G Biscuits', quantity: 2, price: 5, image: 'https://images.pexels.com/photos/239578/pexels-photo-239578.jpeg?auto=compress&cs=tinysrgb&w=200' }
+            ]
+          }
+        ];
+        localStorage.setItem('okmart_orders', JSON.stringify(demoOrders));
+        console.log('✅ Demo orders initialized');
+      }
+    })();
+  </script>
+</body>
+</html>
