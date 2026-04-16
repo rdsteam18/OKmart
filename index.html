@@ -2,58 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-   <!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="OK Mart">
-<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   
-  <!-- SEO Meta Tags -->
-  <title>OK Mart | Online Grocery Delivery | Fresh & Fast</title>
-  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes. Free delivery on orders above ₹199.">
-  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits delivery, vegetables, snacks, dairy products, OK Mart">
+  <title>OK Mart | Fresh Grocery Delivery</title>
+  <meta name="description" content="Fresh groceries delivered in 10 minutes">
   <meta name="theme-color" content="#2ecc71">
   
-  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="OK Mart">
-  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://okmart.netlify.app/">
-  <meta property="og:title" content="OK Mart | Online Grocery Delivery">
-  <meta property="og:description" content="Fresh groceries delivered in 10 minutes. Order now!">
-  <meta property="og:image" content="https://okmart.netlify.app/assets/images/og-image.jpg">
-  
-  <!-- Canonical -->
-  <link rel="canonical" href="https://okmart.netlify.app/">
-  
-  <!-- CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <meta name="google-site-verification" content="d1uLLcwbDH99lepVNG6a_KEpVP24yjo1DqHN4aKhWk8" />
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 </head>
 <body>
-  <!-- STICKY HEADER -->
-  <header class="app-header" id="mainHeader">
+  <!-- Sticky Header -->
+  <header class="app-header">
     <div class="header-container">
-      <a href="/index.html" class="logo-link" aria-label="OK Mart Home">
+      <a href="/index.html" class="logo-link">
         <span class="logo-text">🛒 OK Mart</span>
+        <span class="delivery-tag">10 min</span>
       </a>
-      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
+      <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
         <span class="cart-icon">🛍️</span>
         <span class="cart-badge" id="cartCountPlaceholder">0</span>
       </a>
@@ -61,165 +30,121 @@
   </header>
 
   <main class="home-main">
-    <!-- TOP BANNER -->
-    <div class="banner-section">
-      <a href="/categories/offers.html" class="banner-link">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgd8sPXAsbAseHFXT7JVNtkNDJc3uuFYZVnpMNsiwSmrT7U7ZpJJNn7I48emV7mWnDp6ciA2H-oHb2El7at9JZsHObUm1BdgfAXu0-VH8-zAnN53YFWHPb4KvXeG2wjNJUo4LZkBFgG2Myqlk_WL0-Vbxe_lyHBI0QHmzMXbQzFZmMgL16fwr2odls0=rw" alt="Big Sale - Up to 30% OFF" class="banner-image" loading="eager">
-        <div class="banner-content">
-          <span class="banner-tag">🔥 Limited Time</span>
-          <h2 class="banner-title">1KG प्याज FREE!</h2>
-          <span class="banner-cta">Shop Now →</span>
+    <!-- Search Bar -->
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, snacks..." autocomplete="off">
+        <button class="clear-search" id="clearSearchBtn">✕</button>
+      </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner-container">
+      <a href="/offers.html" class="banner-link">
+        <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Special Offers" class="banner-image">
+        <div class="banner-overlay">
+          <span class="banner-tag">Limited Time</span>
+          <span class="banner-text">Up to 30% OFF</span>
         </div>
       </a>
     </div>
 
-    <!-- SEARCH BAR -->
-    <div class="search-container">
-      <div class="search-wrapper">
-        <span class="search-icon" aria-hidden="true">🔍</span>
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="Search for milk, bread, snacks..."
-          autocomplete="off"
-          aria-label="Search products"
-        >
-        <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
-        <button class="search-submit-btn" id="searchSubmitBtn" aria-label="Submit search">→</button>
-      </div>
-      <!-- Search Suggestions Dropdown -->
-      <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
-    </div>
-
-    <!-- SHOP BY CATEGORY GRID -->
-    <section class="shop-by-category">
-      <h2 class="section-title">📂 Shop by Category</h2>
-      
-      <div class="category-grid-main">
-        <a href="/categories/fruits.html" class="main-category-card">
-          <div class="category-icon-large">🍎</div>
-          <span class="category-name-large">Fruits & Vegetables</span>
+    <!-- Category Grid -->
+    <section class="category-section">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="category-grid">
+        <a href="/categories/fruits.html" class="category-item">
+          <span class="category-emoji">🍎</span>
+          <span class="category-label">Fruits</span>
         </a>
-        
-        <a href="/categories/dairy.html" class="main-category-card">
-          <div class="category-icon-large">🥛</div>
-          <span class="category-name-large">Dairy & Bakery</span>
+        <a href="/categories/dairy.html" class="category-item">
+          <span class="category-emoji">🥛</span>
+          <span class="category-label">Dairy</span>
         </a>
-        
-        <a href="/categories/grocery.html" class="main-category-card">
-          <div class="category-icon-large">🌾</div>
-          <span class="category-name-large">Atta Rice Dal</span>
+        <a href="/categories/snacks.html" class="category-item">
+          <span class="category-emoji">🍿</span>
+          <span class="category-label">Snacks</span>
         </a>
-        
-        <a href="/categories/snacks.html" class="main-category-card">
-          <div class="category-icon-large">🍿</div>
-          <span class="category-name-large">Snacks & Beverages</span>
+        <a href="/categories/grocery.html" class="category-item">
+          <span class="category-emoji">🧺</span>
+          <span class="category-label">Grocery</span>
         </a>
-        
-        <a href="/categories/personal-care.html" class="main-category-card">
-          <div class="category-icon-large">🧴</div>
-          <span class="category-name-large">Personal Care</span>
+        <a href="/categories/beverages.html" class="category-item">
+          <span class="category-emoji">🥤</span>
+          <span class="category-label">Drinks</span>
         </a>
-        
-        <a href="/categories/household.html" class="main-category-card">
-          <div class="category-icon-large">🧹</div>
-          <span class="category-name-large">Household Needs</span>
+        <a href="/categories/electronics.html" class="category-item">
+          <span class="category-emoji">📱</span>
+          <span class="category-label">Electronics</span>
         </a>
-        
-        <a href="/categories/electronics.html" class="main-category-card">
-          <div class="category-icon-large">📱</div>
-          <span class="category-name-large">Electronics</span>
+        <a href="/categories/personal-care.html" class="category-item">
+          <span class="category-emoji">🧴</span>
+          <span class="category-label">Personal</span>
         </a>
-        
-        <a href="/categories/offers.html" class="main-category-card">
-          <div class="category-icon-large">🏷️</div>
-          <span class="category-name-large">Offers</span>
+        <a href="/offers.html" class="category-item">
+          <span class="category-emoji">🏷️</span>
+          <span class="category-label">Offers</span>
         </a>
       </div>
     </section>
 
-    <!-- TODAY'S DEALS / OFFERS SECTION -->
+    <!-- Offers Section -->
     <section class="offers-section">
-      <div class="section-header-with-link">
-        <h2 class="section-title">🏷️ Today's Deals</h2>
-        <a href="/categories/offers.html" class="view-all-link">View All →</a>
+      <div class="section-header">
+        <h2 class="section-title">Today's Deals</h2>
+        <a href="/offers.html" class="view-all">View All →</a>
       </div>
-      <div class="offers-scroll-container">
-        <div class="offers-grid" id="offersGrid">
-          <div class="loading-placeholder">Loading offers...</div>
-        </div>
+      <div class="offers-scroll" id="offersGrid">
+        <div class="loading-placeholder">Loading offers...</div>
       </div>
     </section>
 
-    <!-- DAILY ESSENTIALS / QUICK ORDER -->
-    <section class="quick-order-section">
-      <div class="section-header">
-        <h2 class="section-title">⚡ Daily Essentials</h2>
-        <span class="quick-badge">Quick Add</span>
-      </div>
-      <div class="quick-order-grid" id="quickOrderGrid">
+    <!-- Quick Order -->
+    <section class="quick-section">
+      <h2 class="section-title">⚡ Daily Essentials</h2>
+      <div class="quick-grid" id="quickOrderGrid">
         <div class="loading-placeholder">Loading...</div>
       </div>
     </section>
 
-    <!-- MAIN PRODUCT GRID -->
-    <section class="main-products-section">
-      <div class="section-header-with-filter">
-        <h2 class="section-title">🛒 All Products</h2>
-        <div class="category-filter-scroll" id="categoryFilterContainer">
-          <!-- Category filter pills will be injected here -->
-        </div>
+    <!-- Product Grid -->
+    <section class="products-section">
+      <div class="section-header">
+        <h2 class="section-title">All Products</h2>
+        <div class="filter-scroll" id="categoryFilterContainer"></div>
       </div>
       
-      <div class="results-info" id="resultsInfo">
-        <span class="results-count" id="resultsCount">0 items</span>
-        <span class="filter-badge" id="activeFilterBadge"></span>
+      <div class="results-info">
+        <span id="resultsCount">0 items</span>
       </div>
       
       <div class="product-grid" id="productGrid">
         <div class="loading-state" id="loadingState">
-          <div class="loading-spinner"></div>
-          <p>Loading fresh groceries...</p>
+          <div class="spinner"></div>
+          <p>Loading products...</p>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- STICKY BOTTOM BAR (shown when cart empty) -->
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <a href="/index.html" class="bottom-nav-item active">🏠 Home</a>
-      <a href="/search.html" class="bottom-nav-item">🔍 Search</a>
-      <a href="/track.html" class="bottom-nav-item">📦 Track</a>
-      <a href="/cart.html" class="bottom-nav-item">🛒 Cart</a>
-    </div>
-  </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item active">🏠<span>Home</span></a>
+    <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+    <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+    <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+  </nav>
 
-  <!-- FLOATING WHATSAPP BUTTON -->
-  <a href="https://wa.me/919982239821" class="floating-whatsapp-btn" target="_blank" aria-label="Chat on WhatsApp">
-    <span class="whatsapp-icon">💬</span>
-  </a>
+  <!-- WhatsApp Button -->
+  <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
 
-  <!-- FLOATING CALL BUTTON -->
-  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
-    <span class="call-icon">📞</span>
-  </a>
-
-  <!-- SCRIPTS -->
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
-  
-  <!-- PWA Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('[SW] Registered'))
-          .catch(err => console.log('[SW] Failed:', err));
-      });
+      navigator.serviceWorker.register('/sw.js');
     }
   </script>
-  <script src="/js/pwa.js"></script>
 </body>
 </html>
