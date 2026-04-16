@@ -405,3 +405,26 @@
     max-width: 720px;
   }
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-icon-link {
+  padding: 8px;
+  background: var(--bg-light);
+  border-radius: 40px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.profile-icon {
+  font-size: 1.3rem;
+}
+
+.profile-icon-link:active {
+  background: var(--primary-light);
+  transform: scale(0.92);
+}
