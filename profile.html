@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <!-- SEO Meta Tags -->
+  <title>My Profile | OK Mart Grocery Delivery</title>
+  <meta name="description" content="Manage your OK Mart profile, view orders, wishlist, and get support.">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/profile.css">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header profile-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">Profile</h1>
+        </div>
+        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="view cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="profile-main">
+      
+      <!-- Profile Header Card -->
+      <div class="profile-header-card">
+        <div class="profile-avatar">
+          <span class="avatar-icon">👤</span>
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name" id="profileName">Guest User</h2>
+          <span class="profile-phone" id="profilePhone">Add phone number</span>
+        </div>
+        <button class="edit-profile-btn" id="editProfileBtn" aria-label="Edit profile">Edit</button>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <div class="quick-actions-grid">
+        <div class="quick-action-card" data-action="orders">
+          <span class="action-icon">📋</span>
+          <span class="action-label">Your Orders</span>
+        </div>
+        <div class="quick-action-card" data-action="support">
+          <span class="action-icon">💬</span>
+          <span class="action-label">Help & Support</span>
+        </div>
+        <div class="quick-action-card" data-action="refund">
+          <span class="action-icon">💰</span>
+          <span class="action-label">Refund</span>
+        </div>
+        <div class="quick-action-card" data-action="offers">
+          <span class="action-icon">🏷️</span>
+          <span class="action-label">Offers</span>
+        </div>
+      </div>
+
+      <!-- Profile Menu List -->
+      <div class="profile-menu">
+        <!-- Your Orders -->
+        <a href="/orders.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">📋</span>
+            <span class="menu-label">Your Orders</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </a>
+        
+        <!-- Wishlist -->
+        <a href="/wishlist.html" class="menu-item" id="wishlistMenuItem">
+          <div class="menu-item-left">
+            <span class="menu-icon">❤️</span>
+            <span class="menu-label">Wishlist</span>
+          </div>
+          <div class="menu-item-right">
+            <span class="wishlist-count" id="wishlistCount">0</span>
+            <span class="menu-arrow">›</span>
+          </div>
+        </a>
+        
+        <!-- Offers -->
+        <a href="/offers.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">🏷️</span>
+            <span class="menu-label">Offers & Deals</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </a>
+        
+        <!-- Saved Addresses -->
+        <div class="menu-item" id="savedAddressBtn">
+          <div class="menu-item-left">
+            <span class="menu-icon">📍</span>
+            <span class="menu-label">Saved Addresses</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </div>
+        
+        <!-- Help & Support -->
+        <div class="menu-item" id="helpSupportBtn">
+          <div class="menu-item-left">
+            <span class="menu-icon">💬</span>
+            <span class="menu-label">Help & Support</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </div>
+        
+        <!-- Refund Request -->
+        <div class="menu-item" id="refundRequestBtn">
+          <div class="menu-item-left">
+            <span class="menu-icon">💰</span>
+            <span class="menu-label">Request Refund</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </div>
+        
+        <!-- Track Order -->
+        <a href="/track.html" class="menu-item">
+          <div class="menu-item-left">
+            <span class="menu-icon">📦</span>
+            <span class="menu-label">Track Order</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </a>
+        
+        <!-- About -->
+        <div class="menu-item" id="aboutBtn">
+          <div class="menu-item-left">
+            <span class="menu-icon">ℹ️</span>
+            <span class="menu-label">About OK Mart</span>
+          </div>
+          <span class="menu-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Logout
+      </button>
+
+      <!-- App Version -->
+      <p class="app-version">OK Mart v1.0.0 · Made with ❤️</p>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Edit Profile</h3>
+          <button class="modal-close" id="closeEditModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="editName">Full Name</label>
+            <input type="text" id="editName" placeholder="Enter your name">
+          </div>
+          <div class="input-group">
+            <label for="editPhone">Phone Number</label>
+            <input type="tel" id="editPhone" placeholder="10-digit number" maxlength="10">
+          </div>
+          <div class="input-group">
+            <label for="editEmail">Email (Optional)</label>
+            <input type="email" id="editEmail" placeholder="your@email.com">
+          </div>
+          <button class="save-profile-btn" id="saveProfileBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refund Modal -->
+    <div class="modal-overlay" id="refundModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Request Refund</h3>
+          <button class="modal-close" id="closeRefundModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="refundOrderId">Order ID</label>
+            <input type="text" id="refundOrderId" placeholder="e.g., OKM-2024-001">
+          </div>
+          <div class="input-group">
+            <label for="refundReason">Reason</label>
+            <select id="refundReason">
+              <option value="Wrong Item">Wrong Item</option>
+              <option value="Missing Item">Missing Item</option>
+              <option value="Damaged Item">Damaged Item</option>
+              <option value="Late Delivery">Late Delivery</option>
+              <option value="Quality Issue">Quality Issue</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="refundDetails">Details (Optional)</label>
+            <textarea id="refundDetails" rows="3" placeholder="Describe the issue..."></textarea>
+          </div>
+          <button class="submit-refund-btn" id="submitRefundBtn">Continue to WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div><!-- End app-container -->
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="/search.html" class="nav-item">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="/offers.html" class="nav-item">
+      <span class="nav-icon">🏷️</span>
+      <span class="nav-label">Offers</span>
+    </a>
+    <a href="/orders.html" class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Orders</span>
+    </a>
+    <a href="/profile.html" class="nav-item active">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/common.js"></script>
+  <script src="/js/profile.js"></script>
+</body>
+</html>
