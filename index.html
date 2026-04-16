@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><!-- Disable zoom on mobile -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <!-- Disable zoom on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
   <!-- Google Site Verification -->
   <meta name="google-site-verification" content="d1uLLcwbDH99lepVNG6a_KEpVP24yjo1DqHN4aKhWk8" />
   
   <!-- SEO Meta Tags -->
-  <title>OK Mart | Online Grocery Delivery | Fresh & Fast</title>
-  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes. Free delivery on orders above ₹199.">
+  <title>OK Mart | Grocery Delivery in 12 Minutes</title>
+  <meta name="description" content="Order fresh groceries, vegetables, fruits & daily essentials. Fast delivery in 12 minutes. Free delivery on orders above ₹199.">
   <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits delivery, vegetables, snacks, dairy products, OK Mart">
   <meta name="author" content="OK Mart">
   <meta name="robots" content="index, follow">
@@ -27,14 +28,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://okmart.netlify.app/">
   <meta property="og:title" content="OK Mart | Online Grocery Delivery">
-  <meta property="og:description" content="Fresh groceries delivered in 10 minutes. Order now!">
+  <meta property="og:description" content="Fresh groceries delivered in 12 minutes. Order now!">
   <meta property="og:image" content="https://okmart.netlify.app/assets/images/og-image.jpg">
   
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://okmart.netlify.app/">
   <meta property="twitter:title" content="OK Mart | Online Grocery Delivery">
-  <meta property="twitter:description" content="Fresh groceries delivered in 10 minutes.">
+  <meta property="twitter:description" content="Fresh groceries delivered in 12 minutes.">
   
   <!-- Canonical URL -->
   <link rel="canonical" href="https://okmart.netlify.app/">
@@ -46,169 +47,198 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 </head>
 <body>
-  <!-- Sticky Header -->
-  <header class="app-header">
-    <div class="header-container">
-      <a href="/index.html" class="logo-link" aria-label="OK Mart Home">
-        <span class="logo-text">🛒 OK Mart</span>
-        <span class="delivery-tag">10 min</span>
-      </a>
-      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge" id="cartCountPlaceholder">0</span>
-      </a>
-    </div>
-  </header>
-
-  <main class="home-main">
-    <!-- Search Bar -->
-    <div class="search-container">
-      <div class="search-wrapper">
-        <span class="search-icon" aria-hidden="true">🔍</span>
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="Search for milk, bread, snacks..."
-          autocomplete="off"
-          aria-label="Search products"
-        >
-        <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
-      </div>
-      <!-- Search Suggestions Dropdown -->
-      <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
-    </div>
-
-    <!-- Banner -->
-    <div class="banner-container">
-      <a href="/offers.html" class="banner-link">
-        <img 
-          src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" 
-          alt="Special Offers - Up to 30% OFF" 
-          class="banner-image"
-          loading="eager"
-        >
-        <div class="banner-overlay">
-          <span class="banner-tag">🔥 Limited Time</span>
-          <span class="banner-text">Up to 30% OFF</span>
+  <!-- App Container - Centers content and prevents overflow -->
+  <div class="app-container">
+    
+    <!-- Sticky Header with Location -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="location-section">
+          <span class="location-icon">📍</span>
+          <div class="location-details">
+            <span class="delivery-label">Delivery in 12 minutes</span>
+            <span class="location-address">Home ▼</span>
+          </div>
         </div>
-      </a>
-    </div>
-
-    <!-- Category Grid -->
-    <section class="category-section" aria-label="Shop by Category">
-      <h2 class="section-title">📂 Shop by Category</h2>
-      <div class="category-grid">
-        <a href="/categories/fruits.html" class="category-item">
-          <span class="category-emoji">🍎</span>
-          <span class="category-label">Fruits</span>
-        </a>
-        <a href="/categories/vegetables.html" class="category-item">
-          <span class="category-emoji">🥕</span>
-          <span class="category-label">Vegetables</span>
-        </a>
-        <a href="/categories/dairy.html" class="category-item">
-          <span class="category-emoji">🥛</span>
-          <span class="category-label">Dairy</span>
-        </a>
-        <a href="/categories/bakery.html" class="category-item">
-          <span class="category-emoji">🥐</span>
-          <span class="category-label">Bakery</span>
-        </a>
-        <a href="/categories/snacks.html" class="category-item">
-          <span class="category-emoji">🍿</span>
-          <span class="category-label">Snacks</span>
-        </a>
-        <a href="/categories/beverages.html" class="category-item">
-          <span class="category-emoji">🥤</span>
-          <span class="category-label">Drinks</span>
-        </a>
-        <a href="/categories/grocery.html" class="category-item">
-          <span class="category-emoji">🧺</span>
-          <span class="category-label">Grocery</span>
-        </a>
-        <a href="/categories/electronics.html" class="category-item">
-          <span class="category-emoji">📱</span>
-          <span class="category-label">Electronics</span>
-        </a>
-        <a href="/categories/personal-care.html" class="category-item">
-          <span class="category-emoji">🧴</span>
-          <span class="category-label">Personal</span>
-        </a>
-        <a href="/categories/household.html" class="category-item">
-          <span class="category-emoji">🧹</span>
-          <span class="category-label">Household</span>
-        </a>
-        <a href="/offers.html" class="category-item highlight">
-          <span class="category-emoji">🏷️</span>
-          <span class="category-label">Offers</span>
-        </a>
-        <a href="/track.html" class="category-item">
-          <span class="category-emoji">📦</span>
-          <span class="category-label">Track</span>
+        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
         </a>
       </div>
-    </section>
+    </header>
 
-    <!-- Today's Deals / Offers Section -->
-    <section class="offers-section" aria-label="Today's Deals">
-      <div class="section-header">
-        <h2 class="section-title">🏷️ Today's Deals</h2>
-        <a href="/offers.html" class="view-all">View All →</a>
+    <main class="home-main">
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-wrapper">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder='Search for "Grocery"'
+            autocomplete="off"
+            aria-label="Search products"
+          >
+        </div>
+        <!-- Search Suggestions Dropdown -->
+        <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
       </div>
-      <div class="offers-scroll" id="offersGrid">
-        <div class="loading-placeholder">
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
+
+      <!-- Category Pills -->
+      <div class="category-pills">
+        <div class="pill active" data-category="veg">🥑 Veg</div>
+        <div class="pill" data-category="fruits">🍎 Fruits</div>
+        <div class="pill" data-category="breads">🍞 Breads</div>
+        <div class="pill" data-category="corn">🌽 Corn</div>
+        <div class="pill" data-category="dairy">🥛 Dairy</div>
+        <div class="pill" data-category="snacks">🍿 Snacks</div>
+      </div>
+
+      <!-- Delivery Banner -->
+      <div class="delivery-banner">
+        <div class="banner-card">
+          <span class="banner-icon">🚚</span>
+          <div class="banner-content">
+            <span class="banner-title">Free Delivery</span>
+            <span class="banner-subtitle">On orders above ₹199</span>
+          </div>
+          <span class="banner-arrow">›</span>
+        </div>
+        <div class="banner-card highlight">
+          <span class="banner-icon">💰</span>
+          <div class="banner-content">
+            <span class="banner-title">Get 10% off</span>
+            <span class="banner-subtitle">with Plus+ T&C Apply</span>
+          </div>
+          <span class="banner-arrow">›</span>
         </div>
       </div>
-    </section>
 
-    <!-- Daily Essentials / Quick Order -->
-    <section class="quick-section" aria-label="Daily Essentials">
-      <div class="section-header">
-        <h2 class="section-title">⚡ Daily Essentials</h2>
-        <span class="quick-badge">Quick Add</span>
-      </div>
-      <div class="quick-grid" id="quickOrderGrid">
-        <div class="loading-placeholder">Loading essentials...</div>
-      </div>
-    </section>
+      <!-- You might need / Recommended Section -->
+      <section class="product-section" aria-label="You might need">
+        <div class="section-header">
+          <h2 class="section-title">You might need</h2>
+          <a href="#" class="see-more">See more ›</a>
+        </div>
+        <div class="product-grid-horizontal" id="recommendedGrid">
+          <!-- Products will be dynamically rendered -->
+          <div class="loading-placeholder">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+      </section>
 
-    <!-- Main Product Grid -->
-    <section class="products-section" aria-label="All Products">
-      <div class="section-header">
-        <h2 class="section-title">🛒 All Products</h2>
+      <!-- Category Tags -->
+      <div class="category-tags">
+        <span class="tag" data-filter="meets">Meets</span>
+        <span class="tag" data-filter="veg">Veg</span>
+        <span class="tag" data-filter="fruits">Fruits</span>
+        <span class="tag" data-filter="breads">Breads</span>
+        <span class="tag" data-filter="corn">Corn</span>
       </div>
-      
-      <!-- Category Filter Pills -->
-      <div class="filter-scroll" id="categoryFilterContainer">
-        <button class="category-filter-btn active">All</button>
+
+      <!-- Best Selling Grid -->
+      <section class="product-section" aria-label="Best selling">
+        <div class="section-header">
+          <h2 class="section-title">Best selling</h2>
+          <a href="#" class="see-more">View all ›</a>
+        </div>
+        <div class="product-grid" id="productGrid">
+          <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>Loading fresh products...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Cart Bar -->
+    <div class="bottom-cart-bar" id="bottomCartBar" style="display: none;">
+      <div class="cart-bar-content">
+        <div class="cart-info">
+          <span class="cart-icon-small">🛒</span>
+          <span class="cart-item-count" id="bottomCartCount">0 items</span>
+        </div>
+        <a href="/cart.html" class="checkout-btn">
+          Checkout <span id="bottomCartTotal">₹0</span>
+        </a>
       </div>
-      
-      <!-- Results Info -->
-      <div class="results-info">
-        <span id="resultsCount">0 items</span>
-      </div>
-      
-      <!-- Product Grid -->
-      <div class="product-grid" id="productGrid">
-        <div class="loading-state" id="loadingState">
-          <div class="spinner"></div>
-          <p>Loading fresh products...</p>
+    </div>
+
+    <!-- Product Detail Modal (Slide-up Panel) -->
+    <div class="product-modal-overlay" id="productModalOverlay">
+      <div class="product-modal" id="productModal">
+        <div class="modal-drag-handle"></div>
+        
+        <div class="modal-header">
+          <button class="modal-close" id="modalCloseBtn" aria-label="Close">✕</button>
+          <button class="modal-share" id="modalShareBtn" aria-label="Share">📤</button>
+        </div>
+        
+        <div class="modal-content">
+          <!-- Product Image -->
+          <div class="modal-image-container">
+            <img id="modalProductImage" src="" alt="" class="modal-product-image">
+            <span class="modal-delivery-badge">🚚 12 min delivery</span>
+          </div>
+          
+          <!-- Product Info -->
+          <div class="modal-product-info">
+            <h2 id="modalProductName" class="modal-product-name"></h2>
+            <span id="modalProductUnit" class="modal-product-unit"></span>
+            
+            <!-- Rating -->
+            <div class="modal-rating">
+              <span class="stars">★★★★½</span>
+              <span class="rating-value">4.5</span>
+            </div>
+            
+            <!-- Price -->
+            <div class="modal-price-container">
+              <span id="modalProductPrice" class="modal-current-price"></span>
+              <span id="modalProductMrp" class="modal-mrp-price"></span>
+              <span id="modalDiscountBadge" class="modal-discount-badge"></span>
+            </div>
+            
+            <!-- Satisfaction Guarantee -->
+            <div class="modal-guarantee">
+              <span class="guarantee-icon">✓</span>
+              <span class="guarantee-text">100% satisfaction guarantee</span>
+            </div>
+            <p class="guarantee-desc">If you experience any of the following issues: missing, poor item, late arrival, unprofessional service...</p>
+            <button class="read-more-btn">Read more</button>
+          </div>
+        </div>
+        
+        <!-- Add to Cart Section -->
+        <div class="modal-footer">
+          <div class="quantity-controls" id="modalQuantityControls">
+            <button class="qty-btn minus" id="modalQtyMinus" aria-label="Decrease quantity">−</button>
+            <span class="qty-number" id="modalQtyNumber">1</span>
+            <button class="qty-btn plus" id="modalQtyPlus" aria-label="Increase quantity">+</button>
+          </div>
+          <button class="add-to-cart-modal-btn" id="modalAddToCartBtn">
+            Add to cart · <span id="modalItemTotal">₹0</span>
+          </button>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
 
-  <!-- Bottom Navigation -->
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div><!-- End app-container -->
+
+  <!-- Bottom Navigation (for mobile) -->
   <nav class="bottom-nav">
     <a href="/index.html" class="nav-item active">
       <span class="nav-icon">🏠</span>
@@ -255,6 +285,48 @@
           .catch(err => console.log('[SW] Failed:', err));
       });
     }
+  </script>
+
+  <!-- Overflow Prevention Script -->
+  <script>
+    (function() {
+      // Force hide any horizontal overflow
+      document.documentElement.style.overflowX = 'hidden';
+      document.body.style.overflowX = 'hidden';
+      
+      // Update cart UI on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        // Update cart badge
+        const badge = document.getElementById('cartCountPlaceholder');
+        if (badge) badge.textContent = totalItems;
+        
+        // Update bottom cart bar
+        const bottomBar = document.getElementById('bottomCartBar');
+        const bottomCount = document.getElementById('bottomCartCount');
+        const bottomTotal = document.getElementById('bottomCartTotal');
+        
+        if (bottomBar && totalItems > 0) {
+          bottomBar.style.display = 'block';
+          if (bottomCount) bottomCount.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+          if (bottomTotal) bottomTotal.textContent = `₹${subtotal}`;
+        }
+      });
+      
+      // Debug overflow in development
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        setTimeout(() => {
+          const docWidth = document.documentElement.scrollWidth;
+          const winWidth = window.innerWidth;
+          if (docWidth > winWidth) {
+            console.warn('Horizontal overflow detected:', docWidth - winWidth, 'px extra');
+          }
+        }, 1000);
+      }
+    })();
   </script>
 </body>
 </html>
