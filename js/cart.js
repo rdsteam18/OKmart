@@ -385,3 +385,169 @@
   init();
   
 })();
+
+
+
+// Add to cart.js - Free Onion System
+
+const FREE_ONION_PRODUCT = {
+  id: 'free_onion',
+  name: 'Onion (FREE)',
+  price: 0,
+  mrp: 30,
+  image: 'https://images.pexels.com/photos/144248/pexels-photo-144248.jpeg?auto=compress&cs=tinysrgb&w=200',
+  unit: '1 kg',
+  quantity: 1,
+  isFree: true
+};
+
+const FREE_ONION_THRESHOLD = 199;
+
+// Check and manage free onion
+function manageFreeOnion() {
+  const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+  
+  // Calculate total excluding free items
+  const paidItemsTotal = cart
+    .filter(item => !item.isFree)
+    .reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  const hasFreeOnion = cart.some(item => item.id === 'free_onion');
+  
+  if (paidItemsTotal >= FREE_ONION_THRESHOLD) {
+    // Add free onion if not present
+    if (!hasFreeOnion) {
+      cart.push({ ...FREE_ONION_PRODUCT });
+      localStorage.setItem('okmart_cart', JSON.stringify(cart));
+      return true;
+    }
+  } else {
+    // Remove free onion if total below threshold
+    if (hasFreeOnion) {
+      const filteredCart = cart.filter(item => item.id !== 'free_onion');
+      localStorage.setItem('okmart_cart', JSON.stringify(filteredCart));
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+// Override addToCart to manage free onion
+const originalAddToCart = window.OKMart?.addToCart;
+if (originalAddToCart) {
+  window.OKMart.addToCart = (product, quantity) => {
+    originalAddToCart(product, quantity);
+    manageFreeOnion();
+    renderCart();
+  };
+}
+
+// Override updateQuantity
+const originalUpdateQuantity = updateQuantity;
+updateQuantity = (productId, change) => {
+  // Prevent manual removal of free onion
+  if (productId === 'free_onion') {
+    window.OKMart.showToast?.('This is a free gift! Add more items worth ₹199+ to keep it.', 'info');
+    return;
+  }
+  
+  originalUpdateQuantity(productId, change);
+  manageFreeOnion();
+  renderCart();
+};
+
+// Override removeItem
+const originalRemoveItem = removeItem;
+removeItem = (productId) => {
+  if (productId === 'free_onion') {
+    window.OKMart.showToast?.('Free onion cannot be removed. Add items worth ₹199+ to get it free!', 'info');
+    return;
+  }
+  
+  originalRemoveItem(productId);
+  manageFreeOnion();
+  renderCart();
+};
+
+// Modify renderCartItem to show free badge
+function renderCartItem(item) {
+  const card = document.createElement('div');
+  card.className = 'cart-item-card';
+  card.dataset.productId = item.id;
+  
+  const isFree = item.isFree || item.id === 'free_onion';
+  const discount = item.mrp ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
+  const itemTotal = item.price * item.quantity;
+  
+  card.innerHTML = `
+    <img src="${item.image}" alt="${item.name}" class="cart-item-image" loading="lazy">
+    
+    <div class="cart-item-details">
+      <div class="cart-item-header">
+        <div>
+          <h3 class="cart-item-name">
+            ${item.name}
+            ${isFree ? '<span class="free-badge">🎁 FREE</span>' : ''}
+          </h3>
+          <span class="cart-item-unit">${item.unit || ''}</span>
+        </div>
+      </div>
+      
+      <div class="cart-item-pricing">
+        <span class="current-price">${isFree ? 'FREE' : '₹' + item.price}</span>
+        ${!isFree && item.mrp && item.mrp > item.price ? `<span class="mrp-price">₹${item.mrp}</span>` : ''}
+        ${!isFree && discount > 0 ? `<span class="discount-percent">${discount}% OFF</span>` : ''}
+      </div>
+      
+      <div class="cart-item-actions">
+        ${!isFree ? `
+          <div class="quantity-controls">
+            <button class="quantity-btn minus-btn" data-id="${item.id}" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
+            <span class="quantity-number">${item.quantity}</span>
+            <button class="quantity-btn plus-btn" data-id="${item.id}">+</button>
+          </div>
+          <button class="remove-btn" data-id="${item.id}">Remove</button>
+        ` : `
+          <span class="free-item-note">Added automatically on orders above ₹199</span>
+        `}
+      </div>
+    </div>
+    
+    <div class="item-total">${isFree ? 'FREE' : '₹' + itemTotal}</div>
+  `;
+  
+  if (!isFree) {
+    const minusBtn = card.querySelector('.minus-btn');
+    const plusBtn = card.querySelector('.plus-btn');
+    const removeBtn = card.querySelector('.remove-btn');
+    
+    minusBtn?.addEventListener('click', () => updateQuantity(item.id, -1));
+    plusBtn?.addEventListener('click', () => updateQuantity(item.id, 1));
+    removeBtn?.addEventListener('click', () => removeItem(item.id));
+  }
+  
+  return card;
+}
+
+// Add CSS for free badge
+const freeBadgeStyle = document.createElement('style');
+freeBadgeStyle.textContent = `
+  .free-badge {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 8px;
+    display: inline-block;
+  }
+  
+  .free-item-note {
+    color: #10b981;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+`;
+document.head.appendChild(freeBadgeStyle);
