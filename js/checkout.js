@@ -513,6 +513,29 @@
         quantity: item.quantity,
         price: item.price
       })),
+      // In checkout.js - Add after creating orderData
+
+// Save order to orders history
+if (window.OKMartOrders && window.OKMartOrders.saveOrder) {
+  window.OKMartOrders.saveOrder({
+    orderId: orderId,
+    total: cartTotals.finalTotal,
+    deliveryCharge: cartTotals.deliveryCharge,
+    subtotal: cartTotals.subtotal,
+    status: 'received',
+    paymentMethod: 'Cash on Delivery',
+    items: cartItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      mrp: item.mrp,
+      image: item.image,
+      unit: item.unit,
+      quantity: item.quantity
+    }))
+  });
+},
+      
       totals: cartTotals,
       customer: {
         name: customerName.value.trim(),
