@@ -1,5 +1,56 @@
 /* ===== OK MART - CLEAN HOME STYLES ===== */
+/* ===== OVERFLOW PREVENTION ===== */
 
+.home-main {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 14px;
+}
+
+/* Horizontal scroll containers */
+.product-grid-horizontal,
+.category-pills,
+.category-tags {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.product-grid-horizontal::-webkit-scrollbar,
+.category-pills::-webkit-scrollbar,
+.category-tags::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fix for product grid */
+.product-grid {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Ensure product cards don't overflow */
+.product-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Bottom bar fix */
+.bottom-cart-bar {
+  width: 100%;
+  max-width: 480px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+}
+
+/* Modal fix */
+.product-modal {
+  max-width: 480px;
+  width: 100%;
+  box-sizing: border-box;
+}
 /* Reset & Base */
 * {
   margin: 0;
