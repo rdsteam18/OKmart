@@ -462,3 +462,81 @@
   };
   
 })();
+
+
+// Add to search.js - Auto-add functionality from URL parameters
+
+// Check URL for auto-add parameter
+function checkAutoAddFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const shouldAutoAdd = params.get('add') === 'true';
+  const productId = params.get('id');
+  const searchQuery = params.get('query');
+  
+  if (!shouldAutoAdd) return;
+  
+  // Wait for products to load
+  setTimeout(() => {
+    let productToAdd = null;
+    
+    if (productId) {
+      // Find by ID
+      productToAdd = allProducts.find(p => p.id === productId);
+    } else if (searchQuery) {
+      // Find by name (first match)
+      const query = searchQuery.toLowerCase();
+      productToAdd = allProducts.find(p => 
+        p.name.toLowerCase().includes(query)
+      );
+    }
+    
+    if (productToAdd) {
+      // Check if already auto-added in this session
+      const autoAddedKey = `auto_added_${productToAdd.id}`;
+      const hasBeenAutoAdded = sessionStorage.getItem(autoAddedKey);
+      
+      if (!hasBeenAutoAdded) {
+        // Add to cart
+        if (window.OKMart && window.OKMart.addToCart) {
+          window.OKMart.addToCart(productToAdd, 1);
+          sessionStorage.setItem(autoAddedKey, 'true');
+          
+          // Show feedback
+          window.OKMart.showToast?.(`${productToAdd.name} added to cart!`, 'success');
+        }
+      }
+      
+      // Highlight the product card
+      highlightProductCard(productToAdd.id);
+      
+      // Scroll to product
+      scrollToProduct(productToAdd.id);
+    }
+  }, 500);
+}
+
+// Highlight product card
+function highlightProductCard(productId) {
+  const card = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+  if (card) {
+    card.style.transition = 'all 0.3s';
+    card.style.boxShadow = '0 0 0 4px #2ecc71';
+    card.style.transform = 'scale(1.02)';
+    
+    setTimeout(() => {
+      card.style.boxShadow = '';
+      card.style.transform = '';
+    }, 3000);
+  }
+}
+
+// Scroll to product
+function scrollToProduct(productId) {
+  const card = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Call in init()
+// checkAutoAddFromURL();
