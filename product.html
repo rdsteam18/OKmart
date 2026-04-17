@@ -34,17 +34,17 @@
           <h1 class="page-title">Product Details</h1>
         </div>
         <div class="header-actions">
-  <button class="wishlist-header-btn" id="headerWishlistBtn" aria-label="Add to wishlist">
-    <span id="headerWishlistIcon">🤍</span>
-  </button>
-  <button class="share-header-btn" id="headerShareBtn" aria-label="Share">
-    <span>📤</span>
-  </button>
-  <a href="/cart.html" class="cart-icon-link" aria-label="cart">
-    <span class="cart-icon">🛒</span>
-    <span class="cart-badge" id="cartCountPlaceholder">0</span>
-  </a>
-</div>
+          <button class="wishlist-header-btn" id="headerWishlistBtn" aria-label="Add to wishlist">
+            <span id="headerWishlistIcon">🤍</span>
+          </button>
+          <button class="share-header-btn" id="headerShareBtn" aria-label="Share">
+            <span>📤</span>
+          </button>
+          <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="cart">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -92,6 +92,23 @@
             You save <span id="savingsAmount">₹0</span> on this item
           </div>
           
+          <!-- Quantity Selector (VISIBLE ABOVE ADD BUTTON) -->
+          <div class="quantity-section">
+            <span class="quantity-label">Quantity</span>
+            <div class="quantity-control-inline">
+              <button class="qty-btn-inline" id="qtyMinusInline" aria-label="Decrease quantity">−</button>
+              <span class="qty-number-inline" id="quantityInline">1</span>
+              <button class="qty-btn-inline" id="qtyPlusInline" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+          
+          <!-- ADD TO CART BUTTON (PROMINENT) -->
+          <button class="add-to-cart-primary-btn" id="addToCartPrimaryBtn">
+            <span class="btn-icon">🛒</span>
+            <span class="btn-text">Add to Cart</span>
+            <span class="btn-price">· <span id="itemTotalPrimary">₹0</span></span>
+          </button>
+          
           <!-- Guarantee -->
           <div class="guarantee-section">
             <div class="guarantee-item">
@@ -108,7 +125,7 @@
             </div>
           </div>
           
-          <!-- Description (optional) -->
+          <!-- Description -->
           <div class="description-section" id="descriptionSection">
             <h3>Product Description</h3>
             <p id="productDescription">Fresh and high-quality product sourced directly from farmers.</p>
@@ -137,15 +154,14 @@
       </div>
     </main>
 
-    <!-- Sticky Add to Cart Bar -->
+    <!-- Sticky Bottom Bar (Alternative add to cart - shows when scrolling) -->
     <div class="sticky-add-bar" id="stickyAddBar" style="display: none;">
-      <div class="quantity-control">
-        <button class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
-        <span class="qty-number" id="quantity">1</span>
-        <button class="qty-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
+      <div class="sticky-product-info">
+        <span class="sticky-product-name" id="stickyProductName"></span>
+        <span class="sticky-product-price" id="stickyProductPrice"></span>
       </div>
-      <button class="add-to-cart-btn-large" id="addToCartBtn">
-        Add to cart · <span id="itemTotal">₹0</span>
+      <button class="sticky-add-btn" id="stickyAddBtn">
+        Add to Cart <span id="stickyItemTotal">₹0</span>
       </button>
     </div>
 
