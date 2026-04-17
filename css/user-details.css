@@ -1,0 +1,152 @@
+.user-details-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+}
+
+.welcome-card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.welcome-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.welcome-card h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-dark);
+}
+
+.welcome-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.user-form {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+  color: var(--text-dark);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-light);
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-light);
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: var(--primary);
+}
+
+.country-code {
+  padding: 14px 8px 14px 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  background: var(--bg-light);
+  border-right: 1px solid var(--border-light);
+}
+
+.phone-input-wrapper input {
+  border: none !important;
+  background: transparent !important;
+  padding: 14px 16px !important;
+}
+
+.error-message {
+  display: block;
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  min-height: 18px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.submit-btn:active {
+  background: var(--primary-dark);
+  transform: scale(0.98);
+}
+
+.terms-note {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 20px;
+}
+
+.header-spacer {
+  width: 40px;
+}
+
+.toast-message {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-dark);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 40px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.toast-message.show {
+  opacity: 1;
+  bottom: 80px;
+}
