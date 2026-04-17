@@ -1,292 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="OK Mart">
-<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
-
-<!-- Theme Color -->
-<meta name="theme-color" content="#2ecc71">
-<meta name="msapplication-TileColor" content="#2ecc71">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Checkout · OK Mart</title>
-  
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/checkout.css">
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Checkout | OK Mart</title>
+  <meta name="theme-color" content="#2ecc71">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/checkout.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="app-header checkout-header">
-    <div class="header-container">
-      <div class="header-left">
-        <a href="cart.html" class="back-button" aria-label="back to cart">
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-container">
+        <a href="/cart.html" class="back-button">
           <span class="back-icon">←</span>
         </a>
         <h1 class="page-title">Checkout</h1>
+        <div class="header-spacer"></div>
       </div>
-      <div class="header-right-placeholder"></div>
-    </div>
-  </header>
+    </header>
 
-  <main class="checkout-main">
-    <!-- Progress Indicator -->
-    <div class="checkout-progress">
-      <div class="progress-step active">
-        <span class="step-icon">1</span>
-        <span class="step-label">Details</span>
-      </div>
-      <div class="progress-line"></div>
-      <div class="progress-step">
-        <span class="step-icon">2</span>
-        <span class="step-label">Confirm</span>
-      </div>
-    </div>
-
-    <!-- Order Summary -->
-    <div class="order-summary-section">
-      <div class="section-header">
-        <h2 class="section-title">📋 Order Summary</h2>
-        <button class="view-items-btn" id="viewItemsToggle">View Items ▼</button>
-      </div>
-      
-      <div class="order-items-collapsible" id="orderItemsCollapsible">
-        <div class="order-items-list" id="orderItemsList">
-          <!-- Items will be rendered here -->
+    <main class="checkout-main">
+      <!-- Delivery Address Card -->
+      <div class="address-card">
+        <div class="address-header">
+          <span class="address-icon">📍</span>
+          <h3>Delivery Address</h3>
+          <a href="/profile.html" class="change-btn">Change</a>
+        </div>
+        <div class="address-content" id="deliveryAddress">
+          <p class="address-name" id="displayName">Loading...</p>
+          <p class="address-phone" id="displayPhone"></p>
+          <p class="address-full" id="displayAddress"></p>
+          <p class="address-pincode" id="displayPincode"></p>
         </div>
       </div>
-      
-      <div class="order-total-summary">
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <span id="checkoutSubtotal">₹0</span>
-        </div>
-        <div class="summary-row">
-          <span>Delivery</span>
-          <span id="checkoutDelivery">₹0</span>
-        </div>
-        <div class="summary-row total-row">
-          <span>Total</span>
-          <span id="checkoutTotal">₹0</span>
-        </div>
-      </div>
-    </div>
-<!-- Add after order total summary, before user details form -->
 
-<!-- Coupon Section -->
-<div class="coupon-section" id="couponSection">
-  <div class="coupon-header">
-    <span class="coupon-icon">🏷️</span>
-    <span class="coupon-title">Apply Coupon</span>
-  </div>
-  <div class="coupon-input-group">
-    <input 
-      type="text" 
-      id="couponInput" 
-      class="coupon-input" 
-      placeholder="Enter coupon code"
-      autocomplete="off"
-    >
-    <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
-  </div>
-  <div class="coupon-message" id="couponMessage"></div>
-  <div class="coupon-hint">Try: SAVE20 (₹20 off on orders above ₹250)</div>
-</div>
-
-<!-- Applied Coupon Display -->
-<div class="applied-coupon-display" id="appliedCouponDisplay" style="display: none;">
-  <div class="applied-coupon-info">
-    <span class="applied-icon">✅</span>
-    <div class="applied-details">
-      <span class="applied-code" id="appliedCouponCode">SAVE20</span>
-      <span class="applied-discount" id="appliedCouponValue">-₹20</span>
-    </div>
-    <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
-  </div>
-</div>
-
-<!-- Delivery Offer Message -->
-<div class="delivery-offer-message" id="deliveryOfferMessage">
-  🚚 Free delivery on orders above ₹199!
-</div>
-    
-    <!-- User Details Form -->
-    <form class="checkout-form" id="checkoutForm">
-      <div class="form-section">
-        <h2 class="section-title">📍 Delivery Details</h2>
+      <!-- Order Summary -->
+      <div class="order-summary-card">
+        <div class="summary-header">
+          <h3>Order Summary</h3>
+          <button class="view-items-btn" id="viewItemsToggle">View Items ▼</button>
+        </div>
+        <div class="order-items-list" id="orderItemsList"></div>
         
-        <!-- Name Field -->
-        <div class="form-group">
-          <label for="customerName" class="form-label">
-            <span class="label-icon">👤</span>
-            Full Name
-          </label>
-          <input 
-            type="text" 
-            id="customerName" 
-            name="name" 
-            class="form-input" 
-            placeholder="Enter your full name"
-            required
-            autocomplete="name"
-          >
-          <span class="error-message" id="nameError"></span>
-        </div>
-
-        <!-- Phone Field -->
-        <div class="form-group">
-          <label for="customerPhone" class="form-label">
-            <span class="label-icon">📱</span>
-            Phone Number
-          </label>
-          <input 
-            type="tel" 
-            id="customerPhone" 
-            name="phone" 
-            class="form-input" 
-            placeholder="10-digit mobile number"
-            pattern="[0-9]{10}"
-            maxlength="10"
-            required
-            autocomplete="tel"
-          >
-          <span class="error-message" id="phoneError"></span>
-        </div>
-
-        <!-- Address Field -->
-        <div class="form-group">
-          <label for="customerAddress" class="form-label">
-            <span class="label-icon">🏠</span>
-            Delivery Address
-          </label>
-          <textarea 
-            id="customerAddress" 
-            name="address" 
-            class="form-input" 
-            rows="3"
-            placeholder="House/Flat No., Street, Area"
-            required
-            autocomplete="street-address"
-          ></textarea>
-          <span class="error-message" id="addressError"></span>
-        </div>
-
-        <!-- Pincode Field -->
-        <div class="form-group">
-          <label for="customerPincode" class="form-label">
-            <span class="label-icon">📮</span>
-            Pincode
-          </label>
-          <input 
-            type="text" 
-            id="customerPincode" 
-            name="pincode" 
-            class="form-input" 
-            placeholder="6-digit pincode"
-            pattern="[0-9]{6}"
-            maxlength="6"
-            required
-            autocomplete="postal-code"
-          >
-          <span class="error-message" id="pincodeError"></span>
-          <div class="pincode-status" id="pincodeStatus"></div>
+        <div class="price-breakdown">
+          <div class="price-row">
+            <span>Subtotal</span>
+            <span id="checkoutSubtotal">₹0</span>
+          </div>
+          <div class="price-row" id="couponRow" style="display: none;">
+            <span>Coupon Discount</span>
+            <span class="discount-value" id="couponDiscount">-₹0</span>
+          </div>
+          <div class="price-row">
+            <span>Delivery</span>
+            <span id="checkoutDelivery">₹20</span>
+          </div>
+          <div class="price-row total-row">
+            <span>Total</span>
+            <span id="checkoutTotal">₹0</span>
+          </div>
         </div>
       </div>
 
-      <!-- Optional Fields -->
-      <div class="form-section">
-        <h2 class="section-title">⏰ Additional Preferences</h2>
-        
-        <!-- Delivery Time Slot -->
-        <div class="form-group">
-          <label for="deliverySlot" class="form-label">
-            <span class="label-icon">🕐</span>
-            Preferred Delivery Time
-          </label>
-          <select id="deliverySlot" name="deliverySlot" class="form-input form-select">
-            <option value="morning">🌅 Morning (8 AM - 12 PM)</option>
-            <option value="evening">🌆 Evening (4 PM - 8 PM)</option>
-            <option value="urgent">⚡ Urgent (within 30 mins)</option>
-          </select>
-        </div>
-
-        <!-- Special Instructions -->
-        <div class="form-group">
-          <label for="specialInstructions" class="form-label">
-            <span class="label-icon">💬</span>
-            Special Instructions (Optional)
-          </label>
-          <textarea 
-            id="specialInstructions" 
-            name="instructions" 
-            class="form-input" 
-            rows="2"
-            placeholder="e.g., Leave at door, Call before delivery"
-          ></textarea>
-        </div>
+      <!-- Payment Method -->
+      <div class="payment-card">
+        <h3>Payment Method</h3>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="cod" checked>
+          <span class="payment-label">💵 Cash on Delivery</span>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment" value="upi">
+          <span class="payment-label">📱 UPI / Card</span>
+        </label>
       </div>
 
-      <!-- Payment Method (Simplified) -->
-      <div class="form-section">
-        <h2 class="section-title">💳 Payment Method</h2>
-        <div class="payment-option">
-          <input type="radio" id="cod" name="payment" value="cod" checked>
-          <label for="cod" class="payment-label">
-            <span class="payment-icon">💵</span>
-            <div class="payment-details">
-              <strong>Cash on Delivery</strong>
-              <small>Pay when you receive</small>
-            </div>
-          </label>
+      <!-- Coupon Section -->
+      <div class="coupon-card">
+        <div class="coupon-input-wrapper">
+          <input type="text" id="couponInput" placeholder="Enter coupon code" autocomplete="off">
+          <button id="applyCouponBtn">Apply</button>
         </div>
+        <div class="coupon-message" id="couponMessage"></div>
       </div>
-    </form>
+    </main>
 
-    <!-- Bottom Spacer for Sticky Button -->
-    <div class="bottom-spacer"></div>
-  </main>
-
-  <!-- STICKY PLACE ORDER BAR -->
-  <div class="sticky-order-bar" id="stickyOrderBar">
-    <div class="order-bar-inner">
-      <div class="order-total-compact">
-        <span class="total-label">Total</span>
-        <span class="total-value" id="stickyCheckoutTotal">₹0</span>
+    <div class="sticky-checkout-bar">
+      <div class="checkout-bar-inner">
+        <div class="total-info">
+          <span class="total-label">Total</span>
+          <span class="total-value" id="stickyTotal">₹0</span>
+        </div>
+        <button class="place-order-btn" id="placeOrderBtn">Place Order →</button>
       </div>
-      <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">
-        Place Order via WhatsApp →
-      </button>
     </div>
+
+    <div class="toast-message" id="toastMessage"></div>
   </div>
 
-  <!-- SCRIPTS -->
-  <script src="js/common.js"></script>
-  <script src="js/checkout.js"></script>
-  <!-- PWA Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('[PWA] Service Worker registered:', registration.scope);
-        })
-        .catch((error) => {
-          console.log('[PWA] Service Worker registration failed:', error);
-        });
-    });
-  }
-</script>
-
-<!-- PWA Install Prompt -->
-<script src="/js/pwa.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/checkout.js"></script>
 </body>
 </html>
