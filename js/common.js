@@ -1095,3 +1095,138 @@ window.OKMart.renderProductCard = (product) => {
   
   return card;
 };
+
+
+// ===== WISHLIST FUNCTIONS =====
+
+const WISHLIST_KEY = 'okmart_wishlist';
+
+// Get wishlist
+window.OKMart.getWishlist = () => {
+  const stored = localStorage.getItem(WISHLIST_KEY);
+  return stored ? JSON.parse(stored) : [];
+};
+
+// Save wishlist
+window.OKMart.saveWishlist = (wishlist) => {
+  localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+  window.dispatchEvent(new CustomEvent('wishlist-updated'));
+};
+
+// Check if product is in wishlist
+window.OKMart.isInWishlist = (productId) => {
+  const wishlist = window.OKMart.getWishlist();
+  return wishlist.some(item => item.id === productId);
+};
+
+// Toggle wishlist item
+window.OKMart.toggleWishlist = (product) => {
+  const wishlist = window.OKMart.getWishlist();
+  const index = wishlist.findIndex(item => item.id === product.id);
+  
+  if (index > -1) {
+    wishlist.splice(index, 1);
+    window.OKMart.saveWishlist(wishlist);
+    return false; // removed
+  } else {
+    wishlist.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      mrp: product.mrp,
+      image: product.image,
+      unit: product.unit,
+      category: product.category
+    });
+    window.OKMart.saveWishlist(wishlist);
+    return true; // added
+  }
+};
+
+// Get wishlist count
+window.OKMart.getWishlistCount = () => {
+  return window.OKMart.getWishlist().length;
+};
+
+// Update wishlist UI across page
+window.OKMart.updateWishlistUI = () => {
+  const count = window.OKMart.getWishlistCount();
+  document.querySelectorAll('.wishlist-count-badge').forEach(badge => {
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+  });
+};
+
+// Enhanced renderProductCard with wishlist heart
+const originalRenderProductCard = window.OKMart.renderProductCard;
+
+window.OKMart.renderProductCard = (product) => {
+  const card = originalRenderProductCard(product);
+  
+  // Add wishlist heart button
+  const wishlistBtn = document.createElement('button');
+  wishlistBtn.className = 'wishlist-heart-btn';
+  wishlistBtn.setAttribute('aria-label', 'Add to wishlist');
+  
+  const isInWishlist = window.OKMart.isInWishlist(product.id);
+  wishlistBtn.innerHTML = isInWishlist ? '❤️' : '🤍';
+  
+  wishlistBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const added = window.OKMart.toggleWishlist(product);
+    wishlistBtn.innerHTML = added ? '❤️' : '🤍';
+    
+    // Show feedback
+    window.OKMart.showToast?.(
+      added ? 'Added to wishlist!' : 'Removed from wishlist',
+      'success'
+    );
+    
+    // Update wishlist count badges
+    window.OKMart.updateWishlistUI();
+  });
+  
+  wishlistBtn.style.cssText = `
+    position: absolute;
+    top: 8px;
+    right: 40px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.15s;
+  `;
+  
+  card.style.position = 'relative';
+  
+  // Check if share button exists, if so adjust position
+  const shareBtn = card.querySelector('.share-product-btn');
+  if (shareBtn) {
+    shareBtn.style.right = '8px';
+    wishlistBtn.style.right = '44px';
+  }
+  
+  card.appendChild(wishlistBtn);
+  
+  return card;
+};
+
+// Initialize wishlist UI
+document.addEventListener('DOMContentLoaded', () => {
+  window.OKMart.updateWishlistUI();
+});
+
+// Listen for wishlist updates
+window.addEventListener('wishlist-updated', () => {
+  window.OKMart.updateWishlistUI();
+});
