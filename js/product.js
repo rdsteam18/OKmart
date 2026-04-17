@@ -86,6 +86,17 @@
       stickyAddBar.style.display = 'none';
       return;
     }
+    // Update wishlist heart state
+function updateWishlistHeart() {
+  const wishlistBtn = document.querySelector('.wishlist-heart-btn');
+  if (wishlistBtn && currentProduct) {
+    const isInWishlist = window.OKMart.isInWishlist(currentProduct.id);
+    wishlistBtn.innerHTML = isInWishlist ? '❤️' : '🤍';
+  }
+}
+
+// Call in renderProduct after setting currentProduct
+updateWishlistHeart();
     
     // Update page title
     document.title = `${currentProduct.name} | OK Mart`;
