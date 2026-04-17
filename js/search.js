@@ -1,542 +1,168 @@
-// ===== OK MART - SEARCH.JS =====
-// Dedicated search results page with primary results and related suggestions
-
 (function() {
   'use strict';
   
-  // ---------- STATE ----------
-  let allProducts = [];
-  let searchQuery = '';
-  let primaryResults = [];
-  let relatedResults = [];
+  const CART_KEY = 'okmart_cart';
+  const JSON_FILES = ['fruits', 'dairy', 'snacks', 'beverages', 'electronics', 'grocery', 'offers'];
   
-  // DOM Elements
-  const searchLoadingState = document.getElementById('searchLoadingState');
-  const searchResultsContainer = document.getElementById('searchResultsContainer');
-  const searchResultTitle = document.getElementById('searchResultTitle');
+  let allProducts = [];
+  let searchResults = [];
+  let searchQuery = '';
+  
+  const loadingState = document.getElementById('loadingState');
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  const emptyState = document.getElementById('emptyState');
+  const searchTitle = document.getElementById('searchTitle');
   const resultCount = document.getElementById('resultCount');
-  const primaryResultsGrid = document.getElementById('primaryResultsGrid');
-  const relatedResultsGrid = document.getElementById('relatedResultsGrid');
-  const emptySearchState = document.getElementById('emptySearchState');
-  const emptySearchMessage = document.getElementById('emptySearchMessage');
-  const suggestedEmptyGrid = document.getElementById('suggestedEmptyGrid');
   const headerSearchInput = document.getElementById('headerSearchInput');
   const clearHeaderSearch = document.getElementById('clearHeaderSearch');
-  const primaryResultsTitle = document.getElementById('primaryResultsTitle');
-  const relatedProductsSection = document.getElementById('relatedProductsSection');
   
-  // ---------- UTILITY FUNCTIONS ----------
-  
-  // Get search query from URL
-  function getSearchQueryFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('query') || '';
-  }
-  
-  // Update URL with search query
-  function updateURL(query) {
-    const url = new URL(window.location);
-    url.searchParams.set('query', query);
-    window.history.replaceState({}, '', url);
-  }
-  
-  // Calculate match score for sorting
-  function getMatchScore(productName, query) {
-    const nameLower = productName.toLowerCase();
-    const queryLower = query.toLowerCase();
+  async function loadAllProducts() {
+    const products = [];
     
-    // Exact match
-    if (nameLower === queryLower) return 100;
-    
-    // Starts with query
-    if (nameLower.startsWith(queryLower)) return 80;
-    
-    // Contains query as whole word
-    const words = nameLower.split(/\s+/);
-    if (words.some(word => word === queryLower)) return 60;
-    
-    // Contains query
-    if (nameLower.includes(queryLower)) return 40;
-    
-    // Category match
-    return 20;
-  }
-  
-  // Check if product matches search query
-  function productMatchesQuery(product, query) {
-    const queryLower = query.toLowerCase();
-    const nameLower = product.name.toLowerCase();
-    const categoryLower = product.category.toLowerCase();
-    
-    return nameLower.includes(queryLower) || categoryLower.includes(queryLower);
-  }
-  
-  // Search products
-  function searchProducts(query) {
-    if (!query || query.trim().length === 0) {
-      return { primary: [], related: [] };
-    }
-    
-    const queryLower = query.toLowerCase().trim();
-    
-    // Find all matching products
-    const matches = allProducts.filter(product => 
-      productMatchesQuery(product, queryLower)
-    );
-    
-    // Sort by match score (priority)
-    const sortedMatches = matches.sort((a, b) => {
-      const scoreA = getMatchScore(a.name, queryLower);
-      const scoreB = getMatchScore(b.name, queryLower);
-      
-      if (scoreB !== scoreA) return scoreB - scoreA;
-      
-      // Then by popular
-      if (a.popular && !b.popular) return -1;
-      if (!a.popular && b.popular) return 1;
-      
-      return 0;
-    });
-    
-    // Get related products (from same categories as matches, excluding already matched)
-    const matchedIds = new Set(sortedMatches.map(p => p.id));
-    const matchedCategories = new Set(sortedMatches.map(p => p.category));
-    
-    const related = allProducts.filter(product => {
-      // Not already in primary results
-      if (matchedIds.has(product.id)) return false;
-      
-      // From same category as a matched product
-      return matchedCategories.has(product.category);
-    });
-    
-    // Sort related by popular first, then random-ish
-    const sortedRelated = related.sort((a, b) => {
-      if (a.popular && !b.popular) return -1;
-      if (!a.popular && b.popular) return 1;
-      return 0;
-    }).slice(0, 8);
-    
-    return {
-      primary: sortedMatches,
-      related: sortedRelated
-    };
-  }
-  
-  // Get popular products (for empty state)
-  function getPopularProducts(limit = 6) {
-    return allProducts
-      .filter(p => p.popular === true)
-      .sort((a, b) => b.price - a.price)
-      .slice(0, limit);
-  }
-  
-  // Highlight matching text
-  function highlightText(text, query) {
-    if (!query || query.length < 2) return text;
-    
-    const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<span class="search-match-highlight">$1</span>');
-  }
-  
-  // ---------- RENDERING FUNCTIONS ----------
-  
-  // Render primary results
-  function renderPrimaryResults() {
-    if (!primaryResultsGrid) return;
-    
-    primaryResultsGrid.innerHTML = '';
-    
-    if (primaryResults.length === 0) {
-      const noResultsMsg = document.createElement('div');
-      noResultsMsg.className = 'no-results-message';
-      noResultsMsg.textContent = 'No matching products found';
-      primaryResultsGrid.appendChild(noResultsMsg);
-      return;
-    }
-    
-    primaryResults.forEach(product => {
-      const card = OKMart.renderProductCard(product);
-      
-      // Highlight product name if it matches
-      const nameEl = card.querySelector('.product-name');
-      if (nameEl && searchQuery) {
-        nameEl.innerHTML = highlightText(product.name, searchQuery);
-      }
-      
-      // Add popular badge
-      if (product.popular) {
-        const badge = document.createElement('span');
-        badge.className = 'product-badge';
-        badge.textContent = '🔥 Popular';
-        badge.style.cssText = `
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          background: #27ae60;
-          color: white;
-          padding: 4px 10px;
-          border-radius: 40px;
-          font-size: 0.65rem;
-          font-weight: 600;
-          z-index: 2;
-        `;
-        card.style.position = 'relative';
-        card.insertBefore(badge, card.firstChild);
-      }
-      
-      primaryResultsGrid.appendChild(card);
-    });
-  }
-  
-  // Render related results
-  function renderRelatedResults() {
-    if (!relatedResultsGrid) return;
-    
-    relatedResultsGrid.innerHTML = '';
-    
-    if (relatedResults.length === 0) {
-      // If no related, show popular products instead
-      const popular = getPopularProducts(4);
-      popular.forEach(product => {
-        const card = OKMart.renderProductCard(product);
-        
-        if (product.popular) {
-          const badge = document.createElement('span');
-          badge.className = 'product-badge';
-          badge.textContent = '🔥 Popular';
-          badge.style.cssText = `
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: #27ae60;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 40px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            z-index: 2;
-          `;
-          card.style.position = 'relative';
-          card.insertBefore(badge, card.firstChild);
+    for (const cat of JSON_FILES) {
+      try {
+        const response = await fetch(`/data/${cat}.json`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.products) {
+            products.push(...data.products);
+          }
         }
-        
-        relatedResultsGrid.appendChild(card);
-      });
-      return;
+      } catch (e) {
+        console.warn(`Could not load ${cat}.json`);
+      }
     }
     
-    relatedResults.forEach(product => {
-      const card = OKMart.renderProductCard(product);
-      
-      if (product.popular) {
-        const badge = document.createElement('span');
-        badge.className = 'product-badge';
-        badge.textContent = '🔥 Popular';
-        badge.style.cssText = `
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          background: #27ae60;
-          color: white;
-          padding: 4px 10px;
-          border-radius: 40px;
-          font-size: 0.65rem;
-          font-weight: 600;
-          z-index: 2;
-        `;
-        card.style.position = 'relative';
-        card.insertBefore(badge, card.firstChild);
-      }
-      
-      relatedResultsGrid.appendChild(card);
-    });
+    return products;
   }
   
-  // Render empty state with suggestions
-  function renderEmptyState() {
-    if (!suggestedEmptyGrid) return;
+  function renderProductCard(product) {
+    const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
     
-    const popularProducts = getPopularProducts(6);
-    
-    suggestedEmptyGrid.innerHTML = '';
-    
-    popularProducts.forEach(product => {
-      const card = OKMart.renderProductCard(product);
-      
-      if (product.popular) {
-        const badge = document.createElement('span');
-        badge.className = 'product-badge';
-        badge.textContent = '🔥 Popular';
-        badge.style.cssText = `
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          background: #27ae60;
-          color: white;
-          padding: 4px 10px;
-          border-radius: 40px;
-          font-size: 0.65rem;
-          font-weight: 600;
-          z-index: 2;
-        `;
-        card.style.position = 'relative';
-        card.insertBefore(badge, card.firstChild);
-      }
-      
-      suggestedEmptyGrid.appendChild(card);
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.dataset.productId = product.id;
+    card.addEventListener('click', () => {
+      window.location.href = `/product.html?id=${product.id}`;
     });
     
-    if (emptySearchMessage && searchQuery) {
-      emptySearchMessage.textContent = `We couldn't find any products matching "${searchQuery}"`;
-    }
+    card.innerHTML = `
+      <img src="${product.image}" alt="${product.name}" class="product-image">
+      <h3 class="product-name">${product.name}</h3>
+      <span class="product-unit">${product.unit || ''}</span>
+      <div class="price-row">
+        <span class="current-price">₹${product.price}</span>
+        ${product.mrp && product.mrp > product.price ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
+        ${discount > 0 ? `<span class="discount-badge">${discount}% OFF</span>` : ''}
+      </div>
+      <button class="add-btn">ADD</button>
+    `;
+    
+    card.querySelector('.add-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      addToCart(product);
+    });
+    
+    return card;
   }
   
-  // Update UI based on search results
-  function updateUI() {
-    // Update title
-    if (searchResultTitle) {
-      if (searchQuery) {
-        searchResultTitle.innerHTML = `Results for <span class="search-query-highlight">"${searchQuery}"</span>`;
-      } else {
-        searchResultTitle.textContent = 'All Products';
-      }
-    }
+  function addToCart(product) {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const existing = cart.find(item => item.id === product.id);
     
-    // Update result count
-    if (resultCount) {
-      const count = primaryResults.length;
-      resultCount.textContent = `${count} item${count !== 1 ? 's' : ''} found`;
-    }
-    
-    // Update primary results title
-    if (primaryResultsTitle) {
-      if (searchQuery) {
-        primaryResultsTitle.textContent = `Search Results (${primaryResults.length})`;
-      } else {
-        primaryResultsTitle.textContent = 'All Products';
-      }
-    }
-    
-    // Show/hide sections based on results
-    if (primaryResults.length === 0) {
-      // Show empty state
-      emptySearchState.style.display = 'block';
-      
-      // Hide related section if no primary results
-      if (relatedProductsSection) {
-        relatedProductsSection.style.display = 'none';
-      }
-      
-      renderEmptyState();
+    if (existing) {
+      existing.quantity += 1;
     } else {
-      // Hide empty state
-      emptySearchState.style.display = 'none';
-      
-      // Show related section
-      if (relatedProductsSection) {
-        relatedProductsSection.style.display = relatedResults.length > 0 ? 'block' : 'none';
-      }
-      
-      renderPrimaryResults();
-      renderRelatedResults();
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        mrp: product.mrp,
+        image: product.image,
+        unit: product.unit,
+        quantity: 1
+      });
     }
     
-    // Show results container, hide loading
-    if (searchLoadingState) {
-      searchLoadingState.style.display = 'none';
-    }
-    if (searchResultsContainer) {
-      searchResultsContainer.style.display = 'block';
-    }
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    updateCartBadge();
   }
   
-  // Perform search and update UI
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-badge').forEach(b => b.textContent = total);
+  }
+  
   function performSearch(query) {
     searchQuery = query;
+    headerSearchInput.value = query;
+    clearHeaderSearch.classList.toggle('visible', query.length > 0);
     
-    // Update header input
-    if (headerSearchInput) {
-      headerSearchInput.value = query;
-      clearHeaderSearch?.classList.toggle('visible', query.length > 0);
+    const q = query.toLowerCase().trim();
+    searchResults = allProducts.filter(p => 
+      p.name.toLowerCase().includes(q) || 
+      (p.category && p.category.toLowerCase().includes(q))
+    );
+    
+    renderResults();
+  }
+  
+  function renderResults() {
+    loadingState.style.display = 'none';
+    
+    if (searchResults.length === 0) {
+      searchResultsGrid.innerHTML = '';
+      emptyState.style.display = 'block';
+      searchTitle.textContent = `No results for "${searchQuery}"`;
+      resultCount.textContent = '0 items';
+      return;
     }
     
-    if (!query || query.trim().length === 0) {
-      // Show all products as primary
-      primaryResults = allProducts.sort((a, b) => {
-        if (a.popular && !b.popular) return -1;
-        if (!a.popular && b.popular) return 1;
-        return 0;
-      });
-      relatedResults = [];
-    } else {
-      const results = searchProducts(query);
-      primaryResults = results.primary;
-      relatedResults = results.related;
+    emptyState.style.display = 'none';
+    searchTitle.textContent = `Results for "${searchQuery}"`;
+    resultCount.textContent = `${searchResults.length} item${searchResults.length !== 1 ? 's' : ''}`;
+    
+    searchResultsGrid.innerHTML = '';
+    searchResults.slice(0, 20).forEach(product => {
+      searchResultsGrid.appendChild(renderProductCard(product));
+    });
+  }
+  
+  // Event Listeners
+  headerSearchInput.addEventListener('input', (e) => {
+    clearHeaderSearch.classList.toggle('visible', e.target.value.length > 0);
+  });
+  
+  headerSearchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performSearch(e.target.value);
     }
-    
-    updateUI();
-  }
+  });
   
-  // ---------- EVENT LISTENERS ----------
+  clearHeaderSearch.addEventListener('click', () => {
+    headerSearchInput.value = '';
+    clearHeaderSearch.classList.remove('visible');
+    headerSearchInput.focus();
+  });
   
-  // Header search input
-  if (headerSearchInput) {
-    headerSearchInput.addEventListener('input', (e) => {
-      const query = e.target.value;
-      clearHeaderSearch?.classList.toggle('visible', query.length > 0);
-    });
-    
-    headerSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const query = e.target.value.trim();
-        if (query) {
-          updateURL(query);
-          performSearch(query);
-        }
-        headerSearchInput.blur();
-      }
-    });
-  }
-  
-  // Clear search button
-  if (clearHeaderSearch) {
-    clearHeaderSearch.addEventListener('click', () => {
-      if (headerSearchInput) {
-        headerSearchInput.value = '';
-        clearHeaderSearch.classList.remove('visible');
-        headerSearchInput.focus();
-      }
-    });
-  }
-  
-  // ---------- INITIALIZATION ----------
-  
+  // Init
   async function init() {
-    try {
-      // Get search query from URL
-      const urlQuery = getSearchQueryFromURL();
-      
-      // Fetch products
-      allProducts = await OKMart.getProducts();
-      
-      if (!allProducts.length) {
-        throw new Error('No products loaded');
-      }
-      
-      // Perform initial search
-      performSearch(urlQuery);
-      
-      // Preload popular product images
-      const popular = getPopularProducts(6);
-      popular.forEach(p => {
-        const img = new Image();
-        img.src = p.image;
-      });
-      
-    } catch (error) {
-      console.error('Failed to load search page:', error);
-      
-      if (searchLoadingState) {
-        searchLoadingState.innerHTML = `
-          <div class="empty-search-icon">⚠️</div>
-          <h3>Failed to load products</h3>
-          <p>Please check your connection and refresh</p>
-          <button class="browse-all-btn" onclick="location.reload()">Retry</button>
-        `;
-      }
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('query') || '';
+    
+    allProducts = await loadAllProducts();
+    
+    if (query) {
+      performSearch(query);
+    } else {
+      loadingState.style.display = 'none';
+      emptyState.style.display = 'block';
+      searchTitle.textContent = 'Search for products';
     }
+    
+    updateCartBadge();
   }
   
-  // Start the app
   init();
-  
-  // Expose for debugging
-  window.OKMartSearch = {
-    performSearch,
-    getState: () => ({
-      query: searchQuery,
-      primaryCount: primaryResults.length,
-      relatedCount: relatedResults.length
-    })
-  };
-  
 })();
-
-
-// Add to search.js - Auto-add functionality from URL parameters
-
-// Check URL for auto-add parameter
-function checkAutoAddFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const shouldAutoAdd = params.get('add') === 'true';
-  const productId = params.get('id');
-  const searchQuery = params.get('query');
-  
-  if (!shouldAutoAdd) return;
-  
-  // Wait for products to load
-  setTimeout(() => {
-    let productToAdd = null;
-    
-    if (productId) {
-      // Find by ID
-      productToAdd = allProducts.find(p => p.id === productId);
-    } else if (searchQuery) {
-      // Find by name (first match)
-      const query = searchQuery.toLowerCase();
-      productToAdd = allProducts.find(p => 
-        p.name.toLowerCase().includes(query)
-      );
-    }
-    
-    if (productToAdd) {
-      // Check if already auto-added in this session
-      const autoAddedKey = `auto_added_${productToAdd.id}`;
-      const hasBeenAutoAdded = sessionStorage.getItem(autoAddedKey);
-      
-      if (!hasBeenAutoAdded) {
-        // Add to cart
-        if (window.OKMart && window.OKMart.addToCart) {
-          window.OKMart.addToCart(productToAdd, 1);
-          sessionStorage.setItem(autoAddedKey, 'true');
-          
-          // Show feedback
-          window.OKMart.showToast?.(`${productToAdd.name} added to cart!`, 'success');
-        }
-      }
-      
-      // Highlight the product card
-      highlightProductCard(productToAdd.id);
-      
-      // Scroll to product
-      scrollToProduct(productToAdd.id);
-    }
-  }, 500);
-}
-
-// Highlight product card
-function highlightProductCard(productId) {
-  const card = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-  if (card) {
-    card.style.transition = 'all 0.3s';
-    card.style.boxShadow = '0 0 0 4px #2ecc71';
-    card.style.transform = 'scale(1.02)';
-    
-    setTimeout(() => {
-      card.style.boxShadow = '';
-      card.style.transform = '';
-    }, 3000);
-  }
-}
-
-// Scroll to product
-function scrollToProduct(productId) {
-  const card = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-  if (card) {
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-}
-
-// Call in init()
-// checkAutoAddFromURL();
