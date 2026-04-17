@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <title>My Wishlist | OK Mart</title>
+  <meta name="description" content="View and manage your saved products at OK Mart.">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/wishlist.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header wishlist-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="back">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">My Wishlist</h1>
+        </div>
+        <div class="header-actions">
+          <span class="wishlist-count-badge" id="headerWishlistCount">0</span>
+          <a href="/cart.html" class="cart-icon-link" aria-label="cart">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="wishlist-main">
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading your wishlist...</p>
+      </div>
+      
+      <!-- Wishlist Content -->
+      <div class="wishlist-content" id="wishlistContent" style="display: none;">
+        <div class="wishlist-header-info">
+          <span class="wishlist-count-info">
+            <span class="heart-filled">❤️</span>
+            <span id="wishlistItemCount">0 items</span>
+          </span>
+          <button class="clear-all-btn" id="clearAllBtn">Clear All</button>
+        </div>
+        
+        <div class="wishlist-grid" id="wishlistGrid">
+          <!-- Wishlist items will be rendered here -->
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div class="empty-wishlist-state" id="emptyWishlistState" style="display: none;">
+        <div class="empty-icon">🤍</div>
+        <h2>Your wishlist is empty</h2>
+        <p>Save your favorite products here and order them anytime!</p>
+        <a href="/index.html" class="browse-btn">Start Shopping →</a>
+        
+        <!-- Suggested Products -->
+        <div class="suggested-section">
+          <h3>Popular Products</h3>
+          <div class="suggested-grid" id="suggestedGrid"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast Message -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/wishlist.js"></script>
+</body>
+</html>
