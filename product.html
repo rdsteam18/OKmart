@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Product Details | OK Mart</title>
+  <meta name="theme-color" content="#2ecc71">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/product.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-container">
+        <a href="javascript:history.back()" class="back-button">
+          <span class="back-icon">←</span>
+        </a>
+        <h1 class="page-title">Product Details</h1>
+        <a href="/cart.html" class="cart-icon-link">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="product-main">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading product...</p>
+      </div>
+      
+      <div class="product-content" id="productContent" style="display: none;">
+        <div class="product-image-container">
+          <img id="productImage" src="" alt="" class="main-product-image">
+          <span class="delivery-badge">🚚 12 min delivery</span>
+        </div>
+        
+        <div class="product-info">
+          <h1 id="productName" class="product-title"></h1>
+          <span id="productUnit" class="product-unit-detail"></span>
+          
+          <div class="price-section">
+            <span id="productPrice" class="detail-price"></span>
+            <span id="productMrp" class="detail-mrp"></span>
+            <span id="discountBadge" class="detail-discount"></span>
+          </div>
+          
+          <div class="guarantee-section">
+            <span class="guarantee-icon">✓</span>
+            <span>100% satisfaction guarantee</span>
+          </div>
+        </div>
+        
+        <div class="related-section">
+          <h3>You might also like</h3>
+          <div class="related-grid" id="relatedGrid"></div>
+        </div>
+      </div>
+      
+      <div class="error-state" id="errorState" style="display: none;">
+        <span class="error-icon">⚠️</span>
+        <h3>Product not found</h3>
+        <a href="/index.html" class="browse-btn">Browse Products</a>
+      </div>
+    </main>
+
+    <div class="sticky-add-bar" id="stickyAddBar">
+      <div class="quantity-control">
+        <button id="qtyMinus">−</button>
+        <span id="quantity">1</span>
+        <button id="qtyPlus">+</button>
+      </div>
+      <button class="add-to-cart-btn-large" id="addToCartBtn">
+        Add to cart · <span id="itemTotal">₹0</span>
+      </button>
+    </div>
+
+    <div class="toast-message" id="toastMessage"></div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/product.js"></script>
+</body>
+</html>
