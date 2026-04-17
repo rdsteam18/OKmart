@@ -29,17 +29,17 @@
       "category": "dairy",
       "price": 10,
       "mrp": 10,
-      "image": "https://amul.com/files/products/amul-tazza.png",
+      "image": "https://blogger.googleusercontent.com/img/a/AVvXsEhVdfJT-KaL34R5OWKy0i1K0CAqR1ObZLB-hXC-we8t3DXPhA2HAtOhM-JQv2M7PQAWEJiHGIB8TC-NykUMd664D8pq5hpUFW9bLZVbrvqIethxZ_yAVCgZIb4O9p_PQA-mPSBfcTdg-fwh1Z5z7NOcKOT1JvttRgV484kylCETAo-ffH9kFPRKAD1I=rw",
       "unit": "170 g",
       "popular": false
     },
     {
       "id": "d4",
-      "name": "Malai Paneer",
+      "name": "Amul Malai Paneer",
       "category": "dairy",
       "price": 85,
       "mrp": 90,
-      "image": "https://amul.com/files/products/promotion/Fresh-Paneer_200g_with_transparent.png",
+      "image": "https://www.bbassets.com/media/uploads/p/l/40096747_8-amul-malai-fresh-paneer.jpg",
       "unit": "200 g",
       "popular": true
     },
@@ -59,7 +59,7 @@
       "category": "dairy",
       "price": 9,
       "mrp": 10,
-      "image": "https://amul.com/files/products/promotion/pro_amul_meetha_dahi.jpg",
+      "image": "https://blogger.googleusercontent.com/img/a/AVvXsEgSisSLO9xv6Pd6jlm025DKbPkWu7HX0ukqEGACObFkw58HEaykgqWHRfHfr2X3TkjM-mChg0L3hw2xWltmsh66mGkenMLMp7GfWGhXdgCY3YpT8dKvVmj_8E2jVOeUNVvFAvUqV4T5ayyP4V04tyY2ZabnFb9Zp-9dbXDtcOnab6BJ3uVlwOyi_Gmf",
       "unit": "85 g",
       "popular": false
     },
