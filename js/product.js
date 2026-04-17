@@ -1,5 +1,5 @@
 // ===== OK MART - PRODUCT.JS =====
-// Complete product page with share and related products
+// Complete product page with clear add to cart
 
 (function() {
   'use strict';
@@ -15,7 +15,6 @@
   const loadingState = document.getElementById('loadingState');
   const productContent = document.getElementById('productContent');
   const errorState = document.getElementById('errorState');
-  const stickyAddBar = document.getElementById('stickyAddBar');
   
   const productImage = document.getElementById('productImage');
   const productName = document.getElementById('productName');
@@ -27,17 +26,29 @@
   const productDescription = document.getElementById('productDescription');
   const relatedGrid = document.getElementById('relatedGrid');
   
-  const quantitySpan = document.getElementById('quantity');
-  const itemTotal = document.getElementById('itemTotal');
-  const qtyMinus = document.getElementById('qtyMinus');
-  const qtyPlus = document.getElementById('qtyPlus');
-  const addToCartBtn = document.getElementById('addToCartBtn');
+  // Quantity and Add to Cart
+  const quantityInline = document.getElementById('quantityInline');
+  const qtyMinusInline = document.getElementById('qtyMinusInline');
+  const qtyPlusInline = document.getElementById('qtyPlusInline');
+  const addToCartPrimaryBtn = document.getElementById('addToCartPrimaryBtn');
+  const itemTotalPrimary = document.getElementById('itemTotalPrimary');
+  
+  // Sticky bar
+  const stickyAddBar = document.getElementById('stickyAddBar');
+  const stickyProductName = document.getElementById('stickyProductName');
+  const stickyProductPrice = document.getElementById('stickyProductPrice');
+  const stickyAddBtn = document.getElementById('stickyAddBtn');
+  const stickyItemTotal = document.getElementById('stickyItemTotal');
+  
+  // Header
+  const headerWishlistBtn = document.getElementById('headerWishlistBtn');
+  const headerWishlistIcon = document.getElementById('headerWishlistIcon');
   const headerShareBtn = document.getElementById('headerShareBtn');
   
   const toastMessage = document.getElementById('toastMessage');
   const pageTitle = document.getElementById('pageTitle');
   
-  // Meta tags for social sharing
+  // Meta tags
   const ogUrl = document.getElementById('ogUrl');
   const ogTitle = document.getElementById('ogTitle');
   const ogDescription = document.getElementById('ogDescription');
@@ -83,30 +94,18 @@
     if (!currentProduct) {
       loadingState.style.display = 'none';
       errorState.style.display = 'block';
-      stickyAddBar.style.display = 'none';
       return;
     }
-    // Update wishlist heart state
-function updateWishlistHeart() {
-  const wishlistBtn = document.querySelector('.wishlist-heart-btn');
-  if (wishlistBtn && currentProduct) {
-    const isInWishlist = window.OKMart.isInWishlist(currentProduct.id);
-    wishlistBtn.innerHTML = isInWishlist ? '❤️' : '🤍';
-  }
-}
-
-// Call in renderProduct after setting currentProduct
-updateWishlistHeart();
     
     // Update page title
     document.title = `${currentProduct.name} | OK Mart`;
     if (pageTitle) pageTitle.textContent = currentProduct.name;
     
-    // Update meta tags for sharing
+    // Update meta tags
     const shareUrl = window.location.href;
     if (ogUrl) ogUrl.content = shareUrl;
     if (ogTitle) ogTitle.content = currentProduct.name;
-    if (ogDescription) ogDescription.content = `Buy ${currentProduct.name} at OK Mart. Fast delivery in 12 minutes.`;
+    if (ogDescription) ogDescription.content = `Buy ${currentProduct.name} at OK Mart. Fast delivery.`;
     if (ogImage) ogImage.content = currentProduct.image;
     
     // Product details
@@ -123,6 +122,7 @@ updateWishlistHeart();
       discountBadge.textContent = `${discount}% OFF`;
       discountBadge.style.display = 'inline-block';
       savingsAmount.textContent = `₹${currentProduct.mrp - currentProduct.price}`;
+      document.getElementById('savingsInfo').style.display = 'block';
     } else {
       productMrp.textContent = '';
       discountBadge.style.display = 'none';
@@ -130,23 +130,25 @@ updateWishlistHeart();
     }
     
     // Description
-    if (currentProduct.description) {
-      productDescription.textContent = currentProduct.description;
-    } else {
-      productDescription.textContent = `Fresh and high-quality ${currentProduct.name.toLowerCase()} sourced directly from trusted suppliers. Perfect for your daily needs.`;
-    }
+    productDescription.textContent = `Fresh and high-quality ${currentProduct.name.toLowerCase()} sourced directly from trusted suppliers.`;
+    
+    // Sticky bar info
+    stickyProductName.textContent = currentProduct.name;
+    stickyProductPrice.textContent = `₹${currentProduct.price}`;
+    
+    // Update wishlist heart
+    updateHeaderWishlistIcon();
+    
+    // Update total
+    updateTotal();
     
     // Render related products
     const related = getRelatedProducts(currentProduct.category, currentProduct.id);
     renderRelatedProducts(related);
     
-    // Update total
-    updateTotal();
-    
     // Show content
     loadingState.style.display = 'none';
     productContent.style.display = 'block';
-    stickyAddBar.style.display = 'flex';
   }
   
   function renderProductCard(product) {
@@ -182,13 +184,28 @@ updateWishlistHeart();
     relatedGrid.innerHTML = '';
     
     if (products.length === 0) {
-      relatedGrid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);">No related products</p>';
+      relatedGrid.innerHTML = '<p style="grid-column:1/-1;color:var(--text-muted);text-align:center;">No related products</p>';
       return;
     }
     
     products.forEach(product => {
       relatedGrid.appendChild(renderProductCard(product));
     });
+  }
+  
+  function updateTotal() {
+    if (currentProduct) {
+      const total = currentProduct.price * quantity;
+      itemTotalPrimary.textContent = `₹${total}`;
+      stickyItemTotal.textContent = `₹${total}`;
+    }
+  }
+  
+  function updateHeaderWishlistIcon() {
+    if (headerWishlistIcon && currentProduct) {
+      const isInWishlist = window.OKMart?.isInWishlist?.(currentProduct.id);
+      headerWishlistIcon.textContent = isInWishlist ? '❤️' : '🤍';
+    }
   }
   
   // ---------- CART FUNCTIONS ----------
@@ -240,15 +257,10 @@ updateWishlistHeart();
     updateCartBadge();
     showToast(`Added ${quantity} ${currentProduct.name} to cart!`, 'success');
     
+    // Reset quantity
     quantity = 1;
-    quantitySpan.textContent = quantity;
+    quantityInline.textContent = quantity;
     updateTotal();
-  }
-  
-  function updateTotal() {
-    if (currentProduct) {
-      itemTotal.textContent = `₹${currentProduct.price * quantity}`;
-    }
   }
   
   function updateCartBadge() {
@@ -259,132 +271,98 @@ updateWishlistHeart();
     });
   }
   
-  // ---------- SHARE FUNCTIONS ----------
+  // ---------- TOAST ----------
   
   function showToast(message, type = 'info') {
+    if (!toastMessage) return;
+    
     toastMessage.textContent = message;
     toastMessage.className = `toast-message ${type}`;
     toastMessage.classList.add('show');
-    setTimeout(() => toastMessage.classList.remove('show'), 2500);
+    
+    setTimeout(() => {
+      toastMessage.classList.remove('show');
+    }, 2500);
   }
+  
+  // ---------- SHARE ----------
   
   function shareCurrentProduct() {
     if (!currentProduct) return;
     
     const shareUrl = window.location.href;
-    const message = `🛒 *Check this product on OK Mart!*\n\n*${currentProduct.name}*\n💰 ₹${currentProduct.price}${currentProduct.mrp ? ` (MRP ₹${currentProduct.mrp})` : ''}\n\nOrder now 👇\n${shareUrl}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    const message = `🛒 *${currentProduct.name}*\n💰 ₹${currentProduct.price}\n\n${shareUrl}`;
     
-    // Show share options
-    showShareOptions(shareUrl, currentProduct);
-  }
-  
-  function showShareOptions(shareUrl, product) {
-    const popup = document.createElement('div');
-    popup.className = 'share-popup';
-    popup.style.cssText = `
-      position: fixed;
-      bottom: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      padding: 16px;
-      z-index: 1000;
-      display: flex;
-      gap: 16px;
-      border: 1px solid #e5e7eb;
-    `;
-    
-    popup.innerHTML = `
-      <button class="share-popup-btn" data-action="whatsapp" style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 12px 20px;
-        border-radius: 16px;
-        transition: background 0.15s;
-      ">
-        <span style="font-size: 2rem;">💬</span>
-        <span style="font-weight: 600;">WhatsApp</span>
-      </button>
-      <button class="share-popup-btn" data-action="copy" style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 12px 20px;
-        border-radius: 16px;
-        transition: background 0.15s;
-      ">
-        <span style="font-size: 2rem;">📋</span>
-        <span style="font-weight: 600;">Copy Link</span>
-      </button>
-    `;
-    
-    document.body.appendChild(popup);
-    
-    // Add overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'share-popup-overlay active';
-    overlay.addEventListener('click', () => {
-      popup.remove();
-      overlay.remove();
-    });
-    document.body.appendChild(overlay);
-    
-    popup.querySelector('[data-action="whatsapp"]').addEventListener('click', () => {
-      const message = `🛒 *${product.name}*\n💰 ₹${product.price}\n\n${shareUrl}`;
+    if (navigator.share) {
+      navigator.share({
+        title: currentProduct.name,
+        text: `Check out ${currentProduct.name} on OK Mart!`,
+        url: shareUrl
+      }).catch(() => {});
+    } else {
       window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-      popup.remove();
-      overlay.remove();
-    });
-    
-    popup.querySelector('[data-action="copy"]').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        showToast('Link copied to clipboard!', 'success');
-      } catch (err) {
-        const textarea = document.createElement('textarea');
-        textarea.value = shareUrl;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast('Link copied!', 'success');
-      }
-      popup.remove();
-      overlay.remove();
-    });
+    }
   }
   
   // ---------- EVENT LISTENERS ----------
   
-  qtyMinus.addEventListener('click', () => {
+  // Quantity controls
+  qtyMinusInline.addEventListener('click', () => {
     if (quantity > 1) {
       quantity--;
-      quantitySpan.textContent = quantity;
+      quantityInline.textContent = quantity;
       updateTotal();
     }
   });
   
-  qtyPlus.addEventListener('click', () => {
+  qtyPlusInline.addEventListener('click', () => {
     quantity++;
-    quantitySpan.textContent = quantity;
+    quantityInline.textContent = quantity;
     updateTotal();
   });
   
-  addToCartBtn.addEventListener('click', addCurrentToCart);
+  // Add to cart buttons
+  addToCartPrimaryBtn.addEventListener('click', addCurrentToCart);
+  stickyAddBtn.addEventListener('click', addCurrentToCart);
   
-  headerShareBtn.addEventListener('click', shareCurrentProduct);
+  // Wishlist
+  if (headerWishlistBtn) {
+    headerWishlistBtn.addEventListener('click', () => {
+      if (!currentProduct) return;
+      
+      if (window.OKMart?.toggleWishlist) {
+        const added = window.OKMart.toggleWishlist(currentProduct);
+        headerWishlistIcon.textContent = added ? '❤️' : '🤍';
+        showToast(added ? 'Added to wishlist!' : 'Removed from wishlist', 'success');
+      }
+    });
+  }
+  
+  // Share
+  if (headerShareBtn) {
+    headerShareBtn.addEventListener('click', shareCurrentProduct);
+  }
+  
+  // Show/hide sticky bar on scroll
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    if (!stickyAddBar) return;
+    
+    const primaryBtn = document.querySelector('.add-to-cart-primary-btn');
+    if (!primaryBtn) return;
+    
+    const btnRect = primaryBtn.getBoundingClientRect();
+    const isBtnVisible = btnRect.top < window.innerHeight && btnRect.bottom > 0;
+    
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      if (!isBtnVisible) {
+        stickyAddBar.style.display = 'flex';
+      } else {
+        stickyAddBar.style.display = 'none';
+      }
+    }, 50);
+  });
   
   // ---------- INITIALIZATION ----------
   
@@ -408,29 +386,3 @@ updateWishlistHeart();
   init();
   
 })();
-
-
-
-const headerWishlistBtn = document.getElementById('headerWishlistBtn');
-const headerWishlistIcon = document.getElementById('headerWishlistIcon');
-
-if (headerWishlistBtn) {
-  headerWishlistBtn.addEventListener('click', () => {
-    if (!currentProduct) return;
-    
-    const added = window.OKMart.toggleWishlist(currentProduct);
-    headerWishlistIcon.textContent = added ? '❤️' : '🤍';
-    showToast(added ? 'Added to wishlist!' : 'Removed from wishlist', 'success');
-  });
-}
-
-// Update icon when product loads
-function updateHeaderWishlistIcon() {
-  if (headerWishlistIcon && currentProduct) {
-    const isInWishlist = window.OKMart.isInWishlist(currentProduct.id);
-    headerWishlistIcon.textContent = isInWishlist ? '❤️' : '🤍';
-  }
-}
-
-// Call in renderProduct
-updateHeaderWishlistIcon();
