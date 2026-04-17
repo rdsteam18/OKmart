@@ -408,3 +408,29 @@ updateWishlistHeart();
   init();
   
 })();
+
+
+
+const headerWishlistBtn = document.getElementById('headerWishlistBtn');
+const headerWishlistIcon = document.getElementById('headerWishlistIcon');
+
+if (headerWishlistBtn) {
+  headerWishlistBtn.addEventListener('click', () => {
+    if (!currentProduct) return;
+    
+    const added = window.OKMart.toggleWishlist(currentProduct);
+    headerWishlistIcon.textContent = added ? '❤️' : '🤍';
+    showToast(added ? 'Added to wishlist!' : 'Removed from wishlist', 'success');
+  });
+}
+
+// Update icon when product loads
+function updateHeaderWishlistIcon() {
+  if (headerWishlistIcon && currentProduct) {
+    const isInWishlist = window.OKMart.isInWishlist(currentProduct.id);
+    headerWishlistIcon.textContent = isInWishlist ? '❤️' : '🤍';
+  }
+}
+
+// Call in renderProduct
+updateHeaderWishlistIcon();
