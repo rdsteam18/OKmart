@@ -898,3 +898,200 @@ window.OKMart.showToast = (message, type = 'info') => {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 };
+
+
+// Add this function to common.js for share functionality
+
+// Generate share link
+window.OKMart.generateShareLink = (productId) => {
+  return `${window.location.origin}/product.html?id=${productId}`;
+};
+
+// Share via WhatsApp
+window.OKMart.shareViaWhatsApp = (product) => {
+  const link = window.OKMart.generateShareLink(product.id);
+  const message = `🛒 *Check this product on OK Mart!*\n\n*${product.name}*\n💰 ₹${product.price}${product.mrp ? ` (MRP ₹${product.mrp})` : ''}\n\nOrder now 👇\n${link}`;
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+};
+
+// Copy link to clipboard
+window.OKMart.copyShareLink = async (productId) => {
+  const link = window.OKMart.generateShareLink(productId);
+  try {
+    await navigator.clipboard.writeText(link);
+    window.OKMart.showToast('Link copied to clipboard!', 'success');
+  } catch (err) {
+    const textarea = document.createElement('textarea');
+    textarea.value = link;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    window.OKMart.showToast('Link copied!', 'success');
+  }
+};
+
+// Show share options popup
+window.OKMart.showShareOptions = (product, event) => {
+  event.stopPropagation();
+  
+  const existingPopup = document.querySelector('.share-popup');
+  if (existingPopup) existingPopup.remove();
+  
+  const popup = document.createElement('div');
+  popup.className = 'share-popup';
+  
+  const rect = event.target.getBoundingClientRect();
+  popup.style.cssText = `
+    position: fixed;
+    top: ${rect.bottom + 8}px;
+    left: ${rect.left}px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+    border: 1px solid #e5e7eb;
+  `;
+  
+  popup.innerHTML = `
+    <button class="share-option-btn" data-action="whatsapp" style="
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    ">
+      <span>💬</span> WhatsApp
+    </button>
+    <button class="share-option-btn" data-action="copy" style="
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #f8fafc;
+      color: #1a1e2b;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    ">
+      <span>📋</span> Copy Link
+    </button>
+  `;
+  
+  document.body.appendChild(popup);
+  
+  popup.querySelector('[data-action="whatsapp"]').addEventListener('click', () => {
+    window.OKMart.shareViaWhatsApp(product);
+    popup.remove();
+  });
+  
+  popup.querySelector('[data-action="copy"]').addEventListener('click', () => {
+    window.OKMart.copyShareLink(product.id);
+    popup.remove();
+  });
+  
+  // Close on outside click
+  setTimeout(() => {
+    const closeHandler = (e) => {
+      if (!popup.contains(e.target)) {
+        popup.remove();
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+    document.addEventListener('click', closeHandler);
+  }, 10);
+};
+
+// Toast notification
+window.OKMart.showToast = (message, type = 'info') => {
+  const toast = document.createElement('div');
+  toast.className = 'share-toast';
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${type === 'success' ? '#10b981' : '#1a1e2b'};
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-weight: 500;
+    z-index: 1001;
+    animation: slideUp 0.3s ease-out;
+    white-space: nowrap;
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+};
+
+// Add animation style
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  .share-product-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.15s;
+  }
+  .share-product-btn:active {
+    background: #e8f8ef;
+    transform: scale(0.9);
+  }
+`;
+document.head.appendChild(style);
+
+// Enhanced renderProductCard with share button
+const originalRenderCard = window.OKMart.renderProductCard;
+window.OKMart.renderProductCard = (product) => {
+  const card = originalRenderCard(product);
+  
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'share-product-btn';
+  shareBtn.innerHTML = '📤';
+  shareBtn.setAttribute('aria-label', 'Share product');
+  
+  shareBtn.addEventListener('click', (e) => {
+    window.OKMart.showShareOptions(product, e);
+  });
+  
+  card.style.position = 'relative';
+  card.appendChild(shareBtn);
+  
+  // Make card clickable to product page
+  card.addEventListener('click', (e) => {
+    if (!e.target.closest('.share-product-btn') && !e.target.closest('.add-to-cart-btn')) {
+      window.location.href = `/product.html?id=${product.id}`;
+    }
+  });
+  
+  return card;
+};
