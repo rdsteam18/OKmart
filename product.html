@@ -3,81 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>Product Details | OK Mart</title>
+  
+  <title id="pageTitle">Product | OK Mart</title>
+  <meta name="description" content="Buy fresh groceries online at OK Mart. Fast delivery in 12 minutes.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Open Graph for social sharing -->
+  <meta property="og:type" content="product">
+  <meta property="og:url" id="ogUrl" content="">
+  <meta property="og:title" id="ogTitle" content="">
+  <meta property="og:description" id="ogDescription" content="">
+  <meta property="og:image" id="ogImage" content="">
+  
+  <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/product.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app-container">
-    <header class="app-header">
+    
+    <!-- Header -->
+    <header class="app-header product-header">
       <div class="header-container">
-        <a href="javascript:history.back()" class="back-button">
-          <span class="back-icon">←</span>
-        </a>
-        <h1 class="page-title">Product Details</h1>
-        <a href="/cart.html" class="cart-icon-link">
-          <span class="cart-icon">🛒</span>
-          <span class="cart-badge" id="cartCountPlaceholder">0</span>
-        </a>
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="back">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">Product Details</h1>
+        </div>
+        <div class="header-actions">
+          <button class="share-header-btn" id="headerShareBtn" aria-label="Share">
+            <span>📤</span>
+          </button>
+          <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="cart">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+          </a>
+        </div>
       </div>
     </header>
 
     <main class="product-main">
+      <!-- Loading State -->
       <div class="loading-state" id="loadingState">
         <div class="spinner"></div>
-        <p>Loading product...</p>
+        <p>Loading product details...</p>
       </div>
       
+      <!-- Product Content -->
       <div class="product-content" id="productContent" style="display: none;">
+        <!-- Product Image -->
         <div class="product-image-container">
           <img id="productImage" src="" alt="" class="main-product-image">
           <span class="delivery-badge">🚚 12 min delivery</span>
+          <span class="stock-badge" id="stockBadge">In Stock</span>
         </div>
         
-        <div class="product-info">
-          <h1 id="productName" class="product-title"></h1>
-          <span id="productUnit" class="product-unit-detail"></span>
+        <!-- Product Info -->
+        <div class="product-info-section">
+          <div class="product-header">
+            <h1 id="productName" class="product-title"></h1>
+            <span id="productUnit" class="product-unit-detail"></span>
+          </div>
           
+          <!-- Rating -->
+          <div class="rating-section">
+            <span class="stars">★★★★½</span>
+            <span class="rating-value">4.5</span>
+            <span class="rating-count">(500+ ratings)</span>
+          </div>
+          
+          <!-- Price -->
           <div class="price-section">
-            <span id="productPrice" class="detail-price"></span>
-            <span id="productMrp" class="detail-mrp"></span>
+            <div class="price-main">
+              <span id="productPrice" class="detail-price"></span>
+              <span id="productMrp" class="detail-mrp"></span>
+            </div>
             <span id="discountBadge" class="detail-discount"></span>
           </div>
           
+          <!-- Savings Info -->
+          <div class="savings-info" id="savingsInfo">
+            You save <span id="savingsAmount">₹0</span> on this item
+          </div>
+          
+          <!-- Guarantee -->
           <div class="guarantee-section">
-            <span class="guarantee-icon">✓</span>
-            <span>100% satisfaction guarantee</span>
+            <div class="guarantee-item">
+              <span class="guarantee-icon">✓</span>
+              <span>100% Satisfaction</span>
+            </div>
+            <div class="guarantee-item">
+              <span class="guarantee-icon">🔄</span>
+              <span>Easy Returns</span>
+            </div>
+            <div class="guarantee-item">
+              <span class="guarantee-icon">🚚</span>
+              <span>Fast Delivery</span>
+            </div>
+          </div>
+          
+          <!-- Description (optional) -->
+          <div class="description-section" id="descriptionSection">
+            <h3>Product Description</h3>
+            <p id="productDescription">Fresh and high-quality product sourced directly from farmers.</p>
           </div>
         </div>
         
+        <!-- Related Products -->
         <div class="related-section">
-          <h3>You might also like</h3>
+          <div class="section-header">
+            <h3>You might also like</h3>
+            <a href="/index.html" class="view-all">View All ›</a>
+          </div>
           <div class="related-grid" id="relatedGrid"></div>
         </div>
       </div>
       
+      <!-- Error State -->
       <div class="error-state" id="errorState" style="display: none;">
-        <span class="error-icon">⚠️</span>
-        <h3>Product not found</h3>
-        <a href="/index.html" class="browse-btn">Browse Products</a>
+        <div class="error-icon">🔍</div>
+        <h2>Product Not Found</h2>
+        <p>The product you're looking for doesn't exist or has been removed.</p>
+        <div class="error-actions">
+          <a href="/index.html" class="btn-primary">Browse Products</a>
+          <button class="btn-secondary" onclick="history.back()">Go Back</button>
+        </div>
       </div>
     </main>
 
-    <div class="sticky-add-bar" id="stickyAddBar">
+    <!-- Sticky Add to Cart Bar -->
+    <div class="sticky-add-bar" id="stickyAddBar" style="display: none;">
       <div class="quantity-control">
-        <button id="qtyMinus">−</button>
-        <span id="quantity">1</span>
-        <button id="qtyPlus">+</button>
+        <button class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
+        <span class="qty-number" id="quantity">1</span>
+        <button class="qty-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
       </div>
       <button class="add-to-cart-btn-large" id="addToCartBtn">
         Add to cart · <span id="itemTotal">₹0</span>
       </button>
     </div>
 
+    <!-- Toast Message -->
     <div class="toast-message" id="toastMessage"></div>
+    
   </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+    <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+    <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+    <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+    <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+  </nav>
 
   <script src="/js/common.js"></script>
   <script src="/js/product.js"></script>
