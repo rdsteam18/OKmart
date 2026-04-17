@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Complete Your Profile | OK Mart</title>
+  <meta name="theme-color" content="#2ecc71">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/user-details.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-container">
+        <a href="/index.html" class="back-button">
+          <span class="back-icon">←</span>
+        </a>
+        <h1 class="page-title">Your Details</h1>
+        <div class="header-spacer"></div>
+      </div>
+    </header>
+
+    <main class="user-details-main">
+      <div class="welcome-card">
+        <span class="welcome-icon">👋</span>
+        <h2>Welcome to OK Mart!</h2>
+        <p>Please enter your details to continue</p>
+      </div>
+
+      <form class="user-form" id="userForm">
+        <div class="form-group">
+          <label for="fullName">Full Name *</label>
+          <input type="text" id="fullName" placeholder="Enter your full name" required>
+          <span class="error-message" id="nameError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number *</label>
+          <div class="phone-input-wrapper">
+            <span class="country-code">+91</span>
+            <input type="tel" id="phoneNumber" placeholder="10-digit number" maxlength="10" required>
+          </div>
+          <span class="error-message" id="phoneError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userAddress">Delivery Address *</label>
+          <textarea id="userAddress" placeholder="House/Flat No., Street, Area, City" rows="3" required></textarea>
+          <span class="error-message" id="addressError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userPincode">Pincode *</label>
+          <input type="text" id="userPincode" placeholder="6-digit pincode" maxlength="6" required>
+          <span class="error-message" id="pincodeError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userEmail">Email (Optional)</label>
+          <input type="email" id="userEmail" placeholder="your@email.com">
+        </div>
+
+        <button type="submit" class="submit-btn">Save & Continue →</button>
+      </form>
+
+      <p class="terms-note">By continuing, you agree to our Terms & Privacy Policy</p>
+    </main>
+
+    <div class="toast-message" id="toastMessage"></div>
+  </div>
+
+  <script src="/js/user-details.js"></script>
+</body>
+</html>
