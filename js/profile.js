@@ -1,19 +1,21 @@
 // ===== OK MART - PROFILE.JS =====
-// Profile page with WhatsApp support, refund system, and wishlist
+// Complete profile page functionality
 
 (function() {
   'use strict';
   
-  // ---------- CONFIGURATION ----------
+  const CART_KEY = 'okmart_cart';
+  const USER_KEY = 'okmart_user';
+  const WISHLIST_KEY = 'okmart_wishlist';
+  const ORDERS_KEY = 'okmart_orders';
   const WHATSAPP_NUMBER = '919982239821';
   
-  // ---------- STATE ----------
   let userData = {};
-  let wishlist = [];
   
   // DOM Elements
   const profileName = document.getElementById('profileName');
   const profilePhone = document.getElementById('profilePhone');
+  const avatarIcon = document.getElementById('avatarIcon');
   const editProfileBtn = document.getElementById('editProfileBtn');
   const editProfileModal = document.getElementById('editProfileModal');
   const closeEditModal = document.getElementById('closeEditModal');
@@ -22,69 +24,113 @@
   const editPhone = document.getElementById('editPhone');
   const editEmail = document.getElementById('editEmail');
   
-  const refundModal = document.getElementById('refundModal');
-  const closeRefundModal = document.getElementById('closeRefundModal');
-  const submitRefundBtn = document.getElementById('submitRefundBtn');
-  const refundOrderId = document.getElementById('refundOrderId');
-  const refundReason = document.getElementById('refundReason');
-  const refundDetails = document.getElementById('refundDetails');
+  const addressModal = document.getElementById('addressModal');
+  const closeAddressModal = document.getElementById('closeAddressModal');
+  const savedAddressesList = document.getElementById('savedAddressesList');
+  const addAddressBtn = document.getElementById('addAddressBtn');
   
-  const wishlistCount = document.getElementById('wishlistCount');
+  const totalOrders = document.getElementById('totalOrders');
+  const totalSaved = document.getElementById('totalSaved');
+  const memberSince = document.getElementById('memberSince');
+  const menuOrdersCount = document.getElementById('menuOrdersCount');
+  const menuWishlistCount = document.getElementById('menuWishlistCount');
+  const quickWishlistCount = document.getElementById('quickWishlistCount');
+  
+  const savedAddressBtn = document.getElementById('savedAddressBtn');
+  const paymentMethodsBtn = document.getElementById('paymentMethodsBtn');
+  const helpSupportBtn = document.getElementById('helpSupportBtn');
+  const aboutBtn = document.getElementById('aboutBtn');
   const logoutBtn = document.getElementById('logoutBtn');
+  
   const toastMessage = document.getElementById('toastMessage');
   
   // Quick action cards
   const quickActionCards = document.querySelectorAll('.quick-action-card');
   
-  // Menu items
-  const helpSupportBtn = document.getElementById('helpSupportBtn');
-  const refundRequestBtn = document.getElementById('refundRequestBtn');
-  const savedAddressBtn = document.getElementById('savedAddressBtn');
-  const aboutBtn = document.getElementById('aboutBtn');
-  
   // ---------- DATA LOADING ----------
   
   function loadUserData() {
-    const stored = localStorage.getItem('okmart_user_data');
-    userData = stored ? JSON.parse(stored) : { name: '', phone: '', email: '' };
+    const stored = localStorage.getItem(USER_KEY);
+    userData = stored ? JSON.parse(stored) : { name: '', phone: '', email: '', createdAt: new Date().toISOString() };
     return userData;
   }
   
   function saveUserData(data) {
     userData = { ...userData, ...data };
-    localStorage.setItem('okmart_user_data', JSON.stringify(userData));
+    if (!userData.createdAt) {
+      userData.createdAt = new Date().toISOString();
+    }
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
     updateProfileUI();
   }
   
   function loadWishlist() {
-    const stored = localStorage.getItem('okmart_wishlist');
-    wishlist = stored ? JSON.parse(stored) : [];
-    return wishlist;
+    const stored = localStorage.getItem(WISHLIST_KEY);
+    return stored ? JSON.parse(stored) : [];
   }
   
-  function saveWishlist(items) {
-    wishlist = items;
-    localStorage.setItem('okmart_wishlist', JSON.stringify(wishlist));
-    updateWishlistCount();
+  function loadOrders() {
+    const stored = localStorage.getItem(ORDERS_KEY);
+    return stored ? JSON.parse(stored) : [];
   }
   
   // ---------- UI UPDATES ----------
   
   function updateProfileUI() {
     if (profileName) {
-      profileName.textContent = userData.name || 'Guest User';
+      const name = userData.name || 'Guest User';
+      profileName.textContent = name;
+      avatarIcon.textContent = name.charAt(0).toUpperCase() || '👤';
     }
     if (profilePhone) {
       profilePhone.textContent = userData.phone ? `+91 ${userData.phone}` : 'Add phone number';
     }
   }
   
-  function updateWishlistCount() {
-    if (wishlistCount) {
-      const count = wishlist.length;
-      wishlistCount.textContent = count;
-      wishlistCount.style.display = count > 0 ? 'inline-block' : 'none';
+  function updateStats() {
+    const orders = loadOrders();
+    const wishlist = loadWishlist();
+    
+    if (totalOrders) {
+      totalOrders.textContent = orders.length;
     }
+    
+    if (menuOrdersCount) {
+      menuOrdersCount.textContent = orders.length;
+      menuOrdersCount.classList.toggle('visible', orders.length > 0);
+    }
+    
+    const wishlistCount = wishlist.length;
+    if (menuWishlistCount) {
+      menuWishlistCount.textContent = wishlistCount;
+      menuWishlistCount.classList.toggle('visible', wishlistCount > 0);
+    }
+    if (quickWishlistCount) {
+      quickWishlistCount.textContent = wishlistCount;
+      quickWishlistCount.classList.toggle('visible', wishlistCount > 0);
+    }
+    
+    // Calculate total saved
+    const totalSavedAmount = orders.reduce((sum, order) => {
+      return sum + (order.itemDiscount || 0) + (order.couponDiscount || 0);
+    }, 0);
+    if (totalSaved) {
+      totalSaved.textContent = `₹${totalSavedAmount}`;
+    }
+    
+    // Member since
+    if (memberSince && userData.createdAt) {
+      const date = new Date(userData.createdAt);
+      memberSince.textContent = date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+    }
+  }
+  
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-badge').forEach(b => {
+      if (b) b.textContent = total;
+    });
   }
   
   // ---------- TOAST ----------
@@ -101,43 +147,6 @@
     }, 2500);
   }
   
-  // ---------- WHATSAPP FUNCTIONS ----------
-  
-  function openWhatsApp(message) {
-    const encodedMessage = encodeURIComponent(message);
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-    window.open(url, '_blank');
-  }
-  
-  function sendHelpSupport() {
-    const message = `Hello OK Mart,
-
-I need help regarding my order.
-
-🧾 Order ID: ______
-📦 Issue Type: (Refund / Wrong Item / Missing Item / Late Delivery / Other)
-📝 Problem Details: ______
-
-Please assist me as soon as possible.`;
-    
-    openWhatsApp(message);
-  }
-  
-  function sendRefundRequest(orderId, reason, details) {
-    const message = `Hello OK Mart,
-
-I want to request a refund.
-
-🧾 Order ID: ${orderId || '______'}
-📦 Reason: ${reason || '______'}
-📝 Details: ${details || '______'}
-
-Please process my refund request.`;
-    
-    openWhatsApp(message);
-    showToast('Opening WhatsApp...', 'success');
-  }
-  
   // ---------- MODAL FUNCTIONS ----------
   
   function openEditModal() {
@@ -151,25 +160,83 @@ Please process my refund request.`;
     editProfileModal.classList.remove('active');
   }
   
-  function openRefundModal() {
-    refundModal.classList.add('active');
+  function openAddressModal() {
+    renderSavedAddresses();
+    addressModal.classList.add('active');
   }
   
-  function closeRefundModalFunc() {
-    refundModal.classList.remove('active');
+  function closeAddressModalFunc() {
+    addressModal.classList.remove('active');
+  }
+  
+  function renderSavedAddresses() {
+    const addresses = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
+    
+    if (addresses.length === 0) {
+      savedAddressesList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No saved addresses yet</p>';
+      return;
+    }
+    
+    savedAddressesList.innerHTML = '';
+    addresses.forEach((addr, index) => {
+      const addrEl = document.createElement('div');
+      addrEl.className = 'address-item';
+      addrEl.innerHTML = `
+        <span class="address-type">${addr.type || 'Home'}</span>
+        <div class="address-text">${addr.address}</div>
+        <div class="address-pincode">📮 ${addr.pincode}</div>
+      `;
+      savedAddressesList.appendChild(addrEl);
+    });
+  }
+  
+  function addNewAddress() {
+    const address = prompt('Enter your full address:');
+    if (address && address.trim()) {
+      const pincode = prompt('Enter pincode:');
+      if (pincode && /^\d{6}$/.test(pincode)) {
+        const addresses = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
+        addresses.push({
+          type: 'Home',
+          address: address.trim(),
+          pincode: pincode
+        });
+        localStorage.setItem('okmart_saved_addresses', JSON.stringify(addresses));
+        renderSavedAddresses();
+        showToast('Address saved!', 'success');
+      } else {
+        showToast('Invalid pincode', 'error');
+      }
+    }
+  }
+  
+  // ---------- WHATSAPP SUPPORT ----------
+  
+  function openWhatsAppSupport() {
+    const message = `Hello OK Mart,\n\nI need help with my account.\n\nName: ${userData.name || 'Guest'}\nPhone: ${userData.phone || 'Not provided'}\n\nPlease assist me.`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+  
+  // ---------- LOGOUT ----------
+  
+  function handleLogout() {
+    if (confirm('Are you sure you want to logout? This will clear your profile data.')) {
+      localStorage.removeItem(USER_KEY);
+      userData = { name: '', phone: '', email: '' };
+      updateProfileUI();
+      showToast('Logged out successfully', 'success');
+      
+      setTimeout(() => {
+        window.location.href = '/index.html';
+      }, 800);
+    }
   }
   
   // ---------- EVENT LISTENERS ----------
   
   // Edit Profile
-  if (editProfileBtn) {
-    editProfileBtn.addEventListener('click', openEditModal);
-  }
-  
-  if (closeEditModal) {
-    closeEditModal.addEventListener('click', closeEditModalFunc);
-  }
-  
+  if (editProfileBtn) editProfileBtn.addEventListener('click', openEditModal);
+  if (closeEditModal) closeEditModal.addEventListener('click', closeEditModalFunc);
   if (editProfileModal) {
     editProfileModal.addEventListener('click', (e) => {
       if (e.target === editProfileModal) closeEditModalFunc();
@@ -188,50 +255,25 @@ Please process my refund request.`;
       }
       
       if (phone && !/^\d{10}$/.test(phone)) {
-        showToast('Please enter a valid 10-digit phone number', 'error');
+        showToast('Invalid phone number', 'error');
         return;
       }
       
       saveUserData({ name, phone, email });
       closeEditModalFunc();
-      showToast('Profile updated successfully!', 'success');
+      showToast('Profile updated!', 'success');
     });
   }
   
-  // Refund Modal
-  if (refundRequestBtn) {
-    refundRequestBtn.addEventListener('click', openRefundModal);
-  }
-  
-  if (closeRefundModal) {
-    closeRefundModal.addEventListener('click', closeRefundModalFunc);
-  }
-  
-  if (refundModal) {
-    refundModal.addEventListener('click', (e) => {
-      if (e.target === refundModal) closeRefundModalFunc();
+  // Address Modal
+  if (savedAddressBtn) savedAddressBtn.addEventListener('click', openAddressModal);
+  if (closeAddressModal) closeAddressModal.addEventListener('click', closeAddressModalFunc);
+  if (addressModal) {
+    addressModal.addEventListener('click', (e) => {
+      if (e.target === addressModal) closeAddressModalFunc();
     });
   }
-  
-  if (submitRefundBtn) {
-    submitRefundBtn.addEventListener('click', () => {
-      const orderId = refundOrderId.value.trim();
-      const reason = refundReason.value;
-      const details = refundDetails.value.trim();
-      
-      if (!orderId) {
-        showToast('Please enter Order ID', 'error');
-        return;
-      }
-      
-      sendRefundRequest(orderId, reason, details);
-      closeRefundModalFunc();
-      
-      // Clear form
-      refundOrderId.value = '';
-      refundDetails.value = '';
-    });
-  }
+  if (addAddressBtn) addAddressBtn.addEventListener('click', addNewAddress);
   
   // Quick Action Cards
   quickActionCards.forEach(card => {
@@ -242,11 +284,11 @@ Please process my refund request.`;
         case 'orders':
           window.location.href = '/orders.html';
           break;
-        case 'support':
-          sendHelpSupport();
+        case 'wishlist':
+          window.location.href = '/wishlist.html';
           break;
-        case 'refund':
-          openRefundModal();
+        case 'support':
+          openWhatsAppSupport();
           break;
         case 'offers':
           window.location.href = '/offers.html';
@@ -256,87 +298,39 @@ Please process my refund request.`;
   });
   
   // Menu Items
-  if (helpSupportBtn) {
-    helpSupportBtn.addEventListener('click', sendHelpSupport);
-  }
-  
-  if (savedAddressBtn) {
-    savedAddressBtn.addEventListener('click', () => {
-      const addresses = localStorage.getItem('okmart_saved_addresses');
-      if (addresses) {
-        const parsed = JSON.parse(addresses);
-        showToast(`${parsed.length} address(es) saved`, 'info');
-      } else {
-        showToast('No saved addresses yet', 'info');
-      }
+  if (helpSupportBtn) helpSupportBtn.addEventListener('click', openWhatsAppSupport);
+  if (paymentMethodsBtn) {
+    paymentMethodsBtn.addEventListener('click', () => {
+      showToast('Cash on Delivery & UPI available', 'info');
     });
   }
-  
   if (aboutBtn) {
     aboutBtn.addEventListener('click', () => {
-      alert('OK Mart v1.0.0\nFresh groceries delivered in 10 minutes!\n\nContact: +91 99822 39821');
+      alert('OK Mart v2.0.0\nFresh groceries delivered in 10-12 minutes!\n\nContact: +91 99822 39821\n\nServing your neighborhood with love ❤️');
     });
   }
   
   // Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('okmart_user_data');
-        userData = { name: '', phone: '', email: '' };
-        updateProfileUI();
-        showToast('Logged out successfully', 'success');
-        
-        setTimeout(() => {
-          window.location.href = '/index.html';
-        }, 800);
-      }
-    });
-  }
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
   
   // ---------- INITIALIZATION ----------
   
   function init() {
     loadUserData();
-    loadWishlist();
-    updateProfileUI();
-    updateWishlistCount();
     
-    // Update cart badge
-    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const badges = document.querySelectorAll('.cart-badge');
-    badges.forEach(badge => {
-      if (badge) badge.textContent = totalItems;
-    });
+    // Save user if first time
+    if (!userData.createdAt) {
+      userData.createdAt = new Date().toISOString();
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    }
+    
+    updateProfileUI();
+    updateStats();
+    updateCartBadge();
     
     console.log('✅ Profile page initialized');
   }
   
   init();
-  
-  // Expose functions
-  window.OKMartProfile = {
-    getUserData: () => userData,
-    getWishlist: () => wishlist,
-    addToWishlist: (productId) => {
-      if (!wishlist.includes(productId)) {
-        wishlist.push(productId);
-        saveWishlist(wishlist);
-        return true;
-      }
-      return false;
-    },
-    removeFromWishlist: (productId) => {
-      const index = wishlist.indexOf(productId);
-      if (index > -1) {
-        wishlist.splice(index, 1);
-        saveWishlist(wishlist);
-        return true;
-      }
-      return false;
-    },
-    isInWishlist: (productId) => wishlist.includes(productId)
-  };
   
 })();
