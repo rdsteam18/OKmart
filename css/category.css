@@ -797,3 +797,45 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* ===== BRANDS GRID ===== */
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.brand-card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 16px 8px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.brand-card:active {
+  transform: scale(0.95);
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.brand-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-dark);
+}
+
+/* Rating Sort Option */
+.sort-option[data-sort="rating"] {
+  border-bottom: 1px solid var(--border-light);
+}
