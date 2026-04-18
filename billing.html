@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <title>Create Invoice | OK Mart Admin</title>
+  <meta name="description" content="Admin billing page - Create invoices for WhatsApp orders">
+  <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/billing.css">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header billing-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="Back">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">Create Invoice</h1>
+        </div>
+        <div class="header-badge">Admin</div>
+      </div>
+    </header>
+
+    <main class="billing-main">
+      
+      <!-- Customer Details Section -->
+      <section class="customer-section">
+        <h2 class="section-title">👤 Customer Details</h2>
+        <div class="customer-form">
+          <div class="form-row">
+            <input type="text" id="customerName" class="customer-input" placeholder="Customer Name" autocomplete="off">
+          </div>
+          <div class="form-row">
+            <div class="phone-input-wrapper">
+              <span class="country-code">+91</span>
+              <input type="tel" id="customerPhone" class="customer-input" placeholder="Phone Number" maxlength="10" autocomplete="off">
+            </div>
+          </div>
+          <div class="form-row">
+            <textarea id="customerAddress" class="customer-input" placeholder="Delivery Address" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Product Search Section -->
+      <section class="search-section">
+        <h2 class="section-title">🔍 Search Products</h2>
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="productSearchInput" class="search-input" placeholder="Search for milk, bread, snacks..." autocomplete="off">
+          <button class="clear-search" id="clearSearchBtn">✕</button>
+        </div>
+        
+        <!-- Search Results Dropdown -->
+        <div class="search-results" id="searchResults" style="display: none;">
+          <div class="results-list" id="searchResultsList"></div>
+        </div>
+      </section>
+
+      <!-- Bill Cart Section -->
+      <section class="cart-section">
+        <div class="cart-header">
+          <h2 class="section-title">🛒 Bill Cart</h2>
+          <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
+        </div>
+        
+        <!-- Cart Items -->
+        <div class="cart-items-container" id="cartItemsContainer">
+          <div class="empty-cart-message" id="emptyCartMessage">
+            <span>🛒</span>
+            <p>No items added yet</p>
+            <p class="hint">Search and add products above</p>
+          </div>
+        </div>
+        
+        <!-- Price Summary -->
+        <div class="price-summary" id="priceSummary" style="display: none;">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="cartSubtotal">₹0</span>
+          </div>
+          <div class="summary-row free-item-row" id="freeOnionRow" style="display: none;">
+            <span>🧅 Free Onion (1kg)</span>
+            <span class="free-tag">FREE</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span id="cartDelivery">₹20</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Total</span>
+            <span id="cartTotal">₹0</span>
+          </div>
+        </div>
+        
+        <!-- Delivery Info -->
+        <div class="delivery-info" id="deliveryInfo">
+          <span class="info-icon">🚚</span>
+          <span id="deliveryMessage">Add ₹199 more for FREE delivery</span>
+        </div>
+      </section>
+
+      <!-- Generate Invoice Button -->
+      <div class="invoice-actions">
+        <button class="generate-invoice-btn" id="generateInvoiceBtn">
+          <span>📄</span> Generate PDF Invoice
+        </button>
+        <button class="whatsapp-share-btn" id="whatsappShareBtn">
+          <span>💬</span> Share on WhatsApp
+        </button>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Generating PDF...</p>
+      </div>
+      
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/billing.js"></script>
+</body>
+</html>
