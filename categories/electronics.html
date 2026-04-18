@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <!-- SEO Meta Tags -->
+  <title>Buy Electronics & Accessories Online | Chargers, Cables, Earphones | OK Mart</title>
+  <meta name="description" content="Order electronics and mobile accessories online - chargers, cables, earphones, power banks, screen protectors. Fast delivery from OK Mart. Best prices on boAt, MI, and more.">
+  <meta name="keywords" content="electronics online, mobile accessories, charger delivery, USB cable, earphones online, power bank, screen protector, OK Mart">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/categories/electronics.html">
+  <meta property="og:title" content="Buy Electronics & Accessories Online | OK Mart">
+  <meta property="og:description" content="Chargers, cables, earphones, power banks delivered fast.">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/electronics-og.jpg">
+  
+  <!-- Canonical -->
+  <link rel="canonical" href="https://okmart.netlify.app/categories/electronics.html">
+  
+  <!-- Unified Category CSS -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/category.css">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-category="electronics">
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Sticky Header -->
+    <header class="app-header category-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="Back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <a href="/index.html" class="logo-link">
+            <span class="logo-text">🛒 OK Mart</span>
+          </a>
+        </div>
+        <div class="header-actions">
+          <a href="/wishlist.html" class="wishlist-icon-link" aria-label="Wishlist">
+            <span class="wishlist-icon">❤️</span>
+            <span class="wishlist-badge" id="wishlistCountBadge">0</span>
+          </a>
+          <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="category-main">
+      <!-- Category Hero with Animation -->
+      <div class="category-hero animate-slide-up">
+        <div class="category-icon-wrapper">
+          <span class="category-icon">📱</span>
+          <div class="icon-ring"></div>
+        </div>
+        <h1 class="category-title">Electronics & Accessories</h1>
+        <p class="category-description">Mobile accessories, chargers, cables & gadgets</p>
+        <div class="category-stats">
+          <span class="stat-item">
+            <span class="stat-value" id="productCount">0</span>
+            <span class="stat-label">Products</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">🚚</span>
+            <span class="stat-label">12 min</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">⚡</span>
+            <span class="stat-label">Fast</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container animate-slide-up" style="animation-delay: 0.05s;">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="categorySearchInput" 
+            class="search-input" 
+            placeholder="Search for chargers, cables, earphones..."
+            autocomplete="off"
+            aria-label="Search electronics"
+          >
+          <button class="clear-search" id="clearCategorySearch" aria-label="Clear search">✕</button>
+        </div>
+      </div>
+
+      <!-- Quick Filters -->
+      <div class="quick-filters animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="filter-scroll">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="chargers">🔌 Chargers</button>
+          <button class="filter-chip" data-filter="cables">🔗 Cables</button>
+          <button class="filter-chip" data-filter="earphones">🎧 Earphones</button>
+          <button class="filter-chip" data-filter="power-banks">🔋 Power Banks</button>
+          <button class="filter-chip" data-filter="screen-protector">📱 Screen Protector</button>
+          <button class="filter-chip" data-filter="holders">📎 Holders</button>
+        </div>
+      </div>
+
+      <!-- Results Header -->
+      <div class="results-header animate-slide-up" style="animation-delay: 0.15s;">
+        <div class="results-info">
+          <span class="results-count" id="categoryResultsCount">0 items found</span>
+        </div>
+        <div class="sort-container">
+          <button class="sort-btn" id="sortToggleBtn" aria-label="Sort products">
+            <span>📊</span>
+            <span id="sortLabel">Popular</span>
+            <span>▼</span>
+          </button>
+          <div class="sort-dropdown" id="sortDropdown" style="display: none;">
+            <button class="sort-option active" data-sort="popular">🔥 Popular First</button>
+            <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
+            <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
+            <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
+            <button class="sort-option" data-sort="rating">⭐ Top Rated</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deal Banner -->
+      <div class="category-banner animate-slide-up" style="animation-delay: 0.18s;">
+        <div class="banner-content">
+          <span class="banner-icon">⚡</span>
+          <span class="banner-text">Flash Sale: Up to 40% OFF on chargers & cables!</span>
+          <span class="banner-icon">🔌</span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="categoryLoadingState">
+        <div class="loading-animation">
+          <div class="category-loader">
+            <span>📱</span><span>🔌</span><span>🎧</span><span>🔋</span>
+          </div>
+          <p>Loading electronics & accessories...</p>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="product-grid category-grid" id="categoryProductGrid" style="display: none;">
+        <!-- Products will be dynamically rendered here -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-animation">
+          <span class="empty-icon">📱</span>
+        </div>
+        <h3>No products found</h3>
+        <p id="emptyStateMessage">Try adjusting your search or filters</p>
+        <button class="reset-btn" id="resetFiltersBtn">Reset Filters</button>
+      </div>
+
+      <!-- Popular in Electronics Section -->
+      <section class="popular-in-category animate-slide-up" id="popularSection" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">🔥 Popular Accessories</h2>
+        </div>
+        <div class="popular-grid" id="popularGrid"></div>
+      </section>
+
+      <!-- Top Brands Section -->
+      <section class="value-packs-section animate-slide-up" id="brandsSection" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">🏷️ Top Brands</h2>
+          <span class="value-badge">Premium</span>
+        </div>
+        <div class="brands-grid" id="brandsGrid">
+          <div class="brand-card">
+            <span class="brand-icon">🎵</span>
+            <span class="brand-name">boAt</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">📱</span>
+            <span class="brand-name">MI</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">🔊</span>
+            <span class="brand-name">JBL</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">💻</span>
+            <span class="brand-name">Samsung</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+      <span>💬</span>
+    </a>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/common.js"></script>
+  <script src="/js/category.js"></script>
+  
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] Registered'))
+        .catch(err => console.log('[SW] Failed:', err));
+    }
+  </script>
+</body>
+</html>
