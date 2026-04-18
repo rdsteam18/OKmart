@@ -4,7 +4,7 @@
   max-width: 480px;
   margin: 0 auto;
   padding: 0 14px 85px;
-  min-height: 80vh;
+  min-height: 100vh;
 }
 
 /* Header */
@@ -15,31 +15,18 @@
   padding: 12px 16px;
   z-index: 100;
   border-bottom: 1px solid var(--border-light);
-  max-width: 480px;
-  margin: 0 auto;
+}
+
+.profile-header .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .profile-header .header-left {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--bg-light);
-  text-decoration: none;
-}
-
-.back-icon {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-dark);
 }
 
 .page-title {
@@ -50,26 +37,25 @@
 
 /* Profile Header Card */
 .profile-header-card {
-  background: var(--card-bg);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   border-radius: 24px;
   padding: 20px;
   margin: 16px 0 20px;
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.25);
 }
 
 .profile-avatar {
   width: 64px;
   height: 64px;
-  background: var(--primary-light);
+  background: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid var(--primary);
+  border: 3px solid white;
 }
 
 .avatar-icon {
@@ -83,30 +69,33 @@
 .profile-name {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-dark);
+  color: white;
   margin-bottom: 4px;
 }
 
 .profile-phone {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .edit-profile-btn {
-  background: var(--primary-light);
-  border: 1.5px solid var(--primary);
-  color: var(--primary-dark);
-  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 14px;
   border-radius: 30px;
   font-weight: 600;
   font-size: 0.8rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   transition: all 0.15s;
 }
 
 .edit-profile-btn:active {
-  background: var(--primary);
-  color: white;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
 }
 
 /* Quick Actions Grid */
@@ -114,7 +103,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .quick-action-card {
@@ -126,6 +115,7 @@
   border: 1px solid var(--border-light);
   cursor: pointer;
   transition: all 0.15s;
+  position: relative;
 }
 
 .quick-action-card:active {
@@ -144,6 +134,59 @@
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-dark);
+}
+
+.action-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #dc2626;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-badge.visible {
+  display: flex;
+}
+
+/* Stats Container */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.stat-value {
+  display: block;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 /* Profile Menu */
@@ -199,13 +242,18 @@
   gap: 8px;
 }
 
-.wishlist-count {
+.menu-badge {
   background: var(--primary);
   color: white;
   padding: 2px 8px;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 600;
+  display: none;
+}
+
+.menu-badge.visible {
+  display: block;
 }
 
 .menu-arrow {
@@ -322,27 +370,49 @@
   color: var(--text-dark);
 }
 
-.input-group input,
-.input-group select,
-.input-group textarea {
+.input-group input {
   width: 100%;
   padding: 14px 16px;
   background: var(--bg-light);
   border: 1.5px solid var(--border-light);
   border-radius: 14px;
   font-size: 0.95rem;
-  font-family: inherit;
 }
 
-.input-group input:focus,
-.input-group select:focus,
-.input-group textarea:focus {
+.input-group input:focus {
   border-color: var(--primary);
   outline: none;
 }
 
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-light);
+  border: 1.5px solid var(--border-light);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: var(--primary);
+}
+
+.country-code {
+  padding: 14px 8px 14px 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  background: var(--bg-light);
+  border-right: 1px solid var(--border-light);
+}
+
+.phone-input-wrapper input {
+  border: none !important;
+  background: transparent !important;
+  padding: 14px 16px !important;
+}
+
 .save-profile-btn,
-.submit-refund-btn {
+.add-address-btn {
   width: 100%;
   padding: 16px;
   background: var(--primary);
@@ -357,9 +427,46 @@
 }
 
 .save-profile-btn:active,
-.submit-refund-btn:active {
+.add-address-btn:active {
   background: var(--primary-dark);
   transform: scale(0.98);
+}
+
+/* Saved Addresses List */
+.saved-addresses-list {
+  margin-bottom: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.address-item {
+  background: var(--bg-light);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-light);
+}
+
+.address-type {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.address-text {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.address-pincode {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 /* Toast Message */
@@ -385,16 +492,12 @@
 }
 
 .toast-message.success {
-  background: var(--primary-dark);
+  background: #10b981;
 }
 
 /* Responsive */
 @media (min-width: 500px) {
   .profile-main {
     padding: 0 16px 85px;
-  }
-  
-  .profile-header {
-    max-width: 480px;
   }
 }
