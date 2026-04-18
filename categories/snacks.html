@@ -1,127 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="OK Mart">
-<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
-
-<!-- Theme Color -->
-<meta name="theme-color" content="#2ecc71">
-<meta name="msapplication-TileColor" content="#2ecc71">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Snacks & Munchies · OK Mart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   
+  <!-- SEO Meta Tags -->
+  <title>Buy Snacks & Munchies Online | Chips, Biscuits, Namkeen | OK Mart</title>
+  <meta name="description" content="Order snacks online - chips, biscuits, namkeen, chocolates, noodles, ready-to-eat. Fast delivery from OK Mart. Best prices on Lays, Kurkure, Parle, Maggi.">
+  <meta name="keywords" content="snacks online, chips delivery, biscuits online, namkeen, chocolates, noodles, ready to eat, OK Mart">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/categories/snacks.html">
+  <meta property="og:title" content="Buy Snacks & Munchies Online | OK Mart">
+  <meta property="og:description" content="Chips, biscuits, namkeen, chocolates delivered fast.">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/snacks-og.jpg">
+  
+  <!-- Canonical -->
+  <link rel="canonical" href="https://okmart.netlify.app/categories/snacks.html">
+  
+  <!-- Unified Category CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
-  <header class="app-header category-header">
-    <div class="header-container">
-      <div class="header-left">
-        <a href="/index.html" class="back-button" aria-label="back to home">
-          <span class="back-icon">←</span>
-        </a>
-        <a href="/index.html" class="logo-link">
-          <span class="logo-text">🛒 OK Mart</span>
-        </a>
+<body data-category="snacks">
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Sticky Header -->
+    <header class="app-header category-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="Back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <a href="/index.html" class="logo-link">
+            <span class="logo-text">🛒 OK Mart</span>
+          </a>
+        </div>
+        <div class="header-actions">
+          <a href="/wishlist.html" class="wishlist-icon-link" aria-label="Wishlist">
+            <span class="wishlist-icon">❤️</span>
+            <span class="wishlist-badge" id="wishlistCountBadge">0</span>
+          </a>
+          <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
+            <span class="cart-icon">🛒</span>
+            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+          </a>
+        </div>
       </div>
-      <!-- Update cart icon in all pages -->
-<a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="cart">
-  <span class="cart-icon">🛍️</span>
-  <span class="cart-badge" id="cartCountPlaceholder">0</span>
-</a>
-    </div>
-  </header>
+    </header>
 
-  <main class="category-main">
-    <div class="category-hero">
-      <div class="category-icon">🍿</div>
-      <h1 class="category-title" id="categoryTitle">Snacks & Munchies</h1>
-      <p class="category-description" id="categoryDescription">Chips, namkeen, biscuits & more</p>
-    </div>
-
-    <div class="search-container">
-      <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          id="categorySearchInput" 
-          class="search-input" 
-          placeholder="Search in snacks..."
-          autocomplete="off"
-        >
-        <button class="clear-search" id="clearCategorySearch" aria-label="clear search">✕</button>
+    <main class="category-main">
+      <!-- Category Hero with Animation -->
+      <div class="category-hero animate-slide-up">
+        <div class="category-icon-wrapper">
+          <span class="category-icon">🍿</span>
+          <div class="icon-ring"></div>
+        </div>
+        <h1 class="category-title">Snacks & Munchies</h1>
+        <p class="category-description">Chips, biscuits, namkeen, chocolates & more</p>
+        <div class="category-stats">
+          <span class="stat-item">
+            <span class="stat-value" id="productCount">0</span>
+            <span class="stat-label">Products</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">🚚</span>
+            <span class="stat-label">12 min</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">😋</span>
+            <span class="stat-label">Tasty</span>
+          </span>
+        </div>
       </div>
-    </div>
 
-    <div class="results-info">
-      <span class="results-count" id="categoryResultsCount">0 items</span>
-      <button class="sort-btn" id="sortToggleBtn" aria-label="sort">
-        <span>📊 Sort</span>
-      </button>
-    </div>
+      <!-- Search Bar -->
+      <div class="search-container animate-slide-up" style="animation-delay: 0.05s;">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="categorySearchInput" 
+            class="search-input" 
+            placeholder="Search for chips, biscuits, namkeen..."
+            autocomplete="off"
+            aria-label="Search snacks"
+          >
+          <button class="clear-search" id="clearCategorySearch" aria-label="Clear search">✕</button>
+        </div>
+      </div>
 
-    <div class="product-grid category-grid" id="categoryProductGrid">
+      <!-- Quick Filters -->
+      <div class="quick-filters animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="filter-scroll">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="chips">🍟 Chips</button>
+          <button class="filter-chip" data-filter="biscuits">🍪 Biscuits</button>
+          <button class="filter-chip" data-filter="namkeen">🥨 Namkeen</button>
+          <button class="filter-chip" data-filter="chocolate">🍫 Chocolates</button>
+          <button class="filter-chip" data-filter="noodles">🍜 Noodles</button>
+          <button class="filter-chip" data-filter="ready-to-eat">🍲 Ready to Eat</button>
+          <button class="filter-chip" data-filter="frozen">❄️ Frozen Snacks</button>
+        </div>
+      </div>
+
+      <!-- Results Header -->
+      <div class="results-header animate-slide-up" style="animation-delay: 0.15s;">
+        <div class="results-info">
+          <span class="results-count" id="categoryResultsCount">0 items found</span>
+        </div>
+        <div class="sort-container">
+          <button class="sort-btn" id="sortToggleBtn" aria-label="Sort products">
+            <span>📊</span>
+            <span id="sortLabel">Popular</span>
+            <span>▼</span>
+          </button>
+          <div class="sort-dropdown" id="sortDropdown" style="display: none;">
+            <button class="sort-option active" data-sort="popular">🔥 Popular First</button>
+            <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
+            <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
+            <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
+            <button class="sort-option" data-sort="newest">🆕 Newest First</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combo Offer Banner -->
+      <div class="category-banner animate-slide-up" style="animation-delay: 0.18s;">
+        <div class="banner-content">
+          <span class="banner-icon">🎉</span>
+          <span class="banner-text">Buy 2 Get 1 FREE on selected snacks! Limited time offer.</span>
+          <span class="banner-icon">🍿</span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
       <div class="loading-state" id="categoryLoadingState">
-        <div class="loading-spinner"></div>
-        <p>Loading fresh products...</p>
+        <div class="loading-animation">
+          <div class="category-loader">
+            <span>🍿</span><span>🍪</span><span>🍫</span><span>🍜</span>
+          </div>
+          <p>Loading tasty snacks...</p>
+        </div>
       </div>
-    </div>
 
-    <div class="sort-dropdown" id="sortDropdown" style="display: none;">
-      <button class="sort-option" data-sort="popular">🔥 Popular First</button>
-      <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
-      <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
-      <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
-    </div>
-  </main>
+      <!-- Product Grid -->
+      <div class="product-grid category-grid" id="categoryProductGrid" style="display: none;">
+        <!-- Products will be dynamically rendered here -->
+      </div>
 
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <span class="delivery-message">🚀 delivery in 10 mins</span>
-      <span class="min-order">min order ₹99</span>
-    </div>
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-animation">
+          <span class="empty-icon">🍿</span>
+        </div>
+        <h3>No snacks found</h3>
+        <p id="emptyStateMessage">Try adjusting your search or filters</p>
+        <button class="reset-btn" id="resetFiltersBtn">Reset Filters</button>
+      </div>
+
+      <!-- Popular Snacks Section -->
+      <section class="popular-in-category animate-slide-up" id="popularSection" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">🔥 Popular Snacks</h2>
+        </div>
+        <div class="popular-grid" id="popularGrid"></div>
+      </section>
+
+      <!-- Party Combos Section -->
+      <section class="value-packs-section animate-slide-up" id="combosSection" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">🎉 Party Combos</h2>
+          <span class="value-badge">Save More</span>
+        </div>
+        <div class="value-grid" id="combosGrid"></div>
+      </section>
+
+      <!-- Top Brands Section -->
+      <section class="brands-section animate-slide-up" id="brandsSection" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">🏷️ Top Brands</h2>
+          <span class="value-badge">Popular</span>
+        </div>
+        <div class="brands-grid" id="brandsGrid">
+          <div class="brand-card">
+            <span class="brand-icon">🍟</span>
+            <span class="brand-name">Lay's</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">🥨</span>
+            <span class="brand-name">Kurkure</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">🍪</span>
+            <span class="brand-name">Parle</span>
+          </div>
+          <div class="brand-card">
+            <span class="brand-icon">🍜</span>
+            <span class="brand-name">Maggi</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+      <span>💬</span>
+    </a>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
   </div>
 
-  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
-    <span class="call-icon">📞</span>
-  </a>
-
+  <!-- Scripts -->
   <script src="/js/common.js"></script>
   <script src="/js/category.js"></script>
+  
+  <!-- PWA Service Worker -->
   <script>
-    // EXACT CATEGORY MATCH - "snacks" (lowercase)
-    window.__OKMART_CATEGORY_CONFIG = {
-      slug: 'snacks',
-      displayName: 'Snacks & Munchies',
-      description: 'Chips, namkeen, biscuits & more',
-      icon: '🍿'
-    };
-  </script>
-  <!-- PWA Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('[PWA] Service Worker registered:', registration.scope);
-        })
-        .catch((error) => {
-          console.log('[PWA] Service Worker registration failed:', error);
-        });
-    });
-  }
-</script>
-
-<!-- PWA Install Prompt -->
-<script src="/js/pwa.js"></script>
+        .then(reg => console.log('[SW] Registered'))
+        .catch(err => console.log('[SW] Failed:', err));
+    }
+  </script>
 </body>
 </html>
