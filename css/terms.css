@@ -1,0 +1,380 @@
+/* ===== OK MART - TERMS & CONDITIONS STYLES ===== */
+
+.terms-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px 85px;
+  min-height: 100vh;
+}
+
+/* Header */
+.terms-header {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  padding: 12px 16px;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.terms-header .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terms-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.back-button:active {
+  background: var(--border-light);
+  transform: scale(0.92);
+}
+
+.back-icon {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.page-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.header-spacer {
+  width: 40px;
+}
+
+/* Terms Content */
+.terms-content {
+  padding: 16px 0;
+}
+
+/* Last Updated */
+.last-updated {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 16px;
+}
+
+.update-icon {
+  font-size: 1rem;
+}
+
+/* Section Styles */
+.terms-section {
+  margin-bottom: 28px;
+}
+
+.section-heading {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-text {
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* Terms List */
+.terms-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.terms-list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.terms-list li::before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* Highlight Section */
+.highlight-section .section-heading {
+  color: var(--primary-dark);
+}
+
+.highlight-box {
+  background: var(--primary-light);
+  border-left: 4px solid var(--primary);
+  border-radius: 0 12px 12px 0;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.highlight-text {
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 0;
+}
+
+/* Valid Reasons */
+.valid-reasons {
+  margin: 16px 0;
+}
+
+.reasons-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.reason-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reason-tag {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+/* Warning Section */
+.warning-section .section-heading {
+  color: #dc2626;
+}
+
+.warning-box {
+  background: #fef3c7;
+  border: 1.5px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.warning-box .section-text {
+  color: #92400e;
+  margin-bottom: 0;
+}
+
+.warning-note {
+  background: #fee2e2;
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: #991b1b;
+  font-size: 0.9rem;
+  margin-top: 16px;
+}
+
+/* Action Steps */
+.action-steps {
+  margin: 20px 0;
+}
+
+.step-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: #dc2626;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.step-content p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Contact Options */
+.contact-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-light);
+  border-radius: 16px;
+  padding: 16px 18px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.contact-card:active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.contact-icon {
+  font-size: 2rem;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-info h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.contact-info p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.contact-hint {
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Terms Footer */
+.terms-footer {
+  margin-top: 32px;
+  padding: 24px 0 16px;
+  text-align: center;
+  border-top: 1px solid var(--border-light);
+}
+
+.terms-footer p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.agree-btn {
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: inline-block;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
+}
+
+.agree-btn:active {
+  background: var(--primary-dark);
+  transform: scale(0.96);
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-light);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-around;
+  z-index: 90;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: 40px;
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .terms-main {
+    padding: 0 20px 85px;
+  }
+  
+  .contact-options {
+    flex-direction: row;
+  }
+  
+  .contact-card {
+    flex: 1;
+  }
+}
