@@ -20,8 +20,6 @@
   <link rel="stylesheet" href="/css/orders.css">
   
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -32,12 +30,12 @@
     <header class="app-header orders-header">
       <div class="header-container">
         <div class="header-left">
-          <a href="/index.html" class="back-button" aria-label="back to home">
+          <a href="/index.html" class="back-button" aria-label="Back to home">
             <span class="back-icon">←</span>
           </a>
           <h1 class="page-title">My Orders</h1>
         </div>
-        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="view cart">
+        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
           <span class="cart-icon">🛒</span>
           <span class="cart-badge" id="cartCountPlaceholder">0</span>
         </a>
@@ -45,14 +43,40 @@
     </header>
 
     <main class="orders-main">
+      
       <!-- Loading State -->
       <div class="loading-state" id="ordersLoadingState">
         <div class="spinner"></div>
         <p>Loading your orders...</p>
       </div>
 
-      <!-- Orders List Container -->
+      <!-- Orders Container -->
       <div class="orders-container" id="ordersContainer" style="display: none;">
+        
+        <!-- Stats Summary -->
+        <div class="orders-stats">
+          <div class="stat-card">
+            <span class="stat-value" id="totalOrdersCount">0</span>
+            <span class="stat-label">Total Orders</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="totalSpent">₹0</span>
+            <span class="stat-label">Total Spent</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="activeOrdersCount">0</span>
+            <span class="stat-label">Active</span>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All Orders</button>
+          <button class="filter-tab" data-filter="active">Active</button>
+          <button class="filter-tab" data-filter="delivered">Delivered</button>
+        </div>
+
+        <!-- Orders List -->
         <div class="orders-list" id="ordersList">
           <!-- Orders will be dynamically rendered here -->
         </div>
@@ -64,6 +88,12 @@
         <h2 class="empty-title">No orders yet</h2>
         <p class="empty-message">Looks like you haven't placed any orders yet.</p>
         <a href="/index.html" class="start-shopping-btn">Start Shopping →</a>
+        
+        <!-- Popular Products Suggestion -->
+        <div class="suggestion-section">
+          <h3>Popular items you might like</h3>
+          <div class="suggestion-grid" id="suggestionGrid"></div>
+        </div>
       </div>
     </main>
 
@@ -85,18 +115,32 @@
               <span class="info-value" id="modalOrderId">#OKM001</span>
             </div>
             <div class="order-info-row">
-              <span class="info-label">Date</span>
-              <span class="info-value" id="modalOrderDate">17 Apr 2026</span>
+              <span class="info-label">Date & Time</span>
+              <span class="info-value" id="modalOrderDateTime">17 Apr 2026, 10:30 AM</span>
             </div>
             <div class="order-info-row">
               <span class="info-label">Status</span>
               <span class="status-badge" id="modalOrderStatus">Delivered</span>
             </div>
+            <div class="order-info-row">
+              <span class="info-label">Payment</span>
+              <span class="info-value" id="modalPaymentMethod">Cash on Delivery</span>
+            </div>
+          </div>
+          
+          <!-- Delivery Address -->
+          <div class="delivery-section">
+            <h3 class="section-subtitle">📍 Delivery Address</h3>
+            <div class="address-box">
+              <p id="modalCustomerName">Rahul Sharma</p>
+              <p id="modalCustomerPhone">+91 9876543210</p>
+              <p id="modalCustomerAddress">A-101, Green Park, New Delhi - 110001</p>
+            </div>
           </div>
           
           <!-- Items List -->
           <div class="order-items-section">
-            <h3 class="items-title">Items</h3>
+            <h3 class="section-subtitle">📋 Items</h3>
             <div class="order-items-list" id="modalOrderItems">
               <!-- Items will be populated here -->
             </div>
@@ -107,6 +151,10 @@
             <div class="summary-row">
               <span class="summary-label">Subtotal</span>
               <span class="summary-value" id="modalSubtotal">₹0</span>
+            </div>
+            <div class="summary-row" id="modalCouponRow" style="display: none;">
+              <span class="summary-label">Coupon Discount</span>
+              <span class="summary-value discount" id="modalCouponDiscount">-₹0</span>
             </div>
             <div class="summary-row">
               <span class="summary-label">Delivery</span>
@@ -127,6 +175,9 @@
           <button class="track-order-btn" id="trackOrderBtn">
             <span>📦</span> Track Order
           </button>
+          <button class="support-btn" id="supportBtn">
+            <span>💬</span> Help
+          </button>
         </div>
       </div>
     </div>
@@ -138,89 +189,24 @@
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <a href="/index.html" class="nav-item">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </a>
-    <a href="/search.html" class="nav-item">
-      <span class="nav-icon">🔍</span>
-      <span class="nav-label">Search</span>
-    </a>
-    <a href="/offers.html" class="nav-item">
-      <span class="nav-icon">🏷️</span>
-      <span class="nav-label">Offers</span>
-    </a>
-    <a href="/orders.html" class="nav-item active">
-      <span class="nav-icon">📋</span>
-      <span class="nav-label">Orders</span>
-    </a>
-    <a href="/cart.html" class="nav-item">
-      <span class="nav-icon">🛒</span>
-      <span class="nav-label">Cart</span>
-    </a>
+    <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+    <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+    <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+    <a href="/orders.html" class="nav-item active">📋<span>Orders</span></a>
+    <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
   </nav>
 
   <!-- Scripts -->
   <script src="/js/common.js"></script>
   <script src="/js/orders.js"></script>
   
-  <!-- Demo Orders (for testing - remove in production) -->
+  <!-- PWA Service Worker -->
   <script>
-    // Initialize demo orders if none exist
-    (function() {
-      const existingOrders = localStorage.getItem('okmart_orders');
-      if (!existingOrders) {
-        const demoOrders = [
-          {
-            orderId: 'OKM-2024-001',
-            date: '2026-04-15',
-            time: '10:30 AM',
-            total: 231,
-            deliveryCharge: 0,
-            subtotal: 231,
-            status: 'delivered',
-            paymentMethod: 'Cash on Delivery',
-            items: [
-              { name: 'Amul Taaza Milk', quantity: 2, price: 26, image: 'https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Amul Butter', quantity: 1, price: 54, image: 'https://images.pexels.com/photos/1291712/pexels-photo-1291712.jpeg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Mother Dairy Paneer', quantity: 1, price: 85, image: 'https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Lay\'s Classic Salted', quantity: 2, price: 20, image: 'https://images.pexels.com/photos/4791269/pexels-photo-4791269.jpeg?auto=compress&cs=tinysrgb&w=200' }
-            ]
-          },
-          {
-            orderId: 'OKM-2024-002',
-            date: '2026-04-10',
-            time: '08:15 PM',
-            total: 265,
-            deliveryCharge: 20,
-            subtotal: 245,
-            status: 'delivered',
-            paymentMethod: 'UPI',
-            items: [
-              { name: 'Fortune Sunflower Oil', quantity: 1, price: 115, image: 'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Tata Sampann Toor Dal', quantity: 1, price: 150, image: 'https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?auto=compress&cs=tinysrgb&w=200' }
-            ]
-          },
-          {
-            orderId: 'OKM-2024-003',
-            date: '2026-04-17',
-            time: '09:45 AM',
-            total: 186,
-            deliveryCharge: 0,
-            subtotal: 186,
-            status: 'preparing',
-            paymentMethod: 'Cash on Delivery',
-            items: [
-              { name: 'Fresh Apple (Royal Gala)', quantity: 1, price: 120, image: 'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Banana (Yelakki)', quantity: 1, price: 40, image: 'https://images.pexels.com/photos/1093038/pexels-photo-1093038.jpeg?auto=compress&cs=tinysrgb&w=200' },
-              { name: 'Parle-G Biscuits', quantity: 2, price: 5, image: 'https://images.pexels.com/photos/239578/pexels-photo-239578.jpeg?auto=compress&cs=tinysrgb&w=200' }
-            ]
-          }
-        ];
-        localStorage.setItem('okmart_orders', JSON.stringify(demoOrders));
-        console.log('✅ Demo orders initialized');
-      }
-    })();
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] Registered'))
+        .catch(err => console.log('[SW] Failed:', err));
+    }
   </script>
 </body>
 </html>
