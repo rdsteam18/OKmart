@@ -1,11 +1,16 @@
 // ===== OK MART - ORDERS.JS =====
-// Order history page with order details modal and "Order Again" feature
+// Complete orders page with order history and "Order Again" feature
 
 (function() {
   'use strict';
   
-  // ---------- STATE ----------
+  const CART_KEY = 'okmart_cart';
+  const ORDERS_KEY = 'okmart_orders';
+  const WHATSAPP_NUMBER = '919982239821';
+  
   let allOrders = [];
+  let filteredOrders = [];
+  let currentFilter = 'all';
   let currentOrder = null;
   
   // DOM Elements
@@ -13,20 +18,35 @@
   const ordersContainer = document.getElementById('ordersContainer');
   const ordersList = document.getElementById('ordersList');
   const emptyOrdersState = document.getElementById('emptyOrdersState');
+  const suggestionGrid = document.getElementById('suggestionGrid');
+  
+  const totalOrdersCount = document.getElementById('totalOrdersCount');
+  const totalSpent = document.getElementById('totalSpent');
+  const activeOrdersCount = document.getElementById('activeOrdersCount');
+  
+  const filterTabs = document.querySelectorAll('.filter-tab');
   
   // Modal Elements
   const modalOverlay = document.getElementById('orderModalOverlay');
-  const modal = document.getElementById('orderModal');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
   const modalOrderId = document.getElementById('modalOrderId');
-  const modalOrderDate = document.getElementById('modalOrderDate');
+  const modalOrderDateTime = document.getElementById('modalOrderDateTime');
   const modalOrderStatus = document.getElementById('modalOrderStatus');
+  const modalPaymentMethod = document.getElementById('modalPaymentMethod');
+  const modalCustomerName = document.getElementById('modalCustomerName');
+  const modalCustomerPhone = document.getElementById('modalCustomerPhone');
+  const modalCustomerAddress = document.getElementById('modalCustomerAddress');
   const modalOrderItems = document.getElementById('modalOrderItems');
   const modalSubtotal = document.getElementById('modalSubtotal');
+  const modalCouponRow = document.getElementById('modalCouponRow');
+  const modalCouponDiscount = document.getElementById('modalCouponDiscount');
   const modalDelivery = document.getElementById('modalDelivery');
   const modalTotal = document.getElementById('modalTotal');
+  
   const orderAgainBtn = document.getElementById('orderAgainBtn');
   const trackOrderBtn = document.getElementById('trackOrderBtn');
+  const supportBtn = document.getElementById('supportBtn');
+  
   const toastMessage = document.getElementById('toastMessage');
   
   // Status display mapping
@@ -34,13 +54,14 @@
     'received': '📋 Received',
     'preparing': '🟡 Preparing',
     'outfordelivery': '🚚 Out for Delivery',
-    'delivered': '✅ Delivered'
+    'delivered': '✅ Delivered',
+    'cancelled': '❌ Cancelled'
   };
   
   // ---------- DATA LOADING ----------
   
   function loadOrders() {
-    const stored = localStorage.getItem('okmart_orders');
+    const stored = localStorage.getItem(ORDERS_KEY);
     allOrders = stored ? JSON.parse(stored) : [];
     
     // Sort by date (newest first)
@@ -49,15 +70,25 @@
     return allOrders;
   }
   
+  function filterOrders() {
+    if (currentFilter === 'all') {
+      filteredOrders = [...allOrders];
+    } else if (currentFilter === 'active') {
+      filteredOrders = allOrders.filter(o => 
+        o.status === 'received' || o.status === 'preparing' || o.status === 'outfordelivery'
+      );
+    } else if (currentFilter === 'delivered') {
+      filteredOrders = allOrders.filter(o => o.status === 'delivered');
+    }
+    
+    return filteredOrders;
+  }
+  
   // ---------- RENDERING ----------
   
   function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   }
   
   function getItemsPreview(items) {
@@ -75,6 +106,11 @@
     const statusClass = order.status || 'received';
     const statusText = STATUS_DISPLAY[order.status] || STATUS_DISPLAY.received;
     
+    // Get preview images
+    const previewImages = order.items.slice(0, 3).map(item => 
+      `<img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/32?text=OK'">`
+    ).join('');
+    
     card.innerHTML = `
       <div class="order-card-header">
         <span class="order-id">#${order.orderId || 'OKM001'}</span>
@@ -86,7 +122,8 @@
         </span>
       </div>
       <div class="order-items-preview">
-        ${getItemsPreview(order.items)}
+        <div class="preview-images">${previewImages}</div>
+        <span class="preview-text">${getItemsPreview(order.items)}</span>
       </div>
       <div class="order-footer">
         <span class="order-total">₹${order.total || 0}</span>
@@ -96,16 +133,13 @@
       </div>
     `;
     
-    // Open modal on card click (except on Order Again button)
     card.addEventListener('click', (e) => {
       if (!e.target.classList.contains('order-again-small')) {
         openOrderModal(order);
       }
     });
     
-    // Order Again button
-    const orderAgainBtn = card.querySelector('.order-again-small');
-    orderAgainBtn.addEventListener('click', (e) => {
+    card.querySelector('.order-again-small').addEventListener('click', (e) => {
       e.stopPropagation();
       orderAgain(order);
     });
@@ -114,28 +148,77 @@
   }
   
   function renderOrdersList() {
+    filterOrders();
+    
     if (ordersList) {
       ordersList.innerHTML = '';
       
-      allOrders.forEach(order => {
+      if (filteredOrders.length === 0) {
+        ordersList.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+            <span style="font-size: 3rem; opacity: 0.5; display: block; margin-bottom: 16px;">📭</span>
+            <p>No ${currentFilter === 'active' ? 'active' : currentFilter === 'delivered' ? 'delivered' : ''} orders found</p>
+          </div>
+        `;
+        return;
+      }
+      
+      filteredOrders.forEach(order => {
         ordersList.appendChild(renderOrderCard(order));
       });
     }
   }
   
+  function updateStats() {
+    const total = allOrders.length;
+    const spent = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const active = allOrders.filter(o => 
+      o.status === 'received' || o.status === 'preparing' || o.status === 'outfordelivery'
+    ).length;
+    
+    if (totalOrdersCount) totalOrdersCount.textContent = total;
+    if (totalSpent) totalSpent.textContent = `₹${spent}`;
+    if (activeOrdersCount) activeOrdersCount.textContent = active;
+  }
+  
   function updateUI() {
-    if (ordersLoadingState) {
-      ordersLoadingState.style.display = 'none';
-    }
+    if (ordersLoadingState) ordersLoadingState.style.display = 'none';
     
     if (allOrders.length === 0) {
       ordersContainer.style.display = 'none';
       emptyOrdersState.style.display = 'block';
+      loadSuggestedProducts();
     } else {
       ordersContainer.style.display = 'block';
       emptyOrdersState.style.display = 'none';
+      updateStats();
       renderOrdersList();
     }
+  }
+  
+  async function loadSuggestedProducts() {
+    try {
+      const response = await fetch('/data/dairy.json');
+      if (response.ok) {
+        const data = await response.json();
+        const products = data.products.slice(0, 4);
+        
+        suggestionGrid.innerHTML = '';
+        products.forEach(product => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.innerHTML = `
+            <img src="${product.image}" alt="${product.name}" class="product-image">
+            <h3 class="product-name">${product.name}</h3>
+            <div class="price-row">
+              <span class="current-price">₹${product.price}</span>
+            </div>
+            <button class="add-btn">ADD</button>
+          `;
+          suggestionGrid.appendChild(card);
+        });
+      }
+    } catch (e) {}
   }
   
   // ---------- MODAL FUNCTIONS ----------
@@ -143,13 +226,19 @@
   function openOrderModal(order) {
     currentOrder = order;
     
-    // Update modal content
     modalOrderId.textContent = `#${order.orderId || 'OKM001'}`;
-    modalOrderDate.textContent = `${formatDate(order.date)} ${order.time ? '· ' + order.time : ''}`;
+    modalOrderDateTime.textContent = `${formatDate(order.date)} ${order.time ? '· ' + order.time : ''}`;
     
     const statusText = STATUS_DISPLAY[order.status] || STATUS_DISPLAY.received;
     modalOrderStatus.textContent = statusText;
     modalOrderStatus.className = `status-badge ${order.status || 'received'}`;
+    
+    modalPaymentMethod.textContent = order.paymentMethod || 'Cash on Delivery';
+    
+    // Customer details
+    modalCustomerName.textContent = order.customerName || 'Customer';
+    modalCustomerPhone.textContent = order.customerPhone ? `+91 ${order.customerPhone}` : '-';
+    modalCustomerAddress.textContent = order.customerAddress || 'Address not available';
     
     // Render items
     renderModalItems(order.items);
@@ -158,12 +247,20 @@
     const subtotal = order.subtotal || order.total - (order.deliveryCharge || 0);
     const delivery = order.deliveryCharge || 0;
     const total = order.total || 0;
+    const couponDiscount = order.couponDiscount || 0;
     
     modalSubtotal.textContent = `₹${subtotal}`;
+    
+    if (couponDiscount > 0) {
+      modalCouponRow.style.display = 'flex';
+      modalCouponDiscount.textContent = `-₹${couponDiscount}`;
+    } else {
+      modalCouponRow.style.display = 'none';
+    }
+    
     modalDelivery.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
     modalTotal.textContent = `₹${total}`;
     
-    // Show modal
     modalOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -199,7 +296,7 @@
     currentOrder = null;
   }
   
-  // ---------- ORDER AGAIN FUNCTION ----------
+  // ---------- ORDER AGAIN ----------
   
   function orderAgain(order) {
     if (!order || !order.items || order.items.length === 0) {
@@ -207,10 +304,8 @@
       return;
     }
     
-    // Clear current cart
-    localStorage.removeItem('okmart_cart');
+    localStorage.removeItem(CART_KEY);
     
-    // Create new cart with items from the order
     const cartItems = order.items.map(item => ({
       id: item.id || `reorder_${Date.now()}_${Math.random()}`,
       name: item.name,
@@ -221,21 +316,15 @@
       quantity: item.quantity
     }));
     
-    // Save to cart
-    localStorage.setItem('okmart_cart', JSON.stringify(cartItems));
+    localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
     
-    // Update cart UI if available
     if (window.OKMart && window.OKMart.updateStickyCartBar) {
       window.OKMart.updateStickyCartBar();
     }
     
-    // Show success message
     showToast(`${cartItems.length} items added to cart!`, 'success');
-    
-    // Close modal
     closeModal();
     
-    // Redirect to cart page after short delay
     setTimeout(() => {
       window.location.href = '/cart.html';
     }, 800);
@@ -251,6 +340,13 @@
     }
   }
   
+  // ---------- SUPPORT ----------
+  
+  function openSupport(order) {
+    const message = `Hello OK Mart,\n\nI need help with my order.\n\nOrder ID: ${order.orderId}\nStatus: ${order.status}\n\nPlease assist me.`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+  
   // ---------- TOAST ----------
   
   function showToast(message, type = 'info') {
@@ -260,42 +356,48 @@
     toastMessage.className = `toast-message ${type}`;
     toastMessage.classList.add('show');
     
-    setTimeout(() => {
-      toastMessage.classList.remove('show');
-    }, 2500);
+    setTimeout(() => toastMessage.classList.remove('show'), 2500);
   }
   
   // ---------- EVENT LISTENERS ----------
   
-  if (modalCloseBtn) {
-    modalCloseBtn.addEventListener('click', closeModal);
-  }
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentFilter = tab.dataset.filter;
+      renderOrdersList();
+    });
+  });
+  
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
   
   if (modalOverlay) {
     modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) {
-        closeModal();
-      }
+      if (e.target === modalOverlay) closeModal();
     });
   }
   
   if (orderAgainBtn) {
     orderAgainBtn.addEventListener('click', () => {
-      if (currentOrder) {
-        orderAgain(currentOrder);
-      }
+      if (currentOrder) orderAgain(currentOrder);
     });
   }
   
   if (trackOrderBtn) {
     trackOrderBtn.addEventListener('click', () => {
-      if (currentOrder) {
-        trackOrder(currentOrder);
-      }
+      if (currentOrder) trackOrder(currentOrder);
+    });
+  }
+  
+  if (supportBtn) {
+    supportBtn.addEventListener('click', () => {
+      if (currentOrder) openSupport(currentOrder);
     });
   }
   
   // Swipe down to close modal
+  const modal = document.getElementById('orderModal');
   let startY = 0;
   if (modal) {
     modal.addEventListener('touchstart', (e) => {
@@ -304,34 +406,17 @@
     
     modal.addEventListener('touchmove', (e) => {
       const deltaY = e.touches[0].clientY - startY;
-      if (deltaY > 50) {
-        closeModal();
-      }
+      if (deltaY > 50) closeModal();
     }, { passive: true });
   }
   
-  // ---------- SAVE ORDER FUNCTION (for checkout integration) ----------
-  
-  function saveOrder(orderData) {
-    const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-    
-    const newOrder = {
-      orderId: orderData.orderId || `OKM-${Date.now().toString(36).toUpperCase()}`,
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      total: orderData.total || 0,
-      deliveryCharge: orderData.deliveryCharge || 0,
-      subtotal: orderData.subtotal || orderData.total || 0,
-      status: orderData.status || 'received',
-      paymentMethod: orderData.paymentMethod || 'Cash on Delivery',
-      items: orderData.items || []
-    };
-    
-    orders.push(newOrder);
-    localStorage.setItem('okmart_orders', JSON.stringify(orders));
-    
-    console.log('✅ Order saved:', newOrder.orderId);
-    return newOrder;
+  // Update cart badge
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-badge').forEach(b => {
+      if (b) b.textContent = total;
+    });
   }
   
   // ---------- INITIALIZATION ----------
@@ -339,25 +424,11 @@
   function init() {
     loadOrders();
     updateUI();
-    
-    // Update cart badge
-    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const badges = document.querySelectorAll('.cart-badge');
-    badges.forEach(badge => {
-      if (badge) badge.textContent = totalItems;
-    });
+    updateCartBadge();
     
     console.log('✅ Orders page initialized |', allOrders.length, 'orders');
   }
   
   init();
-  
-  // Expose for checkout integration
-  window.OKMartOrders = {
-    saveOrder,
-    loadOrders: () => allOrders,
-    refresh: init
-  };
   
 })();
