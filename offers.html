@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  
+  <!-- SEO Meta Tags -->
+  <title>Offers & Deals | OK Mart - Save on Groceries</title>
+  <meta name="description" content="Explore the latest offers, coupons, and deals at OK Mart. Save big on groceries, dairy, snacks, and more.">
+  <meta name="keywords" content="grocery offers, discount coupons, deals, save on groceries, OK Mart offers">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/offers.html">
+  <meta property="og:title" content="Offers & Deals | OK Mart">
+  <meta property="og:description" content="Save big on groceries with exclusive offers and coupons.">
+  <meta property="og:image" content="https://okmart.netlify.app/assets/images/offers-og.jpg">
+  
+  <!-- Canonical -->
+  <link rel="canonical" href="https://okmart.netlify.app/offers.html">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/offers.css">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header offers-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="Back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">Offers & Deals</h1>
+        </div>
+        <a href="/cart.html" class="cart-icon-link" aria-label="View Cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="offers-main">
+      
+      <!-- Top Banner -->
+      <div class="offers-hero-banner">
+        <div class="hero-content">
+          <span class="hero-icon">🏷️</span>
+          <div class="hero-text">
+            <h2>Big Savings Today!</h2>
+            <p>Use code <strong>SAVE20</strong> for ₹20 off on ₹250+</p>
+          </div>
+          <span class="hero-icon">🎉</span>
+        </div>
+      </div>
+
+      <!-- Active Offers Count -->
+      <div class="offers-stats">
+        <span class="offers-count" id="offersCount">8 active offers</span>
+        <span class="offers-hint">👆 Tap code to copy</span>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="offersLoadingState">
+        <div class="spinner"></div>
+        <p>Loading amazing offers...</p>
+      </div>
+
+      <!-- Offers Grid -->
+      <div class="offers-grid" id="offersGrid" style="display: none;"></div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">🏷️</div>
+        <h3>No offers available</h3>
+        <p>Check back later for exciting deals!</p>
+        <a href="/index.html" class="btn-primary">Shop Now →</a>
+      </div>
+
+      <!-- How to Use Section -->
+      <div class="how-to-use">
+        <h3 class="how-to-title">📋 How to Use Coupons</h3>
+        <div class="steps-container">
+          <div class="step-item">
+            <span class="step-number">1</span>
+            <span class="step-text">Tap to copy the coupon code</span>
+          </div>
+          <div class="step-item">
+            <span class="step-number">2</span>
+            <span class="step-text">Add items to your cart</span>
+          </div>
+          <div class="step-item">
+            <span class="step-number">3</span>
+            <span class="step-text">Apply code at checkout</span>
+          </div>
+          <div class="step-item">
+            <span class="step-number">4</span>
+            <span class="step-text">Enjoy your savings! 🎉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bank Offers Section -->
+      <div class="bank-offers-section">
+        <h3 class="section-title">🏦 Bank & Wallet Offers</h3>
+        <div class="bank-offers-list" id="bankOffersList"></div>
+      </div>
+
+      <!-- Terms Note -->
+      <div class="terms-note">
+        <span class="terms-icon">ℹ️</span>
+        <p>Offers cannot be combined. Terms & conditions apply.</p>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item active">🏷️<span>Offers</span></a>
+      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/common.js"></script>
+  <script src="/js/offers.js"></script>
+  
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] Registered'))
+        .catch(err => console.log('[SW] Failed:', err));
+    }
+  </script>
+</body>
+</html>
