@@ -1,42 +1,135 @@
 // ===== OK MART - OFFERS.JS =====
-// Dynamic offers page with coupon copy functionality
+// Complete offers page with coupons, deals, and bank offers
 
 (function() {
   'use strict';
   
-  // ---------- STATE ----------
-  let allOffers = [];
+  const CART_KEY = 'okmart_cart';
   
-  // DOM Elements
-  const offersGrid = document.getElementById('offersGrid');
-  const offersLoadingState = document.getElementById('offersLoadingState');
-  const emptyState = document.getElementById('emptyState');
-  const offersCount = document.getElementById('offersCount');
-  const toastMessage = document.getElementById('toastMessage');
-  
-  // Offer type icons
-  const typeIcons = {
-    'discount': '💰',
-    'freebie': '🎁',
-    'delivery': '🚚',
-    'bogo': '🎉',
-    'cashback': '💵'
+  // Offers data
+  const offersData = {
+    offers: [
+      {
+        id: 'o1',
+        title: 'SAVE20',
+        description: 'Get ₹20 off on orders above ₹250',
+        code: 'SAVE20',
+        minOrder: 250,
+        type: 'discount',
+        badge: '🔥 Hot Deal',
+        badgeColor: '#ef4444',
+        expiry: 'Valid till 31st Dec',
+        terms: 'Applicable on all products. Cannot be combined.',
+        icon: '💰'
+      },
+      {
+        id: 'o2',
+        title: 'FREE ONION',
+        description: '1kg Onion FREE on orders above ₹199',
+        code: 'ONIONFREE',
+        minOrder: 199,
+        type: 'freebie',
+        badge: '🎁 Freebie',
+        badgeColor: '#f59e0b',
+        expiry: 'Auto-applied at checkout',
+        terms: 'Free onion added automatically when cart reaches ₹199.',
+        icon: '🧅'
+      },
+      {
+        id: 'o3',
+        title: 'FIRST50',
+        description: '₹50 off on your first order above ₹299',
+        code: 'FIRST50',
+        minOrder: 299,
+        type: 'discount',
+        badge: '👋 New User',
+        badgeColor: '#3b82f6',
+        expiry: 'First order only',
+        terms: 'Valid only for new customers. One time use.',
+        icon: '🎁'
+      },
+      {
+        id: 'o4',
+        title: 'FREEDELIVERY',
+        description: 'FREE delivery on orders above ₹199',
+        code: 'FREEDEL199',
+        minOrder: 199,
+        type: 'delivery',
+        badge: '🚚 Free Delivery',
+        badgeColor: '#10b981',
+        expiry: 'Ongoing offer',
+        terms: 'Automatically applied at checkout.',
+        icon: '🚚'
+      },
+      {
+        id: 'o5',
+        title: 'WEEKEND10',
+        description: '10% off on weekends (Sat-Sun)',
+        code: 'WEEKEND10',
+        minOrder: 300,
+        type: 'discount',
+        badge: '📅 Weekend',
+        badgeColor: '#8b5cf6',
+        expiry: 'Sat & Sun only',
+        terms: 'Maximum discount ₹50. Valid only on weekends.',
+        icon: '📅'
+      },
+      {
+        id: 'o6',
+        title: 'B1G1 SNACKS',
+        description: 'Buy 1 Get 1 Free on selected snacks',
+        code: 'B1G1SNACK',
+        minOrder: 99,
+        type: 'bogo',
+        badge: '🎉 BOGO',
+        badgeColor: '#ec4899',
+        expiry: 'Limited time',
+        terms: 'Applicable on selected snacks only.',
+        icon: '🍿'
+      },
+      {
+        id: 'o7',
+        title: 'COMBO100',
+        description: '₹100 off on orders above ₹499',
+        code: 'COMBO100',
+        minOrder: 499,
+        type: 'discount',
+        badge: '💎 Premium',
+        badgeColor: '#06b6d4',
+        expiry: 'Limited period',
+        terms: 'Applicable on all products.',
+        icon: '💎'
+      },
+      {
+        id: 'o8',
+        title: 'DAIRY5',
+        description: '5% cashback on dairy products',
+        code: 'DAIRY5',
+        minOrder: 150,
+        type: 'cashback',
+        badge: '🥛 Dairy',
+        badgeColor: '#14b8a6',
+        expiry: 'Auto-applied',
+        terms: 'Cashback credited as wallet points.',
+        icon: '🥛'
+      }
+    ]
   };
   
-  // ---------- DATA LOADING ----------
+  const bankOffers = [
+    { bank: 'HDFC Bank', offer: '10% instant discount', discount: 'Up to ₹100', icon: '🏦' },
+    { bank: 'ICICI Bank', offer: '5% cashback on grocery', discount: 'Up to ₹75', icon: '💳' },
+    { bank: 'SBI Credit Card', offer: '₹50 off on ₹500+', discount: '₹50 OFF', icon: '🏧' },
+    { bank: 'Paytm Wallet', offer: '5% cashback', discount: 'Up to ₹50', icon: '📱' }
+  ];
   
-  async function loadOffers() {
-    try {
-      const response = await fetch('/data/offers.json');
-      if (!response.ok) throw new Error('Failed to load offers');
-      const data = await response.json();
-      allOffers = data.offers || [];
-      return allOffers;
-    } catch (error) {
-      console.error('Error loading offers:', error);
-      return [];
-    }
-  }
+  // DOM Elements
+  const offersLoadingState = document.getElementById('offersLoadingState');
+  const offersGrid = document.getElementById('offersGrid');
+  const emptyState = document.getElementById('emptyState');
+  const offersCount = document.getElementById('offersCount');
+  const bankOffersList = document.getElementById('bankOffersList');
+  const toastMessage = document.getElementById('toastMessage');
   
   // ---------- RENDERING ----------
   
@@ -45,16 +138,14 @@
     card.className = 'offer-card';
     card.dataset.offerId = offer.id;
     
-    const icon = typeIcons[offer.type] || '🏷️';
-    
     card.innerHTML = `
-      ${offer.badge ? `<span class="offer-badge" style="background: ${offer.badgeColor || '#ef4444'};">${offer.badge}</span>` : ''}
+      ${offer.badge ? `<span class="offer-badge" style="background: ${offer.badgeColor};">${offer.badge}</span>` : ''}
       
       <div class="offer-header">
-        <div class="offer-icon">${icon}</div>
+        <div class="offer-icon">${offer.icon}</div>
         <div class="offer-title-section">
           <h3 class="offer-title">${offer.title}</h3>
-          <span class="offer-type">${offer.type || 'Offer'}</span>
+          <span class="offer-type">${offer.type}</span>
         </div>
       </div>
       
@@ -68,7 +159,7 @@
         ${offer.code ? `
           <span class="detail-item">
             <span class="detail-icon">🏷️</span>
-            Use Code: ${offer.code}
+            Code: ${offer.code}
           </span>
         ` : ''}
       </div>
@@ -84,16 +175,12 @@
       
       <div class="offer-footer">
         <span class="offer-expiry">
-          <span>⏰</span> ${offer.expiry || 'Limited time'}
+          <span>⏰</span> ${offer.expiry}
         </span>
-        ${offer.terms ? `
-          <span class="offer-terms">Terms & Conditions</span>
-          <div class="terms-tooltip">${offer.terms}</div>
-        ` : ''}
+        <span class="offer-terms" title="${offer.terms}">Terms</span>
       </div>
     `;
     
-    // Add event listeners
     const couponCode = card.querySelector('.coupon-code');
     const copyBtn = card.querySelector('.copy-btn');
     
@@ -108,30 +195,52 @@
     return card;
   }
   
+  function renderBankOfferCard(bank) {
+    const card = document.createElement('div');
+    card.className = 'bank-offer-card';
+    card.innerHTML = `
+      <div class="bank-icon">${bank.icon}</div>
+      <div class="bank-info">
+        <div class="bank-name">${bank.bank}</div>
+        <div class="bank-offer-text">${bank.offer}</div>
+      </div>
+      <span class="bank-discount">${bank.discount}</span>
+    `;
+    return card;
+  }
+  
   function renderOffers() {
-    if (offersLoadingState) {
-      offersLoadingState.style.display = 'none';
-    }
+    const offers = offersData.offers;
     
-    if (allOffers.length === 0) {
+    if (offersLoadingState) offersLoadingState.style.display = 'none';
+    
+    if (offers.length === 0) {
       offersGrid.style.display = 'none';
       emptyState.style.display = 'block';
       if (offersCount) offersCount.textContent = '0 active offers';
       return;
     }
     
-    offersGrid.style.display = 'grid';
+    offersGrid.style.display = 'flex';
     emptyState.style.display = 'none';
     
     if (offersCount) {
-      offersCount.textContent = `${allOffers.length} active offer${allOffers.length !== 1 ? 's' : ''}`;
+      offersCount.textContent = `${offers.length} active offer${offers.length !== 1 ? 's' : ''}`;
     }
     
     offersGrid.innerHTML = '';
-    
-    allOffers.forEach(offer => {
+    offers.forEach(offer => {
       offersGrid.appendChild(renderOfferCard(offer));
     });
+  }
+  
+  function renderBankOffers() {
+    if (bankOffersList) {
+      bankOffersList.innerHTML = '';
+      bankOffers.forEach(bank => {
+        bankOffersList.appendChild(renderBankOfferCard(bank));
+      });
+    }
   }
   
   // ---------- COPY FUNCTIONALITY ----------
@@ -141,24 +250,19 @@
     
     try {
       await navigator.clipboard.writeText(code);
-      
-      // Show success feedback
       showToast(`Code "${code}" copied!`, 'success');
       
-      // Update button state
       if (button) {
-        const originalText = button.innerHTML;
+        const originalHTML = button.innerHTML;
         button.classList.add('copied');
         button.innerHTML = '<span>✓</span> Copied!';
         
         setTimeout(() => {
           button.classList.remove('copied');
-          button.innerHTML = originalText;
+          button.innerHTML = originalHTML;
         }, 2000);
       }
-      
     } catch (err) {
-      // Fallback for older browsers
       const textarea = document.createElement('textarea');
       textarea.value = code;
       document.body.appendChild(textarea);
@@ -169,19 +273,19 @@
       showToast(`Code "${code}" copied!`, 'success');
       
       if (button) {
-        const originalText = button.innerHTML;
+        const originalHTML = button.innerHTML;
         button.classList.add('copied');
         button.innerHTML = '<span>✓</span> Copied!';
         
         setTimeout(() => {
           button.classList.remove('copied');
-          button.innerHTML = originalText;
+          button.innerHTML = originalHTML;
         }, 2000);
       }
     }
   }
   
-  // ---------- TOAST NOTIFICATION ----------
+  // ---------- TOAST ----------
   
   function showToast(message, type = 'info') {
     if (!toastMessage) return;
@@ -190,53 +294,29 @@
     toastMessage.className = `toast-message ${type}`;
     toastMessage.classList.add('show');
     
-    setTimeout(() => {
-      toastMessage.classList.remove('show');
-    }, 3000);
+    setTimeout(() => toastMessage.classList.remove('show'), 2500);
+  }
+  
+  // ---------- CART BADGE ----------
+  
+  function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-badge').forEach(b => {
+      if (b) b.textContent = total;
+    });
   }
   
   // ---------- INITIALIZATION ----------
   
-  async function init() {
-    try {
-      // Load offers
-      await loadOffers();
-      
-      // Render offers
-      renderOffers();
-      
-      // Update cart badge
-      if (window.OKMart && window.OKMart.getCartItems) {
-        const cart = window.OKMart.getCartItems();
-        const badges = document.querySelectorAll('.cart-badge');
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        badges.forEach(badge => {
-          if (badge) badge.textContent = totalItems;
-        });
-      }
-      
-      console.log('✅ Offers page initialized |', allOffers.length, 'offers');
-      
-    } catch (error) {
-      console.error('Failed to initialize offers page:', error);
-      if (offersLoadingState) {
-        offersLoadingState.innerHTML = `
-          <div class="empty-icon">⚠️</div>
-          <h3>Failed to load offers</h3>
-          <p>Please refresh the page</p>
-        `;
-      }
-    }
+  function init() {
+    renderOffers();
+    renderBankOffers();
+    updateCartBadge();
+    
+    console.log('✅ Offers page initialized |', offersData.offers.length, 'offers');
   }
   
-  // Start the app
   init();
-  
-  // Expose for debugging
-  window.OKMartOffers = {
-    getOffers: () => allOffers,
-    refresh: init,
-    copyCode
-  };
   
 })();
