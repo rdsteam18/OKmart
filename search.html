@@ -3,25 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>Search | OK Mart</title>
+  
+  <!-- SEO Meta Tags -->
+  <title>Search Products | OK Mart Grocery Delivery</title>
+  <meta name="description" content="Search for groceries, dairy, snacks, fruits, vegetables and more at OK Mart.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/search.css">
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- App Container -->
   <div class="app-container">
-    <header class="app-header">
+    
+    <!-- Header with Search -->
+    <header class="app-header search-header">
       <div class="header-container">
-        <a href="/index.html" class="back-button">
+        <a href="/index.html" class="back-button" aria-label="Back">
           <span class="back-icon">←</span>
         </a>
         <div class="search-wrapper-header">
           <span class="search-icon-header">🔍</span>
-          <input type="text" id="headerSearchInput" class="header-search-input" placeholder="Search products..." autocomplete="off">
-          <button class="clear-search-header" id="clearHeaderSearch">✕</button>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="header-search-input" 
+            placeholder="Search for milk, bread, snacks..."
+            autocomplete="off"
+            autofocus
+          >
+          <button class="clear-search-header" id="clearSearchBtn">✕</button>
         </div>
-        <a href="/cart.html" class="cart-icon-link">
+        <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
           <span class="cart-icon">🛒</span>
           <span class="cart-badge" id="cartCountPlaceholder">0</span>
         </a>
@@ -29,26 +52,113 @@
     </header>
 
     <main class="search-main">
-      <div class="results-header">
-        <h2 id="searchTitle">Search Results</h2>
-        <span id="resultCount">0 items</span>
-      </div>
       
-      <div class="loading-state" id="loadingState">
+      <!-- Suggestions Dropdown -->
+      <div class="suggestions-container" id="suggestionsContainer" style="display: none;">
+        <div class="suggestions-header">
+          <span>🔍 Suggestions</span>
+        </div>
+        <div class="suggestions-list" id="suggestionsList"></div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState" style="display: none;">
         <div class="spinner"></div>
         <p>Searching...</p>
       </div>
-      
-      <div class="product-grid" id="searchResultsGrid"></div>
-      
+
+      <!-- Search Results Content -->
+      <div class="search-content" id="searchContent" style="display: none;">
+        
+        <!-- Results Header -->
+        <div class="results-header">
+          <h2 id="resultsTitle">Search Results</h2>
+          <span class="results-count" id="resultsCount">0 items</span>
+        </div>
+
+        <!-- Top Matches Section (Horizontal Scroll) -->
+        <section class="slider-section" id="topMatchesSection" style="display: none;">
+          <div class="section-header">
+            <h3 class="section-title">🎯 Top Matches</h3>
+          </div>
+          <div class="product-slider" id="topMatchesSlider"></div>
+        </section>
+
+        <!-- Related Products Section (Horizontal Scroll) -->
+        <section class="slider-section" id="relatedSection" style="display: none;">
+          <div class="section-header">
+            <h3 class="section-title">🔄 Related Products</h3>
+          </div>
+          <div class="product-slider" id="relatedSlider"></div>
+        </section>
+
+        <!-- All Results Grid -->
+        <section class="grid-section" id="allResultsSection">
+          <div class="section-header">
+            <h3 class="section-title">📋 All Results</h3>
+          </div>
+          <div class="product-grid" id="allResultsGrid"></div>
+        </section>
+
+        <!-- You May Also Like Section -->
+        <section class="slider-section" id="youMayLikeSection">
+          <div class="section-header">
+            <h3 class="section-title">❤️ You May Also Like</h3>
+          </div>
+          <div class="product-slider" id="youMayLikeSlider"></div>
+        </section>
+      </div>
+
+      <!-- Empty State -->
       <div class="empty-state" id="emptyState" style="display: none;">
-        <span class="empty-icon">🔍</span>
-        <h3>No products found</h3>
-        <p>Try searching with a different term</p>
-        <a href="/index.html" class="browse-btn">Browse All Products</a>
+        <div class="empty-icon">🔍</div>
+        <h2>No results found</h2>
+        <p id="emptyMessage">We couldn't find any products matching your search.</p>
+        
+        <!-- Popular Products When Empty -->
+        <div class="popular-section">
+          <h3>🔥 Popular Products</h3>
+          <div class="product-grid" id="popularGrid"></div>
+        </div>
+        
+        <a href="/index.html" class="browse-btn">Browse All Categories →</a>
+      </div>
+
+      <!-- Initial State (Before Search) -->
+      <div class="initial-state" id="initialState">
+        <div class="initial-icon">🔍</div>
+        <h2>Search for products</h2>
+        <p>Find groceries, dairy, snacks, and more</p>
+        
+        <!-- Quick Categories -->
+        <div class="quick-categories">
+          <h3>Quick Categories</h3>
+          <div class="category-chips">
+            <a href="/categories/dairy.html" class="category-chip">🥛 Dairy</a>
+            <a href="/categories/fruits.html" class="category-chip">🍎 Fruits</a>
+            <a href="/categories/snacks.html" class="category-chip">🍿 Snacks</a>
+            <a href="/categories/beverages.html" class="category-chip">🥤 Beverages</a>
+            <a href="/categories/grocery.html" class="category-chip">🧺 Grocery</a>
+            <a href="/categories/vegetables.html" class="category-chip">🥕 Vegetables</a>
+          </div>
+        </div>
+        
+        <!-- Trending Searches -->
+        <div class="trending-section">
+          <h3>📈 Trending Searches</h3>
+          <div class="trending-list" id="trendingList">
+            <span class="trending-item" data-query="milk">🥛 Milk</span>
+            <span class="trending-item" data-query="bread">🍞 Bread</span>
+            <span class="trending-item" data-query="eggs">🥚 Eggs</span>
+            <span class="trending-item" data-query="chips">🍟 Chips</span>
+            <span class="trending-item" data-query="mango">🥭 Mango</span>
+            <span class="trending-item" data-query="coke">🥤 Coke</span>
+          </div>
+        </div>
       </div>
     </main>
 
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item active">🔍<span>Search</span></a>
@@ -56,9 +166,21 @@
       <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage"></div>
+    
   </div>
 
+  <!-- Scripts -->
   <script src="/js/common.js"></script>
   <script src="/js/search.js"></script>
+  
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
 </body>
 </html>
