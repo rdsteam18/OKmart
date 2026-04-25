@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Admin Dashboard | OK Mart</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#2ecc71">
-  
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
@@ -23,10 +21,13 @@
     .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
     .main-content{flex:1;margin-left:250px;padding:24px}
     h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+    h2{font-size:1.2rem;font-weight:700;margin:24px 0 16px}
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-    .stat-card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .stat-card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04);cursor:pointer;transition:.2s}
+    .stat-card:hover{transform:translateY(-2px)}
     .stat-value{font-size:2rem;font-weight:800}
     .stat-label{color:#6b7280;font-size:.85rem;margin-top:4px}
+    .stat-icon{font-size:1.5rem;margin-bottom:8px}
     table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden}
     th{text-align:left;padding:14px 16px;background:#f8fafc;font-size:.75rem;text-transform:uppercase;color:#6b7280}
     td{padding:14px 16px;border-bottom:1px solid #e5e7eb;font-size:.9rem}
@@ -35,7 +36,11 @@
     .badge-preparing{background:#dbeafe;color:#1e40af}
     .badge-outfordelivery{background:#d1fae5;color:#065f46}
     .badge-delivered{background:#e0e7ff;color:#3730a3}
-    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
+    .quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .quick-action{background:white;border-radius:12px;padding:16px;text-align:center;text-decoration:none;color:#1a1e2b;font-weight:500;font-size:.85rem;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:.15s}
+    .quick-action:hover{background:#e8f8ef;color:#27ae60}
+    .quick-action span{display:block;font-size:1.5rem;margin-bottom:4px}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}.quick-actions{grid-template-columns:1fr 1fr}}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -47,34 +52,61 @@
       <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html" class="active">📊 Dashboard</a>
-        <a href="products.html">📦 Products</a>
         <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
         <a href="offers.html">🏷️ Offers</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a href="manual-order.html">✍️ Manual Order</a>
       </nav>
-      <div class="sidebar-footer"><button onclick="location.href='/'">🚪 Exit Admin</button></div>
+      <div class="sidebar-footer"><button onclick="logout()">🚪 Logout</button></div>
     </aside>
     <main class="main-content">
       <h1>📊 Dashboard</h1>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value" id="totalOrders">0</div><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><div class="stat-value" id="totalRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
-        <div class="stat-card"><div class="stat-value" id="todayOrders">0</div><div class="stat-label">Today Orders</div></div>
-        <div class="stat-card"><div class="stat-value" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
+      
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <a href="orders.html" class="quick-action"><span>📋</span>View Orders</a>
+        <a href="products.html" class="quick-action"><span>📦</span>Add Product</a>
+        <a href="offers.html" class="quick-action"><span>🏷️</span>New Coupon</a>
+        <a href="manual-order.html" class="quick-action"><span>✍️</span>Manual Order</a>
       </div>
-      <h2 style="margin-bottom:16px;">📋 Recent Orders</h2>
-      <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
+      
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="totalOrders">0</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value" id="totalRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="todayOrders">0</div><div class="stat-label">Today Orders</div></div>
+        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
+      </div>
+      
+      <!-- Recent Orders -->
+      <h2>📋 Recent Orders</h2>
+      <table><thead><tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
+      
+      <!-- Top Products -->
+      <h2>🔥 Top Selling Products</h2>
+      <table><thead><tr><th>Product</th><th>Units Sold</th></tr></thead><tbody id="topProducts"></tbody></table>
     </main>
   </div>
   <script src="/js/firebase.js"></script>
+  <script src="/js/admin-auth.js"></script>
   <script>
+    function logout(){sessionStorage.removeItem('okmart_admin_logged');window.location.href='login.html'}
+    
     db.collection('orders').orderBy('orderDate','desc').onSnapshot(s=>{
       const orders=[],today=new Date().toISOString().split('T')[0];
       s.forEach(d=>orders.push({id:d.id,...d.data()}));
       document.getElementById('totalOrders').textContent=orders.length;
       document.getElementById('totalRevenue').textContent='₹'+orders.reduce((a,o)=>a+(Number(o.total)||0),0).toLocaleString('en-IN');
       document.getElementById('todayOrders').textContent=orders.filter(o=>(o.orderDate||'').startsWith(today)).length;
-      document.getElementById('pendingOrders').textContent=orders.filter(o=>o.status!=='delivered').length;
-      document.getElementById('recentOrders').innerHTML=orders.slice(0,10).map(o=>`<tr><td style="font-family:monospace;color:#27ae60;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||'-'}</td><td>₹${(o.total||0).toLocaleString('en-IN')}</td><td><span class="badge badge-${o.status||'received'}">${o.status||'received'}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>`).join('');
+      document.getElementById('pendingOrders').textContent=orders.filter(o=>o.status!=='delivered'&&o.status!=='cancelled').length;
+      document.getElementById('recentOrders').innerHTML=orders.slice(0,10).map(o=>`<tr><td style="font-family:monospace;color:#27ae60;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||'-'}</td><td>${o.customerPhone||'-'}</td><td>₹${(o.total||0).toLocaleString('en-IN')}</td><td><span class="badge badge-${o.status||'received'}">${o.status||'received'}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>`).join('');
+      
+      // Top products
+      const productSales={};
+      orders.forEach(o=>(o.items||[]).forEach(i=>{const key=i.name||'Unknown';productSales[key]=(productSales[key]||0)+(i.quantity||1)}));
+      const topProducts=Object.entries(productSales).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      document.getElementById('topProducts').innerHTML=topProducts.map(([name,qty])=>`<tr><td>${name}</td><td style="font-weight:700;">${qty}</td></tr>`).join('')||'<tr><td colspan="2">No sales yet</td></tr>';
     });
   </script>
 </body>
