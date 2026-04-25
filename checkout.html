@@ -5,104 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>Checkout | OK Mart</title>
   <meta name="theme-color" content="#2ecc71">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/checkout.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .container{max-width:480px;margin:0 auto;padding:0 16px 100px}
+    .header{display:flex;align-items:center;gap:12px;padding:12px 0;position:sticky;top:0;background:#f8fafc;z-index:10}
+    .back-btn{width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;border:1px solid #e5e7eb}
+    h1{font-size:1.3rem;font-weight:700}
+    .section-card{background:white;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+    .section-card h2{font-size:1rem;margin-bottom:12px}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-weight:600;margin-bottom:6px;font-size:.85rem}
+    .form-group input,.form-group textarea{width:100%;padding:14px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:14px;font-size:.9rem;font-family:inherit}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#2ecc71}
+    textarea{resize:vertical;min-height:70px}
+    .item-row{display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;border-bottom:1px solid #f1f5f9}
+    .summary-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.9rem}
+    .summary-row.total{font-weight:700;font-size:1.1rem;border-top:1px solid #e5e7eb;margin-top:8px;padding-top:12px}
+    .coupon-row{display:flex;gap:8px;margin-bottom:12px}
+    .coupon-row input{flex:1;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem;text-transform:uppercase}
+    .coupon-row button{padding:12px 18px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+    .coupon-msg{font-size:.8rem;margin-bottom:8px}
+    .place-order-btn{width:100%;padding:16px;background:#2ecc71;color:white;border:none;border-radius:16px;font-weight:700;font-size:1.1rem;cursor:pointer;box-shadow:0 4px 12px rgba(46,204,113,.25)}
+    .place-order-btn:active{transform:scale(.97)}
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:40px;font-weight:500;z-index:999;opacity:0;transition:.3s;white-space:nowrap}
+    .toast.show{opacity:1}
+    .toast.success{background:#10b981;color:white}
+    .toast.error{background:#ef4444;color:white}
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <header class="app-header">
-      <div class="header-container">
-        <a href="/cart.html" class="back-button">
-          <span class="back-icon">←</span>
-        </a>
-        <h1 class="page-title">Checkout</h1>
-        <div class="header-spacer"></div>
-      </div>
-    </header>
-
-    <main class="checkout-main">
-      <!-- Delivery Address Card -->
-      <div class="address-card">
-        <div class="address-header">
-          <span class="address-icon">📍</span>
-          <h3>Delivery Address</h3>
-          <a href="/profile.html" class="change-btn">Change</a>
-        </div>
-        <div class="address-content" id="deliveryAddress">
-          <p class="address-name" id="displayName">Loading...</p>
-          <p class="address-phone" id="displayPhone"></p>
-          <p class="address-full" id="displayAddress"></p>
-          <p class="address-pincode" id="displayPincode"></p>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="order-summary-card">
-        <div class="summary-header">
-          <h3>Order Summary</h3>
-          <button class="view-items-btn" id="viewItemsToggle">View Items ▼</button>
-        </div>
-        <div class="order-items-list" id="orderItemsList"></div>
-        
-        <div class="price-breakdown">
-          <div class="price-row">
-            <span>Subtotal</span>
-            <span id="checkoutSubtotal">₹0</span>
-          </div>
-          <div class="price-row" id="couponRow" style="display: none;">
-            <span>Coupon Discount</span>
-            <span class="discount-value" id="couponDiscount">-₹0</span>
-          </div>
-          <div class="price-row">
-            <span>Delivery</span>
-            <span id="checkoutDelivery">₹20</span>
-          </div>
-          <div class="price-row total-row">
-            <span>Total</span>
-            <span id="checkoutTotal">₹0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Payment Method -->
-      <div class="payment-card">
-        <h3>Payment Method</h3>
-        <label class="payment-option">
-          <input type="radio" name="payment" value="cod" checked>
-          <span class="payment-label">💵 Cash on Delivery</span>
-        </label>
-        <label class="payment-option">
-          <input type="radio" name="payment" value="upi">
-          <span class="payment-label">📱 UPI / Card</span>
-        </label>
-      </div>
-
-      <!-- Coupon Section -->
-      <div class="coupon-card">
-        <div class="coupon-input-wrapper">
-          <input type="text" id="couponInput" placeholder="Enter coupon code" autocomplete="off">
-          <button id="applyCouponBtn">Apply</button>
-        </div>
-        <div class="coupon-message" id="couponMessage"></div>
-      </div>
-    </main>
-
-    <div class="sticky-checkout-bar">
-      <div class="checkout-bar-inner">
-        <div class="total-info">
-          <span class="total-label">Total</span>
-          <span class="total-value" id="stickyTotal">₹0</span>
-        </div>
-        <button class="place-order-btn" id="placeOrderBtn">Place Order →</button>
-      </div>
+  <div class="container">
+    <div class="header"><a href="/cart.html" class="back-btn">←</a><h1>Checkout</h1></div>
+    
+    <div class="section-card">
+      <h2>👤 Delivery Details</h2>
+      <div class="form-group"><label>Full Name *</label><input type="text" id="customerName" placeholder="Your name" required></div>
+      <div class="form-group"><label>Phone Number *</label><input type="tel" id="customerPhone" placeholder="10-digit number" maxlength="10" required></div>
+      <div class="form-group"><label>Delivery Address *</label><textarea id="customerAddress" placeholder="House/Flat, Street, Area" required></textarea></div>
     </div>
-
-    <div class="toast-message" id="toastMessage"></div>
+    
+    <div class="section-card">
+      <h2>🛒 Order Summary</h2>
+      <div id="orderItems"></div>
+      <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+      <div class="summary-row" id="couponRow" style="display:none;"><span style="color:#10b981;">Coupon Discount</span><span style="color:#10b981;" id="couponDiscount">-₹0</span></div>
+      <div class="summary-row"><span>Delivery</span><span id="delivery">₹20</span></div>
+      <div class="summary-row total"><span>Total</span><span id="total">₹0</span></div>
+    </div>
+    
+    <div class="section-card">
+      <h2>🏷️ Apply Coupon</h2>
+      <div class="coupon-row"><input type="text" id="couponInput" placeholder="Enter code (e.g., SAVE20)"><button id="applyCoupon">Apply</button></div>
+      <div class="coupon-msg" id="couponMsg"></div>
+    </div>
+    
+    <button class="place-order-btn" id="placeOrderBtn">Place Order →</button>
   </div>
+  
+  <div class="toast" id="toastMessage"></div>
 
+  <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script src="/js/checkout.js"></script>
+  <script>
+    const WHATSAPP_NUMBER = '919982239821';
+    const FREE_THRESHOLD = 199;
+    const DELIVERY_FEE = 20;
+    
+    const cart = window.OKMart.getCart();
+    if (cart.length === 0) { location.href = '/index.html'; }
+    
+    let couponDiscount = 0;
+    
+    const userData = JSON.parse(localStorage.getItem('okmart_user') || '{}');
+    document.getElementById('customerName').value = userData.name || '';
+    document.getElementById('customerPhone').value = userData.phone || '';
+    document.getElementById('customerAddress').value = userData.address || '';
+    
+    function calcTotal() {
+      const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+      const delivery = subtotal >= FREE_THRESHOLD ? 0 : DELIVERY_FEE;
+      const total = Math.max(0, subtotal - couponDiscount + delivery);
+      return { subtotal, delivery, total };
+    }
+    
+    function updateUI() {
+      const t = calcTotal();
+      document.getElementById('subtotal').textContent = `₹${t.subtotal}`;
+      document.getElementById('delivery').textContent = t.delivery === 0 ? 'FREE' : `₹${t.delivery}`;
+      document.getElementById('total').textContent = `₹${t.total}`;
+      if (couponDiscount > 0) {
+        document.getElementById('couponRow').style.display = 'flex';
+        document.getElementById('couponDiscount').textContent = `-₹${couponDiscount}`;
+      }
+    }
+    
+    // Render items
+    const itemsContainer = document.getElementById('orderItems');
+    cart.forEach(item => {
+      itemsContainer.innerHTML += `<div class="item-row"><span>${item.name} x${item.quantity}</span><span>₹${item.price * item.quantity}</span></div>`;
+    });
+    updateUI();
+    
+    // Coupon
+    document.getElementById('applyCoupon').addEventListener('click', async () => {
+      const code = document.getElementById('couponInput').value.trim().toUpperCase();
+      if (!code) return;
+      const snap = await db.collection('offers').where('code', '==', code).where('active', '==', true).get();
+      if (snap.empty) { document.getElementById('couponMsg').textContent = '❌ Invalid coupon'; return; }
+      const offer = snap.docs[0].data();
+      const { subtotal } = calcTotal();
+      if (subtotal < offer.minOrder) { document.getElementById('couponMsg').textContent = `❌ Min order ₹${offer.minOrder}`; return; }
+      if (offer.type === 'flat') couponDiscount = offer.discount;
+      else if (offer.type === 'percent') { const d = Math.round((subtotal * offer.discount) / 100); couponDiscount = offer.maxDiscount ? Math.min(d, offer.maxDiscount) : d; }
+      document.getElementById('couponMsg').textContent = `✅ ${code} applied! -₹${couponDiscount}`;
+      document.getElementById('couponMsg').style.color = '#10b981';
+      updateUI();
+    });
+    
+    // Place Order
+    document.getElementById('placeOrderBtn').addEventListener('click', async () => {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim().replace(/\D/g, '');
+      const address = document.getElementById('customerAddress').value.trim();
+      
+      if (!name || !phone || !address) return window.OKMart.showToast('Fill all fields', 'error');
+      if (!/^\d{10}$/.test(phone)) return window.OKMart.showToast('Invalid phone', 'error');
+      
+      localStorage.setItem('okmart_user', JSON.stringify({ name, phone, address }));
+      
+      const totals = calcTotal();
+      const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
+      
+      const orderData = {
+        orderId, customerName: name, customerPhone: phone, phone, name,
+        customerAddress: address, address,
+        items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, image: i.image })),
+        subtotal: totals.subtotal, delivery: totals.delivery, total: totals.total,
+        couponDiscount, status: 'received', orderDate: new Date().toISOString(), date: new Date().toISOString().split('T')[0]
+      };
+      
+      try {
+        await db.collection('orders').add(orderData);
+        
+        let msg = `🛒 *New Order – OK Mart*\n\n👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n📍 *Address:* ${address}\n\n🧾 *Items:*\n`;
+        cart.forEach(i => msg += `  • ${i.name} x${i.quantity} - ₹${i.price * i.quantity}\n`);
+        msg += `\n💰 *Total:* ₹${totals.total}\n🆔 *Order ID:* ${orderId}\n📦 Track: ${location.origin}/tracking.html`;
+        
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+        localStorage.removeItem('okmart_cart');
+        const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+        orders.push(orderData);
+        localStorage.setItem('okmart_orders', JSON.stringify(orders));
+        setTimeout(() => { location.href = '/success.html'; }, 500);
+      } catch (e) { window.OKMart.showToast('Order failed', 'error'); }
+    });
+  </script>
 </body>
 </html>
