@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Admin Login | OK Mart</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2ecc71">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-container{background:white;border-radius:24px;padding:40px 24px;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.08);text-align:center}
+    .login-logo{font-size:3rem;margin-bottom:8px}
+    .login-title{font-size:1.5rem;font-weight:800;margin-bottom:4px}
+    .login-subtitle{color:#6b7280;font-size:.9rem;margin-bottom:28px}
+    .form-group{margin-bottom:16px;text-align:left}
+    .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
+    .form-group input{width:100%;padding:14px 16px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.95rem;font-family:inherit}
+    .form-group input:focus{outline:none;border-color:#2ecc71}
+    .login-btn{width:100%;padding:16px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:8px;transition:.15s}
+    .login-btn:active{background:#27ae60;transform:scale(.97)}
+    .error-msg{color:#ef4444;font-size:.85rem;margin-top:8px;display:none}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
+    .toast.show{opacity:1;bottom:50px}.toast.error{background:#ef4444}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo">🛒</div>
+    <h1 class="login-title">OK Mart Admin</h1>
+    <p class="login-subtitle">Enter credentials to continue</p>
+    <form id="loginForm">
+      <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="admin" required></div>
+      <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="••••••••" required></div>
+      <p class="error-msg" id="errorMsg">Invalid credentials</p>
+      <button type="submit" class="login-btn">🔐 Login</button>
+    </form>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Hardcoded admin credentials (change these)
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'okmart2024';
+    
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        // Set session
+        sessionStorage.setItem('okmart_admin_logged', 'true');
+        sessionStorage.setItem('okmart_admin_time', Date.now());
+        
+        const toast = document.getElementById('toast');
+        toast.textContent = '✅ Login successful!';
+        toast.className = 'toast';
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 500);
+      } else {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('password').value = '';
+      }
+    });
+    
+    // Check if already logged in
+    if (sessionStorage.getItem('okmart_admin_logged') === 'true') {
+      const loginTime = parseInt(sessionStorage.getItem('okmart_admin_time') || '0');
+      // Session expires after 8 hours
+      if (Date.now() - loginTime < 8 * 60 * 60 * 1000) {
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+</body>
+</html>
