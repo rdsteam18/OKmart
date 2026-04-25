@@ -4,36 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
   
-  <!-- SEO Meta Tags -->
   <title>OK Mart | Fresh Grocery Delivery in 10-15 Minutes</title>
   <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast delivery in 10-15 minutes. Free delivery on orders above ₹199.">
-  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits, vegetables, snacks, OK Mart">
   <meta name="theme-color" content="#2ecc71">
   
-  <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
   
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
   
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- App Container -->
   <div class="app-container">
     
     <!-- ========== HEADER ========== -->
     <header class="app-header">
-      <!-- Location Bar -->
       <div class="location-bar">
         <div class="location-info">
           <span class="location-icon">📍</span>
@@ -44,14 +35,12 @@
         </div>
         <a href="/profile.html" class="profile-btn">👤</a>
       </div>
-      
-      <!-- Search + Cart -->
       <div class="header-actions">
         <div class="search-bar" onclick="location.href='/search.html'">
           <span class="search-icon">🔍</span>
           <span class="search-placeholder">Search for grocery...</span>
         </div>
-        <a href="/cart.html" class="cart-icon-link" aria-label="View Cart">
+        <a href="/cart.html" class="cart-icon-link">
           <span class="cart-icon">🛒</span>
           <span class="cart-badge" id="cartBadge">0</span>
         </a>
@@ -61,120 +50,26 @@
     <!-- ========== MAIN CONTENT ========== -->
     <main class="home-main">
       
-      <!-- Category Pills -->
-      <div class="category-pills-container">
-        <div class="category-pills" id="categoryPills">
-          <div class="pill active" onclick="location.href='/categories/vegetables.html'">🥑 Veg</div>
-          <div class="pill" onclick="location.href='/categories/fruits.html'">🍎 Fruits</div>
-          <div class="pill" onclick="location.href='/categories/dairy.html'">🥛 Dairy</div>
-          <div class="pill" onclick="location.href='/categories/snacks.html'">🍿 Snacks</div>
-          <div class="pill" onclick="location.href='/categories/beverages.html'">🥤 Drinks</div>
-          <div class="pill" onclick="location.href='/categories/grocery.html'">🧺 Grocery</div>
-          <div class="pill" onclick="location.href='/categories/electronics.html'">📱 Electronics</div>
-          <div class="pill highlight" onclick="location.href='/offers.html'">🏷️ Offers</div>
-        </div>
-      </div>
-
-      <!-- Banner Carousel -->
+      <!-- Banner Carousel (Admin Controlled) -->
       <div class="banner-carousel" id="bannerCarousel">
         <div class="banner-track" id="bannerTrack">
-          <div class="banner-slide">
-            <a href="/offers.html">
-              <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Free Onion Offer">
-              <div class="banner-overlay">
-                <span class="banner-tag">🎁 Freebie</span>
-                <span class="banner-title">1kg Onion FREE on ₹199+</span>
-                <span class="banner-subtitle">Shop Now →</span>
-              </div>
-            </a>
-          </div>
-          <div class="banner-slide">
-            <a href="/offers.html">
-              <img src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=600" alt="SAVE20 Coupon">
-              <div class="banner-overlay">
-                <span class="banner-tag">💰 Coupon</span>
-                <span class="banner-title">SAVE20 - ₹20 OFF on ₹250+</span>
-                <span class="banner-subtitle">Shop Now →</span>
-              </div>
-            </a>
-          </div>
-          <div class="banner-slide">
-            <a href="/offers.html">
-              <img src="https://images.pexels.com/photos/1639556/pexels-photo-1639556.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Free Delivery">
-              <div class="banner-overlay">
-                <span class="banner-tag">🚚 Delivery</span>
-                <span class="banner-title">FREE Delivery on ₹199+</span>
-                <span class="banner-subtitle">Shop Now →</span>
-              </div>
-            </a>
-          </div>
+          <div class="loading-placeholder" style="padding:20px;text-align:center;color:#6b7280;">Loading offers...</div>
         </div>
-        <div class="banner-dots" id="bannerDots">
-          <span class="dot active"></span>
-          <span class="dot"></span>
-          <span class="dot"></span>
-        </div>
+        <div class="banner-dots" id="bannerDots"></div>
       </div>
 
-      <!-- Quick Info Cards -->
-      <div class="info-cards">
-        <div class="info-card">
-          <span class="info-icon">🚚</span>
-          <div class="info-text">
-            <strong>Free Delivery</strong>
-            <span>On orders above ₹199</span>
-          </div>
-        </div>
-        <div class="info-card highlight">
-          <span class="info-icon">💰</span>
-          <div class="info-text">
-            <strong>Get 10% OFF</strong>
-            <span>With Plus+ T&C Apply</span>
+      <!-- Category Sections (Dynamic from Firebase) -->
+      <div id="categorySections">
+        <div class="loading-section">
+          <div class="skeleton-title"></div>
+          <div class="skeleton-scroll">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
           </div>
         </div>
       </div>
-
-      <!-- Products Section: You Might Need -->
-      <section class="products-section">
-        <div class="section-header">
-          <h2 class="section-title">🛒 You might need</h2>
-          <a href="/categories/all.html" class="see-all">See all ›</a>
-        </div>
-        <div class="product-slider" id="recommendedSlider">
-          <div class="loading-skeleton">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Products Section: Best Selling -->
-      <section class="products-section">
-        <div class="section-header">
-          <h2 class="section-title">🔥 Best Selling</h2>
-          <a href="/categories/all.html" class="see-all">View all ›</a>
-        </div>
-        <div class="product-grid-2col" id="bestsellerGrid">
-          <div class="loading-skeleton">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Products Section: Popular Picks -->
-      <section class="products-section">
-        <div class="section-header">
-          <h2 class="section-title">⭐ Popular Picks</h2>
-        </div>
-        <div class="product-slider" id="popularSlider">
-          <div class="loading-skeleton">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      </section>
 
     </main>
 
@@ -185,9 +80,7 @@
           <span class="cart-bar-icon">🛒</span>
           <span class="cart-bar-count" id="barCartCount">0 items</span>
         </div>
-        <a href="/cart.html" class="cart-bar-btn">
-          View Cart · <span id="barCartTotal">₹0</span>
-        </a>
+        <a href="/cart.html" class="cart-bar-btn">View Cart · <span id="barCartTotal">₹0</span></a>
       </div>
     </div>
 
@@ -200,7 +93,7 @@
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
-    <!-- ========== FLOATING BUTTONS ========== -->
+    <!-- Floating Buttons -->
     <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
     <a href="tel:+919982239821" class="fab-call">📞</a>
 
@@ -209,16 +102,8 @@
     
   </div>
 
-  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
-  
-  <!-- PWA -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-  </script>
 </body>
 </html>
