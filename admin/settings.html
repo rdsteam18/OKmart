@@ -1,157 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Admin Auth Protection -->
-<script src="/js/admin-auth.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Settings | OK Mart Admin</title>
   <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2ecc71">
+  
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .admin-layout{display:flex;min-height:100vh}
-    .sidebar{width:250px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
-    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
-    .sidebar-brand span{font-size:1.2rem;font-weight:700}
-    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.6rem;text-transform:uppercase;font-weight:600}
-    .sidebar-nav{flex:1;padding:20px 0}
-    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
-    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
-    .sidebar-nav a.active{border-left:3px solid #2ecc71}
-    .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
-    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
-    .main-content{flex:1;margin-left:250px;padding:24px}
-    h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
-    .settings-section{background:white;border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
-    .settings-section h2{font-size:1.1rem;font-weight:700;margin-bottom:16px}
-    .form-row{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
-    .form-group{flex:1;min-width:150px}
-    .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
-    .form-group input,.form-group select{width:100%;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem}
-    .save-btn{padding:12px 24px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:8px}
-    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-    .toggle{width:50px;height:28px;background:#e5e7eb;border-radius:14px;position:relative;cursor:pointer;transition:.3s}
-    .toggle.active{background:#2ecc71}
-    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;background:white;border-radius:50%;transition:.3s}
-    .toggle.active::after{left:25px}
-    .pincode-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .pincode-tag{background:#f8fafc;border:1px solid #e5e7eb;padding:6px 12px;border-radius:20px;font-size:.8rem;display:flex;align-items:center;gap:6px}
-    .pincode-tag button{background:none;border:none;color:#ef4444;cursor:pointer;font-size:1rem}
-    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
-    .toast.show{opacity:1;bottom:50px}.toast.success{background:#10b981}
-    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #e8f8ef;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px; --transition: all .2s ease;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    
+    .admin-layout { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: #1a1e2b; color: white; position: fixed;
+      top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column;
+    }
+    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
+    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
+    .sidebar-nav a.active { background: rgba(46,204,113,.1); color: var(--primary); border-left: 3px solid var(--primary); }
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
+    
+    .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    
+    /* Main */
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1000px; }
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; }
+    
+    /* Sections */
+    .settings-section { background: var(--card); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .settings-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    
+    /* Form */
+    .form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .form-group { flex: 1; min-width: 200px; }
+    .form-group label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    .form-group input:focus { outline: none; border-color: var(--primary); }
+    .save-delivery-btn { padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    
+    /* Toggle Row */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-info h3 { font-size: 1rem; font-weight: 600; }
+    .toggle-info p { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+    .toggle-switch { width: 52px; height: 28px; background: #d1d5db; border-radius: 14px; position: relative; cursor: pointer; transition: .3s; flex-shrink: 0; }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .toggle-switch.active::after { left: 26px; }
+    
+    /* Block User */
+    .block-form { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .block-form input { flex: 1; min-width: 200px; padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    .block-form button { padding: 12px 20px; background: var(--danger); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .blocked-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .blocked-tag { display: flex; align-items: center; gap: 6px; background: #fee2e2; border: 1px solid var(--danger); padding: 8px 14px; border-radius: 20px; font-size: .85rem; font-weight: 500; }
+    .blocked-tag button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; }
+    
+    /* Customer List */
+    .customer-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+    .customer-card:last-child { border-bottom: none; }
+    .customer-info h4 { font-size: .95rem; font-weight: 600; }
+    .customer-info p { font-size: .8rem; color: var(--muted); }
+    .customer-stats { display: flex; gap: 20px; font-size: .85rem; }
+    .customer-stats span { font-weight: 600; }
+    .msg-btn { padding: 8px 16px; background: #25D366; color: white; border: none; border-radius: 20px; font-weight: 600; font-size: .8rem; cursor: pointer; }
+    .msg-btn:hover { background: #128C7E; }
+    
+    /* Search */
+    .search-box { width: 100%; padding: 12px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; margin-bottom: 16px; }
+    .search-box:focus { outline: none; border-color: var(--primary); }
+    
+    /* Toast */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
+    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: #10b981; } .toast.error { background: var(--danger); }
+    
+    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } }
   </style>
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="admin-layout">
+    
     <aside class="sidebar">
-      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
-        <a href="products.html">📦 Products</a>
-        <a href="offers.html">🏷️ Offers</a>
+        <a href="index.html">📊 Dashboard</a><a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a><a href="offers.html">🏷️ Offers</a>
         <a href="settings.html" class="active">⚙️ Settings</a>
-        <a href="manual-order.html">✍️ Manual Order</a>
       </nav>
-      <div class="sidebar-footer"><button onclick="logout()">🚪 Logout</button></div>
+      <div class="sidebar-footer"><button onclick="adminLogout()">🚪 Logout</button></div>
     </aside>
+
+    <div class="mobile-header">
+      <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">Settings</span><span></span>
+    </div>
+
     <main class="main-content">
-      <h1>⚙️ Settings</h1>
+      <h1>⚙️ Admin Control Panel</h1>
       
       <!-- Delivery Settings -->
       <div class="settings-section">
-        <h2>🚚 Delivery Settings</h2>
+        <h2>🚚 Delivery Control</h2>
         <div class="form-row">
-          <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="deliveryCharge" value="20"></div>
-          <div class="form-group"><label>Free Delivery Threshold (₹)</label><input type="number" id="freeThreshold" value="199"></div>
+          <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="deliveryCharge" value="20" min="0"></div>
+          <div class="form-group"><label>Free Delivery Above (₹)</label><input type="number" id="freeDeliveryAbove" value="199" min="0"></div>
         </div>
-        <button class="save-btn" onclick="saveDelivery()">💾 Save Delivery</button>
+        <button class="save-delivery-btn" onclick="saveDeliverySettings()">💾 Save Delivery Settings</button>
       </div>
       
       <!-- Feature Toggles -->
       <div class="settings-section">
         <h2>🔧 Feature Toggles</h2>
-        <div class="toggle-row"><span>Site Active</span><div class="toggle active" id="siteToggle" onclick="toggleFeature('siteActive')"></div></div>
-        <div class="toggle-row"><span>Delivery Enabled</span><div class="toggle active" id="deliveryToggle" onclick="toggleFeature('deliveryEnabled')"></div></div>
-        <div class="toggle-row"><span>Offers Enabled</span><div class="toggle active" id="offersToggle" onclick="toggleFeature('offersEnabled')"></div></div>
-        <div class="toggle-row"><span>COD Enabled</span><div class="toggle active" id="codToggle" onclick="toggleFeature('codEnabled')"></div></div>
+        <div id="featureToggles"><p style="color:var(--muted);">Loading...</p></div>
       </div>
       
-      <!-- Pincodes -->
+      <!-- Block Users -->
       <div class="settings-section">
-        <h2>📍 Allowed Pincodes</h2>
-        <div class="form-row">
-          <div class="form-group"><input type="text" id="newPincode" placeholder="Enter pincode" maxlength="6"></div>
-          <button class="save-btn" onclick="addPincode()" style="margin-top:0;">+ Add</button>
+        <h2>🚫 Block Users</h2>
+        <div class="block-form">
+          <input type="text" id="blockPhone" placeholder="Enter phone number to block" maxlength="10">
+          <button onclick="blockUser()">🔒 Block User</button>
         </div>
-        <div class="pincode-tags" id="pincodeList"></div>
+        <h3 style="font-size:.9rem;margin-bottom:10px;">Blocked Users List</h3>
+        <div class="blocked-tags" id="blockedList"><p style="color:var(--muted);">No blocked users</p></div>
+      </div>
+      
+      <!-- Customer Management -->
+      <div class="settings-section">
+        <h2>👥 Customer Management</h2>
+        <input type="text" class="search-box" id="customerSearch" placeholder="🔍 Search by phone..." oninput="renderCustomers()">
+        <div id="customerList"><p style="color:var(--muted);">Loading customers...</p></div>
       </div>
       
     </main>
   </div>
+
   <div class="toast" id="toast"></div>
+
   <script src="/js/firebase.js"></script>
   <script src="/js/admin-auth.js"></script>
   <script>
-    function logout(){sessionStorage.removeItem('okmart_admin_logged');window.location.href='login.html'}
+    // ===== ADMIN CONTROL SYSTEM =====
     
-    // Load settings
-    db.collection('settings').doc('delivery').onSnapshot(doc=>{
-      if(doc.exists){
-        const d=doc.data();
-        document.getElementById('deliveryCharge').value=d.charge||20;
-        document.getElementById('freeThreshold').value=d.freeThreshold||199;
+    const WHATSAPP_ADMIN = '919982239821';
+    let allCustomers = [];
+    let blockedUsers = [];
+    
+    // ========== DELIVERY SETTINGS ==========
+    db.collection('settings').doc('delivery').onSnapshot(doc => {
+      if (doc.exists) {
+        const d = doc.data();
+        document.getElementById('deliveryCharge').value = d.charge || 20;
+        document.getElementById('freeDeliveryAbove').value = d.freeThreshold || 199;
       }
     });
     
-    db.collection('settings').doc('features').onSnapshot(doc=>{
-      if(doc.exists){
-        const d=doc.data();
-        ['siteActive','deliveryEnabled','offersEnabled','codEnabled'].forEach(f=>{
-          document.getElementById(f+'Toggle').classList.toggle('active',d[f]!==false);
-        });
+    window.saveDeliverySettings = async function() {
+      const data = {
+        charge: Number(document.getElementById('deliveryCharge').value) || 20,
+        freeThreshold: Number(document.getElementById('freeDeliveryAbove').value) || 199
+      };
+      await db.collection('settings').doc('delivery').set(data, { merge: true });
+      showToast('✅ Delivery settings saved!', 'success');
+    };
+    
+    // ========== FEATURE TOGGLES ==========
+    db.collection('settings').doc('global').onSnapshot(doc => {
+      const container = document.getElementById('featureToggles');
+      if (!doc.exists) {
+        container.innerHTML = '<p style="color:var(--muted);">No settings found</p>'; return;
       }
+      const d = doc.data();
+      container.innerHTML = `
+        <div class="toggle-row">
+          <div class="toggle-info"><h3>🌐 Website Active</h3><p>Turn entire website ON/OFF. When OFF, shows maintenance message.</p></div>
+          <div class="toggle-switch ${d.siteActive !== false ? 'active' : ''}" onclick="toggleGlobal('siteActive', ${d.siteActive !== false})"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h3>🚚 Delivery Enabled</h3><p>Enable or disable delivery service globally.</p></div>
+          <div class="toggle-switch ${d.deliveryEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('deliveryEnabled', ${d.deliveryEnabled !== false})"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h3>🏷️ Offers Enabled</h3><p>Show/hide coupon codes and offers on the user site.</p></div>
+          <div class="toggle-switch ${d.offersEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('offersEnabled', ${d.offersEnabled !== false})"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info"><h3>🖼️ Banners Enabled</h3><p>Show/hide promotional banners on the website.</p></div>
+          <div class="toggle-switch ${d.bannersEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('bannersEnabled', ${d.bannersEnabled !== false})"></div>
+        </div>
+      `;
     });
     
-    db.collection('settings').doc('pincodes').onSnapshot(doc=>{
-      const pins=doc.exists?(doc.data().list||[]):['380026','382418','380058','110001','400001','560001'];
-      document.getElementById('pincodeList').innerHTML=pins.map(p=>`<span class="pincode-tag">${p}<button onclick="removePincode('${p}')">✕</button></span>`).join('');
+    window.toggleGlobal = async function(field, currentValue) {
+      await db.collection('settings').doc('global').set({ [field]: !currentValue }, { merge: true });
+      showToast(`${field} ${!currentValue ? 'enabled ✅' : 'disabled ❌'}`, 'success');
+    };
+    
+    // ========== BLOCK USER SYSTEM ==========
+    db.collection('blockedUsers').onSnapshot(snapshot => {
+      blockedUsers = [];
+      snapshot.forEach(doc => blockedUsers.push({ id: doc.id, ...doc.data() }));
+      renderBlockedList();
     });
     
-    function saveDelivery(){
-      const data={charge:Number(document.getElementById('deliveryCharge').value),freeThreshold:Number(document.getElementById('freeThreshold').value)};
-      db.collection('settings').doc('delivery').set(data).then(()=>showToast('Saved!','success'));
+    function renderBlockedList() {
+      const container = document.getElementById('blockedList');
+      if (blockedUsers.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);">No blocked users</p>'; return;
+      }
+      container.innerHTML = blockedUsers.map(u => `
+        <span class="blocked-tag">
+          📱 ${u.phone} ${u.reason ? '· ' + u.reason : ''}
+          <button onclick="unblockUser('${u.id}')">✕</button>
+        </span>
+      `).join('');
     }
     
-    function toggleFeature(feature){
-      db.collection('settings').doc('features').get().then(doc=>{
-        const data=doc.exists?doc.data():{};
-        data[feature]=!data[feature]||data[feature]===undefined?false:!data[feature];
-        db.collection('settings').doc('features').set(data);
+    window.blockUser = async function() {
+      const phone = document.getElementById('blockPhone').value.trim().replace(/\D/g, '');
+      if (!phone || !/^\d{10}$/.test(phone)) return showToast('Enter valid 10-digit phone', 'error');
+      if (blockedUsers.some(u => u.phone === phone)) return showToast('User already blocked', 'error');
+      
+      const reason = prompt('Reason for blocking (optional):') || '';
+      await db.collection('blockedUsers').add({ phone, reason, blockedAt: new Date().toISOString() });
+      document.getElementById('blockPhone').value = '';
+      showToast(`🔒 ${phone} blocked!`, 'success');
+    };
+    
+    window.unblockUser = async function(id) {
+      if (confirm('Unblock this user?')) {
+        await db.collection('blockedUsers').doc(id).delete();
+        showToast('✅ User unblocked', 'success');
+      }
+    };
+    
+    // ========== CUSTOMER MANAGEMENT ==========
+    function loadCustomers() {
+      const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+      const customerMap = {};
+      
+      // From localStorage
+      orders.forEach(o => {
+        const phone = o.customerPhone || o.phone;
+        if (!phone) return;
+        if (!customerMap[phone]) customerMap[phone] = { phone, name: o.customerName || o.name, totalOrders: 0, totalSpent: 0 };
+        customerMap[phone].totalOrders++;
+        customerMap[phone].totalSpent += (o.total || 0);
       });
+      
+      allCustomers = Object.values(customerMap).sort((a, b) => b.totalOrders - a.totalOrders);
+      renderCustomers();
     }
     
-    async function addPincode(){
-      const pin=document.getElementById('newPincode').value.trim();
-      if(!/^\d{6}$/.test(pin)){showToast('Invalid pincode','error');return}
-      const doc=await db.collection('settings').doc('pincodes').get();
-      const pins=doc.exists?(doc.data().list||[]):[];
-      if(!pins.includes(pin)){pins.push(pin);await db.collection('settings').doc('pincodes').set({list:pins});}
-      document.getElementById('newPincode').value='';
+    // Also listen to Firebase for live updates
+    db.collection('orders').onSnapshot(snapshot => {
+      const customerMap = {};
+      snapshot.forEach(doc => {
+        const o = doc.data();
+        const phone = o.customerPhone || o.phone;
+        if (!phone) return;
+        if (!customerMap[phone]) customerMap[phone] = { phone, name: o.customerName || o.name, totalOrders: 0, totalSpent: 0 };
+        customerMap[phone].totalOrders++;
+        customerMap[phone].totalSpent += (o.total || 0);
+      });
+      allCustomers = Object.values(customerMap).sort((a, b) => b.totalOrders - a.totalOrders);
+      renderCustomers();
+    });
+    
+    function renderCustomers() {
+      const search = (document.getElementById('customerSearch')?.value || '').trim();
+      let filtered = [...allCustomers];
+      if (search) filtered = filtered.filter(c => c.phone.includes(search));
+      
+      const container = document.getElementById('customerList');
+      if (filtered.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);padding:20px 0;">No customers found</p>'; return;
+      }
+      
+      container.innerHTML = filtered.map(c => `
+        <div class="customer-card">
+          <div class="customer-info">
+            <h4>${c.name || 'Customer'} · 📱 ${c.phone}</h4>
+            <p>${c.totalOrders} order${c.totalOrders !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="customer-stats">
+            <span>💰 ₹${c.totalSpent.toLocaleString('en-IN')}</span>
+            <span>📦 ${c.totalOrders}</span>
+          </div>
+          <button class="msg-btn" onclick="messageCustomer('${c.phone}')">💬 Message</button>
+        </div>
+      `).join('');
     }
     
-    async function removePincode(pin){
-      const doc=await db.collection('settings').doc('pincodes').get();
-      const pins=(doc.data().list||[]).filter(p=>p!==pin);
-      await db.collection('settings').doc('pincodes').set({list:pins});
+    // ========== CUSTOMER MESSAGING ==========
+    window.messageCustomer = function(phone) {
+      const customer = allCustomers.find(c => c.phone === phone);
+      const name = customer?.name || 'Customer';
+      
+      const message = `Hello ${name}! 👋\n\nThank you for being a valued customer of OK Mart! 🛒\n\nWe have a special offer for you. Use code SAVE20 to get ₹20 off on your next order above ₹250.\n\nOrder now: ${window.location.origin}\n\n📞 Contact: +91 99822 39821`;
+      
+      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    };
+    
+    // ========== BROADCAST MESSAGE (TO ALL) ==========
+    window.broadcastMessage = function() {
+      const message = prompt('Enter broadcast message:');
+      if (!message) return;
+      
+      const phones = allCustomers.slice(0, 5).map(c => c.phone).join(',');
+      alert(`Broadcast ready! Phones: ${phones}\n\nMessage: ${message}\n\nOpen WhatsApp to send individually.`);
+    };
+    
+    // ========== TOAST ==========
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg; toast.className = `toast ${type}`; toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+    // Init
+    loadCustomers();
+    console.log('✅ Admin control panel ready');
   </script>
 </body>
 </html>
