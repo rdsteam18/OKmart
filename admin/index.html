@@ -6,59 +6,60 @@
   <title>Admin Dashboard | OK Mart</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .admin-container{display:flex;min-height:100vh}
-    .sidebar{width:260px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
-    .sidebar-header{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
-    .sidebar-logo{font-size:1.3rem;font-weight:700}
-    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:600}
+    .admin-layout{display:flex;min-height:100vh}
+    .sidebar{width:250px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-brand span{font-size:1.2rem;font-weight:700}
+    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.6rem;text-transform:uppercase;font-weight:600}
     .sidebar-nav{flex:1;padding:20px 0}
-    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
-    .sidebar-nav a.active,.sidebar-nav a:hover{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500;transition:.15s}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
     .sidebar-nav a.active{border-left:3px solid #2ecc71}
     .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
-    .logout-btn{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
-    .main-content{flex:1;margin-left:260px;padding:24px}
+    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:250px;padding:24px}
     h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-    .stat-card{background:white;border-radius:20px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .stat-card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
     .stat-value{font-size:2rem;font-weight:800}
     .stat-label{color:#6b7280;font-size:.85rem;margin-top:4px}
     table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden}
     th{text-align:left;padding:14px 16px;background:#f8fafc;font-size:.75rem;text-transform:uppercase;color:#6b7280}
     td{padding:14px 16px;border-bottom:1px solid #e5e7eb;font-size:.9rem}
-    .status-badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
-    .status-received{background:#fef3c7;color:#92400e}
-    .status-preparing{background:#dbeafe;color:#1e40af}
-    .status-outfordelivery{background:#d1fae5;color:#065f46}
-    .status-delivered{background:#e0e7ff;color:#3730a3}
+    .badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+    .badge-received{background:#fef3c7;color:#92400e}
+    .badge-preparing{background:#dbeafe;color:#1e40af}
+    .badge-outfordelivery{background:#d1fae5;color:#065f46}
+    .badge-delivered{background:#e0e7ff;color:#3730a3}
     @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="admin-container">
+  <div class="admin-layout">
     <aside class="sidebar">
-      <div class="sidebar-header"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html" class="active">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
+        <a href="orders.html">📋 Orders</a>
         <a href="offers.html">🏷️ Offers</a>
       </nav>
-      <div class="sidebar-footer"><button class="logout-btn" onclick="location.href='/index.html'">🚪 Exit</button></div>
+      <div class="sidebar-footer"><button onclick="location.href='/'">🚪 Exit Admin</button></div>
     </aside>
     <main class="main-content">
       <h1>📊 Dashboard</h1>
       <div class="stats-grid">
-        <div class="stat-card"><span class="stat-value" id="totalOrders">0</span><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><span class="stat-value" id="totalRevenue">₹0</span><div class="stat-label">Total Revenue</div></div>
-        <div class="stat-card"><span class="stat-value" id="todayOrders">0</span><div class="stat-label">Today Orders</div></div>
-        <div class="stat-card"><span class="stat-value" id="pendingOrders">0</span><div class="stat-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-value" id="totalOrders">0</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-value" id="totalRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><div class="stat-value" id="todayOrders">0</div><div class="stat-label">Today Orders</div></div>
+        <div class="stat-card"><div class="stat-value" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
       </div>
       <h2 style="margin-bottom:16px;">📋 Recent Orders</h2>
       <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
@@ -66,16 +67,14 @@
   </div>
   <script src="/js/firebase.js"></script>
   <script>
-    db.collection('orders').orderBy('orderDate','desc').onSnapshot(snapshot=>{
-      const orders=[];snapshot.forEach(doc=>orders.push({id:doc.id,...doc.data()}));
-      const today=new Date().toISOString().split('T')[0];
+    db.collection('orders').orderBy('orderDate','desc').onSnapshot(s=>{
+      const orders=[],today=new Date().toISOString().split('T')[0];
+      s.forEach(d=>orders.push({id:d.id,...d.data()}));
       document.getElementById('totalOrders').textContent=orders.length;
-      document.getElementById('totalRevenue').textContent='₹'+orders.reduce((s,o)=>s+(Number(o.total)||0),0).toLocaleString('en-IN');
+      document.getElementById('totalRevenue').textContent='₹'+orders.reduce((a,o)=>a+(Number(o.total)||0),0).toLocaleString('en-IN');
       document.getElementById('todayOrders').textContent=orders.filter(o=>(o.orderDate||'').startsWith(today)).length;
       document.getElementById('pendingOrders').textContent=orders.filter(o=>o.status!=='delivered').length;
-      document.getElementById('recentOrders').innerHTML=orders.slice(0,10).map(o=>`
-        <tr><td style="font-family:monospace;color:#27ae60;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||'-'}</td><td>₹${(o.total||0).toLocaleString('en-IN')}</td><td><span class="status-badge status-${o.status||'received'}">${o.status||'received'}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>
-      `).join('');
+      document.getElementById('recentOrders').innerHTML=orders.slice(0,10).map(o=>`<tr><td style="font-family:monospace;color:#27ae60;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||'-'}</td><td>₹${(o.total||0).toLocaleString('en-IN')}</td><td><span class="badge badge-${o.status||'received'}">${o.status||'received'}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>`).join('');
     });
   </script>
 </body>
