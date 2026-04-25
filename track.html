@@ -2,283 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  
-  <!-- SEO Meta Tags -->
-  <title>Track Your Order | OK Mart Grocery Delivery</title>
-  <meta name="description" content="Track your OK Mart grocery order status. Check delivery status using your phone number.">
-  <meta name="robots" content="noindex, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Track Order | OK Mart</title>
   <meta name="theme-color" content="#2ecc71">
-  
-  <!-- CSS -->
   <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/track.css">
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/css/tracking.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .container{max-width:480px;margin:0 auto;padding:20px 16px 100px}
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    .back-btn{width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;border:1px solid #e5e7eb}
+    h1{font-size:1.4rem;font-weight:700}
+    .search-card{background:white;border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);margin-bottom:20px}
+    .input-group{display:flex;gap:10px;margin-bottom:10px}
+    .input-group input{flex:1;padding:14px 16px;border:1.5px solid #e5e7eb;border-radius:14px;font-size:.95rem}
+    .input-group input:focus{outline:none;border-color:#2ecc71}
+    .track-btn{width:100%;padding:14px;background:#2ecc71;color:white;border:none;border-radius:14px;font-weight:700;font-size:1rem;cursor:pointer}
+    .or-divider{text-align:center;color:#6b7280;font-size:.85rem;margin:12px 0}
+    .result-card{background:white;border-radius:20px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);margin-bottom:16px;display:none}
+    .order-id{font-weight:700;color:#27ae60;font-family:monospace;font-size:1rem;margin-bottom:8px}
+    .customer-info{font-size:.9rem;color:#6b7280;margin-bottom:12px}
+    .progress-steps{display:flex;align-items:center;justify-content:space-between;margin:20px 0}
+    .step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+    .step-icon{width:36px;height:36px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .step.completed .step-icon{background:#2ecc71}
+    .step.active .step-icon{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.2)}
+    .step-label{font-size:.65rem;color:#6b7280;text-align:center}
+    .step.completed .step-label,.step.active .step-label{color:#1a1e2b;font-weight:600}
+    .progress-line{width:20px;height:2px;background:#e5e7eb;margin:0 4px 20px}
+    .progress-line.completed{background:#2ecc71}
+    .items-section{margin-top:16px}
+    .items-section h3{font-size:1rem;margin-bottom:10px}
+    .item-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb;font-size:.9rem}
+    .total-row{display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:1.1rem;margin-top:8px;border-top:1px solid #e5e7eb}
+    .status-badge{padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;display:inline-block}
+    .status-received{background:#fef3c7;color:#92400e}
+    .status-preparing{background:#dbeafe;color:#1e40af}
+    .status-outfordelivery{background:#d1fae5;color:#065f46}
+    .status-delivered{background:#e0e7ff;color:#3730a3}
+    .no-result{text-align:center;padding:40px;color:#6b7280;display:none}
+    .multiple-orders{margin-top:16px}
+    .order-card-mini{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer}
+  </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="app-header track-header">
-    <div class="header-container">
-      <div class="header-left">
-        <a href="/index.html" class="back-button" aria-label="back to home">
-          <span class="back-icon">←</span>
-        </a>
-        <h1 class="page-title">Track Order</h1>
+  <div class="container">
+    <div class="header">
+      <a href="/index.html" class="back-btn">←</a>
+      <h1>Track Your Order</h1>
+    </div>
+    
+    <div class="search-card">
+      <div class="input-group">
+        <input type="text" id="trackInput" placeholder="Phone Number or Order ID">
       </div>
-      <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="view cart">
-        <span class="cart-icon">🛍️</span>
-        <span class="cart-badge" id="cartCountPlaceholder">0</span>
-      </a>
+      <button class="track-btn" onclick="trackOrder()">🔍 Track Order</button>
+      <p class="or-divider">Enter 10-digit phone number or Order ID</p>
     </div>
-  </header>
-
-  <main class="track-main">
-    <!-- Search Section -->
-    <div class="track-search-section">
-      <div class="track-icon">📦</div>
-      <h2 class="track-heading">Track Your Order</h2>
-      <p class="track-subheading">Enter your phone number to check order status</p>
-      
-      <div class="track-input-group">
-        <div class="phone-input-wrapper">
-          <span class="country-code">+91</span>
-          <input 
-            type="tel" 
-            id="trackPhoneInput" 
-            class="track-phone-input" 
-            placeholder="Enter 10-digit number"
-            maxlength="10"
-            pattern="[0-9]{10}"
-            autocomplete="tel"
-            inputmode="numeric"
-          >
-        </div>
-        <button class="track-search-btn" id="trackSearchBtn">
-          <span>🔍</span> Track Order
-        </button>
-      </div>
-      
-      <p class="track-hint">Try demo: 9876543210</p>
-    </div>
-
-    <!-- Loading State -->
-    <div class="track-loading" id="trackLoading" style="display: none;">
-      <div class="loading-spinner"></div>
-      <p>Searching for your order...</p>
-    </div>
-
-    <!-- Result Section (Hidden by default) -->
-    <div class="track-result-section" id="trackResultSection" style="display: none;">
-      
-      <!-- Order Found -->
-      <div class="order-found-card" id="orderFoundCard">
-        <div class="order-header">
-          <div class="order-id-section">
-            <span class="order-label">Order ID</span>
-            <span class="order-id-value" id="displayOrderId">#OKM123456</span>
-          </div>
-          <div class="order-date-section">
-            <span class="order-date" id="displayOrderDate">Placed on 15 Jan 2024</span>
-          </div>
-        </div>
-
-        <!-- Status Progress Bar -->
-        <div class="status-progress-container">
-          <div class="progress-steps" id="progressSteps">
-            <div class="progress-step" data-status="received">
-              <div class="step-icon">📋</div>
-              <span class="step-label">Received</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-status="preparing">
-              <div class="step-icon">🔪</div>
-              <span class="step-label">Preparing</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-status="outfordelivery">
-              <div class="step-icon">🚚</div>
-              <span class="step-label">Out for Delivery</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-status="delivered">
-              <div class="step-icon">✅</div>
-              <span class="step-label">Delivered</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Current Status Badge -->
-        <div class="current-status-section">
-          <span class="status-label">Current Status:</span>
-          <span class="status-badge" id="displayOrderStatus">Order Received</span>
-        </div>
-
-        <!-- Estimated Delivery -->
-        <div class="delivery-estimate-section" id="deliveryEstimateSection">
-          <span class="estimate-icon">🕐</span>
-          <span class="estimate-text" id="deliveryEstimateText">Estimated delivery: 15-20 mins</span>
-        </div>
-
-        <!-- Order Items -->
-        <div class="order-items-section">
-          <h3 class="items-title">📋 Order Items</h3>
-          <div class="order-items-list" id="orderItemsList">
-            <!-- Items will be populated here -->
-          </div>
-        </div>
-
-        <!-- Customer Details -->
-        <div class="customer-details-section">
-          <div class="detail-row">
-            <span class="detail-label">👤 Name:</span>
-            <span class="detail-value" id="displayCustomerName">-</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">📱 Phone:</span>
-            <span class="detail-value" id="displayCustomerPhone">-</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">🏠 Address:</span>
-            <span class="detail-value" id="displayCustomerAddress">-</span>
-          </div>
-        </div>
-
-        <!-- Order Total -->
-        <div class="order-total-section">
-          <div class="total-row">
-            <span class="total-label">Total Amount:</span>
-            <span class="total-value" id="displayOrderTotal">₹0</span>
-          </div>
-          <div class="total-row payment-row">
-            <span class="total-label">Payment Method:</span>
-            <span class="total-value" id="displayPaymentMethod">Cash on Delivery</span>
-          </div>
-        </div>
-
-        <!-- Need Help -->
-        <div class="need-help-section">
-          <a href="tel:+919982239821" class="help-link">
-            <span>📞</span> Need help? Call us
-          </a>
-          <a href="https://wa.me/919982239821" class="help-link" target="_blank">
-            <span>💬</span> WhatsApp
-          </a>
-        </div>
-      </div>
-
-      <!-- No Order Found -->
-      <div class="no-order-card" id="noOrderCard" style="display: none;">
-        <div class="no-order-icon">🔍</div>
-        <h3 class="no-order-title">No Order Found</h3>
-        <p class="no-order-message" id="noOrderMessage">We couldn't find any order with this phone number.</p>
-        <div class="no-order-actions">
-          <a href="/index.html" class="btn-primary">Start Shopping →</a>
-          <button class="btn-secondary" id="tryAgainBtn">Try Again</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Orders (Optional) -->
-    <div class="recent-orders-section" id="recentOrdersSection">
-      <!-- Will show recent orders from same device if any -->
-    </div>
-  </main>
-
-  <!-- STICKY BOTTOM BAR -->
-  <div class="sticky-bottom-bar">
-    <div class="bottom-bar-inner">
-      <a href="/index.html" class="bottom-nav-item">
-        <span>🏠</span>
-        <span>Home</span>
-      </a>
-      <a href="/search.html" class="bottom-nav-item">
-        <span>🔍</span>
-        <span>Search</span>
-      </a>
-      <a href="/track.html" class="bottom-nav-item active">
-        <span>📦</span>
-        <span>Track</span>
-      </a>
-      <a href="/cart.html" class="bottom-nav-item">
-        <span>🛒</span>
-        <span>Cart</span>
-      </a>
-    </div>
+    
+    <div class="result-card" id="resultCard"></div>
+    <div class="no-result" id="noResult">No orders found</div>
+    <div class="multiple-orders" id="multipleOrders"></div>
   </div>
 
-  <!-- Floating Call Button -->
-  <a href="tel:+919982239821" class="floating-call-btn" aria-label="Call for support">
-    <span class="call-icon">📞</span>
-  </a>
-
-  <script src="/js/common.js"></script>
-  <script src="/js/track.js"></script>
-  
-  <!-- Demo Data for Testing -->
+  <script src="/js/firebase.js"></script>
   <script>
-    // Initialize demo order if no orders exist
-    (function() {
-      const existingOrders = localStorage.getItem('okmart_orders');
-      if (!existingOrders) {
-        const demoOrders = [
-          {
-            orderId: 'OKM-2024-001',
-            phone: '9876543210',
-            customerName: 'Rahul Sharma',
-            customerAddress: 'A-101, Green Park, Near Metro Station, New Delhi - 110001',
-            items: [
-              { name: 'Amul Taaza Milk', quantity: 2, price: 26 },
-              { name: 'Amul Butter', quantity: 1, price: 54 },
-              { name: 'Mother Dairy Paneer', quantity: 1, price: 85 },
-              { name: 'Lay\'s Classic Salted', quantity: 2, price: 20 }
-            ],
-            total: 231,
-            paymentMethod: 'Cash on Delivery',
-            status: 'preparing',
-            orderDate: new Date().toISOString(),
-            estimatedDelivery: '15-20 mins'
-          },
-          {
-            orderId: 'OKM-2024-002',
-            phone: '9876543210',
-            customerName: 'Rahul Sharma',
-            customerAddress: 'A-101, Green Park, Near Metro Station, New Delhi - 110001',
-            items: [
-              { name: 'Fortune Sunflower Oil', quantity: 1, price: 115 },
-              { name: 'Tata Sampann Toor Dal', quantity: 1, price: 150 }
-            ],
-            total: 265,
-            paymentMethod: 'UPI',
-            status: 'delivered',
-            orderDate: new Date(Date.now() - 86400000).toISOString(),
-            estimatedDelivery: 'Delivered'
-          }
-        ];
-        localStorage.setItem('okmart_orders', JSON.stringify(demoOrders));
-        console.log('✅ Demo orders initialized');
-      }
-    })();
-  </script>
-  <!-- PWA Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          console.log('[PWA] Service Worker registered:', registration.scope);
-        })
-        .catch((error) => {
-          console.log('[PWA] Service Worker registration failed:', error);
+    const statusSteps = ['received', 'preparing', 'outfordelivery', 'delivered'];
+    const statusIcons = { received: '📋', preparing: '🔪', outfordelivery: '🚚', delivered: '✅' };
+    const statusLabels = { received: 'Received', preparing: 'Preparing', outfordelivery: 'Out for Delivery', delivered: 'Delivered' };
+    
+    async function trackOrder() {
+      const input = document.getElementById('trackInput').value.trim();
+      if (!input) return alert('Please enter phone number or Order ID');
+      
+      let results = [];
+      const resultCard = document.getElementById('resultCard');
+      const noResult = document.getElementById('noResult');
+      const multipleOrders = document.getElementById('multipleOrders');
+      
+      resultCard.style.display = 'none';
+      noResult.style.display = 'none';
+      multipleOrders.innerHTML = '';
+      
+      // Try by order ID first
+      const orderDoc = await db.collection('orders').doc(input).get();
+      if (orderDoc.exists) {
+        results = [{ id: orderDoc.id, ...orderDoc.data() }];
+      } else {
+        // Search by phone
+        const snapshot = await db.collection('orders').where('phone', '==', input).get();
+        snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
+        
+        // Also try customerPhone field
+        const snapshot2 = await db.collection('orders').where('customerPhone', '==', input).get();
+        snapshot2.forEach(doc => {
+          if (!results.find(r => r.id === doc.id)) results.push({ id: doc.id, ...doc.data() });
         });
-    });
-  }
-</script>
-
-<!-- PWA Install Prompt -->
-<script src="/js/pwa.js"></script>
+        
+        // Search by orderId field
+        const snapshot3 = await db.collection('orders').where('orderId', '==', input).get();
+        snapshot3.forEach(doc => {
+          if (!results.find(r => r.id === doc.id)) results.push({ id: doc.id, ...doc.data() });
+        });
+      }
+      
+      if (results.length === 0) { noResult.style.display = 'block'; return; }
+      
+      if (results.length === 1) {
+        showOrderDetail(results[0], resultCard);
+      } else {
+        showMultipleOrders(results, multipleOrders);
+      }
+    }
+    
+    function showOrderDetail(order, container) {
+      const currentIdx = statusSteps.indexOf(order.status || 'received');
+      
+      const stepsHTML = statusSteps.map((step, idx) => {
+        let stepClass = '';
+        if (idx < currentIdx) stepClass = 'completed';
+        else if (idx === currentIdx) stepClass = 'active';
+        return `<div class="step ${stepClass}"><div class="step-icon">${statusIcons[step]}</div><span class="step-label">${statusLabels[step]}</span></div>${idx < 3 ? `<div class="progress-line ${idx < currentIdx ? 'completed' : ''}"></div>` : ''}`;
+      }).join('');
+      
+      const itemsHTML = (order.items || []).map(item => `<div class="item-row"><span>${item.name} x${item.quantity}</span><span style="font-weight:600;">₹${item.price * item.quantity}</span></div>`).join('');
+      
+      container.innerHTML = `
+        <div class="order-id">#${order.orderId || order.id.slice(-8).toUpperCase()}</div>
+        <div class="customer-info">👤 ${order.customerName || order.name || 'Customer'} · 📱 ${order.phone || order.customerPhone || '-'}</div>
+        <span class="status-badge status-${order.status || 'received'}">${statusLabels[order.status] || 'Received'}</span>
+        <div class="progress-steps">${stepsHTML}</div>
+        <div class="items-section"><h3>📋 Items</h3>${itemsHTML}</div>
+        <div class="total-row"><span>Total</span><span>₹${Number(order.total || 0).toLocaleString('en-IN')}</span></div>
+      `;
+      container.style.display = 'block';
+    }
+    
+    function showMultipleOrders(orders, container) {
+      container.innerHTML = '<h3 style="margin-bottom:12px;">📋 Multiple Orders Found</h3>' + 
+        orders.map(order => `
+          <div class="order-card-mini" onclick="showOrderDetail(${JSON.stringify(order).replace(/"/g, '&quot;')}, document.getElementById('resultCard'))">
+            <strong>#${order.orderId || order.id.slice(-8).toUpperCase()}</strong> · 
+            <span class="status-badge status-${order.status || 'received'}">${statusLabels[order.status] || 'Received'}</span> · 
+            ₹${Number(order.total || 0).toLocaleString('en-IN')}
+          </div>
+        `).join('');
+    }
+  </script>
 </body>
 </html>
