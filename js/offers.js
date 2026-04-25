@@ -1,320 +1,171 @@
 // ===== OK MART - OFFERS.JS =====
-// Complete offers page with coupons, deals, and bank offers
+// Dynamic offers page with Firebase coupons and banners
 
 (function() {
   'use strict';
   
-  const CART_KEY = 'okmart_cart';
+  // ========== STATE ==========
+  let allBanners = [];
+  let bannerIndex = 0;
+  let bannerInterval;
   
-  // Offers data
-  const offersData = {
-    offers: [
-      {
-        id: 'o1',
-        title: 'SAVE20',
-        description: 'Get ₹20 off on orders above ₹250',
-        code: 'SAVE20',
-        minOrder: 250,
-        type: 'discount',
-        badge: '🔥 Hot Deal',
-        badgeColor: '#ef4444',
-        expiry: 'Valid till 31st Dec',
-        terms: 'Applicable on all products. Cannot be combined.',
-        icon: '💰'
-      },
-      {
-        id: 'o2',
-        title: 'FREE ONION',
-        description: '1kg Onion FREE on orders above ₹199',
-        code: 'ONIONFREE',
-        minOrder: 199,
-        type: 'freebie',
-        badge: '🎁 Freebie',
-        badgeColor: '#f59e0b',
-        expiry: 'Auto-applied at checkout',
-        terms: 'Free onion added automatically when cart reaches ₹199.',
-        icon: '🧅'
-      },
-      {
-        id: 'o3',
-        title: 'FIRST50',
-        description: '₹50 off on your first order above ₹299',
-        code: 'FIRST50',
-        minOrder: 299,
-        type: 'discount',
-        badge: '👋 New User',
-        badgeColor: '#3b82f6',
-        expiry: 'First order only',
-        terms: 'Valid only for new customers. One time use.',
-        icon: '🎁'
-      },
-      {
-        id: 'o4',
-        title: 'FREEDELIVERY',
-        description: 'FREE delivery on orders above ₹199',
-        code: 'FREEDEL199',
-        minOrder: 199,
-        type: 'delivery',
-        badge: '🚚 Free Delivery',
-        badgeColor: '#10b981',
-        expiry: 'Ongoing offer',
-        terms: 'Automatically applied at checkout.',
-        icon: '🚚'
-      },
-      {
-        id: 'o5',
-        title: 'WEEKEND10',
-        description: '10% off on weekends (Sat-Sun)',
-        code: 'WEEKEND10',
-        minOrder: 300,
-        type: 'discount',
-        badge: '📅 Weekend',
-        badgeColor: '#8b5cf6',
-        expiry: 'Sat & Sun only',
-        terms: 'Maximum discount ₹50. Valid only on weekends.',
-        icon: '📅'
-      },
-      {
-        id: 'o6',
-        title: 'B1G1 SNACKS',
-        description: 'Buy 1 Get 1 Free on selected snacks',
-        code: 'B1G1SNACK',
-        minOrder: 99,
-        type: 'bogo',
-        badge: '🎉 BOGO',
-        badgeColor: '#ec4899',
-        expiry: 'Limited time',
-        terms: 'Applicable on selected snacks only.',
-        icon: '🍿'
-      },
-      {
-        id: 'o7',
-        title: 'COMBO100',
-        description: '₹100 off on orders above ₹499',
-        code: 'COMBO100',
-        minOrder: 499,
-        type: 'discount',
-        badge: '💎 Premium',
-        badgeColor: '#06b6d4',
-        expiry: 'Limited period',
-        terms: 'Applicable on all products.',
-        icon: '💎'
-      },
-      {
-        id: 'o8',
-        title: 'DAIRY5',
-        description: '5% cashback on dairy products',
-        code: 'DAIRY5',
-        minOrder: 150,
-        type: 'cashback',
-        badge: '🥛 Dairy',
-        badgeColor: '#14b8a6',
-        expiry: 'Auto-applied',
-        terms: 'Cashback credited as wallet points.',
-        icon: '🥛'
-      }
-    ]
-  };
-  
-  const bankOffers = [
-    { bank: 'HDFC Bank', offer: '10% instant discount', discount: 'Up to ₹100', icon: '🏦' },
-    { bank: 'ICICI Bank', offer: '5% cashback on grocery', discount: 'Up to ₹75', icon: '💳' },
-    { bank: 'SBI Credit Card', offer: '₹50 off on ₹500+', discount: '₹50 OFF', icon: '🏧' },
-    { bank: 'Paytm Wallet', offer: '5% cashback', discount: 'Up to ₹50', icon: '📱' }
-  ];
-  
-  // DOM Elements
-  const offersLoadingState = document.getElementById('offersLoadingState');
-  const offersGrid = document.getElementById('offersGrid');
-  const emptyState = document.getElementById('emptyState');
-  const offersCount = document.getElementById('offersCount');
-  const bankOffersList = document.getElementById('bankOffersList');
+  // ========== DOM ELEMENTS ==========
+  const bannerTrack = document.getElementById('bannerTrack');
+  const bannerDots = document.getElementById('bannerDots');
+  const couponsList = document.getElementById('couponsList');
+  const couponCount = document.getElementById('couponCount');
   const toastMessage = document.getElementById('toastMessage');
   
-  // ---------- RENDERING ----------
-  
-  function renderOfferCard(offer) {
-    const card = document.createElement('div');
-    card.className = 'offer-card';
-    card.dataset.offerId = offer.id;
-    
-    card.innerHTML = `
-      ${offer.badge ? `<span class="offer-badge" style="background: ${offer.badgeColor};">${offer.badge}</span>` : ''}
+  // ========== LOAD BANNERS ==========
+  async function loadBanners() {
+    try {
+      const snap = await db.collection('banners').where('active', '==', true).get();
+      allBanners = [];
+      snap.forEach(doc => allBanners.push({ id: doc.id, ...doc.data() }));
       
-      <div class="offer-header">
-        <div class="offer-icon">${offer.icon}</div>
-        <div class="offer-title-section">
-          <h3 class="offer-title">${offer.title}</h3>
-          <span class="offer-type">${offer.type}</span>
-        </div>
-      </div>
+      if (allBanners.length === 0) {
+        // Default banners if none in Firebase
+        allBanners = [
+          { title: '₹199 Shopping Offer', image: 'https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' },
+          { title: 'Free Delivery', image: 'https://images.pexels.com/photos/1639556/pexels-photo-1639556.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' },
+          { title: 'SAVE20 Coupon', image: 'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' }
+        ];
+      }
       
-      <p class="offer-description">${offer.description}</p>
+      renderBanners();
+      startCarousel();
       
-      <div class="offer-details">
-        <span class="detail-item">
-          <span class="detail-icon">🛒</span>
-          Min. Order: ₹${offer.minOrder}
-        </span>
-        ${offer.code ? `
-          <span class="detail-item">
-            <span class="detail-icon">🏷️</span>
-            Code: ${offer.code}
-          </span>
-        ` : ''}
-      </div>
-      
-      ${offer.code ? `
-        <div class="coupon-section">
-          <div class="coupon-code" data-code="${offer.code}">${offer.code}</div>
-          <button class="copy-btn" data-code="${offer.code}">
-            <span>📋</span> Copy
-          </button>
-        </div>
-      ` : ''}
-      
-      <div class="offer-footer">
-        <span class="offer-expiry">
-          <span>⏰</span> ${offer.expiry}
-        </span>
-        <span class="offer-terms" title="${offer.terms}">Terms</span>
-      </div>
-    `;
-    
-    const couponCode = card.querySelector('.coupon-code');
-    const copyBtn = card.querySelector('.copy-btn');
-    
-    if (couponCode) {
-      couponCode.addEventListener('click', () => copyCode(offer.code, copyBtn));
+    } catch (err) {
+      console.error('Banners error:', err);
+      bannerTrack.innerHTML = '<p style="padding:20px;text-align:center;">🎉 Special Offers Available!</p>';
     }
-    
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => copyCode(offer.code, copyBtn));
-    }
-    
-    return card;
   }
   
-  function renderBankOfferCard(bank) {
-    const card = document.createElement('div');
-    card.className = 'bank-offer-card';
-    card.innerHTML = `
-      <div class="bank-icon">${bank.icon}</div>
-      <div class="bank-info">
-        <div class="bank-name">${bank.bank}</div>
-        <div class="bank-offer-text">${bank.offer}</div>
+  function renderBanners() {
+    bannerTrack.innerHTML = allBanners.map((b, i) => `
+      <div class="banner-slide">
+        <a href="${b.link || '/offers.html'}">
+          <img src="${b.image}" alt="${b.title}" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='https://via.placeholder.com/600x150?text=OK+Mart+Offer'">
+        </a>
       </div>
-      <span class="bank-discount">${bank.discount}</span>
-    `;
-    return card;
+    `).join('');
+    
+    bannerDots.innerHTML = allBanners.map((_, i) => `
+      <span class="banner-dot ${i === 0 ? 'active' : ''}" onclick="window.goToBanner(${i})"></span>
+    `).join('');
   }
   
-  function renderOffers() {
-    const offers = offersData.offers;
+  function goToSlide(index) {
+    bannerIndex = index;
+    bannerTrack.style.transform = `translateX(-${bannerIndex * 100}%)`;
+    document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === bannerIndex));
+  }
+  
+  window.goToBanner = goToSlide;
+  
+  function startCarousel() {
+    if (allBanners.length <= 1) return;
+    bannerInterval = setInterval(() => {
+      bannerIndex = (bannerIndex + 1) % allBanners.length;
+      goToSlide(bannerIndex);
+    }, 3000);
     
-    if (offersLoadingState) offersLoadingState.style.display = 'none';
-    
-    if (offers.length === 0) {
-      offersGrid.style.display = 'none';
-      emptyState.style.display = 'block';
-      if (offersCount) offersCount.textContent = '0 active offers';
-      return;
-    }
-    
-    offersGrid.style.display = 'flex';
-    emptyState.style.display = 'none';
-    
-    if (offersCount) {
-      offersCount.textContent = `${offers.length} active offer${offers.length !== 1 ? 's' : ''}`;
-    }
-    
-    offersGrid.innerHTML = '';
-    offers.forEach(offer => {
-      offersGrid.appendChild(renderOfferCard(offer));
+    // Touch swipe
+    let startX = 0;
+    bannerTrack.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+    bannerTrack.addEventListener('touchend', e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) bannerIndex = (bannerIndex + 1) % allBanners.length;
+        else bannerIndex = (bannerIndex - 1 + allBanners.length) % allBanners.length;
+        goToSlide(bannerIndex);
+      }
     });
   }
   
-  function renderBankOffers() {
-    if (bankOffersList) {
-      bankOffersList.innerHTML = '';
-      bankOffers.forEach(bank => {
-        bankOffersList.appendChild(renderBankOfferCard(bank));
+  // ========== LOAD COUPONS ==========
+  async function loadCoupons() {
+    try {
+      const snap = await db.collection('offers').where('active', '==', true).get();
+      
+      couponCount.textContent = snap.size + ' active';
+      
+      if (snap.empty) {
+        couponsList.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px;">No active coupons at the moment</p>';
+        return;
+      }
+      
+      couponsList.innerHTML = '';
+      snap.forEach(doc => {
+        const o = doc.data();
+        const card = document.createElement('div');
+        card.className = 'coupon-card';
+        card.innerHTML = `
+          <div class="coupon-header">
+            <span class="coupon-code-display">${o.code}</span>
+            <span class="coupon-type-badge">${o.type === 'flat' ? '₹' + o.discount + ' OFF' : o.discount + '% OFF'}</span>
+          </div>
+          <div class="coupon-description">${o.description || 'Save on your order'}</div>
+          <div class="coupon-details">
+            <span class="coupon-detail-item">🛒 Min: ₹${o.minOrder}</span>
+            ${o.maxDiscount ? `<span class="coupon-detail-item">📌 Max: ₹${o.maxDiscount}</span>` : ''}
+          </div>
+          <div class="coupon-actions">
+            <button class="copy-coupon-btn" data-code="${o.code}">📋 Copy Code</button>
+            <a href="/cart.html" class="apply-btn">Apply →</a>
+          </div>
+        `;
+        
+        card.querySelector('.copy-coupon-btn').addEventListener('click', function() {
+          copyCode(o.code, this);
+        });
+        
+        couponsList.appendChild(card);
       });
+      
+    } catch (err) {
+      console.error('Coupons error:', err);
+      couponsList.innerHTML = '<p style="text-align:center;color:var(--muted);">Could not load coupons</p>';
     }
   }
-  
-  // ---------- COPY FUNCTIONALITY ----------
   
   async function copyCode(code, button) {
-    if (!code) return;
-    
     try {
       await navigator.clipboard.writeText(code);
-      showToast(`Code "${code}" copied!`, 'success');
-      
-      if (button) {
-        const originalHTML = button.innerHTML;
-        button.classList.add('copied');
-        button.innerHTML = '<span>✓</span> Copied!';
-        
-        setTimeout(() => {
-          button.classList.remove('copied');
-          button.innerHTML = originalHTML;
-        }, 2000);
-      }
-    } catch (err) {
-      const textarea = document.createElement('textarea');
-      textarea.value = code;
-      document.body.appendChild(textarea);
-      textarea.select();
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
       document.execCommand('copy');
-      document.body.removeChild(textarea);
-      
-      showToast(`Code "${code}" copied!`, 'success');
-      
-      if (button) {
-        const originalHTML = button.innerHTML;
-        button.classList.add('copied');
-        button.innerHTML = '<span>✓</span> Copied!';
-        
-        setTimeout(() => {
-          button.classList.remove('copied');
-          button.innerHTML = originalHTML;
-        }, 2000);
-      }
+      document.body.removeChild(ta);
     }
+    
+    button.textContent = '✓ Copied!';
+    button.classList.add('copied');
+    setTimeout(() => {
+      button.textContent = '📋 Copy Code';
+      button.classList.remove('copied');
+    }, 2000);
+    
+    showToast(`Code "${code}" copied!`, 'success');
   }
   
-  // ---------- TOAST ----------
-  
-  function showToast(message, type = 'info') {
-    if (!toastMessage) return;
-    
-    toastMessage.textContent = message;
-    toastMessage.className = `toast-message ${type}`;
-    toastMessage.classList.add('show');
-    
-    setTimeout(() => toastMessage.classList.remove('show'), 2500);
+  // ========== TOAST ==========
+  function showToast(msg, type = 'info') {
+    const toast = toastMessage;
+    toast.textContent = msg;
+    toast.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
+    toast.style.color = 'white';
+    toast.classList.add('show');
+    clearTimeout(window._t);
+    window._t = setTimeout(() => toast.classList.remove('show'), 2500);
   }
   
-  // ---------- CART BADGE ----------
-  
-  function updateCartBadge() {
-    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.querySelectorAll('.cart-badge').forEach(b => {
-      if (b) b.textContent = total;
-    });
-  }
-  
-  // ---------- INITIALIZATION ----------
-  
-  function init() {
-    renderOffers();
-    renderBankOffers();
-    updateCartBadge();
-    
-    console.log('✅ Offers page initialized |', offersData.offers.length, 'offers');
+  // ========== INIT ==========
+  async function init() {
+    await Promise.all([loadBanners(), loadCoupons()]);
+    console.log('✅ Offers page ready');
   }
   
   init();
