@@ -1,334 +1,253 @@
 // ===== OK MART - PROFILE.JS =====
-// Complete profile page functionality
+// Complete user profile with orders, wishlist, offers, support
 
 (function() {
   'use strict';
   
-  const CART_KEY = 'okmart_cart';
   const USER_KEY = 'okmart_user';
   const WISHLIST_KEY = 'okmart_wishlist';
-  const ORDERS_KEY = 'okmart_orders';
+  const CART_KEY = 'okmart_cart';
   const WHATSAPP_NUMBER = '919982239821';
   
+  // ========== STATE ==========
   let userData = {};
+  let openSection = null;
   
-  // DOM Elements
+  // ========== DOM ELEMENTS ==========
   const profileName = document.getElementById('profileName');
   const profilePhone = document.getElementById('profilePhone');
-  const avatarIcon = document.getElementById('avatarIcon');
-  const editProfileBtn = document.getElementById('editProfileBtn');
-  const editProfileModal = document.getElementById('editProfileModal');
-  const closeEditModal = document.getElementById('closeEditModal');
-  const saveProfileBtn = document.getElementById('saveProfileBtn');
-  const editName = document.getElementById('editName');
-  const editPhone = document.getElementById('editPhone');
-  const editEmail = document.getElementById('editEmail');
+  const profileAvatar = document.getElementById('profileAvatar');
+  const statOrders = document.getElementById('statOrders');
+  const statWishlist = document.getElementById('statWishlist');
+  const statSaved = document.getElementById('statSaved');
+  const wishlistBadge = document.getElementById('wishlistBadge');
   
-  const addressModal = document.getElementById('addressModal');
-  const closeAddressModal = document.getElementById('closeAddressModal');
-  const savedAddressesList = document.getElementById('savedAddressesList');
-  const addAddressBtn = document.getElementById('addAddressBtn');
+  const ordersList = document.getElementById('ordersList');
+  const ordersLoading = document.getElementById('ordersLoading');
+  const noOrders = document.getElementById('noOrders');
+  const ordersContent = document.getElementById('ordersContent');
   
-  const totalOrders = document.getElementById('totalOrders');
-  const totalSaved = document.getElementById('totalSaved');
-  const memberSince = document.getElementById('memberSince');
-  const menuOrdersCount = document.getElementById('menuOrdersCount');
-  const menuWishlistCount = document.getElementById('menuWishlistCount');
-  const quickWishlistCount = document.getElementById('quickWishlistCount');
+  const offersList = document.getElementById('offersList');
+  const offersLoading = document.getElementById('offersLoading');
+  const offersContent = document.getElementById('offersContent');
   
-  const savedAddressBtn = document.getElementById('savedAddressBtn');
-  const paymentMethodsBtn = document.getElementById('paymentMethodsBtn');
-  const helpSupportBtn = document.getElementById('helpSupportBtn');
-  const aboutBtn = document.getElementById('aboutBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  
+  const editModal = document.getElementById('editModal');
   const toastMessage = document.getElementById('toastMessage');
   
-  // Quick action cards
-  const quickActionCards = document.querySelectorAll('.quick-action-card');
-  
-  // ---------- DATA LOADING ----------
-  
+  // ========== USER DATA ==========
   function loadUserData() {
     const stored = localStorage.getItem(USER_KEY);
-    userData = stored ? JSON.parse(stored) : { name: '', phone: '', email: '', createdAt: new Date().toISOString() };
-    return userData;
-  }
-  
-  function saveUserData(data) {
-    userData = { ...userData, ...data };
-    if (!userData.createdAt) {
-      userData.createdAt = new Date().toISOString();
-    }
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    updateProfileUI();
-  }
-  
-  function loadWishlist() {
-    const stored = localStorage.getItem(WISHLIST_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-  
-  function loadOrders() {
-    const stored = localStorage.getItem(ORDERS_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-  
-  // ---------- UI UPDATES ----------
-  
-  function updateProfileUI() {
-    if (profileName) {
-      const name = userData.name || 'Guest User';
-      profileName.textContent = name;
-      avatarIcon.textContent = name.charAt(0).toUpperCase() || '👤';
-    }
-    if (profilePhone) {
-      profilePhone.textContent = userData.phone ? `+91 ${userData.phone}` : 'Add phone number';
+    if (stored) {
+      userData = JSON.parse(stored);
+      profileName.textContent = userData.name || 'Guest User';
+      profilePhone.textContent = userData.phone ? '+91 ' + userData.phone : 'Add your details';
+      profileAvatar.textContent = (userData.name || 'G').charAt(0).toUpperCase();
     }
   }
   
   function updateStats() {
-    const orders = loadOrders();
-    const wishlist = loadWishlist();
+    const wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+    const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+    const saved = orders.reduce((sum, o) => sum + (o.couponDiscount || 0) + ((o.subtotal || 0) - (o.total || 0) + (o.delivery || 0)), 0);
     
-    if (totalOrders) {
-      totalOrders.textContent = orders.length;
-    }
-    
-    if (menuOrdersCount) {
-      menuOrdersCount.textContent = orders.length;
-      menuOrdersCount.classList.toggle('visible', orders.length > 0);
-    }
-    
-    const wishlistCount = wishlist.length;
-    if (menuWishlistCount) {
-      menuWishlistCount.textContent = wishlistCount;
-      menuWishlistCount.classList.toggle('visible', wishlistCount > 0);
-    }
-    if (quickWishlistCount) {
-      quickWishlistCount.textContent = wishlistCount;
-      quickWishlistCount.classList.toggle('visible', wishlistCount > 0);
-    }
-    
-    // Calculate total saved
-    const totalSavedAmount = orders.reduce((sum, order) => {
-      return sum + (order.itemDiscount || 0) + (order.couponDiscount || 0);
-    }, 0);
-    if (totalSaved) {
-      totalSaved.textContent = `₹${totalSavedAmount}`;
-    }
-    
-    // Member since
-    if (memberSince && userData.createdAt) {
-      const date = new Date(userData.createdAt);
-      memberSince.textContent = date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
-    }
+    statOrders.textContent = orders.length;
+    statWishlist.textContent = wishlist.length;
+    statSaved.textContent = '₹' + Math.abs(Math.round(saved));
+    wishlistBadge.textContent = wishlist.length;
   }
   
-  function updateCartBadge() {
-    const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.querySelectorAll('.cart-badge').forEach(b => {
-      if (b) b.textContent = total;
-    });
-  }
+  // ========== MODAL ==========
+  document.getElementById('editProfileBtn').addEventListener('click', () => {
+    const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+    document.getElementById('editName').value = user.name || '';
+    document.getElementById('editPhone').value = user.phone || '';
+    document.getElementById('editAddress').value = user.address || '';
+    document.getElementById('editPincode').value = user.pincode || '';
+    editModal.classList.add('active');
+  });
   
-  // ---------- TOAST ----------
+  document.getElementById('closeModal').addEventListener('click', () => editModal.classList.remove('active'));
+  editModal.addEventListener('click', (e) => { if (e.target === editModal) editModal.classList.remove('active'); });
   
-  function showToast(message, type = 'info') {
-    if (!toastMessage) return;
+  document.getElementById('saveProfileBtn').addEventListener('click', () => {
+    const data = {
+      name: document.getElementById('editName').value.trim(),
+      phone: document.getElementById('editPhone').value.trim().replace(/\D/g, ''),
+      address: document.getElementById('editAddress').value.trim(),
+      pincode: document.getElementById('editPincode').value.trim()
+    };
     
-    toastMessage.textContent = message;
-    toastMessage.className = `toast-message ${type}`;
-    toastMessage.classList.add('show');
-    
-    setTimeout(() => {
-      toastMessage.classList.remove('show');
-    }, 2500);
-  }
-  
-  // ---------- MODAL FUNCTIONS ----------
-  
-  function openEditModal() {
-    editName.value = userData.name || '';
-    editPhone.value = userData.phone || '';
-    editEmail.value = userData.email || '';
-    editProfileModal.classList.add('active');
-  }
-  
-  function closeEditModalFunc() {
-    editProfileModal.classList.remove('active');
-  }
-  
-  function openAddressModal() {
-    renderSavedAddresses();
-    addressModal.classList.add('active');
-  }
-  
-  function closeAddressModalFunc() {
-    addressModal.classList.remove('active');
-  }
-  
-  function renderSavedAddresses() {
-    const addresses = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
-    
-    if (addresses.length === 0) {
-      savedAddressesList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No saved addresses yet</p>';
+    if (!data.name || !data.phone) {
+      showToast('Name and phone are required', 'error');
       return;
     }
     
-    savedAddressesList.innerHTML = '';
-    addresses.forEach((addr, index) => {
-      const addrEl = document.createElement('div');
-      addrEl.className = 'address-item';
-      addrEl.innerHTML = `
-        <span class="address-type">${addr.type || 'Home'}</span>
-        <div class="address-text">${addr.address}</div>
-        <div class="address-pincode">📮 ${addr.pincode}</div>
-      `;
-      savedAddressesList.appendChild(addrEl);
-    });
-  }
-  
-  function addNewAddress() {
-    const address = prompt('Enter your full address:');
-    if (address && address.trim()) {
-      const pincode = prompt('Enter pincode:');
-      if (pincode && /^\d{6}$/.test(pincode)) {
-        const addresses = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
-        addresses.push({
-          type: 'Home',
-          address: address.trim(),
-          pincode: pincode
-        });
-        localStorage.setItem('okmart_saved_addresses', JSON.stringify(addresses));
-        renderSavedAddresses();
-        showToast('Address saved!', 'success');
-      } else {
-        showToast('Invalid pincode', 'error');
-      }
-    }
-  }
-  
-  // ---------- WHATSAPP SUPPORT ----------
-  
-  function openWhatsAppSupport() {
-    const message = `Hello OK Mart,\n\nI need help with my account.\n\nName: ${userData.name || 'Guest'}\nPhone: ${userData.phone || 'Not provided'}\n\nPlease assist me.`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
-  }
-  
-  // ---------- LOGOUT ----------
-  
-  function handleLogout() {
-    if (confirm('Are you sure you want to logout? This will clear your profile data.')) {
-      localStorage.removeItem(USER_KEY);
-      userData = { name: '', phone: '', email: '' };
-      updateProfileUI();
-      showToast('Logged out successfully', 'success');
-      
-      setTimeout(() => {
-        window.location.href = '/index.html';
-      }, 800);
-    }
-  }
-  
-  // ---------- EVENT LISTENERS ----------
-  
-  // Edit Profile
-  if (editProfileBtn) editProfileBtn.addEventListener('click', openEditModal);
-  if (closeEditModal) closeEditModal.addEventListener('click', closeEditModalFunc);
-  if (editProfileModal) {
-    editProfileModal.addEventListener('click', (e) => {
-      if (e.target === editProfileModal) closeEditModalFunc();
-    });
-  }
-  
-  if (saveProfileBtn) {
-    saveProfileBtn.addEventListener('click', () => {
-      const name = editName.value.trim();
-      const phone = editPhone.value.trim().replace(/\D/g, '');
-      const email = editEmail.value.trim();
-      
-      if (!name) {
-        showToast('Please enter your name', 'error');
-        return;
-      }
-      
-      if (phone && !/^\d{10}$/.test(phone)) {
-        showToast('Invalid phone number', 'error');
-        return;
-      }
-      
-      saveUserData({ name, phone, email });
-      closeEditModalFunc();
-      showToast('Profile updated!', 'success');
-    });
-  }
-  
-  // Address Modal
-  if (savedAddressBtn) savedAddressBtn.addEventListener('click', openAddressModal);
-  if (closeAddressModal) closeAddressModal.addEventListener('click', closeAddressModalFunc);
-  if (addressModal) {
-    addressModal.addEventListener('click', (e) => {
-      if (e.target === addressModal) closeAddressModalFunc();
-    });
-  }
-  if (addAddressBtn) addAddressBtn.addEventListener('click', addNewAddress);
-  
-  // Quick Action Cards
-  quickActionCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const action = card.dataset.action;
-      
-      switch (action) {
-        case 'orders':
-          window.location.href = '/orders.html';
-          break;
-        case 'wishlist':
-          window.location.href = '/wishlist.html';
-          break;
-        case 'support':
-          openWhatsAppSupport();
-          break;
-        case 'offers':
-          window.location.href = '/offers.html';
-          break;
-      }
-    });
+    localStorage.setItem(USER_KEY, JSON.stringify(data));
+    loadUserData();
+    editModal.classList.remove('active');
+    showToast('Profile updated!', 'success');
   });
   
-  // Menu Items
-  if (helpSupportBtn) helpSupportBtn.addEventListener('click', openWhatsAppSupport);
-  if (paymentMethodsBtn) {
-    paymentMethodsBtn.addEventListener('click', () => {
-      showToast('Cash on Delivery & UPI available', 'info');
-    });
-  }
-  if (aboutBtn) {
-    aboutBtn.addEventListener('click', () => {
-      alert('OK Mart v2.0.0\nFresh groceries delivered in 10-12 minutes!\n\nContact: +91 99822 39821\n\nServing your neighborhood with love ❤️');
-    });
-  }
-  
-  // Logout
-  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-  
-  // ---------- INITIALIZATION ----------
-  
-  function init() {
-    loadUserData();
+  // ========== SECTION TOGGLE ==========
+  window.toggleSection = function(section) {
+    const content = document.getElementById(section + 'Content');
+    const arrow = document.getElementById(section + 'Arrow');
     
-    // Save user if first time
-    if (!userData.createdAt) {
-      userData.createdAt = new Date().toISOString();
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    if (content.style.display === 'none' || !content.style.display) {
+      content.style.display = 'block';
+      if (arrow) arrow.classList.add('open');
+      openSection = section;
+      
+      if (section === 'orders' && !ordersList.hasChildNodes()) loadOrders();
+      if (section === 'offers' && !offersList.hasChildNodes()) loadOffers();
+    } else {
+      content.style.display = 'none';
+      if (arrow) arrow.classList.remove('open');
+      openSection = null;
+    }
+  };
+  
+  window.scrollToSection = function(section) {
+    const el = document.getElementById(section + 'Section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => toggleSection(section), 300);
+    }
+  };
+  
+  // ========== LOAD ORDERS ==========
+  async function loadOrders() {
+    ordersLoading.style.display = 'block';
+    noOrders.style.display = 'none';
+    
+    const phone = userData.phone;
+    if (!phone) {
+      ordersLoading.style.display = 'none';
+      ordersList.innerHTML = '';
+      return;
     }
     
-    updateProfileUI();
-    updateStats();
-    updateCartBadge();
+    try {
+      // Fetch from Firebase
+      const snap1 = await db.collection('orders').where('customerPhone', '==', phone).get();
+      const allOrders = [];
+      snap1.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
+      
+      // Also check phone field
+      const snap2 = await db.collection('orders').where('phone', '==', phone).get();
+      snap2.forEach(doc => {
+        if (!allOrders.find(o => o.id === doc.id)) allOrders.push({ id: doc.id, ...doc.data() });
+      });
+      
+      // Merge with local orders
+      const localOrders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+      localOrders.forEach(o => {
+        if (!allOrders.find(a => a.orderId === o.orderId)) allOrders.push(o);
+      });
+      
+      allOrders.sort((a, b) => new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date));
+      
+      ordersLoading.style.display = 'none';
+      
+      if (allOrders.length === 0) {
+        noOrders.style.display = 'block';
+        return;
+      }
+      
+      ordersList.innerHTML = allOrders.slice(0, 10).map(order => {
+        const status = order.status || 'received';
+        return `
+          <div class="order-mini-card" onclick="window.location.href='/tracking.html?order=${order.orderId || ''}'">
+            <div class="order-mini-row">
+              <span class="order-mini-id">#${order.orderId || (order.id ? order.id.slice(-8).toUpperCase() : 'N/A')}</span>
+              <span class="order-mini-total">₹${Number(order.total || 0).toLocaleString('en-IN')}</span>
+            </div>
+            <div class="order-mini-row">
+              <span class="order-mini-date">${new Date(order.orderDate || order.date).toLocaleDateString('en-IN')}</span>
+              <span class="status-dot status-${status}">${status}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+    } catch (err) {
+      ordersLoading.style.display = 'none';
+      ordersList.innerHTML = '<p style="color:var(--muted);">Could not load orders</p>';
+    }
+  }
+  
+  // ========== LOAD OFFERS ==========
+  async function loadOffers() {
+    offersLoading.style.display = 'block';
     
-    console.log('✅ Profile page initialized');
+    try {
+      const snap = await db.collection('offers').where('active', '==', true).get();
+      offersLoading.style.display = 'none';
+      
+      if (snap.empty) {
+        offersList.innerHTML = '<p style="color:var(--muted);">No active offers</p>';
+        return;
+      }
+      
+      offersList.innerHTML = '';
+      snap.forEach(doc => {
+        const o = doc.data();
+        const card = document.createElement('div');
+        card.className = 'offer-mini-card';
+        card.innerHTML = `
+          <div>
+            <div class="offer-code">${o.code}</div>
+            <div class="offer-desc">${o.type === 'flat' ? '₹' + o.discount + ' OFF' : o.discount + '% OFF'} · Min ₹${o.minOrder}</div>
+          </div>
+          <span class="offer-value">${o.type === 'flat' ? '₹' + o.discount : o.discount + '%'}</span>
+        `;
+        offersList.appendChild(card);
+      });
+      
+    } catch (err) {
+      offersLoading.style.display = 'none';
+      offersList.innerHTML = '<p style="color:var(--muted);">Could not load offers</p>';
+    }
+  }
+  
+  // ========== SUPPORT & REFUND ==========
+  window.openSupport = function() {
+    const msg = 'Hello OK Mart,\n\nI need help with my account.\n\nPlease assist me.';
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+  
+  window.openRefund = function() {
+    const orderId = prompt('Enter your Order ID for complaint:');
+    if (orderId) {
+      const msg = `Hello OK Mart,\n\nI want to file a complaint/refund request.\n\n📋 Order ID: ${orderId}\n\nPlease look into this matter.`;
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  };
+  
+  // ========== LOGOUT ==========
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear your profile data?')) {
+      localStorage.removeItem(USER_KEY);
+      location.reload();
+    }
+  });
+  
+  // ========== TOAST ==========
+  function showToast(msg, type = 'info') {
+    const toast = toastMessage;
+    toast.textContent = msg;
+    toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#1a1e2b';
+    toast.style.color = 'white';
+    toast.classList.add('show');
+    clearTimeout(window._t);
+    window._t = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+  
+  // ========== INIT ==========
+  function init() {
+    loadUserData();
+    updateStats();
+    console.log('✅ Profile page ready');
   }
   
   init();
