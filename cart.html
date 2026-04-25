@@ -21,7 +21,7 @@
   <div class="app-container">
     
     <!-- ========== HEADER ========== -->
-    <header class="cart-header">
+    <header class="cart-page-header">
       <div class="header-inner">
         <a href="/index.html" class="back-btn">←</a>
         <h1 class="header-title">My Cart</h1>
@@ -32,17 +32,28 @@
     <!-- ========== MAIN CONTENT ========== -->
     <main class="cart-main">
       
-      <!-- Cart Items -->
+      <!-- Cart Items Section -->
       <div class="cart-items-section" id="cartItemsSection">
         <div class="cart-items-list" id="cartItemsList"></div>
       </div>
 
-      <!-- Empty Cart -->
+      <!-- Empty Cart State -->
       <div class="empty-cart" id="emptyCart" style="display: none;">
-        <span class="empty-icon">🛒</span>
+        <div class="empty-cart-icon">🛒</div>
         <h2>Your cart is empty</h2>
         <p>Looks like you haven't added anything yet</p>
-        <a href="/index.html" class="shop-now-btn">Shop Now →</a>
+        <a href="/index.html" class="shop-now-btn">Start Shopping →</a>
+        
+        <!-- Popular Products -->
+        <div class="popular-suggestions">
+          <h3>🔥 Popular Products</h3>
+          <div class="popular-grid" id="popularGrid">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Coupon Section -->
@@ -55,46 +66,66 @@
           <button id="applyCouponBtn">Apply</button>
         </div>
         <div class="coupon-message" id="couponMessage"></div>
-        <div class="applied-coupon" id="appliedCoupon" style="display: none;">
-          <span class="applied-code" id="appliedCode"></span>
-          <span class="applied-discount" id="appliedDiscount"></span>
-          <button class="remove-coupon" id="removeCouponBtn">✕</button>
+        
+        <!-- Applied Coupon Display -->
+        <div class="applied-coupon" id="appliedCouponDisplay" style="display: none;">
+          <div class="applied-coupon-info">
+            <span class="applied-code" id="appliedCode"></span>
+            <span class="applied-discount" id="appliedDiscount"></span>
+          </div>
+          <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
         </div>
       </div>
 
       <!-- Price Summary -->
       <div class="price-summary" id="priceSummary" style="display: none;">
         <h3>Bill Details</h3>
+        
         <div class="summary-row">
-          <span>Subtotal</span>
-          <span id="subtotal">₹0</span>
+          <span>MRP Total</span>
+          <span id="mrpTotal">₹0</span>
         </div>
-        <div class="summary-row" id="couponRow" style="display: none;">
-          <span style="color:#10b981;">Coupon Discount</span>
-          <span style="color:#10b981;" id="couponDiscount">-₹0</span>
+        
+        <div class="summary-row">
+          <span>Discount</span>
+          <span class="discount-value" id="itemDiscount">-₹0</span>
         </div>
+        
+        <div class="summary-row" id="couponDiscountRow" style="display: none;">
+          <span>Coupon Discount</span>
+          <span class="discount-value" id="couponDiscount">-₹0</span>
+        </div>
+        
         <div class="summary-row" id="freeOnionRow" style="display: none;">
           <span>🧅 Free Onion (1kg)</span>
-          <span style="color:#10b981;">FREE</span>
+          <span class="free-tag">FREE</span>
         </div>
+        
         <div class="summary-row">
           <span>Delivery Charge</span>
           <span id="deliveryCharge">₹20</span>
         </div>
+        
         <div class="summary-row total-row">
           <span>Total Amount</span>
           <span id="totalAmount">₹0</span>
         </div>
+        
         <div class="delivery-message" id="deliveryMessage"></div>
+        
+        <!-- Coupon Hint -->
+        <div class="coupon-hint" id="couponHint">
+          💡 Use code <strong>SAVE20</strong> for ₹20 off on ₹250+
+        </div>
       </div>
 
-      <!-- Recommended Products -->
+      <!-- Recommended Products (Upsell) -->
       <div class="recommended-section" id="recommendedSection">
         <div class="section-header">
           <h3>❤️ You may also like</h3>
         </div>
         <div class="recommended-slider" id="recommendedSlider">
-          <div class="loading-skeleton">
+          <div class="skeleton-scroll">
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
             <div class="skeleton-card"></div>
@@ -107,17 +138,30 @@
     <!-- ========== STICKY CHECKOUT BAR ========== -->
     <div class="sticky-checkout-bar" id="stickyCheckoutBar" style="display: none;">
       <div class="checkout-bar-inner">
-        <div class="checkout-total">
+        <div class="checkout-total-info">
           <span class="total-label">Total</span>
           <span class="total-value" id="barTotal">₹0</span>
+          <span class="total-items" id="barItems">0 items</span>
         </div>
-        <a href="/checkout.html" class="checkout-btn">
-          Proceed to Checkout →
-        </a>
+        <div class="checkout-actions">
+          <button class="add-more-btn" onclick="location.href='/index.html'">+ Add More</button>
+          <a href="/checkout.html" class="checkout-btn" id="checkoutBtn">
+            Place Order →
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- Toast -->
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item active">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast Notification -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
