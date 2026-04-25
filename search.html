@@ -2,124 +2,179 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <!-- SEO Meta Tags -->
   <title>Search Products | OK Mart</title>
+  <meta name="description" content="Search for groceries, dairy, snacks, fruits, vegetables and more at OK Mart. Fast delivery in 10-15 minutes.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/search.css">
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .container{max-width:480px;margin:0 auto;padding:0 16px 100px}
-    .search-header{display:flex;align-items:center;gap:8px;padding:10px 0;position:sticky;top:0;background:#f8fafc;z-index:10}
-    .back-btn{width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;border:1px solid #e5e7eb;flex-shrink:0}
-    .search-input-wrapper{flex:1;position:relative}
-    .search-input-wrapper input{width:100%;padding:14px 40px 14px 16px;border:1.5px solid #e5e7eb;border-radius:30px;font-size:.95rem}
-    .search-input-wrapper input:focus{outline:none;border-color:#2ecc71}
-    .clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.1rem;cursor:pointer;display:none}
-    .results-header{padding:16px 0;display:flex;justify-content:space-between;align-items:baseline}
-    .results-header h2{font-size:1.1rem}
-    .results-count{color:#6b7280;font-size:.85rem}
-    .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .empty-state{text-align:center;padding:60px 20px}
-    .empty-state span{font-size:3rem;opacity:.5;display:block;margin-bottom:16px}
-    .browse-btn{display:inline-block;margin-top:20px;background:#2ecc71;color:white;padding:12px 24px;border-radius:40px;text-decoration:none;font-weight:600}
-    .loading{text-align:center;padding:40px;color:#6b7280}
-    .spinner{width:36px;height:36px;border:3px solid #e5e7eb;border-top-color:#2ecc71;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="search-header">
-      <a href="/index.html" class="back-btn">←</a>
-      <div class="search-input-wrapper">
-        <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off" autofocus>
-        <button class="clear-btn" id="clearBtn">✕</button>
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- ========== HEADER ========== -->
+    <header class="search-page-header">
+      <div class="header-inner">
+        <a href="/index.html" class="back-btn" aria-label="Back">
+          <span>←</span>
+        </a>
+        <div class="search-input-wrapper">
+          <span class="search-icon-header">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input-header" 
+            placeholder="Search for milk, bread, snacks..."
+            autocomplete="off"
+            autofocus
+          >
+          <button class="clear-search-btn" id="clearSearchBtn" aria-label="Clear">✕</button>
+        </div>
+        <a href="/cart.html" class="cart-btn" aria-label="View Cart">
+          <span>🛒</span>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="search-main">
+      
+      <!-- Initial State -->
+      <div class="initial-state" id="initialState">
+        <div class="initial-icon">🔍</div>
+        <h2>Search for products</h2>
+        <p>Find groceries, dairy, snacks, and more</p>
+        
+        <!-- Trending Searches -->
+        <div class="trending-section">
+          <h3>📈 Trending Searches</h3>
+          <div class="trending-tags">
+            <span class="trending-tag" data-query="milk">🥛 Milk</span>
+            <span class="trending-tag" data-query="bread">🍞 Bread</span>
+            <span class="trending-tag" data-query="eggs">🥚 Eggs</span>
+            <span class="trending-tag" data-query="chips">🍟 Chips</span>
+            <span class="trending-tag" data-query="mango">🥭 Mango</span>
+            <span class="trending-tag" data-query="coke">🥤 Coke</span>
+            <span class="trending-tag" data-query="atta">🌾 Atta</span>
+            <span class="trending-tag" data-query="paneer">🧀 Paneer</span>
+          </div>
+        </div>
+
+        <!-- Quick Categories -->
+        <div class="quick-categories-section">
+          <h3>📂 Quick Categories</h3>
+          <div class="quick-categories-grid">
+            <a href="/categories/dairy.html" class="quick-cat-card">🥛<span>Dairy</span></a>
+            <a href="/categories/fruits.html" class="quick-cat-card">🍎<span>Fruits</span></a>
+            <a href="/categories/vegetables.html" class="quick-cat-card">🥕<span>Vegetables</span></a>
+            <a href="/categories/snacks.html" class="quick-cat-card">🍿<span>Snacks</span></a>
+            <a href="/categories/beverages.html" class="quick-cat-card">🥤<span>Drinks</span></a>
+            <a href="/categories/grocery.html" class="quick-cat-card">🧺<span>Grocery</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestions Dropdown -->
+      <div class="suggestions-panel" id="suggestionsPanel" style="display: none;">
+        <div class="suggestions-header">🔍 Suggestions</div>
+        <div class="suggestions-list" id="suggestionsList"></div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState" style="display: none;">
+        <div class="spinner"></div>
+        <p>Searching products...</p>
+      </div>
+
+      <!-- Search Results -->
+      <div class="search-results" id="searchResults" style="display: none;">
+        
+        <!-- Results Header -->
+        <div class="results-header-bar">
+          <h2 id="resultsTitle">Search Results</h2>
+          <span class="results-count" id="resultsCount">0 items</span>
+        </div>
+
+        <!-- Top Matches (Horizontal Slider) -->
+        <section class="slider-section" id="topMatchesSection" style="display: none;">
+          <h3 class="section-label">🎯 Top Matches</h3>
+          <div class="product-slider" id="topMatchesSlider"></div>
+        </section>
+
+        <!-- All Results Grid -->
+        <section class="grid-section" id="allResultsSection">
+          <h3 class="section-label">📋 All Results</h3>
+          <div class="product-grid" id="allResultsGrid"></div>
+        </section>
+
+        <!-- You May Also Like -->
+        <section class="slider-section" id="youMayLikeSection">
+          <h3 class="section-label">❤️ You May Also Like</h3>
+          <div class="product-slider" id="youMayLikeSlider"></div>
+        </section>
+      </div>
+
+      <!-- No Results -->
+      <div class="no-results" id="noResults" style="display: none;">
+        <span class="no-results-icon">🔍</span>
+        <h2>No products found</h2>
+        <p id="noResultsMessage">We couldn't find any products matching your search.</p>
+        
+        <div class="popular-section">
+          <h3>🔥 Popular Products</h3>
+          <div class="product-grid" id="popularGrid"></div>
+        </div>
+        
+        <a href="/index.html" class="browse-all-btn">Browse All Categories →</a>
+      </div>
+    </main>
+
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-icon">🛒</span>
+          <span class="cart-bar-count" id="barCartCount">0 items</span>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">View Cart · <span id="barCartTotal">₹0</span></a>
       </div>
     </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item active">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
     
-    <div class="loading" id="loading"><div class="spinner"></div><p>Searching...</p></div>
-    
-    <div id="resultsContent" style="display:none;">
-      <div class="results-header"><h2 id="resultsTitle">Search Results</h2><span class="results-count" id="resultsCount">0 items</span></div>
-      <div class="product-grid" id="productGrid"></div>
-    </div>
-    
-    <div class="empty-state" id="emptyState" style="display:none;">
-      <span>🔍</span><h2>No products found</h2><p>Try searching with a different term</p>
-      <a href="/index.html" class="browse-btn">Browse All Products →</a>
-    </div>
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const clearBtn = document.getElementById('clearBtn');
-    let allProducts = [];
-    let searchTimeout;
-    
-    // Load all products for client-side search
-    async function loadAllProducts() {
-      const snapshot = await db.collection('products').get();
-      allProducts = [];
-      snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
-    }
-    
-    function performSearch(query) {
-      searchInput.value = query;
-      clearBtn.style.display = query ? 'block' : 'none';
-      
-      if (!query || query.length < 2) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('resultsContent').style.display = 'none';
-        document.getElementById('emptyState').style.display = 'block';
-        return;
-      }
-      
-      document.getElementById('loading').style.display = 'block';
-      document.getElementById('resultsContent').style.display = 'none';
-      document.getElementById('emptyState').style.display = 'none';
-      
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        const q = query.toLowerCase();
-        const results = allProducts.filter(p => p.name.toLowerCase().includes(q) || (p.category && p.category.toLowerCase().includes(q)));
-        
-        document.getElementById('loading').style.display = 'none';
-        
-        if (results.length === 0) {
-          document.getElementById('emptyState').style.display = 'block';
-          return;
-        }
-        
-        document.getElementById('resultsContent').style.display = 'block';
-        document.getElementById('resultsCount').textContent = `${results.length} item${results.length !== 1 ? 's' : ''}`;
-        document.getElementById('resultsTitle').textContent = `Results for "${query}"`;
-        
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = '';
-        results.slice(0, 20).forEach(p => grid.appendChild(window.OKMart.renderProductCard(p)));
-      }, 300);
-    }
-    
-    searchInput.addEventListener('input', e => performSearch(e.target.value));
-    clearBtn.addEventListener('click', () => { searchInput.value = ''; clearBtn.style.display = 'none'; searchInput.focus(); });
-    
-    // Check URL params
-    const params = new URLSearchParams(location.search);
-    const urlQuery = params.get('query');
-    
-    async function init() {
-      await loadAllProducts();
-      if (urlQuery) performSearch(urlQuery);
-      else document.getElementById('loading').style.display = 'none';
-    }
-    init();
-  </script>
+  <script src="/js/search.js"></script>
 </body>
 </html>
