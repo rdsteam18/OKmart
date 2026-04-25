@@ -1,6 +1,4 @@
 // ===== OK MART - FIREBASE CONFIGURATION =====
-// Shared Firebase config for all admin pages
-
 const firebaseConfig = {
     apiKey: "AIzaSyDHvki4jXafwzLAXJSrLQt4QodiNi5JXCw",
     authDomain: "okmart-e6219.firebaseapp.com",
@@ -11,21 +9,11 @@ const firebaseConfig = {
     measurementId: "G-2497DJLP1Q"
   };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-// Initialize Firestore
 const db = firebase.firestore();
 
-// Enable offline persistence
 db.enablePersistence({ synchronizeTabs: true })
-  .then(() => console.log('🔥 Firestore offline persistence enabled'))
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code === 'unimplemented') {
-      console.warn('The current browser does not support offline persistence');
-    }
-  });
+  .then(() => console.log('🔥 Firestore persistence enabled'))
+  .catch(err => console.warn('Persistence:', err.code));
 
-console.log('✅ Firebase Admin initialized');
+console.log('✅ Firebase initialized');
