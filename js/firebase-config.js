@@ -1,6 +1,7 @@
 // ===== OK MART - FIREBASE CONFIGURATION =====
-// Replace with your Firebase project credentials
+// Add your Firebase project credentials here
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDHvki4jXafwzLAXJSrLQt4QodiNi5JXCw",
     authDomain: "okmart-e6219.firebaseapp.com",
@@ -14,12 +15,20 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Initialize Firestore
+// Initialize Cloud Firestore and get a reference to the service
 const db = firebase.firestore();
 
-// Enable offline persistence (optional)
-db.enablePersistence()
-  .then(() => console.log('🔥 Firebase connected with offline support'))
-  .catch((err) => console.log('Firebase persistence error:', err));
+// Enable offline persistence
+db.enablePersistence({ synchronizeTabs: true })
+  .then(() => {
+    console.log('🔥 Firestore offline persistence enabled');
+  })
+  .catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+    } else if (err.code === 'unimplemented') {
+      console.warn('The current browser does not support offline persistence');
+    }
+  });
 
 console.log('✅ Firebase initialized successfully');
