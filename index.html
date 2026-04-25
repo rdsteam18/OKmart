@@ -2,64 +2,196 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <title>OK Mart | Fresh Grocery Delivery</title>
-  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables. Fast delivery.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <!-- SEO Meta Tags -->
+  <title>OK Mart | Fresh Grocery Delivery in 10-15 Minutes</title>
+  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast delivery in 10-15 minutes. Free delivery on orders above ₹199.">
+  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits, vegetables, snacks, OK Mart">
   <meta name="theme-color" content="#2ecc71">
+  
+  <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <!-- App Container -->
   <div class="app-container">
+    
+    <!-- ========== HEADER ========== -->
     <header class="app-header">
-      <div class="header-container">
-        <a href="/index.html" class="logo-link"><span class="logo-text">🛒 OK Mart</span><span class="delivery-tag">10 min</span></a>
-        <div class="header-actions">
-          <a href="/profile.html" class="icon-link">👤</a>
-          <a href="/cart.html" class="cart-icon-link"><span class="cart-icon">🛒</span><span class="cart-badge" id="cartCountPlaceholder">0</span></a>
+      <!-- Location Bar -->
+      <div class="location-bar">
+        <div class="location-info">
+          <span class="location-icon">📍</span>
+          <div class="location-text">
+            <span class="delivery-time">Delivery in 10-15 mins</span>
+            <span class="location-address">Home ▼</span>
+          </div>
         </div>
+        <a href="/profile.html" class="profile-btn">👤</a>
+      </div>
+      
+      <!-- Search + Cart -->
+      <div class="header-actions">
+        <div class="search-bar" onclick="location.href='/search.html'">
+          <span class="search-icon">🔍</span>
+          <span class="search-placeholder">Search for grocery...</span>
+        </div>
+        <a href="/cart.html" class="cart-icon-link" aria-label="View Cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
       </div>
     </header>
 
+    <!-- ========== MAIN CONTENT ========== -->
     <main class="home-main">
-      <div class="search-container">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, snacks..." autocomplete="off">
+      
+      <!-- Category Pills -->
+      <div class="category-pills-container">
+        <div class="category-pills" id="categoryPills">
+          <div class="pill active" onclick="location.href='/categories/vegetables.html'">🥑 Veg</div>
+          <div class="pill" onclick="location.href='/categories/fruits.html'">🍎 Fruits</div>
+          <div class="pill" onclick="location.href='/categories/dairy.html'">🥛 Dairy</div>
+          <div class="pill" onclick="location.href='/categories/snacks.html'">🍿 Snacks</div>
+          <div class="pill" onclick="location.href='/categories/beverages.html'">🥤 Drinks</div>
+          <div class="pill" onclick="location.href='/categories/grocery.html'">🧺 Grocery</div>
+          <div class="pill" onclick="location.href='/categories/electronics.html'">📱 Electronics</div>
+          <div class="pill highlight" onclick="location.href='/offers.html'">🏷️ Offers</div>
         </div>
       </div>
 
-      <div class="banner-container">
-        <a href="/offers.html" class="banner-link">
-          <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Offers" class="banner-image">
-          <div class="banner-overlay"><span class="banner-tag">🔥 Limited Time</span><span class="banner-text">Up to 30% OFF</span></div>
-        </a>
+      <!-- Banner Carousel -->
+      <div class="banner-carousel" id="bannerCarousel">
+        <div class="banner-track" id="bannerTrack">
+          <div class="banner-slide">
+            <a href="/offers.html">
+              <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Free Onion Offer">
+              <div class="banner-overlay">
+                <span class="banner-tag">🎁 Freebie</span>
+                <span class="banner-title">1kg Onion FREE on ₹199+</span>
+                <span class="banner-subtitle">Shop Now →</span>
+              </div>
+            </a>
+          </div>
+          <div class="banner-slide">
+            <a href="/offers.html">
+              <img src="https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=600" alt="SAVE20 Coupon">
+              <div class="banner-overlay">
+                <span class="banner-tag">💰 Coupon</span>
+                <span class="banner-title">SAVE20 - ₹20 OFF on ₹250+</span>
+                <span class="banner-subtitle">Shop Now →</span>
+              </div>
+            </a>
+          </div>
+          <div class="banner-slide">
+            <a href="/offers.html">
+              <img src="https://images.pexels.com/photos/1639556/pexels-photo-1639556.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Free Delivery">
+              <div class="banner-overlay">
+                <span class="banner-tag">🚚 Delivery</span>
+                <span class="banner-title">FREE Delivery on ₹199+</span>
+                <span class="banner-subtitle">Shop Now →</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="banner-dots" id="bannerDots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </div>
 
-      <section class="category-section">
-        <h2 class="section-title">📂 Shop by Category</h2>
-        <div class="category-grid" id="categoryGrid">
-          <a href="/categories/dairy.html" class="category-item"><span class="category-emoji">🥛</span><span>Dairy</span></a>
-          <a href="/categories/fruits.html" class="category-item"><span class="category-emoji">🍎</span><span>Fruits</span></a>
-          <a href="/categories/vegetables.html" class="category-item"><span class="category-emoji">🥕</span><span>Vegetables</span></a>
-          <a href="/categories/snacks.html" class="category-item"><span class="category-emoji">🍿</span><span>Snacks</span></a>
-          <a href="/categories/beverages.html" class="category-item"><span class="category-emoji">🥤</span><span>Drinks</span></a>
-          <a href="/categories/grocery.html" class="category-item"><span class="category-emoji">🧺</span><span>Grocery</span></a>
-          <a href="/categories/electronics.html" class="category-item"><span class="category-emoji">📱</span><span>Electronics</span></a>
-          <a href="/offers.html" class="category-item highlight"><span class="category-emoji">🏷️</span><span>Offers</span></a>
+      <!-- Quick Info Cards -->
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-icon">🚚</span>
+          <div class="info-text">
+            <strong>Free Delivery</strong>
+            <span>On orders above ₹199</span>
+          </div>
         </div>
-      </section>
+        <div class="info-card highlight">
+          <span class="info-icon">💰</span>
+          <div class="info-text">
+            <strong>Get 10% OFF</strong>
+            <span>With Plus+ T&C Apply</span>
+          </div>
+        </div>
+      </div>
 
+      <!-- Products Section: You Might Need -->
       <section class="products-section">
-        <h2 class="section-title">🛒 All Products</h2>
-        <div class="product-grid" id="productGrid"><div class="loading-state"><div class="spinner"></div><p>Loading products...</p></div></div>
+        <div class="section-header">
+          <h2 class="section-title">🛒 You might need</h2>
+          <a href="/categories/all.html" class="see-all">See all ›</a>
+        </div>
+        <div class="product-slider" id="recommendedSlider">
+          <div class="loading-skeleton">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
       </section>
+
+      <!-- Products Section: Best Selling -->
+      <section class="products-section">
+        <div class="section-header">
+          <h2 class="section-title">🔥 Best Selling</h2>
+          <a href="/categories/all.html" class="see-all">View all ›</a>
+        </div>
+        <div class="product-grid-2col" id="bestsellerGrid">
+          <div class="loading-skeleton">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Section: Popular Picks -->
+      <section class="products-section">
+        <div class="section-header">
+          <h2 class="section-title">⭐ Popular Picks</h2>
+        </div>
+        <div class="product-slider" id="popularSlider">
+          <div class="loading-skeleton">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-icon">🛒</span>
+          <span class="cart-bar-count" id="barCartCount">0 items</span>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">
+          View Cart · <span id="barCartTotal">₹0</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item active">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
@@ -68,43 +200,25 @@
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
-    <div class="bottom-cart-bar" id="bottomCartBar" style="display:none;">
-      <div class="cart-bar-content">
-        <div class="cart-info"><span>🛒</span><span id="bottomCartCount">0 items</span></div>
-        <a href="/cart.html" class="checkout-btn">View Cart · <span id="bottomCartTotal">₹0</span></a>
-      </div>
-    </div>
-
+    <!-- ========== FLOATING BUTTONS ========== -->
     <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
     <a href="tel:+919982239821" class="fab-call">📞</a>
+
+    <!-- Toast -->
     <div class="toast-message" id="toastMessage"></div>
+    
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/home.js"></script>
+  
+  <!-- PWA -->
   <script>
-    // Load products from Firebase
-    async function loadProducts() {
-      const grid = document.getElementById('productGrid');
-      try {
-        const snapshot = await db.collection('products').limit(20).get();
-        grid.innerHTML = '';
-        if (snapshot.empty) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;">No products available</p>'; return; }
-        snapshot.forEach(doc => {
-          const p = { id: doc.id, ...doc.data() };
-          grid.appendChild(window.OKMart.renderProductCard(p));
-        });
-      } catch (err) {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;">Failed to load products</p>';
-      }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
-    
-    document.getElementById('searchInput').addEventListener('keydown', e => {
-      if (e.key === 'Enter') { const q = e.target.value.trim(); if (q) location.href = `/search.html?query=${encodeURIComponent(q)}`; }
-    });
-    
-    loadProducts();
-    window.OKMart.updateCartUI();
   </script>
 </body>
 </html>
