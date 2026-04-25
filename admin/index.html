@@ -6,473 +6,77 @@
   <title>Admin Dashboard | OK Mart</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
-  
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --info: #3b82f6;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    
-    .admin-container { display: flex; min-height: 100vh; }
-    
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: #1a1e2b;
-      color: white;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s;
-    }
-    
-    .sidebar-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    
-    .sidebar-nav { flex: 1; padding: 20px 0; }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,0.7);
-      text-decoration: none;
-      transition: all 0.15s;
-      font-weight: 500;
-    }
-    
-    .sidebar-nav a:hover,
-    .sidebar-nav a.active {
-      background: rgba(255,255,255,0.08);
-      color: white;
-    }
-    
-    .sidebar-nav a.active { border-left: 3px solid var(--primary); }
-    
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-    
-    .logout-btn {
-      width: 100%; padding: 12px;
-      background: rgba(255,255,255,0.1);
-      border: none; color: white;
-      border-radius: 10px; cursor: pointer;
-      font-weight: 500; font-size: 0.9rem;
-    }
-    
-    .logout-btn:hover { background: rgba(239,68,68,0.2); }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 260px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 { font-size: 1.8rem; font-weight: 800; }
-    
-    .date-display {
-      color: var(--muted);
-      font-size: 0.95rem;
-      font-weight: 500;
-      background: var(--card);
-      padding: 8px 16px;
-      border-radius: 40px;
-      border: 1px solid var(--border);
-    }
-    
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    
-    .stat-card {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      border: 1px solid var(--border);
-      transition: transform 0.2s;
-    }
-    
-    .stat-card:hover { transform: translateY(-2px); }
-    
-    .stat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    
-    .stat-icon {
-      width: 52px; height: 52px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-    }
-    
-    .stat-icon.orders { background: #dbeafe; }
-    .stat-icon.today { background: #d1fae5; }
-    .stat-icon.revenue { background: #fef3c7; }
-    .stat-icon.pending { background: #fee2e2; }
-    
-    .stat-change {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-    }
-    
-    .stat-change.up { background: #d1fae5; color: #065f46; }
-    .stat-change.neutral { background: #f3f4f6; color: #4b5563; }
-    
-    .stat-value {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--text);
-      display: block;
-      line-height: 1.1;
-    }
-    
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-      margin-top: 6px;
-    }
-    
-    /* Quick Stats Row */
-    .quick-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-    
-    .quick-stat-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      border: 1px solid var(--border);
-      text-align: center;
-    }
-    
-    .quick-stat-value {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text);
-      display: block;
-    }
-    
-    .quick-stat-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    
-    /* Recent Orders */
-    .section-card {
-      background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      border: 1px solid var(--border);
-      margin-bottom: 24px;
-    }
-    
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    
-    .section-header h2 { font-size: 1.2rem; font-weight: 700; }
-    
-    .view-all {
-      color: var(--primary-dark);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    
-    .view-all:hover { text-decoration: underline; }
-    
-    /* Table */
-    .table-wrapper { overflow-x: auto; }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    th {
-      text-align: left;
-      padding: 14px 16px;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--muted);
-      border-bottom: 2px solid var(--border);
-      background: var(--bg);
-    }
-    
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-    
-    .status-badge {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-    
-    .status-received { background: #fef3c7; color: #92400e; }
-    .status-preparing { background: #dbeafe; color: #1e40af; }
-    .status-outfordelivery { background: #d1fae5; color: #065f46; }
-    .status-delivered { background: #e0e7ff; color: #3730a3; }
-    .status-cancelled { background: #fee2e2; color: #991b1b; }
-    
-    .no-data { text-align: center; color: var(--muted); padding: 30px; }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .quick-stats { grid-template-columns: repeat(2, 1fr); }
-    }
-    
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { margin-left: 0; padding: 16px; }
-      .mobile-header { display: flex; }
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .quick-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .stat-card { padding: 16px; }
-      .stat-value { font-size: 1.6rem; }
-      .page-header h1 { font-size: 1.4rem; }
-    }
-    
-    @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .admin-container{display:flex;min-height:100vh}
+    .sidebar{width:260px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-header{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-logo{font-size:1.3rem;font-weight:700}
+    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:600}
+    .sidebar-nav{flex:1;padding:20px 0}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
+    .sidebar-nav a.active,.sidebar-nav a:hover{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a.active{border-left:3px solid #2ecc71}
+    .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+    .logout-btn{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:260px;padding:24px}
+    h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+    .stat-card{background:white;border-radius:20px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .stat-value{font-size:2rem;font-weight:800}
+    .stat-label{color:#6b7280;font-size:.85rem;margin-top:4px}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden}
+    th{text-align:left;padding:14px 16px;background:#f8fafc;font-size:.75rem;text-transform:uppercase;color:#6b7280}
+    td{padding:14px 16px;border-bottom:1px solid #e5e7eb;font-size:.9rem}
+    .status-badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+    .status-received{background:#fef3c7;color:#92400e}
+    .status-preparing{background:#dbeafe;color:#1e40af}
+    .status-outfordelivery{background:#d1fae5;color:#065f46}
+    .status-delivered{background:#e0e7ff;color:#3730a3}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
+  </style>
 </head>
 <body>
   <div class="admin-container">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-logo">🛒 OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
+    <aside class="sidebar">
+      <div class="sidebar-header"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html" class="active">📊 Dashboard</a>
         <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
-        <a href="/index.html" target="_blank">🏠 View Store</a>
+        <a href="offers.html">🏷️ Offers</a>
       </nav>
-      <div class="sidebar-footer">
-        <button class="logout-btn" onclick="location.href='/index.html'">🚪 Exit Admin</button>
-      </div>
+      <div class="sidebar-footer"><button class="logout-btn" onclick="location.href='/index.html'">🚪 Exit</button></div>
     </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">OK Mart Admin</span>
-      <span></span>
-    </div>
-
-    <!-- Main Content -->
     <main class="main-content">
-      
-      <!-- Page Header -->
-      <div class="page-header">
-        <h1>📊 Dashboard</h1>
-        <span class="date-display" id="currentDate"></span>
-      </div>
-
-      <!-- Stats Cards -->
+      <h1>📊 Dashboard</h1>
       <div class="stats-grid">
-        <!-- Total Orders -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon orders">📋</div>
-            <span class="stat-change up">All Time</span>
-          </div>
-          <span class="stat-value" id="totalOrders">0</span>
-          <span class="stat-label">Total Orders</span>
-        </div>
-        
-        <!-- Total Revenue -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon revenue">💰</div>
-            <span class="stat-change up">Gross</span>
-          </div>
-          <span class="stat-value" id="totalRevenue">₹0</span>
-          <span class="stat-label">Total Revenue</span>
-        </div>
-        
-        <!-- Today's Orders -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon today">📅</div>
-            <span class="stat-change up">Today</span>
-          </div>
-          <span class="stat-value" id="todayOrders">0</span>
-          <span class="stat-label">Today's Orders</span>
-        </div>
-        
-        <!-- Pending Orders -->
-        <div class="stat-card">
-          <div class="stat-header">
-            <div class="stat-icon pending">⏳</div>
-            <span class="stat-change neutral">Active</span>
-          </div>
-          <span class="stat-value" id="pendingOrders">0</span>
-          <span class="stat-label">Pending Orders</span>
-        </div>
+        <div class="stat-card"><span class="stat-value" id="totalOrders">0</span><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><span class="stat-value" id="totalRevenue">₹0</span><div class="stat-label">Total Revenue</div></div>
+        <div class="stat-card"><span class="stat-value" id="todayOrders">0</span><div class="stat-label">Today Orders</div></div>
+        <div class="stat-card"><span class="stat-value" id="pendingOrders">0</span><div class="stat-label">Pending</div></div>
       </div>
-
-      <!-- Quick Stats -->
-      <div class="quick-stats">
-        <div class="quick-stat-card">
-          <span class="quick-stat-value" id="todayRevenue">₹0</span>
-          <span class="quick-stat-label">Today's Revenue</span>
-        </div>
-        <div class="quick-stat-card">
-          <span class="quick-stat-value" id="avgOrderValue">₹0</span>
-          <span class="quick-stat-label">Avg Order Value</span>
-        </div>
-        <div class="quick-stat-card">
-          <span class="quick-stat-value" id="deliveredCount">0</span>
-          <span class="quick-stat-label">Delivered</span>
-        </div>
-        <div class="quick-stat-card">
-          <span class="quick-stat-value" id="outForDelivery">0</span>
-          <span class="quick-stat-label">Out for Delivery</span>
-        </div>
-      </div>
-
-      <!-- Recent Orders Table -->
-      <div class="section-card">
-        <div class="section-header">
-          <h2>📋 Recent Orders</h2>
-          <a href="orders.html" class="view-all">View All →</a>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Phone</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="recentOrdersTable">
-              <tr><td colspan="6" class="no-data">Loading orders...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+      <h2 style="margin-bottom:16px;">📋 Recent Orders</h2>
+      <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
     </main>
   </div>
-
-  <!-- Firebase Config -->
   <script src="/js/firebase.js"></script>
-  
-  <!-- Dashboard JavaScript -->
-  <script src="/js/admin-dashboard.js"></script>
+  <script>
+    db.collection('orders').orderBy('orderDate','desc').onSnapshot(snapshot=>{
+      const orders=[];snapshot.forEach(doc=>orders.push({id:doc.id,...doc.data()}));
+      const today=new Date().toISOString().split('T')[0];
+      document.getElementById('totalOrders').textContent=orders.length;
+      document.getElementById('totalRevenue').textContent='₹'+orders.reduce((s,o)=>s+(Number(o.total)||0),0).toLocaleString('en-IN');
+      document.getElementById('todayOrders').textContent=orders.filter(o=>(o.orderDate||'').startsWith(today)).length;
+      document.getElementById('pendingOrders').textContent=orders.filter(o=>o.status!=='delivered').length;
+      document.getElementById('recentOrders').innerHTML=orders.slice(0,10).map(o=>`
+        <tr><td style="font-family:monospace;color:#27ae60;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||'-'}</td><td>₹${(o.total||0).toLocaleString('en-IN')}</td><td><span class="status-badge status-${o.status||'received'}">${o.status||'received'}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>
+      `).join('');
+    });
+  </script>
 </body>
 </html>
