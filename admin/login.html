@@ -17,6 +17,7 @@
     :root {
       --primary: #2ecc71;
       --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1a1e2b;
@@ -125,7 +126,7 @@
     
     .input-wrapper input {
       width: 100%;
-      padding: 14px 48px 14px 16px;
+      padding: 14px 48px 14px 44px;
       background: var(--bg);
       border: 2px solid var(--border);
       border-radius: 14px;
@@ -145,6 +146,16 @@
     .input-wrapper input.error {
       border-color: var(--danger);
       box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      font-size: 1.1rem;
     }
     
     /* Password Toggle */
@@ -206,6 +217,10 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     
     .login-btn:hover {
@@ -233,7 +248,6 @@
       border-top-color: white;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
-      margin-right: 8px;
     }
     
     .login-btn.loading .btn-spinner {
@@ -242,6 +256,10 @@
     
     .login-btn.loading .btn-text {
       display: none;
+    }
+    
+    .login-btn.success {
+      background: #10b981;
     }
     
     @keyframes spin {
@@ -275,6 +293,37 @@
     
     .back-link:hover {
       color: var(--primary-dark);
+    }
+    
+    /* Remember Me */
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    
+    .remember-me input {
+      accent-color: var(--primary);
+    }
+    
+    .forgot-link {
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .forgot-link:hover {
+      text-decoration: underline;
     }
     
     /* Responsive */
@@ -315,11 +364,11 @@
     
     <!-- Title -->
     <h1 class="login-title">OK Mart Admin</h1>
-    <p class="login-subtitle">Enter your credentials to continue</p>
+    <p class="login-subtitle">Secure admin panel access</p>
     
     <!-- Error Message -->
     <div class="error-message" id="errorMessage">
-      Invalid username or password
+      Invalid username or password. Please try again.
     </div>
     
     <!-- Login Form -->
@@ -329,6 +378,7 @@
       <div class="form-group">
         <label for="username">Username</label>
         <div class="input-wrapper">
+          <span class="input-icon">👤</span>
           <input 
             type="text" 
             id="username" 
@@ -336,8 +386,6 @@
             required 
             autocomplete="off"
           >
-          <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;">👤</span>
-          <input type="text" id="username" style="padding-left:44px;" placeholder="Enter your username" required>
         </div>
       </div>
       
@@ -345,19 +393,26 @@
       <div class="form-group">
         <label for="password">Password</label>
         <div class="input-wrapper">
+          <span class="input-icon">🔒</span>
           <input 
             type="password" 
             id="password" 
             placeholder="Enter your password" 
             required 
             autocomplete="off"
-            style="padding-left:44px;padding-right:48px;"
           >
-          <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;">🔒</span>
           <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">
             👁️
           </button>
         </div>
+      </div>
+      
+      <!-- Remember Me -->
+      <div class="remember-row">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMe"> Remember me
+        </label>
+        <a href="#" class="forgot-link" onclick="alert('Contact superadmin to reset password')">Forgot?</a>
       </div>
       
       <!-- Login Button -->
@@ -370,7 +425,7 @@
     
     <!-- Security Notice -->
     <p class="security-notice">
-      <span>🔒</span> Secure admin access only
+      <span>🔒</span> Authorized personnel only · Protected access
     </p>
     
     <!-- Back to Store -->
