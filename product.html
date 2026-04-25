@@ -2,134 +2,217 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <!-- SEO Meta Tags -->
   <title>Product Details | OK Mart</title>
+  <meta name="description" content="Buy fresh groceries online at OK Mart. Fast delivery in 10-15 minutes.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Open Graph for social sharing -->
+  <meta property="og:type" content="product">
+  <meta property="og:url" id="ogUrl" content="">
+  <meta property="og:title" id="ogTitle" content="">
+  <meta property="og:description" id="ogDescription" content="">
+  <meta property="og:image" id="ogImage" content="">
+  
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/product.css">
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .container{max-width:480px;margin:0 auto;padding:0 16px 100px}
-    .header{display:flex;align-items:center;gap:12px;padding:12px 0;position:sticky;top:0;background:#f8fafc;z-index:10}
-    .back-btn{width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;border:1px solid #e5e7eb}
-    h1{font-size:1.3rem;font-weight:700}
-    .product-image{width:100%;border-radius:24px;margin-bottom:20px;aspect-ratio:1;object-fit:cover;background:#f1f5f9}
-    .product-name{font-size:1.5rem;font-weight:800;margin-bottom:4px}
-    .product-unit{color:#6b7280;font-size:.9rem;display:block;margin-bottom:16px}
-    .price-section{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-    .current-price{font-size:1.8rem;font-weight:800}
-    .mrp-price{font-size:1rem;color:#6b7280;text-decoration:line-through}
-    .discount-badge{background:#fee2e2;color:#dc2626;padding:4px 12px;border-radius:20px;font-weight:700;font-size:.85rem}
-    .description{color:#6b7280;margin-bottom:20px;line-height:1.6}
-    .quantity-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;margin-bottom:20px}
-    .quantity-control{display:flex;align-items:center;gap:8px;background:#f8fafc;padding:4px;border-radius:40px}
-    .qty-btn{width:44px;height:44px;border-radius:50%;background:white;border:1.5px solid #e5e7eb;font-size:1.5rem;font-weight:600;color:#2ecc71;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .qty-num{min-width:36px;text-align:center;font-weight:700;font-size:1.1rem}
-    .add-to-cart-btn{width:100%;padding:18px;background:#2ecc71;color:white;border:none;border-radius:60px;font-weight:700;font-size:1.1rem;cursor:pointer;margin-bottom:20px;box-shadow:0 8px 20px rgba(46,204,113,.25)}
-    .add-to-cart-btn:active{transform:scale(.97)}
-    .related-section{margin-top:30px}
-    .related-section h3{font-size:1.1rem;margin-bottom:14px}
-    .related-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .loading{text-align:center;padding:80px;color:#6b7280}
-    .spinner{width:40px;height:40px;border:3px solid #e5e7eb;border-top-color:#2ecc71;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header"><a href="javascript:history.back()" class="back-btn">←</a><h1>Product Details</h1></div>
+  <!-- App Container -->
+  <div class="app-container">
     
-    <div class="loading" id="loading"><div class="spinner"></div><p>Loading product...</p></div>
-    
-    <div id="productContent" style="display:none;">
-      <img id="productImage" class="product-image" src="" alt="">
-      <h1 id="productName" class="product-name"></h1>
-      <span id="productUnit" class="product-unit"></span>
-      <div class="price-section">
-        <span id="currentPrice" class="current-price"></span>
-        <span id="mrpPrice" class="mrp-price"></span>
-        <span id="discountBadge" class="discount-badge" style="display:none;"></span>
-      </div>
-      <p id="description" class="description"></p>
-      <div class="quantity-row">
-        <span style="font-weight:700;">Quantity</span>
-        <div class="quantity-control">
-          <button class="qty-btn" onclick="changeQty(-1)">−</button>
-          <span class="qty-num" id="quantity">1</span>
-          <button class="qty-btn" onclick="changeQty(1)">+</button>
+    <!-- ========== HEADER ========== -->
+    <header class="product-header">
+      <div class="header-inner">
+        <button class="back-btn" onclick="history.back()" aria-label="Back">
+          <span>←</span>
+        </button>
+        <h1 class="header-title">Product Details</h1>
+        <div class="header-actions">
+          <button class="header-wishlist-btn" id="headerWishlistBtn" aria-label="Wishlist">
+            <span id="headerWishlistIcon">🤍</span>
+          </button>
+          <button class="header-share-btn" id="headerShareBtn" aria-label="Share">
+            <span>📤</span>
+          </button>
+          <a href="/cart.html" class="cart-btn" aria-label="View Cart">
+            <span>🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
         </div>
       </div>
-      <button class="add-to-cart-btn" id="addToCartBtn">Add to Cart · <span id="itemTotal">₹0</span></button>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="product-main">
       
-      <div class="related-section">
-        <h3>Related Products</h3>
-        <div class="related-grid" id="relatedGrid"></div>
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading product details...</p>
+      </div>
+
+      <!-- Product Content -->
+      <div class="product-content" id="productContent" style="display: none;">
+        
+        <!-- Product Image -->
+        <div class="product-image-container">
+          <img id="productImage" src="" alt="" class="product-image-main" loading="eager">
+          <div class="image-badges">
+            <span class="delivery-badge">🚚 12 min delivery</span>
+            <span class="stock-badge" id="stockBadge">In Stock</span>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info-section">
+          <h1 id="productName" class="product-title"></h1>
+          <span id="productUnit" class="product-unit"></span>
+          
+          <!-- Rating -->
+          <div class="rating-row">
+            <span class="stars">★★★★½</span>
+            <span class="rating-value">4.5</span>
+            <span class="rating-count">(500+ ratings)</span>
+          </div>
+
+          <!-- Price -->
+          <div class="price-section">
+            <div class="price-main">
+              <span id="productPrice" class="current-price"></span>
+              <span id="productMrp" class="mrp-price"></span>
+            </div>
+            <span id="discountBadge" class="discount-badge-large"></span>
+          </div>
+
+          <!-- Savings -->
+          <div class="savings-info" id="savingsInfo" style="display: none;">
+            You save <span id="savingsAmount">₹0</span> on this item
+          </div>
+
+          <!-- Quantity Selector -->
+          <div class="quantity-section">
+            <span class="quantity-label">Quantity</span>
+            <div class="quantity-controls">
+              <button class="qty-btn" id="qtyMinus" aria-label="Decrease">−</button>
+              <span class="qty-number" id="qtyNumber">1</span>
+              <button class="qty-btn" id="qtyPlus" aria-label="Increase">+</button>
+            </div>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button class="add-to-cart-btn" id="addToCartBtn">
+            <span class="btn-icon">🛒</span>
+            <span class="btn-text">Add to Cart</span>
+            <span class="btn-price">· <span id="itemTotal">₹0</span></span>
+          </button>
+
+          <!-- Delivery Info -->
+          <div class="delivery-info-cards">
+            <div class="delivery-card">
+              <span>🚚</span>
+              <div>
+                <strong>Free Delivery</strong>
+                <p>On orders above ₹199</p>
+              </div>
+            </div>
+            <div class="delivery-card">
+              <span>⏱️</span>
+              <div>
+                <strong>10-15 mins</strong>
+                <p>Fast delivery</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Satisfaction Guarantee -->
+          <div class="guarantee-section">
+            <div class="guarantee-item"><span>✓</span> 100% Satisfaction</div>
+            <div class="guarantee-item"><span>🔄</span> Easy Returns</div>
+            <div class="guarantee-item"><span>📦</span> Fresh Products</div>
+          </div>
+
+          <!-- Description -->
+          <div class="description-section">
+            <h3>📝 Product Description</h3>
+            <p id="productDescription">Fresh and high-quality product sourced directly from trusted suppliers.</p>
+          </div>
+        </div>
+
+        <!-- Related Products -->
+        <section class="related-section">
+          <div class="section-header">
+            <h3>❤️ You might also like</h3>
+            <a href="/index.html" class="view-all">View All ›</a>
+          </div>
+          <div class="related-slider" id="relatedSlider">
+            <div class="loading-skeleton">
+              <div class="skeleton-card"></div>
+              <div class="skeleton-card"></div>
+              <div class="skeleton-card"></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Error State -->
+      <div class="error-state" id="errorState" style="display: none;">
+        <span class="error-icon">🔍</span>
+        <h2>Product Not Found</h2>
+        <p>The product you're looking for doesn't exist or has been removed.</p>
+        <div class="error-actions">
+          <a href="/index.html" class="browse-btn">Browse Products</a>
+          <button class="go-back-btn" onclick="history.back()">Go Back</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ========== STICKY BOTTOM BAR ========== -->
+    <div class="sticky-bottom-bar" id="stickyBottomBar">
+      <div class="sticky-product-info">
+        <span class="sticky-product-name" id="stickyProductName"></span>
+        <span class="sticky-product-price" id="stickyProductPrice"></span>
+      </div>
+      <button class="sticky-add-btn" id="stickyAddBtn">
+        ADD · <span id="stickyItemTotal">₹0</span>
+      </button>
+    </div>
+
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-icon">🛒</span>
+          <span class="cart-bar-count" id="barCartCount">0 items</span>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">View Cart · <span id="barCartTotal">₹0</span></a>
       </div>
     </div>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
+    
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script>
-    let product = null;
-    let qty = 1;
-    const params = new URLSearchParams(location.search);
-    const productId = params.get('id');
-    
-    async function loadProduct() {
-      if (!productId) { document.getElementById('loading').innerHTML = '<p>Product not found</p>'; return; }
-      try {
-        const doc = await db.collection('products').doc(productId).get();
-        if (!doc.exists) { document.getElementById('loading').innerHTML = '<p>Product not found</p>'; return; }
-        product = { id: doc.id, ...doc.data() };
-        renderProduct();
-        
-        // Load related
-        const related = await db.collection('products').where('category', '==', product.category || 'dairy').limit(4).get();
-        const relatedGrid = document.getElementById('relatedGrid');
-        relatedGrid.innerHTML = '';
-        related.forEach(doc => {
-          if (doc.id !== product.id) relatedGrid.appendChild(window.OKMart.renderProductCard({ id: doc.id, ...doc.data() }));
-        });
-      } catch (err) { document.getElementById('loading').innerHTML = '<p style="color:#ef4444;">Error loading product</p>'; }
-    }
-    
-    function renderProduct() {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('productContent').style.display = 'block';
-      document.getElementById('productImage').src = product.image;
-      document.getElementById('productName').textContent = product.name;
-      document.getElementById('productUnit').textContent = product.unit || '';
-      document.getElementById('currentPrice').textContent = `₹${product.price}`;
-      if (product.mrp && product.mrp > product.price) {
-        document.getElementById('mrpPrice').textContent = `₹${product.mrp}`;
-        const d = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-        document.getElementById('discountBadge').textContent = `${d}% OFF`;
-        document.getElementById('discountBadge').style.display = 'inline';
-      }
-      document.getElementById('description').textContent = product.description || 'Fresh and high-quality product from OK Mart.';
-      updateTotal();
-    }
-    
-    function changeQty(delta) {
-      qty = Math.max(1, qty + delta);
-      document.getElementById('quantity').textContent = qty;
-      updateTotal();
-    }
-    
-    function updateTotal() {
-      if (product) document.getElementById('itemTotal').textContent = `₹${product.price * qty}`;
-    }
-    
-    document.getElementById('addToCartBtn').addEventListener('click', () => {
-      if (product) { window.OKMart.addToCart(product, qty); qty = 1; document.getElementById('quantity').textContent = 1; updateTotal(); }
-    });
-    
-    loadProduct();
-  </script>
+  <script src="/js/product.js"></script>
 </body>
 </html>
