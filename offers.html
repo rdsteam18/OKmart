@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <title>Offers & Deals | OK Mart</title>
+  <meta name="description" content="Save big with exclusive coupons and deals at OK Mart. Free delivery, discounts, and more.">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/offers.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- ========== HEADER ========== -->
+    <header class="offers-header">
+      <div class="header-inner">
+        <a href="/index.html" class="back-btn">←</a>
+        <h1 class="header-title">Offers & Deals</h1>
+        <span></span>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="offers-main">
+      
+      <!-- Banner Carousel -->
+      <div class="banner-carousel" id="bannerCarousel">
+        <div class="banner-track" id="bannerTrack">
+          <div class="loading-placeholder" style="padding:20px;text-align:center;color:#6b7280;">Loading offers...</div>
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+      </div>
+
+      <!-- Hero Promo -->
+      <div class="hero-promo">
+        <div class="promo-content">
+          <span class="promo-icon">🎉</span>
+          <div class="promo-text">
+            <h2>Big Savings Today!</h2>
+            <p>Use code <strong>SAVE20</strong> for ₹20 off on ₹250+</p>
+          </div>
+          <span class="promo-icon">🎉</span>
+        </div>
+      </div>
+
+      <!-- Coupons Section -->
+      <section class="coupons-section">
+        <div class="section-header">
+          <h2>🏷️ Available Coupons</h2>
+          <span class="section-badge" id="couponCount">0 active</span>
+        </div>
+        <div class="coupons-list" id="couponsList">
+          <div class="loading-skeleton">
+            <div class="skeleton-coupon"></div>
+            <div class="skeleton-coupon"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Today's Deals -->
+      <section class="deals-section">
+        <div class="section-header">
+          <h2>🔥 Today's Deals</h2>
+        </div>
+        <div class="deals-grid" id="dealsGrid">
+          <div class="deal-card static">
+            <span class="deal-icon">🧅</span>
+            <div class="deal-info">
+              <h3>1kg Onion FREE</h3>
+              <p>On orders above ₹199</p>
+            </div>
+            <span class="deal-tag">AUTO</span>
+          </div>
+          <div class="deal-card static">
+            <span class="deal-icon">🚚</span>
+            <div class="deal-info">
+              <h3>FREE Delivery</h3>
+              <p>On orders above ₹199</p>
+            </div>
+            <span class="deal-tag">AUTO</span>
+          </div>
+          <div class="deal-card static">
+            <span class="deal-icon">💳</span>
+            <div class="deal-info">
+              <h3>5% Cashback</h3>
+              <p>On UPI payments</p>
+            </div>
+            <span class="deal-tag">BANK</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- How to Use -->
+      <div class="how-to-use">
+        <h3>📋 How to Use Coupons</h3>
+        <div class="steps">
+          <div class="step"><span class="step-num">1</span><span>Copy coupon code</span></div>
+          <div class="step"><span class="step-num">2</span><span>Add items to cart</span></div>
+          <div class="step"><span class="step-num">3</span><span>Apply at checkout</span></div>
+          <div class="step"><span class="step-num">4</span><span>Enjoy savings! 🎉</span></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item active">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/offers.js"></script>
+</body>
+</html>
