@@ -1,553 +1,329 @@
 // ===== OK MART - CART.JS =====
-// Complete cart functionality with quantity updates, pricing, and offers
+// Full cart system with coupon, free item, and recommended products
 
 (function() {
   'use strict';
   
-  // ---------- OFFER RULES ----------
-  const OFFER_RULES = {
-    FREE_DELIVERY_THRESHOLD: 199,  // Changed to ₹199
-    DELIVERY_CHARGE: 20,
-    COUPON_CODE: 'SAVE20',
-    COUPON_MIN_ORDER: 250,
-    COUPON_DISCOUNT: 20
+  const CART_KEY = 'okmart_cart';
+  const WISHLIST_KEY = 'okmart_wishlist';
+  const FREE_THRESHOLD = 199;
+  const DELIVERY_FEE = 20;
+  const FREE_ONION = {
+    id: 'free_onion',
+    name: 'Onion (FREE)',
+    price: 0,
+    mrp: 30,
+    image: 'https://images.pexels.com/photos/144248/pexels-photo-144248.jpeg?auto=compress&cs=tinysrgb&w=200',
+    unit: '1 kg',
+    quantity: 1,
+    isFree: true
   };
   
-  // ---------- STATE ----------
-  let cartItems = [];
+  // ========== STATE ==========
+  let cart = [];
+  let couponDiscount = 0;
+  let appliedCouponCode = null;
   
-  // DOM Elements
-  const cartItemsContainer = document.getElementById('cartItemsContainer');
-  const emptyCartState = document.getElementById('emptyCartState');
-  const cartSummaryHeader = document.getElementById('cartSummaryHeader');
-  const freeDeliveryBanner = document.getElementById('freeDeliveryBanner');
-  const priceSummarySection = document.getElementById('priceSummarySection');
+  // ========== DOM ELEMENTS ==========
+  const cartItemsList = document.getElementById('cartItemsList');
+  const emptyCart = document.getElementById('emptyCart');
+  const couponSection = document.getElementById('couponSection');
+  const priceSummary = document.getElementById('priceSummary');
   const stickyCheckoutBar = document.getElementById('stickyCheckoutBar');
-  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const headerCartCount = document.getElementById('headerCartCount');
+  const recommendedSlider = document.getElementById('recommendedSlider');
+  const toastMessage = document.getElementById('toastMessage');
   
-  // Summary elements
-  const itemCountBadge = document.getElementById('itemCountBadge');
-  const headerTotalAmount = document.getElementById('headerTotalAmount');
-  const mrpTotalEl = document.getElementById('mrpTotal');
-  const discountAmountEl = document.getElementById('discountAmount');
-  const deliveryChargeEl = document.getElementById('deliveryCharge');
-  const finalTotalEl = document.getElementById('finalTotal');
-  const stickyTotalAmount = document.getElementById('stickyTotalAmount');
-  const savingsMessage = document.getElementById('savingsMessage');
+  // ========== CART FUNCTIONS ==========
+  function getCart() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
+  function saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
   
-  // ---------- CART FUNCTIONS ----------
   function loadCart() {
-    const stored = localStorage.getItem('okmart_cart');
-    cartItems = stored ? JSON.parse(stored) : [];
-    return cartItems;
+    cart = getCart();
+    manageFreeOnion();
+    return cart;
   }
   
-  function saveCart() {
-    localStorage.setItem('okmart_cart', JSON.stringify(cartItems));
-    updateCartBadges();
-    
-    if (window.OKMart && window.OKMart.updateStickyCartBar) {
-      window.OKMart.updateStickyCartBar();
-    }
-  }
-  
-  function updateCartBadges() {
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const badges = document.querySelectorAll('.cart-badge, #cartCountPlaceholder');
-    badges.forEach(badge => {
-      if (badge) badge.textContent = totalItems;
-    });
-  }
-  
-  // ---------- CALCULATE TOTALS WITH OFFERS ----------
-  function calculateTotals() {
-    let mrpTotal = 0;
-    let sellingTotal = 0;
-    let totalItems = 0;
-    
-    cartItems.forEach(item => {
-      mrpTotal += (item.mrp || item.price) * item.quantity;
-      sellingTotal += item.price * item.quantity;
-      totalItems += item.quantity;
-    });
-    
-    const itemDiscount = mrpTotal - sellingTotal;
-    const subtotal = sellingTotal;
-    
-    // Delivery charge: FREE on orders above ₹199, else ₹20
-    const deliveryCharge = subtotal >= OFFER_RULES.FREE_DELIVERY_THRESHOLD ? 0 : OFFER_RULES.DELIVERY_CHARGE;
-    const finalTotal = subtotal + deliveryCharge;
-    
-    return {
-      mrpTotal,
-      sellingTotal,
-      itemDiscount,
-      totalDiscount: itemDiscount,
-      subtotal,
-      deliveryCharge,
-      finalTotal,
-      totalItems,
-      hasFreeDelivery: deliveryCharge === 0
-    };
-  }
-  
-  // ---------- UI UPDATES ----------
-  function updateUI() {
-    const totals = calculateTotals();
-    
-    // Update item count
-    if (itemCountBadge) {
-      itemCountBadge.textContent = `${totals.totalItems} item${totals.totalItems !== 1 ? 's' : ''}`;
-    }
-    
-    // Update header total
-    if (headerTotalAmount) {
-      headerTotalAmount.textContent = `₹${totals.finalTotal}`;
-    }
-    
-    // Update price summary
-    if (mrpTotalEl) {
-      mrpTotalEl.textContent = `₹${totals.mrpTotal}`;
-    }
-    
-    if (discountAmountEl) {
-      discountAmountEl.textContent = `-₹${totals.totalDiscount}`;
-    }
-    
-    if (deliveryChargeEl) {
-      if (totals.deliveryCharge === 0) {
-        deliveryChargeEl.textContent = 'FREE';
-        deliveryChargeEl.style.color = '#10b981';
-      } else {
-        deliveryChargeEl.textContent = `₹${totals.deliveryCharge}`;
-        deliveryChargeEl.style.color = '';
-      }
-    }
-    
-    if (finalTotalEl) {
-      finalTotalEl.textContent = `₹${totals.finalTotal}`;
-    }
-    
-    if (stickyTotalAmount) {
-      stickyTotalAmount.textContent = `₹${totals.finalTotal}`;
-    }
-    
-    // Update savings message
-    if (savingsMessage) {
-      if (totals.totalDiscount > 0) {
-        savingsMessage.textContent = `🎉 You're saving ₹${totals.totalDiscount} on this order!`;
-        savingsMessage.style.display = 'block';
-      } else {
-        savingsMessage.style.display = 'none';
-      }
-    }
-    
-    // Update free delivery banner
-    updateFreeDeliveryBanner(totals);
-    
-    // Update offer tag
-    updateOfferTag(totals);
-    
-    // Enable/disable place order button
-    if (placeOrderBtn) {
-      placeOrderBtn.disabled = cartItems.length === 0;
-    }
-  }
-  
-  // THIS IS WHERE THE FUNCTION GOES - Inside cart.js, before it's called
-  function updateFreeDeliveryBanner(totals) {
-    if (!freeDeliveryBanner) return;
-    
-    const bannerText = freeDeliveryBanner.querySelector('.banner-text');
-    
-    let message = '';
-    let bgGradient = '';
-    
-    if (totals.hasFreeDelivery) {
-      message = '🎉 FREE delivery applied! (Orders above ₹199)';
-      bgGradient = 'linear-gradient(135deg, #d4fcdf 0%, #e8f5e9 100%)';
-    } else {
-      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotal;
-      message = `Add ₹${remaining} more for FREE delivery!`;
-      bgGradient = 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)';
-    }
-    
-    freeDeliveryBanner.style.background = bgGradient;
-    bannerText.textContent = message;
-  }
-  
-  function updateOfferTag(totals) {
-    const summarySection = document.querySelector('.price-summary-section');
-    if (!summarySection) return;
-    
-    let offerTag = document.querySelector('.offer-tag');
-    if (!offerTag) {
-      offerTag = document.createElement('div');
-      offerTag.className = 'offer-tag';
-      offerTag.style.cssText = `
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 40px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        margin-bottom: 16px;
-        text-align: center;
-      `;
-      summarySection.insertBefore(offerTag, summarySection.firstChild);
-    }
-    
-    if (!totals.hasFreeDelivery) {
-      const remaining = OFFER_RULES.FREE_DELIVERY_THRESHOLD - totals.subtotal;
-      offerTag.innerHTML = `🚚 Add ₹${remaining} for FREE delivery!`;
-      offerTag.style.display = 'block';
-      offerTag.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-    } else if (totals.subtotal >= OFFER_RULES.COUPON_MIN_ORDER) {
-      offerTag.innerHTML = `🏷️ Use code ${OFFER_RULES.COUPON_CODE} for ₹${OFFER_RULES.COUPON_DISCOUNT} OFF!`;
-      offerTag.style.display = 'block';
-      offerTag.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    } else if (totals.subtotal < OFFER_RULES.COUPON_MIN_ORDER && totals.subtotal >= OFFER_RULES.FREE_DELIVERY_THRESHOLD) {
-      const remainingForCoupon = OFFER_RULES.COUPON_MIN_ORDER - totals.subtotal;
-      offerTag.innerHTML = `🏷️ Add ₹${remainingForCoupon} more to get ₹20 OFF!`;
-      offerTag.style.display = 'block';
-      offerTag.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-    } else {
-      offerTag.style.display = 'none';
-    }
-  }
-  
-  function toggleEmptyState() {
-    const isEmpty = cartItems.length === 0;
-    
-    if (cartItemsContainer) {
-      cartItemsContainer.style.display = isEmpty ? 'none' : 'block';
-    }
-    
-    if (emptyCartState) {
-      emptyCartState.style.display = isEmpty ? 'block' : 'none';
-    }
-    
-    if (cartSummaryHeader) {
-      cartSummaryHeader.style.display = isEmpty ? 'none' : 'flex';
-    }
-    
-    if (priceSummarySection) {
-      priceSummarySection.style.display = isEmpty ? 'none' : 'block';
-    }
-    
-    if (stickyCheckoutBar) {
-      stickyCheckoutBar.style.display = isEmpty ? 'none' : 'block';
-    }
-    
-    if (freeDeliveryBanner) {
-      freeDeliveryBanner.style.display = isEmpty ? 'none' : 'block';
-    }
-  }
-  
-  // ---------- RENDER CART ITEMS ----------
-  function renderCartItem(item) {
-    const discount = item.mrp ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
-    const itemTotal = item.price * item.quantity;
-    
-    const card = document.createElement('div');
-    card.className = 'cart-item-card';
-    card.dataset.productId = item.id;
-    
-    card.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" class="cart-item-image" loading="lazy">
-      
-      <div class="cart-item-details">
-        <div class="cart-item-header">
-          <div>
-            <h3 class="cart-item-name">${item.name}</h3>
-            <span class="cart-item-unit">${item.unit || ''}</span>
-          </div>
-        </div>
-        
-        <div class="cart-item-pricing">
-          <span class="current-price">₹${item.price}</span>
-          ${item.mrp && item.mrp > item.price ? `<span class="mrp-price">₹${item.mrp}</span>` : ''}
-          ${discount > 0 ? `<span class="discount-percent">${discount}% OFF</span>` : ''}
-        </div>
-        
-        <div class="cart-item-actions">
-          <div class="quantity-controls">
-            <button class="quantity-btn minus-btn" data-id="${item.id}" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
-            <span class="quantity-number">${item.quantity}</span>
-            <button class="quantity-btn plus-btn" data-id="${item.id}">+</button>
-          </div>
-          <button class="remove-btn" data-id="${item.id}">Remove</button>
-        </div>
-      </div>
-      
-      <div class="item-total">₹${itemTotal}</div>
-    `;
-    
-    const minusBtn = card.querySelector('.minus-btn');
-    const plusBtn = card.querySelector('.plus-btn');
-    const removeBtn = card.querySelector('.remove-btn');
-    
-    minusBtn.addEventListener('click', () => updateQuantity(item.id, -1));
-    plusBtn.addEventListener('click', () => updateQuantity(item.id, 1));
-    removeBtn.addEventListener('click', () => removeItem(item.id));
-    
-    return card;
-  }
-  
-  function renderCart() {
-    loadCart();
-    
-    if (cartItemsContainer) {
-      cartItemsContainer.innerHTML = '';
-      
-      cartItems.forEach(item => {
-        cartItemsContainer.appendChild(renderCartItem(item));
-      });
-    }
-    
-    toggleEmptyState();
-    updateUI();
-    updateCartBadges();
-  }
-  
-  // ---------- CART ACTIONS ----------
   function updateQuantity(productId, change) {
-    const item = cartItems.find(item => item.id === productId);
-    if (!item) return;
+    const item = cart.find(i => i.id === productId);
+    if (!item || item.isFree) return;
     
-    const newQuantity = item.quantity + change;
-    
-    if (newQuantity <= 0) {
+    const newQty = item.quantity + change;
+    if (newQty <= 0) {
       removeItem(productId);
     } else {
-      item.quantity = newQuantity;
-      saveCart();
+      item.quantity = newQty;
+      saveCart(cart);
+      manageFreeOnion();
       renderCart();
     }
   }
   
   function removeItem(productId) {
-    cartItems = cartItems.filter(item => item.id !== productId);
-    saveCart();
+    const item = cart.find(i => i.id === productId);
+    if (item && item.isFree) return;
+    cart = cart.filter(i => i.id !== productId);
+    saveCart(cart);
+    manageFreeOnion();
     renderCart();
+    showToast('Item removed');
   }
   
-  function clearCart() {
-    cartItems = [];
-    saveCart();
-    renderCart();
-  }
-  
-  function handlePlaceOrder() {
-    if (cartItems.length === 0) return;
+  // ========== FREE ONION LOGIC ==========
+  function manageFreeOnion() {
+    const paidItemsTotal = cart
+      .filter(i => !i.isFree)
+      .reduce((sum, i) => sum + (i.price * i.quantity), 0);
     
-    const totals = calculateTotals();
-    const orderSummary = {
-      items: cartItems,
-      totals: totals,
-      timestamp: new Date().toISOString()
-    };
+    const hasFreeOnion = cart.some(i => i.id === 'free_onion');
     
-    sessionStorage.setItem('okmart_order_summary', JSON.stringify(orderSummary));
-    window.location.href = '/checkout.html';
-  }
-  
-  // ---------- EVENT LISTENERS ----------
-  if (placeOrderBtn) {
-    placeOrderBtn.addEventListener('click', handlePlaceOrder);
-  }
-  
-  window.addEventListener('okmart:cart-updated', () => {
-    renderCart();
-  });
-  
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'okmart_cart') {
-      renderCart();
+    if (paidItemsTotal >= FREE_THRESHOLD && !hasFreeOnion) {
+      cart.push({ ...FREE_ONION });
+      saveCart(cart);
+    } else if (paidItemsTotal < FREE_THRESHOLD && hasFreeOnion) {
+      cart = cart.filter(i => i.id !== 'free_onion');
+      saveCart(cart);
     }
+  }
+  
+  // ========== CALCULATE TOTALS ==========
+  function calculateTotals() {
+    const subtotal = cart
+      .filter(i => !i.isFree)
+      .reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    
+    const hasFreeOnion = cart.some(i => i.id === 'free_onion');
+    const delivery = subtotal >= FREE_THRESHOLD ? 0 : DELIVERY_FEE;
+    const total = Math.max(0, subtotal - couponDiscount + delivery);
+    
+    return { subtotal, hasFreeOnion, delivery, total, couponDiscount };
+  }
+  
+  // ========== RENDER CART ==========
+  function renderCart() {
+    const totals = calculateTotals();
+    
+    // Update header count
+    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+    headerCartCount.textContent = totalItems;
+    
+    if (cart.length === 0) {
+      cartItemsList.innerHTML = '';
+      emptyCart.style.display = 'block';
+      couponSection.style.display = 'none';
+      priceSummary.style.display = 'none';
+      stickyCheckoutBar.style.display = 'none';
+      return;
+    }
+    
+    emptyCart.style.display = 'none';
+    couponSection.style.display = 'block';
+    priceSummary.style.display = 'block';
+    stickyCheckoutBar.style.display = 'flex';
+    
+    // Render items
+    cartItemsList.innerHTML = cart.map(item => `
+      <div class="cart-item">
+        <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/70'">
+        <div class="cart-item-info">
+          <div class="cart-item-name">
+            ${item.name}
+            ${item.isFree ? '<span class="free-tag">🎁 FREE</span>' : ''}
+          </div>
+          <span class="cart-item-unit">${item.unit || ''}</span>
+          <div class="cart-item-price">${item.isFree ? 'FREE' : '₹' + item.price}</div>
+          ${!item.isFree ? `
+            <div class="cart-item-actions">
+              <div class="qty-control">
+                <button class="qty-btn" onclick="window.cartUpdateQty('${item.id}', -1)">−</button>
+                <span class="qty-number">${item.quantity}</span>
+                <button class="qty-btn" onclick="window.cartUpdateQty('${item.id}', 1)">+</button>
+              </div>
+              <button class="remove-btn" onclick="window.cartRemoveItem('${item.id}')">🗑️</button>
+            </div>
+          ` : '<p style="font-size:.7rem;color:#10b981;margin-top:4px;">Added automatically on ₹199+</p>'}
+        </div>
+      </div>
+    `).join('');
+    
+    // Update price summary
+    document.getElementById('subtotal').textContent = `₹${totals.subtotal}`;
+    
+    if (totals.couponDiscount > 0) {
+      document.getElementById('couponRow').style.display = 'flex';
+      document.getElementById('couponDiscount').textContent = `-₹${totals.couponDiscount}`;
+    } else {
+      document.getElementById('couponRow').style.display = 'none';
+    }
+    
+    document.getElementById('freeOnionRow').style.display = totals.hasFreeOnion ? 'flex' : 'none';
+    document.getElementById('deliveryCharge').textContent = totals.delivery === 0 ? 'FREE' : `₹${totals.delivery}`;
+    document.getElementById('totalAmount').textContent = `₹${totals.total}`;
+    document.getElementById('barTotal').textContent = `₹${totals.total}`;
+    
+    // Delivery message
+    const msgEl = document.getElementById('deliveryMessage');
+    if (totals.delivery === 0) {
+      msgEl.textContent = '🎉 Free delivery applied!';
+      msgEl.style.color = '#10b981';
+    } else {
+      msgEl.textContent = `🚚 Add ₹${FREE_THRESHOLD - totals.subtotal} more for FREE delivery`;
+      msgEl.style.color = '#f59e0b';
+    }
+  }
+  
+  // ========== COUPON SYSTEM ==========
+  async function applyCoupon() {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const msgEl = document.getElementById('couponMessage');
+    
+    if (!code) {
+      msgEl.textContent = 'Please enter a coupon code';
+      msgEl.className = 'coupon-message error';
+      return;
+    }
+    
+    try {
+      const snapshot = await db.collection('offers')
+        .where('code', '==', code)
+        .where('active', '==', true)
+        .get();
+      
+      if (snapshot.empty) {
+        msgEl.textContent = '❌ Invalid or expired coupon';
+        msgEl.className = 'coupon-message error';
+        return;
+      }
+      
+      const offer = snapshot.docs[0].data();
+      const { subtotal } = calculateTotals();
+      
+      if (subtotal < offer.minOrder) {
+        msgEl.textContent = `❌ Minimum order ₹${offer.minOrder} required`;
+        msgEl.className = 'coupon-message error';
+        return;
+      }
+      
+      // Calculate discount
+      if (offer.type === 'flat') {
+        couponDiscount = offer.discount;
+      } else if (offer.type === 'percent') {
+        const calc = Math.round((subtotal * offer.discount) / 100);
+        couponDiscount = offer.maxDiscount ? Math.min(calc, offer.maxDiscount) : calc;
+      }
+      
+      appliedCouponCode = code;
+      
+      // Show applied coupon
+      document.getElementById('appliedCoupon').style.display = 'flex';
+      document.getElementById('appliedCode').textContent = code;
+      document.getElementById('appliedDiscount').textContent = `-₹${couponDiscount}`;
+      document.getElementById('couponInput').value = '';
+      msgEl.textContent = '';
+      
+      renderCart();
+      showToast(`Coupon ${code} applied!`, 'success');
+      
+    } catch (err) {
+      msgEl.textContent = 'Error applying coupon';
+      msgEl.className = 'coupon-message error';
+    }
+  }
+  
+  function removeCoupon() {
+    couponDiscount = 0;
+    appliedCouponCode = null;
+    document.getElementById('appliedCoupon').style.display = 'none';
+    document.getElementById('couponInput').value = '';
+    document.getElementById('couponMessage').textContent = '';
+    renderCart();
+    showToast('Coupon removed');
+  }
+  
+  // ========== RECOMMENDED PRODUCTS ==========
+  async function loadRecommended() {
+    try {
+      const snapshot = await db.collection('products')
+        .where('popular', '==', true)
+        .limit(10)
+        .get();
+      
+      recommendedSlider.innerHTML = '';
+      
+      if (snapshot.empty) {
+        recommendedSlider.innerHTML = '<p style="color:var(--muted);padding:20px;">No recommendations</p>';
+        return;
+      }
+      
+      snapshot.forEach(doc => {
+        const p = { id: doc.id, ...doc.data() };
+        const card = document.createElement('div');
+        card.className = 'mini-product-card';
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" class="mini-product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140'">
+          <div class="mini-product-name">${p.name}</div>
+          <div class="mini-product-price">₹${p.price}</div>
+          <button class="mini-add-btn">+ Add</button>
+        `;
+        card.addEventListener('click', e => {
+          if (!e.target.closest('button')) location.href = `/product.html?id=${p.id}`;
+        });
+        card.querySelector('.mini-add-btn').addEventListener('click', e => {
+          e.stopPropagation();
+          addToCartFromRecommended(p);
+        });
+        recommendedSlider.appendChild(card);
+      });
+      
+    } catch (err) {
+      recommendedSlider.innerHTML = '<p style="color:var(--muted);">Could not load</p>';
+    }
+  }
+  
+  function addToCartFromRecommended(product) {
+    const existing = cart.find(i => i.id === product.id);
+    if (existing) {
+      existing.quantity++;
+    } else {
+      cart.push({ id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.image, unit: product.unit, quantity: 1 });
+    }
+    saveCart(cart);
+    manageFreeOnion();
+    renderCart();
+    showToast(`${product.name} added!`, 'success');
+  }
+  
+  // ========== TOAST ==========
+  function showToast(msg, type = 'info') {
+    const toast = toastMessage;
+    toast.textContent = msg;
+    toast.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
+    toast.style.color = 'white';
+    toast.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+  
+  // ========== GLOBAL FUNCTIONS FOR HTML ==========
+  window.cartUpdateQty = (id, change) => updateQuantity(id, change);
+  window.cartRemoveItem = (id) => removeItem(id);
+  
+  // ========== EVENT LISTENERS ==========
+  document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
+  document.getElementById('removeCouponBtn').addEventListener('click', removeCoupon);
+  
+  document.getElementById('couponInput').addEventListener('keypress', e => {
+    if (e.key === 'Enter') applyCoupon();
   });
   
-  // ---------- INITIALIZATION ----------
-  function init() {
+  // ========== INIT ==========
+  async function init() {
+    loadCart();
     renderCart();
-    
-    window.OKMartCart = {
-      render: renderCart,
-      clear: clearCart,
-      getItems: () => cartItems,
-      getTotals: calculateTotals,
-      getOfferRules: () => OFFER_RULES
-    };
-    
-    console.log('✅ Cart initialized | Free delivery above ₹199');
+    await loadRecommended();
+    console.log('✅ Cart page ready');
   }
   
   init();
   
 })();
-
-
-
-// Add to cart.js - Free Onion System
-
-const FREE_ONION_PRODUCT = {
-  id: 'free_onion',
-  name: 'Onion (FREE)',
-  price: 0,
-  mrp: 30,
-  image: 'https://images.pexels.com/photos/144248/pexels-photo-144248.jpeg?auto=compress&cs=tinysrgb&w=200',
-  unit: '1 kg',
-  quantity: 1,
-  isFree: true
-};
-
-const FREE_ONION_THRESHOLD = 199;
-
-// Check and manage free onion
-function manageFreeOnion() {
-  const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-  
-  // Calculate total excluding free items
-  const paidItemsTotal = cart
-    .filter(item => !item.isFree)
-    .reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
-  const hasFreeOnion = cart.some(item => item.id === 'free_onion');
-  
-  if (paidItemsTotal >= FREE_ONION_THRESHOLD) {
-    // Add free onion if not present
-    if (!hasFreeOnion) {
-      cart.push({ ...FREE_ONION_PRODUCT });
-      localStorage.setItem('okmart_cart', JSON.stringify(cart));
-      return true;
-    }
-  } else {
-    // Remove free onion if total below threshold
-    if (hasFreeOnion) {
-      const filteredCart = cart.filter(item => item.id !== 'free_onion');
-      localStorage.setItem('okmart_cart', JSON.stringify(filteredCart));
-      return true;
-    }
-  }
-  
-  return false;
-}
-
-// Override addToCart to manage free onion
-const originalAddToCart = window.OKMart?.addToCart;
-if (originalAddToCart) {
-  window.OKMart.addToCart = (product, quantity) => {
-    originalAddToCart(product, quantity);
-    manageFreeOnion();
-    renderCart();
-  };
-}
-
-// Override updateQuantity
-const originalUpdateQuantity = updateQuantity;
-updateQuantity = (productId, change) => {
-  // Prevent manual removal of free onion
-  if (productId === 'free_onion') {
-    window.OKMart.showToast?.('This is a free gift! Add more items worth ₹199+ to keep it.', 'info');
-    return;
-  }
-  
-  originalUpdateQuantity(productId, change);
-  manageFreeOnion();
-  renderCart();
-};
-
-// Override removeItem
-const originalRemoveItem = removeItem;
-removeItem = (productId) => {
-  if (productId === 'free_onion') {
-    window.OKMart.showToast?.('Free onion cannot be removed. Add items worth ₹199+ to get it free!', 'info');
-    return;
-  }
-  
-  originalRemoveItem(productId);
-  manageFreeOnion();
-  renderCart();
-};
-
-// Modify renderCartItem to show free badge
-function renderCartItem(item) {
-  const card = document.createElement('div');
-  card.className = 'cart-item-card';
-  card.dataset.productId = item.id;
-  
-  const isFree = item.isFree || item.id === 'free_onion';
-  const discount = item.mrp ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
-  const itemTotal = item.price * item.quantity;
-  
-  card.innerHTML = `
-    <img src="${item.image}" alt="${item.name}" class="cart-item-image" loading="lazy">
-    
-    <div class="cart-item-details">
-      <div class="cart-item-header">
-        <div>
-          <h3 class="cart-item-name">
-            ${item.name}
-            ${isFree ? '<span class="free-badge">🎁 FREE</span>' : ''}
-          </h3>
-          <span class="cart-item-unit">${item.unit || ''}</span>
-        </div>
-      </div>
-      
-      <div class="cart-item-pricing">
-        <span class="current-price">${isFree ? 'FREE' : '₹' + item.price}</span>
-        ${!isFree && item.mrp && item.mrp > item.price ? `<span class="mrp-price">₹${item.mrp}</span>` : ''}
-        ${!isFree && discount > 0 ? `<span class="discount-percent">${discount}% OFF</span>` : ''}
-      </div>
-      
-      <div class="cart-item-actions">
-        ${!isFree ? `
-          <div class="quantity-controls">
-            <button class="quantity-btn minus-btn" data-id="${item.id}" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
-            <span class="quantity-number">${item.quantity}</span>
-            <button class="quantity-btn plus-btn" data-id="${item.id}">+</button>
-          </div>
-          <button class="remove-btn" data-id="${item.id}">Remove</button>
-        ` : `
-          <span class="free-item-note">Added automatically on orders above ₹199</span>
-        `}
-      </div>
-    </div>
-    
-    <div class="item-total">${isFree ? 'FREE' : '₹' + itemTotal}</div>
-  `;
-  
-  if (!isFree) {
-    const minusBtn = card.querySelector('.minus-btn');
-    const plusBtn = card.querySelector('.plus-btn');
-    const removeBtn = card.querySelector('.remove-btn');
-    
-    minusBtn?.addEventListener('click', () => updateQuantity(item.id, -1));
-    plusBtn?.addEventListener('click', () => updateQuantity(item.id, 1));
-    removeBtn?.addEventListener('click', () => removeItem(item.id));
-  }
-  
-  return card;
-}
-
-// Add CSS for free badge
-const freeBadgeStyle = document.createElement('style');
-freeBadgeStyle.textContent = `
-  .free-badge {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 40px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    margin-left: 8px;
-    display: inline-block;
-  }
-  
-  .free-item-note {
-    color: #10b981;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-`;
-document.head.appendChild(freeBadgeStyle);
