@@ -2,103 +2,201 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
   <title>My Profile | OK Mart</title>
+  <meta name="description" content="Manage your OK Mart profile, orders, wishlist, and get support.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/profile.css">
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .container{max-width:480px;margin:0 auto;padding:0 16px 100px}
-    .header{display:flex;align-items:center;gap:12px;padding:12px 0}
-    .back-btn{width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5rem;border:1px solid #e5e7eb}
-    h1{font-size:1.3rem;font-weight:700}
-    .profile-card{background:linear-gradient(135deg,#2ecc71,#27ae60);border-radius:24px;padding:20px;margin:16px 0;display:flex;align-items:center;gap:14px;color:white}
-    .avatar{width:60px;height:60px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem}
-    .profile-info{flex:1}
-    .profile-name{font-size:1.2rem;font-weight:700}
-    .profile-phone{font-size:.85rem;opacity:.9}
-    .menu-section{background:white;border-radius:20px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
-    .menu-item{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;text-decoration:none;color:#1a1e2b;border-bottom:1px solid #f1f5f9;transition:background .15s}
-    .menu-item:last-child{border-bottom:none}
-    .menu-item:active{background:#f8fafc}
-    .menu-left{display:flex;align-items:center;gap:12px}
-    .menu-icon{font-size:1.3rem}
-    .menu-label{font-weight:500}
-    .menu-badge{background:#2ecc71;color:white;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600}
-    .menu-arrow{color:#6b7280}
-    .logout-btn{width:100%;padding:16px;background:white;border:1.5px solid #fee2e2;border-radius:20px;color:#dc2626;font-weight:600;cursor:pointer;margin-top:8px}
-    .version{text-align:center;color:#6b7280;font-size:.75rem;padding:20px 0}
-    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:40px;font-weight:500;z-index:999;opacity:0;transition:.3s;white-space:nowrap}
-    .toast.show{opacity:1}
-    .toast.success{background:#10b981;color:white}
-  </style>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="header"><a href="/index.html" class="back-btn">←</a><h1>My Profile</h1></div>
+  <div class="app-container">
     
-    <div class="profile-card">
-      <div class="avatar" id="avatarIcon">👤</div>
-      <div class="profile-info">
-        <div class="profile-name" id="profileName">Guest User</div>
-        <div class="profile-phone" id="profilePhone">Add phone number</div>
+    <!-- ========== HEADER ========== -->
+    <header class="profile-header">
+      <div class="header-inner">
+        <a href="/index.html" class="back-btn">←</a>
+        <h1 class="header-title">My Profile</h1>
+        <span></span>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="profile-main">
+      
+      <!-- Profile Card -->
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar">👤</div>
+        <div class="profile-info">
+          <h2 class="profile-name" id="profileName">Guest User</h2>
+          <span class="profile-phone" id="profilePhone">Add your details</span>
+        </div>
+        <button class="edit-profile-btn" id="editProfileBtn">✏️ Edit</button>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="stats-row">
+        <div class="stat-card" onclick="scrollToSection('orders')">
+          <span class="stat-value" id="statOrders">0</span>
+          <span class="stat-label">Orders</span>
+        </div>
+        <div class="stat-card" onclick="location.href='/wishlist.html'">
+          <span class="stat-value" id="statWishlist">0</span>
+          <span class="stat-label">Wishlist</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statSaved">₹0</span>
+          <span class="stat-label">Saved</span>
+        </div>
+      </div>
+
+      <!-- Menu Sections -->
+      <div class="menu-sections">
+        
+        <!-- Your Orders -->
+        <div class="menu-section" id="ordersSection">
+          <div class="menu-header" onclick="toggleSection('orders')">
+            <div class="menu-left">
+              <span class="menu-icon">📦</span>
+              <span class="menu-label">Your Orders</span>
+            </div>
+            <span class="menu-arrow" id="ordersArrow">›</span>
+          </div>
+          <div class="menu-content" id="ordersContent" style="display: none;">
+            <div class="orders-loading" id="ordersLoading">Loading orders...</div>
+            <div class="orders-list" id="ordersList"></div>
+            <div class="no-orders" id="noOrders" style="display: none;">
+              <p>No orders found</p>
+              <a href="/index.html" class="shop-link">Start Shopping →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist -->
+        <div class="menu-section">
+          <a href="/wishlist.html" class="menu-header-link">
+            <div class="menu-left">
+              <span class="menu-icon">❤️</span>
+              <span class="menu-label">Wishlist</span>
+            </div>
+            <div class="menu-right">
+              <span class="menu-badge" id="wishlistBadge">0</span>
+              <span class="menu-arrow">›</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Offers -->
+        <div class="menu-section" id="offersSection">
+          <div class="menu-header" onclick="toggleSection('offers')">
+            <div class="menu-left">
+              <span class="menu-icon">🎁</span>
+              <span class="menu-label">Active Offers</span>
+            </div>
+            <span class="menu-arrow" id="offersArrow">›</span>
+          </div>
+          <div class="menu-content" id="offersContent" style="display: none;">
+            <div class="offers-loading" id="offersLoading">Loading offers...</div>
+            <div class="offers-list" id="offersList"></div>
+          </div>
+        </div>
+
+        <!-- Track Order -->
+        <div class="menu-section">
+          <a href="/tracking.html" class="menu-header-link">
+            <div class="menu-left">
+              <span class="menu-icon">🔍</span>
+              <span class="menu-label">Track Order</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </a>
+        </div>
+
+        <!-- Help & Support -->
+        <div class="menu-section">
+          <a href="#" class="menu-header-link" onclick="openSupport(); return false;">
+            <div class="menu-left">
+              <span class="menu-icon">💬</span>
+              <span class="menu-label">Help & Support</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </a>
+        </div>
+
+        <!-- Refund / Complaint -->
+        <div class="menu-section">
+          <a href="#" class="menu-header-link" onclick="openRefund(); return false;">
+            <div class="menu-left">
+              <span class="menu-icon">💰</span>
+              <span class="menu-label">Refund / Complaint</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </a>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="menu-section">
+          <a href="/terms.html" class="menu-header-link">
+            <div class="menu-left">
+              <span class="menu-icon">📄</span>
+              <span class="menu-label">Terms & Conditions</span>
+            </div>
+            <span class="menu-arrow">›</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      
+      <p class="app-version">OK Mart v2.0 · Firebase Powered</p>
+
+    </main>
+
+    <!-- ========== EDIT PROFILE MODAL ========== -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Edit Profile</h3>
+          <button class="modal-close" id="closeModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="editName" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="editPhone" placeholder="10-digit number" maxlength="10">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <textarea id="editAddress" placeholder="Your address" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Pincode</label>
+            <input type="text" id="editPincode" placeholder="6-digit pincode" maxlength="6">
+          </div>
+          <button class="save-btn" id="saveProfileBtn">Save Changes</button>
+        </div>
       </div>
     </div>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
     
-    <div class="menu-section">
-      <a href="/orders.html" class="menu-item">
-        <div class="menu-left"><span class="menu-icon">📋</span><span class="menu-label">Your Orders</span></div>
-        <span class="menu-badge" id="ordersBadge">0</span>
-      </a>
-      <a href="/wishlist.html" class="menu-item">
-        <div class="menu-left"><span class="menu-icon">❤️</span><span class="menu-label">Wishlist</span></div>
-        <span class="menu-badge" id="wishlistBadge">0</span>
-      </a>
-      <a href="/tracking.html" class="menu-item">
-        <div class="menu-left"><span class="menu-icon">📦</span><span class="menu-label">Track Order</span></div>
-        <span class="menu-arrow">›</span>
-      </a>
-      <a href="/offers.html" class="menu-item">
-        <div class="menu-left"><span class="menu-icon">🏷️</span><span class="menu-label">Offers & Deals</span></div>
-        <span class="menu-arrow">›</span>
-      </a>
-      <div class="menu-item" onclick="openWhatsApp()">
-        <div class="menu-left"><span class="menu-icon">💬</span><span class="menu-label">Help & Support</span></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <a href="/terms.html" class="menu-item">
-        <div class="menu-left"><span class="menu-icon">📄</span><span class="menu-label">Terms & Conditions</span></div>
-        <span class="menu-arrow">›</span>
-      </a>
-    </div>
-    
-    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-    <p class="version">OK Mart v2.0 · Firebase Powered</p>
   </div>
 
-  <div class="toast" id="toastMessage"></div>
-
+  <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script>
-    const user = JSON.parse(localStorage.getItem('okmart_user') || '{}');
-    document.getElementById('profileName').textContent = user.name || 'Guest User';
-    document.getElementById('profilePhone').textContent = user.phone ? `+91 ${user.phone}` : 'Add phone number';
-    document.getElementById('avatarIcon').textContent = (user.name || 'G').charAt(0).toUpperCase();
-    
-    document.getElementById('ordersBadge').textContent = JSON.parse(localStorage.getItem('okmart_orders') || '[]').length;
-    document.getElementById('wishlistBadge').textContent = window.OKMart.getWishlist().length;
-    
-    function openWhatsApp() {
-      window.open('https://wa.me/919982239821?text=Hello%20OK%20Mart,%20I%20need%20help.', '_blank');
-    }
-    
-    function logout() {
-      if (confirm('Clear your profile data?')) {
-        localStorage.removeItem('okmart_user');
-        location.reload();
-      }
-    }
-  </script>
+  <script src="/js/profile.js"></script>
 </body>
 </html>
