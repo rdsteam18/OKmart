@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Invoice | OK Mart</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71; --primary-dark: #27ae60;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.5; min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* ===== INVOICE PREVIEW PAGE ===== */
+    .invoice-container {
+      max-width: 800px; margin: 20px auto; padding: 0 16px 40px;
+    }
+    
+    .invoice-actions-bar {
+      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+      position: sticky; top: 10px; z-index: 10;
+    }
+    
+    .action-btn {
+      padding: 12px 20px; border: none; border-radius: 12px;
+      font-weight: 600; font-size: .9rem; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      transition: all .2s; text-decoration: none;
+    }
+    
+    .download-btn { background: var(--primary); color: white; }
+    .download-btn:hover { background: var(--primary-dark); }
+    .print-btn { background: var(--card); border: 1.5px solid var(--border); color: var(--text); }
+    .print-btn:hover { background: var(--bg); }
+    .whatsapp-btn { background: #25D366; color: white; }
+    .whatsapp-btn:hover { background: #128C7E; }
+    .back-btn { background: var(--bg); border: 1.5px solid var(--border); color: var(--text); }
+    
+    .action-btn:active { transform: scale(.96); }
+    
+    /* ===== INVOICE CARD ===== */
+    .invoice-card {
+      background: var(--card); border-radius: 20px; padding: 40px 32px;
+      box-shadow: var(--shadow); position: relative;
+    }
+    
+    /* Invoice Print Styles */
+    @media print {
+      body { background: white; }
+      .invoice-actions-bar { display: none !important; }
+      .invoice-container { margin: 0; padding: 0; max-width: 100%; }
+      .invoice-card { box-shadow: none; border-radius: 0; padding: 20px; }
+    }
+    
+    /* Header */
+    .invoice-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding-bottom: 24px; border-bottom: 2px solid var(--border);
+      margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+    }
+    
+    .company-info h1 {
+      font-size: 1.8rem; font-weight: 800; color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+    .company-info p { color: var(--muted); font-size: .9rem; }
+    .company-logo { font-size: 2.5rem; }
+    
+    .invoice-meta { text-align: right; }
+    .invoice-meta .invoice-title {
+      font-size: 1.4rem; font-weight: 800; color: var(--text);
+      text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .invoice-meta p { font-size: .85rem; color: var(--muted); margin-bottom: 2px; }
+    .invoice-meta .invoice-number {
+      font-family: monospace; font-weight: 700; color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+    
+    /* Info Grid */
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      padding-bottom: 24px; border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    
+    .info-section h3 {
+      font-size: .8rem; text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .info-section p { font-size: .9rem; margin-bottom: 4px; }
+    .info-section strong { color: var(--text); }
+    
+    /* Items Table */
+    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .items-table th {
+      text-align: left; padding: 12px 16px; font-size: .75rem;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); border-bottom: 2px solid var(--border);
+      background: var(--bg);
+    }
+    .items-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      font-size: .9rem;
+    }
+    .items-table .text-right { text-align: right; }
+    .items-table .font-bold { font-weight: 600; }
+    
+    /* Totals */
+    .totals-section {
+      margin-left: auto; max-width: 300px;
+    }
+    .total-row {
+      display: flex; justify-content: space-between;
+      padding: 8px 0; font-size: .9rem;
+    }
+    .total-row.grand-total {
+      font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--text);
+      margin-top: 8px; padding-top: 12px;
+    }
+    .total-row.discount { color: #10b981; }
+    
+    /* Footer */
+    .invoice-footer {
+      margin-top: 32px; padding-top: 20px;
+      border-top: 1px solid var(--border); text-align: center;
+    }
+    .invoice-footer p { color: var(--muted); font-size: .85rem; margin-bottom: 4px; }
+    .invoice-footer .thank-you { font-weight: 700; color: var(--primary-dark); font-size: 1rem; }
+    
+    /* Loading */
+    .loading-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.4); z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      color: white; flex-direction: column;
+    }
+    .spinner {
+      width: 48px; height: 48px; border: 4px solid rgba(255,255,255,.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin .8s linear infinite; margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: white; padding: 12px 24px;
+      border-radius: 40px; font-weight: 500; z-index: 300;
+      opacity: 0; transition: .3s;
+    }
+    .toast.show { opacity: 1; bottom: 50px; }
+    .toast.success { background: #10b981; }
+    
+    @media (max-width: 768px) {
+      .invoice-card { padding: 24px 16px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .invoice-header { flex-direction: column; }
+      .invoice-meta { text-align: left; }
+    }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- jsPDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>Generating PDF...</p>
+  </div>
+
+  <!-- Invoice Page -->
+  <div class="invoice-container">
+    
+    <!-- Action Buttons -->
+    <div class="invoice-actions-bar">
+      <button class="action-btn back-btn" onclick="history.back()">← Back</button>
+      <button class="action-btn download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+      <button class="action-btn print-btn" onclick="printInvoice()">🖨️ Print</button>
+      <button class="action-btn whatsapp-btn" onclick="sendWhatsApp()">💬 Send WhatsApp</button>
+    </div>
+    
+    <!-- Invoice Card -->
+    <div class="invoice-card" id="invoiceCard">
+      
+      <!-- Header -->
+      <div class="invoice-header">
+        <div class="company-info">
+          <div class="company-logo">🛒</div>
+          <h1>OK Mart</h1>
+          <p>Fresh Grocery Delivery</p>
+          <p>📱 +91 99822 39821</p>
+          <p>🚚 Delivery in 10-15 mins</p>
+        </div>
+        <div class="invoice-meta">
+          <div class="invoice-title">INVOICE</div>
+          <p class="invoice-number" id="invOrderId">#ORD-XXXXXX</p>
+          <p id="invDate">Date: --</p>
+          <p id="invStatus">Status: Order Received</p>
+        </div>
+      </div>
+      
+      <!-- Customer Info -->
+      <div class="info-grid">
+        <div class="info-section">
+          <h3>Bill To</h3>
+          <p><strong id="invCustomerName">Customer Name</strong></p>
+          <p>📱 <span id="invCustomerPhone">-</span></p>
+          <p>🏠 <span id="invCustomerAddress">-</span></p>
+        </div>
+        <div class="info-section">
+          <h3>Order Details</h3>
+          <p>Order ID: <strong id="invOrderId2">#ORD-XXXXXX</strong></p>
+          <p>Payment: <strong>Cash on Delivery</strong></p>
+          <p>Estimated: <strong>10-15 mins</strong></p>
+        </div>
+      </div>
+      
+      <!-- Items Table -->
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Price</th>
+            <th class="text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody id="invItemsTable">
+          <tr><td colspan="5" style="text-align:center;color:var(--muted);">Loading items...</td></tr>
+        </tbody>
+      </table>
+      
+      <!-- Totals -->
+      <div class="totals-section">
+        <div class="total-row"><span>Subtotal</span><span id="invSubtotal">₹0</span></div>
+        <div class="total-row discount" id="invDiscountRow" style="display:none;"><span>Discount</span><span id="invDiscount">-₹0</span></div>
+        <div class="total-row"><span>Delivery Charge</span><span id="invDelivery">₹0</span></div>
+        <div class="total-row grand-total"><span>TOTAL</span><span id="invTotal">₹0</span></div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="invoice-footer">
+        <p class="thank-you">🙏 Thank you for shopping with OK Mart!</p>
+        <p>For any queries, contact us on WhatsApp: +91 99822 39821</p>
+        <p>This is a computer-generated invoice.</p>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase Config -->
+  <script src="/js/firebase.js"></script>
+  
+  <!-- Invoice Script -->
+  <script src="/js/invoice.js"></script>
+</body>
+</html>
