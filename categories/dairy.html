@@ -2,207 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
   
   <!-- SEO Meta Tags -->
   <title>Buy Dairy Products Online | Fresh Milk, Butter, Paneer | OK Mart</title>
-  <meta name="description" content="Order fresh dairy products online - milk, butter, cheese, paneer, yogurt, and eggs. Fast delivery from OK Mart. Best prices on Amul, Mother Dairy products.">
-  <meta name="keywords" content="dairy products online, milk delivery, buy milk online, fresh paneer delivery, butter online, cheese delivery, eggs delivery, Amul milk, Mother Dairy">
+  <meta name="description" content="Order fresh dairy products online - milk, butter, cheese, paneer, yogurt, eggs. Fast delivery from OK Mart.">
+  <meta name="keywords" content="dairy products, milk delivery, butter online, paneer, cheese, eggs, OK Mart">
   <meta name="theme-color" content="#2ecc71">
   
-  <!-- PWA Manifest -->
+  <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://okmart.netlify.app/categories/dairy.html">
-  <meta property="og:title" content="Buy Dairy Products Online | OK Mart">
-  <meta property="og:description" content="Fresh milk, butter, paneer, cheese delivered fast.">
-  <meta property="og:image" content="https://okmart.netlify.app/assets/images/dairy-og.jpg">
-  
-  <!-- Canonical -->
-  <link rel="canonical" href="https://okmart.netlify.app/categories/dairy.html">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
   
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body data-category="dairy">
   <!-- App Container -->
   <div class="app-container">
     
-    <!-- Sticky Header -->
+    <!-- ========== HEADER ========== -->
     <header class="app-header category-header">
-      <div class="header-container">
+      <div class="header-inner">
         <div class="header-left">
-          <a href="/index.html" class="back-button" aria-label="Back to home">
-            <span class="back-icon">←</span>
+          <a href="/index.html" class="back-btn" aria-label="Back to home">
+            <span>←</span>
           </a>
-          <a href="/index.html" class="logo-link">
-            <span class="logo-text">🛒 OK Mart</span>
-          </a>
+          <h1 class="category-title" id="categoryTitle">Dairy & Eggs</h1>
         </div>
-        <div class="header-actions">
-          <a href="/wishlist.html" class="wishlist-icon-link" aria-label="Wishlist">
-            <span class="wishlist-icon">❤️</span>
-            <span class="wishlist-badge" id="wishlistCountBadge">0</span>
-          </a>
-          <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
-            <span class="cart-icon">🛒</span>
-            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        <div class="header-right">
+          <a href="/search.html" class="search-btn" aria-label="Search">🔍</a>
+          <a href="/cart.html" class="cart-btn" aria-label="View Cart">
+            <span>🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
           </a>
         </div>
       </div>
     </header>
 
+    <!-- ========== CATEGORY HERO ========== -->
+    <div class="category-hero">
+      <div class="hero-content">
+        <span class="hero-icon">🥛</span>
+        <div class="hero-text">
+          <h2>Dairy & Eggs</h2>
+          <p>Fresh milk, butter, paneer, cheese & eggs delivered daily</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FILTER & SORT BAR ========== -->
+    <div class="filter-bar">
+      <div class="filter-info">
+        <span class="product-count" id="productCount">0 products</span>
+      </div>
+      <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+        <span>📊</span> <span id="sortLabel">Popular</span>
+      </button>
+      <div class="sort-dropdown" id="sortDropdown">
+        <div class="sort-option active" data-sort="popular">🔥 Popular First</div>
+        <div class="sort-option" data-sort="price-low">💰 Price: Low to High</div>
+        <div class="sort-option" data-sort="price-high">💎 Price: High to Low</div>
+        <div class="sort-option" data-sort="discount">🏷️ Best Discount</div>
+      </div>
+    </div>
+
+    <!-- ========== PRODUCT GRID ========== -->
     <main class="category-main">
-      <!-- Category Hero with Animation -->
-      <div class="category-hero animate-slide-up">
-        <div class="category-icon-wrapper">
-          <span class="category-icon">🥛</span>
-          <div class="icon-ring"></div>
-        </div>
-        <h1 class="category-title">Dairy & Eggs</h1>
-        <p class="category-description">Fresh milk, butter, paneer, cheese & eggs delivered to your doorstep</p>
-        <div class="category-stats">
-          <span class="stat-item">
-            <span class="stat-value" id="productCount">0</span>
-            <span class="stat-label">Products</span>
-          </span>
-          <span class="stat-item">
-            <span class="stat-value">🚚</span>
-            <span class="stat-label">12 min</span>
-          </span>
-          <span class="stat-item">
-            <span class="stat-value">✓</span>
-            <span class="stat-label">Fresh</span>
-          </span>
-        </div>
+      <!-- Loading Skeleton -->
+      <div class="loading-grid" id="loadingGrid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
-
-      <!-- Search Bar -->
-      <div class="search-container animate-slide-up" style="animation-delay: 0.05s;">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            id="categorySearchInput" 
-            class="search-input" 
-            placeholder="Search in dairy..."
-            autocomplete="off"
-            aria-label="Search dairy products"
-          >
-          <button class="clear-search" id="clearCategorySearch" aria-label="Clear search">✕</button>
-        </div>
-      </div>
-
-      <!-- Quick Filters -->
-      <div class="quick-filters animate-slide-up" style="animation-delay: 0.1s;">
-        <div class="filter-scroll">
-          <button class="filter-chip active" data-filter="all">All</button>
-          <button class="filter-chip" data-filter="milk">🥛 Milk</button>
-          <button class="filter-chip" data-filter="butter">🧈 Butter</button>
-          <button class="filter-chip" data-filter="cheese">🧀 Cheese</button>
-          <button class="filter-chip" data-filter="paneer">🧊 Paneer</button>
-          <button class="filter-chip" data-filter="yogurt">🍶 Yogurt</button>
-          <button class="filter-chip" data-filter="eggs">🥚 Eggs</button>
-        </div>
-      </div>
-
-      <!-- Results Header -->
-      <div class="results-header animate-slide-up" style="animation-delay: 0.15s;">
-        <div class="results-info">
-          <span class="results-count" id="categoryResultsCount">0 items found</span>
-        </div>
-        <div class="sort-container">
-          <button class="sort-btn" id="sortToggleBtn" aria-label="Sort products">
-            <span>📊</span>
-            <span id="sortLabel">Popular</span>
-            <span>▼</span>
-          </button>
-          <div class="sort-dropdown" id="sortDropdown" style="display: none;">
-            <button class="sort-option active" data-sort="popular">🔥 Popular First</button>
-            <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
-            <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
-            <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
-            <button class="sort-option" data-sort="newest">🆕 Newest First</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-state" id="categoryLoadingState">
-        <div class="loading-animation">
-          <div class="milk-loader">
-            <span>🥛</span>
-            <span>🥛</span>
-            <span>🥛</span>
-          </div>
-          <p>Loading fresh dairy products...</p>
-        </div>
-      </div>
-
+      
       <!-- Product Grid -->
-      <div class="product-grid category-grid" id="categoryProductGrid" style="display: none;">
-        <!-- Products will be dynamically rendered here -->
-      </div>
-
+      <div class="product-grid" id="productGrid" style="display: none;"></div>
+      
       <!-- Empty State -->
       <div class="empty-state" id="emptyState" style="display: none;">
-        <div class="empty-animation">
-          <span class="empty-icon">🔍</span>
-        </div>
-        <h3>No products found</h3>
-        <p id="emptyStateMessage">Try adjusting your search or filters</p>
-        <button class="reset-btn" id="resetFiltersBtn">Reset Filters</button>
+        <span class="empty-icon">🥛</span>
+        <h3>No products available</h3>
+        <p>Check back later for fresh dairy products</p>
+        <a href="/index.html" class="browse-btn">Browse All Categories →</a>
       </div>
-
-      <!-- Popular in Dairy Section -->
-      <section class="popular-in-category animate-slide-up" id="popularSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🔥 Popular in Dairy</h2>
-        </div>
-        <div class="popular-grid" id="popularDairyGrid"></div>
-      </section>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-icon">🛒</span>
+          <span class="cart-bar-count" id="barCartCount">0 items</span>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">
+          View Cart · <span id="barCartTotal">₹0</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
       <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-      <span>💬</span>
-    </a>
+    <!-- ========== FLOATING BUTTONS ========== -->
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
+    <a href="tel:+919982239821" class="fab-call">📞</a>
 
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
 
   <!-- Scripts -->
+  <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script src="/js/category-dairy.js"></script>
+  <script src="/js/category.js"></script>
   
-  <!-- PWA Service Worker -->
+  <!-- PWA -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('[SW] Registered'))
-        .catch(err => console.log('[SW] Failed:', err));
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
 </body>
