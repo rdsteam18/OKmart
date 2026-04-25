@@ -6,76 +6,382 @@
   <title>Admin Login | OK Mart</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
+  
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .login-container{background:white;border-radius:24px;padding:40px 24px;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.08);text-align:center}
-    .login-logo{font-size:3rem;margin-bottom:8px}
-    .login-title{font-size:1.5rem;font-weight:800;margin-bottom:4px}
-    .login-subtitle{color:#6b7280;font-size:.9rem;margin-bottom:28px}
-    .form-group{margin-bottom:16px;text-align:left}
-    .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
-    .form-group input{width:100%;padding:14px 16px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.95rem;font-family:inherit}
-    .form-group input:focus{outline:none;border-color:#2ecc71}
-    .login-btn{width:100%;padding:16px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:8px;transition:.15s}
-    .login-btn:active{background:#27ae60;transform:scale(.97)}
-    .error-msg{color:#ef4444;font-size:.85rem;margin-top:8px;display:none}
-    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
-    .toast.show{opacity:1;bottom:50px}.toast.error{background:#ef4444}
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="login-container">
-    <div class="login-logo">🛒</div>
-    <h1 class="login-title">OK Mart Admin</h1>
-    <p class="login-subtitle">Enter credentials to continue</p>
-    <form id="loginForm">
-      <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="admin" required></div>
-      <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="••••••••" required></div>
-      <p class="error-msg" id="errorMsg">Invalid credentials</p>
-      <button type="submit" class="login-btn">🔐 Login</button>
-    </form>
-  </div>
-  <div class="toast" id="toast"></div>
-
-  <script>
-    // Hardcoded admin credentials (change these)
-    const ADMIN_USER = 'admin';
-    const ADMIN_PASS = 'okmart2024';
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value.trim();
-      
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        // Set session
-        sessionStorage.setItem('okmart_admin_logged', 'true');
-        sessionStorage.setItem('okmart_admin_time', Date.now());
-        
-        const toast = document.getElementById('toast');
-        toast.textContent = '✅ Login successful!';
-        toast.className = 'toast';
-        toast.classList.add('show');
-        
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 500);
-      } else {
-        document.getElementById('errorMsg').style.display = 'block';
-        document.getElementById('password').value = '';
+    :root {
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #e8f8ef 0%, #f8fafc 50%, #e8f8ef 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Background Pattern */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(46, 204, 113, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(46, 204, 113, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    /* Login Container */
+    .login-container {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      border-radius: 28px;
+      padding: 48px 32px 36px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
-    });
-    
-    // Check if already logged in
-    if (sessionStorage.getItem('okmart_admin_logged') === 'true') {
-      const loginTime = parseInt(sessionStorage.getItem('okmart_admin_time') || '0');
-      // Session expires after 8 hours
-      if (Date.now() - loginTime < 8 * 60 * 60 * 1000) {
-        window.location.href = 'index.html';
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
-  </script>
+    
+    /* Logo */
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+      box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+    }
+    
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .login-subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+    }
+    
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .input-wrapper input {
+      width: 100%;
+      padding: 14px 48px 14px 16px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      transition: var(--transition);
+    }
+    
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+      background: white;
+    }
+    
+    .input-wrapper input.error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    }
+    
+    /* Password Toggle */
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--muted);
+      padding: 4px;
+      transition: var(--transition);
+    }
+    
+    .password-toggle:hover {
+      color: var(--text);
+    }
+    
+    /* Error Message */
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: none;
+      animation: shake 0.4s ease;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-6px); }
+    }
+    
+    /* Login Button */
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
+    }
+    
+    .login-btn:hover {
+      box-shadow: 0 6px 16px rgba(46, 204, 113, 0.35);
+      transform: translateY(-1px);
+    }
+    
+    .login-btn:active {
+      transform: scale(0.97);
+      background: var(--primary-dark);
+    }
+    
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Button Loading Spinner */
+    .btn-spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+    }
+    
+    .login-btn.loading .btn-spinner {
+      display: inline-block;
+    }
+    
+    .login-btn.loading .btn-text {
+      display: none;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Security Notice */
+    .security-notice {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .security-notice span {
+      font-size: 1rem;
+    }
+    
+    /* Back Link */
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+    
+    .back-link:hover {
+      color: var(--primary-dark);
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 36px 20px 28px;
+        border-radius: 24px;
+      }
+      
+      .login-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 1.6rem;
+      }
+      
+      .login-title {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  
+  <!-- Background Pattern -->
+  <div class="bg-pattern"></div>
+  
+  <!-- Login Container -->
+  <div class="login-container">
+    
+    <!-- Logo -->
+    <div class="login-logo">🛒</div>
+    
+    <!-- Title -->
+    <h1 class="login-title">OK Mart Admin</h1>
+    <p class="login-subtitle">Enter your credentials to continue</p>
+    
+    <!-- Error Message -->
+    <div class="error-message" id="errorMessage">
+      Invalid username or password
+    </div>
+    
+    <!-- Login Form -->
+    <form id="loginForm" autocomplete="off">
+      
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="username" 
+            placeholder="Enter your username" 
+            required 
+            autocomplete="off"
+          >
+          <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;">👤</span>
+          <input type="text" id="username" style="padding-left:44px;" placeholder="Enter your username" required>
+        </div>
+      </div>
+      
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Enter your password" 
+            required 
+            autocomplete="off"
+            style="padding-left:44px;padding-right:48px;"
+          >
+          <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;">🔒</span>
+          <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password">
+            👁️
+          </button>
+        </div>
+      </div>
+      
+      <!-- Login Button -->
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="btn-spinner"></span>
+        <span class="btn-text">🔐 Login to Dashboard</span>
+      </button>
+      
+    </form>
+    
+    <!-- Security Notice -->
+    <p class="security-notice">
+      <span>🔒</span> Secure admin access only
+    </p>
+    
+    <!-- Back to Store -->
+    <a href="/index.html" class="back-link">← Back to Store</a>
+    
+  </div>
+
+  <!-- Firebase Config -->
+  <script src="/js/firebase.js"></script>
+  
+  <!-- Login Script -->
+  <script src="/js/admin-login.js"></script>
 </body>
 </html>
