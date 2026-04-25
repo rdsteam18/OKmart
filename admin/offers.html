@@ -5,156 +5,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Offer Management | OK Mart Admin</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#2ecc71">
-  
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
-    .admin-container{display:flex;min-height:100vh}
-    .sidebar{width:260px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s}
-    .sidebar-header{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
-    .sidebar-logo{font-size:1.3rem;font-weight:700}
-    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:600}
+    .admin-layout{display:flex;min-height:100vh}
+    .sidebar{width:250px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-brand span{font-size:1.2rem;font-weight:700}
+    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.6rem;text-transform:uppercase;font-weight:600}
     .sidebar-nav{flex:1;padding:20px 0}
     .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
-    .sidebar-nav a.active,.sidebar-nav a:hover{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
     .sidebar-nav a.active{border-left:3px solid #2ecc71}
     .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
-    .logout-btn{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
-    .main-content{flex:1;margin-left:260px;padding:24px;max-width:1400px}
-    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-    .page-header h1{font-size:1.8rem;font-weight:800}
+    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:250px;padding:24px}
+    .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+    h1{font-size:1.8rem;font-weight:800}
     .add-btn{background:#2ecc71;color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:600;cursor:pointer}
     .offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-    .offer-card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid #e5e7eb}
+    .offer-card{background:white;border-radius:16px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid #e5e7eb}
     .offer-header{display:flex;justify-content:space-between;margin-bottom:12px}
     .offer-code{font-weight:700;font-family:monospace;font-size:1.2rem;color:#27ae60}
-    .offer-status{padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600}
-    .status-active{background:#d1fae5;color:#065f46}
-    .status-inactive{background:#fee2e2;color:#991b1b}
-    .offer-details{margin-bottom:12px;font-size:.9rem}
-    .offer-details span{color:#6b7280}
+    .badge-active{background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600}
+    .badge-inactive{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600}
+    .offer-desc{font-size:.9rem;margin-bottom:8px}
+    .offer-detail{font-size:.8rem;color:#6b7280;margin-bottom:12px}
     .offer-actions{display:flex;gap:8px}
-    .edit-btn,.delete-btn{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:500;border:1px solid #e5e7eb}
-    .edit-btn{background:#f8fafc}
-    .delete-btn{background:#fee2e2;color:#ef4444;border-color:#ef4444}
+    .edit-btn,.delete-btn{padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:500}
+    .edit-btn{background:#f8fafc;border:1px solid #e5e7eb}
+    .delete-btn{background:#fee2e2;color:#ef4444;border:1px solid #ef4444}
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
     .modal-overlay.active{display:flex}
     .modal-card{background:white;border-radius:20px;width:90%;max-width:450px;padding:24px}
     .modal-card h3{margin-bottom:16px}
     .form-group{margin-bottom:14px}
-    .form-group label{display:block;font-weight:600;margin-bottom:6px;font-size:.85rem}
+    .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
     .form-group input,.form-group select{width:100%;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem}
+    .form-row{display:flex;gap:12px}.form-row .form-group{flex:1}
     .save-btn{width:100%;padding:14px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:8px}
     .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
-    .toast.show{opacity:1;bottom:50px}
-    .toast.success{background:#10b981}
-    @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0;padding:16px}}
+    .toast.show{opacity:1;bottom:50px}.toast.success{background:#10b981}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}}
   </style>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="admin-container">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
+        <a href="orders.html">📋 Orders</a>
         <a href="offers.html" class="active">🏷️ Offers</a>
-        <a href="/index.html" target="_blank">🏠 View Store</a>
       </nav>
-      <div class="sidebar-footer"><button class="logout-btn" onclick="location.href='/index.html'">🚪 Exit</button></div>
+      <div class="sidebar-footer"><button onclick="location.href='/'">🚪 Exit</button></div>
     </aside>
     <main class="main-content">
-      <div class="page-header"><h1>🏷️ Offer Management</h1><button class="add-btn" onclick="openModal()">+ Add Coupon</button></div>
-      <div class="offers-grid" id="offersGrid"><p>Loading offers...</p></div>
+      <div class="header-row"><h1>🏷️ Offer Management</h1><button class="add-btn" onclick="openModal()">+ Add Coupon</button></div>
+      <div class="offers-grid" id="offersGrid"><p>Loading...</p></div>
     </main>
-    
     <div class="modal-overlay" id="offerModal">
       <div class="modal-card">
         <h3 id="modalTitle">Add Coupon</h3>
         <form id="offerForm">
           <input type="hidden" id="offerId">
-          <div class="form-group"><label>Coupon Code *</label><input type="text" id="offerCode" required placeholder="e.g., SAVE20"></div>
-          <div class="form-group"><label>Discount Type *</label><select id="offerType" required><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
-          <div class="form-group"><label>Discount Value *</label><input type="number" id="offerDiscount" required placeholder="e.g., 20"></div>
-          <div class="form-group"><label>Minimum Order (₹) *</label><input type="number" id="offerMinOrder" required placeholder="e.g., 250"></div>
-          <div class="form-group"><label>Max Discount (₹) - Optional</label><input type="number" id="offerMaxDiscount" placeholder="For percent type only"></div>
-          <div class="form-group"><label>Active</label><select id="offerActive"><option value="true">✅ Active</option><option value="false">❌ Inactive</option></select></div>
+          <div class="form-group"><label>Coupon Code *</label><input type="text" id="offerCode" required></div>
+          <div class="form-row">
+            <div class="form-group"><label>Type *</label><select id="offerType" required><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
+            <div class="form-group"><label>Discount *</label><input type="number" id="offerDiscount" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Min Order (₹) *</label><input type="number" id="offerMin" required></div>
+            <div class="form-group"><label>Max Discount</label><input type="number" id="offerMax" placeholder="Optional"></div>
+          </div>
+          <div class="form-group"><label>Status</label><select id="offerActive"><option value="true">Active</option><option value="false">Inactive</option></select></div>
           <button type="submit" class="save-btn">Save Coupon</button>
         </form>
       </div>
     </div>
-    
     <div class="toast" id="toast"></div>
   </div>
-
   <script src="/js/firebase.js"></script>
   <script>
-    const modal = document.getElementById('offerModal');
-    let editingId = null;
-    
-    function openModal(offer = null) {
-      editingId = offer?.id || null;
-      document.getElementById('modalTitle').textContent = offer ? 'Edit Coupon' : 'Add Coupon';
-      document.getElementById('offerId').value = offer?.id || '';
-      document.getElementById('offerCode').value = offer?.code || '';
-      document.getElementById('offerType').value = offer?.type || 'flat';
-      document.getElementById('offerDiscount').value = offer?.discount || '';
-      document.getElementById('offerMinOrder').value = offer?.minOrder || '';
-      document.getElementById('offerMaxDiscount').value = offer?.maxDiscount || '';
-      document.getElementById('offerActive').value = offer?.active !== false ? 'true' : 'false';
+    const modal=document.getElementById('offerModal');
+    let editingId=null;
+    function openModal(o=null){
+      editingId=o?.id||null;
+      document.getElementById('modalTitle').textContent=o?'Edit Coupon':'Add Coupon';
+      document.getElementById('offerId').value=o?.id||'';
+      document.getElementById('offerCode').value=o?.code||'';
+      document.getElementById('offerType').value=o?.type||'flat';
+      document.getElementById('offerDiscount').value=o?.discount||'';
+      document.getElementById('offerMin').value=o?.minOrder||'';
+      document.getElementById('offerMax').value=o?.maxDiscount||'';
+      document.getElementById('offerActive').value=o?.active!==false?'true':'false';
       modal.classList.add('active');
     }
-    
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
-    
-    document.getElementById('offerForm').addEventListener('submit', async (e) => {
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('active')});
+    document.getElementById('offerForm').addEventListener('submit',async e=>{
       e.preventDefault();
-      const data = {
-        code: document.getElementById('offerCode').value.trim().toUpperCase(),
-        type: document.getElementById('offerType').value,
-        discount: Number(document.getElementById('offerDiscount').value),
-        minOrder: Number(document.getElementById('offerMinOrder').value),
-        maxDiscount: Number(document.getElementById('offerMaxDiscount').value) || null,
-        active: document.getElementById('offerActive').value === 'true'
+      const data={
+        code:document.getElementById('offerCode').value.toUpperCase().trim(),
+        type:document.getElementById('offerType').value,
+        discount:Number(document.getElementById('offerDiscount').value),
+        minOrder:Number(document.getElementById('offerMin').value),
+        maxDiscount:Number(document.getElementById('offerMax').value)||null,
+        active:document.getElementById('offerActive').value==='true'
       };
-      try {
-        if (editingId) await db.collection('offers').doc(editingId).update(data);
+      try{
+        if(editingId) await db.collection('offers').doc(editingId).update(data);
         else await db.collection('offers').add(data);
         modal.classList.remove('active');
-        showToast(editingId ? 'Coupon updated!' : 'Coupon added!', 'success');
-      } catch (err) { console.error(err); }
+        showToast(editingId?'Updated!':'Added!','success');
+      }catch(err){console.error(err)}
     });
-    
-    function deleteOffer(id) {
-      if (confirm('Delete this coupon?')) db.collection('offers').doc(id).delete().then(() => showToast('Deleted'));
-    }
-    
-    db.collection('offers').onSnapshot(snapshot => {
-      const grid = document.getElementById('offersGrid');
-      if (snapshot.empty) { grid.innerHTML = '<p>No offers yet</p>'; return; }
-      grid.innerHTML = '';
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        grid.innerHTML += `
-          <div class="offer-card">
-            <div class="offer-header"><span class="offer-code">${d.code}</span><span class="offer-status ${d.active ? 'status-active' : 'status-inactive'}">${d.active ? 'Active' : 'Inactive'}</span></div>
-            <div class="offer-details"><span>${d.type === 'flat' ? '₹' : ''}${d.discount}${d.type === 'percent' ? '%' : ''} OFF · Min ₹${d.minOrder}${d.maxDiscount ? ' · Max ₹' + d.maxDiscount : ''}</span></div>
-            <div class="offer-actions"><button class="edit-btn" onclick="openModal({id:'${doc.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},active:${d.active}})">✏️ Edit</button><button class="delete-btn" onclick="deleteOffer('${doc.id}')">🗑️ Delete</button></div>
-          </div>`;
+    function deleteOffer(id){if(confirm('Delete?'))db.collection('offers').doc(id).delete().then(()=>showToast('Deleted'))}
+    db.collection('offers').onSnapshot(s=>{
+      const grid=document.getElementById('offersGrid');
+      if(s.empty){grid.innerHTML='<p>No offers</p>';return}
+      grid.innerHTML='';
+      s.forEach(doc=>{
+        const d=doc.data();
+        grid.innerHTML+=`<div class="offer-card"><div class="offer-header"><span class="offer-code">${d.code}</span><span class="${d.active?'badge-active':'badge-inactive'}">${d.active?'Active':'Inactive'}</span></div><div class="offer-desc">${d.type==='flat'?'₹'+d.discount+' OFF':d.discount+'% OFF'}</div><div class="offer-detail">Min order: ₹${d.minOrder}${d.maxDiscount?' · Max discount: ₹'+d.maxDiscount:''}</div><div class="offer-actions"><button class="edit-btn" onclick="openModal({id:'${doc.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},active:${d.active}})">✏️ Edit</button><button class="delete-btn" onclick="deleteOffer('${doc.id}')">🗑️ Delete</button></div></div>`;
       });
     });
-    
-    function showToast(msg, type) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.className = `toast ${type||''}`; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
+    function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
   </script>
 </body>
 </html>
