@@ -9,19 +9,33 @@
   
   <!-- SEO Meta Tags -->
   <title>OK Mart | Online Grocery Delivery | Fresh & Fast</title>
-  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes.">
+  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes. Free delivery on orders above ₹199.">
+  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits delivery, vegetables, snacks, dairy products, OK Mart">
   <meta name="theme-color" content="#2ecc71">
   
+  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
   
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/">
+  <meta property="og:title" content="OK Mart | Online Grocery Delivery">
+  <meta property="og:description" content="Fresh groceries delivered in 10 minutes. Order now!">
+  
+  <!-- Canonical -->
+  <link rel="canonical" href="https://okmart.netlify.app/">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
   
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDK -->
+
+  <!-- Firebase SDK (add these two scripts ONLY) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
@@ -36,15 +50,10 @@
           <span class="logo-text">🛒 OK Mart</span>
           <span class="delivery-tag">10 min</span>
         </a>
-        <div class="header-actions">
-          <a href="/profile.html" class="profile-icon-link" aria-label="Profile">
-            <span class="profile-icon">👤</span>
-          </a>
-          <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
-            <span class="cart-icon">🛍️</span>
-            <span class="cart-badge" id="cartCountPlaceholder">0</span>
-          </a>
-        </div>
+        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
+          <span class="cart-icon">🛍️</span>
+          <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        </a>
       </div>
     </header>
 
@@ -63,7 +72,6 @@
           >
           <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
         </div>
-        <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
       </div>
 
       <!-- Banner -->
@@ -137,7 +145,7 @@
         </div>
       </section>
 
-      <!-- Today's Deals -->
+      <!-- Today's Deals Section -->
       <section class="offers-section" aria-label="Today's Deals">
         <div class="section-header">
           <h2 class="section-title">🏷️ Today's Deals</h2>
@@ -163,29 +171,33 @@
         </div>
       </section>
 
-      <!-- Main Product Grid -->
+      <!-- Main Product Grid - THIS IS THE KEY CONTAINER -->
       <section class="products-section" aria-label="All Products">
         <div class="section-header">
           <h2 class="section-title">🛒 All Products</h2>
         </div>
         
+        <!-- Category Filter Pills -->
         <div class="filter-scroll" id="categoryFilterContainer">
-          <button class="category-filter-btn active" data-category="all">All</button>
+          <button class="category-filter-btn active">All</button>
         </div>
         
+        <!-- Results Info -->
         <div class="results-info">
           <span id="resultsCount">0 items</span>
         </div>
         
-        <div class="product-grid" id="productGrid">
+        <!-- PRODUCTS CONTAINER -->
+        <div id="products" class="product-grid">
           <div class="loading-state" id="loadingState">
             <div class="spinner"></div>
-            <p>Loading products from server...</p>
+            <p>Loading products...</p>
           </div>
         </div>
       </section>
     </main>
 
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item active">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
@@ -194,6 +206,7 @@
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
+    <!-- Floating Buttons -->
     <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
       <span>💬</span>
     </a>
@@ -201,6 +214,7 @@
       <span>📞</span>
     </a>
 
+    <!-- Toast Notification -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
@@ -210,11 +224,16 @@
   <!-- Common JS -->
   <script src="/js/common.js"></script>
   <!-- Home JS with Firebase -->
-  <script src="/js/home-firebase.js"></script>
+  <script src="/js/home.js"></script>
   
+  <!-- PWA Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('[SW] Registered'))
+          .catch(err => console.log('[SW] Failed:', err));
+      });
     }
   </script>
 </body>
