@@ -3,238 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  
-  <!-- Google Site Verification -->
-  <meta name="google-site-verification" content="d1uLLcwbDH99lepVNG6a_KEpVP24yjo1DqHN4aKhWk8" />
-  
-  <!-- SEO Meta Tags -->
-  <title>OK Mart | Online Grocery Delivery | Fresh & Fast</title>
-  <meta name="description" content="Order fresh groceries, dairy, snacks, fruits, vegetables & daily essentials online. Fast delivery in 10 minutes. Free delivery on orders above ₹199.">
-  <meta name="keywords" content="grocery delivery, online grocery, milk delivery, fruits delivery, vegetables, snacks, dairy products, OK Mart">
+  <title>OK Mart | Fresh Grocery Delivery</title>
+  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables. Fast delivery.">
   <meta name="theme-color" content="#2ecc71">
-  
-  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://okmart.netlify.app/">
-  <meta property="og:title" content="OK Mart | Online Grocery Delivery">
-  <meta property="og:description" content="Fresh groceries delivered in 10 minutes. Order now!">
-  
-  <!-- Canonical -->
-  <link rel="canonical" href="https://okmart.netlify.app/">
-  
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Firebase SDK (add these two scripts ONLY) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- App Container -->
   <div class="app-container">
-    
-    <!-- Sticky Header -->
     <header class="app-header">
       <div class="header-container">
-        <a href="/index.html" class="logo-link" aria-label="OK Mart Home">
-          <span class="logo-text">🛒 OK Mart</span>
-          <span class="delivery-tag">10 min</span>
-        </a>
-        <a href="/cart.html" class="cart-icon-link" id="cartIcon" aria-label="View Cart">
-          <span class="cart-icon">🛍️</span>
-          <span class="cart-badge" id="cartCountPlaceholder">0</span>
-        </a>
+        <a href="/index.html" class="logo-link"><span class="logo-text">🛒 OK Mart</span><span class="delivery-tag">10 min</span></a>
+        <div class="header-actions">
+          <a href="/profile.html" class="icon-link">👤</a>
+          <a href="/cart.html" class="cart-icon-link"><span class="cart-icon">🛒</span><span class="cart-badge" id="cartCountPlaceholder">0</span></a>
+        </div>
       </div>
     </header>
 
     <main class="home-main">
-      <!-- Search Bar -->
       <div class="search-container">
         <div class="search-wrapper">
-          <span class="search-icon" aria-hidden="true">🔍</span>
-          <input 
-            type="text" 
-            id="searchInput" 
-            class="search-input" 
-            placeholder="Search for milk, bread, snacks..."
-            autocomplete="off"
-            aria-label="Search products"
-          >
-          <button class="clear-search" id="clearSearchBtn" aria-label="Clear search">✕</button>
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, snacks..." autocomplete="off">
         </div>
       </div>
 
-      <!-- Banner -->
       <div class="banner-container">
         <a href="/offers.html" class="banner-link">
-          <img 
-            src="https://blogger.googleusercontent.com/img/a/AVvXsEgd8sPXAsbAseHFXT7JVNtkNDJc3uuFYZVnpMNsiwSmrT7U7ZpJJNn7I48emV7mWnDp6ciA2H-oHb2El7at9JZsHObUm1BdgfAXu0-VH8-zAnN53YFWHPb4KvXeG2wjNJUo4LZkBFgG2Myqlk_WL0-Vbxe_lyHBI0QHmzMXbQzFZmMgL16fwr2odls0" 
-            alt="Special Offers - Up to 30% OFF" 
-            class="banner-image"
-            loading="eager"
-          >
-          <div class="banner-overlay">
-            <span class="banner-tag">🔥 Limited Time</span>
-            <span class="banner-text">Up to 30% OFF</span>
-          </div>
+          <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Offers" class="banner-image">
+          <div class="banner-overlay"><span class="banner-tag">🔥 Limited Time</span><span class="banner-text">Up to 30% OFF</span></div>
         </a>
       </div>
 
-      <!-- Category Grid -->
-      <section class="category-section" aria-label="Shop by Category">
+      <section class="category-section">
         <h2 class="section-title">📂 Shop by Category</h2>
-        <div class="category-grid">
-          <a href="/categories/fruits.html" class="category-item">
-            <span class="category-emoji">🍎</span>
-            <span class="category-label">Fruits</span>
-          </a>
-          <a href="/categories/vegetables.html" class="category-item">
-            <span class="category-emoji">🥕</span>
-            <span class="category-label">Vegetables</span>
-          </a>
-          <a href="/categories/dairy.html" class="category-item">
-            <span class="category-emoji">🥛</span>
-            <span class="category-label">Dairy</span>
-          </a>
-          <a href="/categories/bakery.html" class="category-item">
-            <span class="category-emoji">🥐</span>
-            <span class="category-label">Bakery</span>
-          </a>
-          <a href="/categories/snacks.html" class="category-item">
-            <span class="category-emoji">🍿</span>
-            <span class="category-label">Snacks</span>
-          </a>
-          <a href="/categories/beverages.html" class="category-item">
-            <span class="category-emoji">🥤</span>
-            <span class="category-label">Drinks</span>
-          </a>
-          <a href="/categories/grocery.html" class="category-item">
-            <span class="category-emoji">🧺</span>
-            <span class="category-label">Grocery</span>
-          </a>
-          <a href="/categories/electronics.html" class="category-item">
-            <span class="category-emoji">📱</span>
-            <span class="category-label">Electronics</span>
-          </a>
-          <a href="/categories/personal-care.html" class="category-item">
-            <span class="category-emoji">🧴</span>
-            <span class="category-label">Personal</span>
-          </a>
-          <a href="/categories/household.html" class="category-item">
-            <span class="category-emoji">🧹</span>
-            <span class="category-label">Household</span>
-          </a>
-          <a href="/offers.html" class="category-item highlight">
-            <span class="category-emoji">🏷️</span>
-            <span class="category-label">Offers</span>
-          </a>
-          <a href="/track.html" class="category-item">
-            <span class="category-emoji">📦</span>
-            <span class="category-label">Track</span>
-          </a>
+        <div class="category-grid" id="categoryGrid">
+          <a href="/categories/dairy.html" class="category-item"><span class="category-emoji">🥛</span><span>Dairy</span></a>
+          <a href="/categories/fruits.html" class="category-item"><span class="category-emoji">🍎</span><span>Fruits</span></a>
+          <a href="/categories/vegetables.html" class="category-item"><span class="category-emoji">🥕</span><span>Vegetables</span></a>
+          <a href="/categories/snacks.html" class="category-item"><span class="category-emoji">🍿</span><span>Snacks</span></a>
+          <a href="/categories/beverages.html" class="category-item"><span class="category-emoji">🥤</span><span>Drinks</span></a>
+          <a href="/categories/grocery.html" class="category-item"><span class="category-emoji">🧺</span><span>Grocery</span></a>
+          <a href="/categories/electronics.html" class="category-item"><span class="category-emoji">📱</span><span>Electronics</span></a>
+          <a href="/offers.html" class="category-item highlight"><span class="category-emoji">🏷️</span><span>Offers</span></a>
         </div>
       </section>
 
-      <!-- Today's Deals Section -->
-      <section class="offers-section" aria-label="Today's Deals">
-        <div class="section-header">
-          <h2 class="section-title">🏷️ Today's Deals</h2>
-          <a href="/offers.html" class="view-all">View All →</a>
-        </div>
-        <div class="offers-scroll" id="offersGrid">
-          <div class="loading-placeholder">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Daily Essentials -->
-      <section class="quick-section" aria-label="Daily Essentials">
-        <div class="section-header">
-          <h2 class="section-title">⚡ Daily Essentials</h2>
-          <span class="quick-badge">Quick Add</span>
-        </div>
-        <div class="quick-grid" id="quickOrderGrid">
-          <div class="loading-placeholder">Loading essentials...</div>
-        </div>
-      </section>
-
-      <!-- Main Product Grid - THIS IS THE KEY CONTAINER -->
-      <section class="products-section" aria-label="All Products">
-        <div class="section-header">
-          <h2 class="section-title">🛒 All Products</h2>
-        </div>
-        
-        <!-- Category Filter Pills -->
-        <div class="filter-scroll" id="categoryFilterContainer">
-          <button class="category-filter-btn active">All</button>
-        </div>
-        
-        <!-- Results Info -->
-        <div class="results-info">
-          <span id="resultsCount">0 items</span>
-        </div>
-        
-        <!-- PRODUCTS CONTAINER -->
-        <div id="products" class="product-grid">
-          <div class="loading-state" id="loadingState">
-            <div class="spinner"></div>
-            <p>Loading products...</p>
-          </div>
-        </div>
+      <section class="products-section">
+        <h2 class="section-title">🛒 All Products</h2>
+        <div class="product-grid" id="productGrid"><div class="loading-state"><div class="spinner"></div><p>Loading products...</p></div></div>
       </section>
     </main>
 
-    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item active">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
       <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
-    <!-- Floating Buttons -->
-    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-      <span>💬</span>
-    </a>
-    <a href="tel:+919982239821" class="fab-call" aria-label="Call for support">
-      <span>📞</span>
-    </a>
+    <div class="bottom-cart-bar" id="bottomCartBar" style="display:none;">
+      <div class="cart-bar-content">
+        <div class="cart-info"><span>🛒</span><span id="bottomCartCount">0 items</span></div>
+        <a href="/cart.html" class="checkout-btn">View Cart · <span id="bottomCartTotal">₹0</span></a>
+      </div>
+    </div>
 
-    <!-- Toast Notification -->
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
+    <a href="tel:+919982239821" class="fab-call">📞</a>
     <div class="toast-message" id="toastMessage"></div>
-    
   </div>
 
-  <!-- Firebase Config -->
-  <script src="/js/firebase-config.js"></script>
-  <!-- Common JS -->
+  <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <!-- Home JS with Firebase -->
-  <script src="/js/home.js"></script>
-  
-  <!-- PWA Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('[SW] Registered'))
-          .catch(err => console.log('[SW] Failed:', err));
-      });
+    // Load products from Firebase
+    async function loadProducts() {
+      const grid = document.getElementById('productGrid');
+      try {
+        const snapshot = await db.collection('products').limit(20).get();
+        grid.innerHTML = '';
+        if (snapshot.empty) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;">No products available</p>'; return; }
+        snapshot.forEach(doc => {
+          const p = { id: doc.id, ...doc.data() };
+          grid.appendChild(window.OKMart.renderProductCard(p));
+        });
+      } catch (err) {
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;">Failed to load products</p>';
+      }
     }
+    
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { const q = e.target.value.trim(); if (q) location.href = `/search.html?query=${encodeURIComponent(q)}`; }
+    });
+    
+    loadProducts();
+    window.OKMart.updateCartUI();
   </script>
 </body>
 </html>
