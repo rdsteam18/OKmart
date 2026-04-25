@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Admin Dashboard | OK Mart</title>
+  <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <link rel="stylesheet" href="css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-container">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">🛒 OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="products.html" class="nav-item">
+          <span class="nav-icon">📦</span>
+          <span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>Orders</span>
+        </a>
+        <a href="/index.html" class="nav-item" target="_blank">
+          <span class="nav-icon">🏠</span>
+          <span>View Store</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <header class="admin-mobile-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <span>OK Mart Admin</span>
+      <span></span>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>📊 Dashboard</h1>
+        <span id="currentDate"></span>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-info">
+            <span class="stat-value" id="totalOrders">0</span>
+            <span class="stat-label">Total Orders</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-info">
+            <span class="stat-value" id="todayOrders">0</span>
+            <span class="stat-label">Today's Orders</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <span class="stat-value" id="totalRevenue">₹0</span>
+            <span class="stat-label">Total Revenue</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <span class="stat-value" id="pendingOrders">0</span>
+            <span class="stat-label">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="recent-orders-section">
+        <h2>📋 Recent Orders</h2>
+        <div class="recent-orders-list" id="recentOrdersList">
+          <p class="loading-text">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Quick Stats Graph -->
+      <div class="quick-stats-section">
+        <h2>📈 Today's Overview</h2>
+        <div class="overview-grid">
+          <div class="overview-card">
+            <span class="overview-label">Revenue Today</span>
+            <span class="overview-value" id="revenueToday">₹0</span>
+          </div>
+          <div class="overview-card">
+            <span class="overview-label">Avg Order Value</span>
+            <span class="overview-value" id="avgOrderValue">₹0</span>
+          </div>
+          <div class="overview-card">
+            <span class="overview-label">Products</span>
+            <span class="overview-value" id="productsCount">0</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase Config -->
+  <script>
+    // Replace with your Firebase config
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+  </script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
