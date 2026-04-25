@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Manage Products | OK Mart Admin</title>
+  <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <link rel="stylesheet" href="css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-container">
+    
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">🛒 OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">📊</span><span>Dashboard</span>
+        </a>
+        <a href="products.html" class="nav-item active">
+          <span class="nav-icon">📦</span><span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+          <span class="nav-icon">📋</span><span>Orders</span>
+        </a>
+        <a href="/index.html" class="nav-item" target="_blank">
+          <span class="nav-icon">🏠</span><span>View Store</span>
+        </a>
+      </nav>
+    </aside>
+
+    <header class="admin-mobile-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <span>Manage Products</span>
+      <button class="add-product-mobile-btn" id="addProductMobileBtn">+ Add</button>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>📦 Product Management</h1>
+        <button class="add-product-btn" id="addProductBtn">+ Add Product</button>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="product-controls">
+        <input type="text" id="productSearch" class="search-input" placeholder="Search products...">
+        <select id="categoryFilter" class="filter-select">
+          <option value="all">All Categories</option>
+          <option value="dairy">Dairy</option>
+          <option value="fruits">Fruits</option>
+          <option value="snacks">Snacks</option>
+          <option value="beverages">Beverages</option>
+          <option value="electronics">Electronics</option>
+          <option value="grocery">Grocery</option>
+        </select>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="productsGrid">
+        <p class="loading-text">Loading products...</p>
+      </div>
+    </main>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal-overlay" id="productModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add Product</h3>
+          <button class="modal-close" id="closeModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="productForm">
+            <input type="hidden" id="productId">
+            <div class="form-group">
+              <label>Product Name *</label>
+              <input type="text" id="prodName" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Price (₹) *</label>
+                <input type="number" id="prodPrice" required>
+              </div>
+              <div class="form-group">
+                <label>MRP (₹)</label>
+                <input type="number" id="prodMrp">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Image URL *</label>
+              <input type="url" id="prodImage" required placeholder="https://...">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Category *</label>
+                <select id="prodCategory" required>
+                  <option value="">Select</option>
+                  <option value="dairy">Dairy</option>
+                  <option value="fruits">Fruits</option>
+                  <option value="snacks">Snacks</option>
+                  <option value="beverages">Beverages</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="grocery">Grocery</option>
+                  <option value="vegetables">Vegetables</option>
+                  <option value="bakery">Bakery</option>
+                  <option value="personal">Personal Care</option>
+                  <option value="household">Household</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Unit</label>
+                <input type="text" id="prodUnit" placeholder="e.g., 500g, 1L">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="prodPopular"> Mark as Popular
+              </label>
+            </div>
+            <button type="submit" class="save-btn" id="saveProductBtn">Save Product</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal-card confirm-modal">
+        <div class="modal-body">
+          <div class="confirm-icon">⚠️</div>
+          <h3>Delete Product?</h3>
+          <p id="deleteProductName">Are you sure?</p>
+          <div class="confirm-actions">
+            <button class="cancel-btn" id="cancelDelete">Cancel</button>
+            <button class="delete-btn" id="confirmDelete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+  </script>
+  <script src="js/products.js"></script>
+</body>
+</html>
