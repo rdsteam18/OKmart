@@ -1,5 +1,5 @@
 // ===== OK MART - HOME.JS =====
-// Firebase product loading, cart, wishlist, share, banner carousel
+// Dynamic home page with Firebase products & banners
 
 (function() {
   'use strict';
@@ -7,42 +7,115 @@
   const CART_KEY = 'okmart_cart';
   const WISHLIST_KEY = 'okmart_wishlist';
   
-  // ========== STATE ==========
+  // Category config with icons and display names
+  const CATEGORY_CONFIG = {
+    dairy: { name: 'Dairy & Eggs', icon: '🥛' },
+    fruits: { name: 'Fresh Fruits', icon: '🍎' },
+    vegetables: { name: 'Fresh Vegetables', icon: '🥕' },
+    snacks: { name: 'Snacks & Munchies', icon: '🍿' },
+    beverages: { name: 'Beverages', icon: '🥤' },
+    grocery: { name: 'Grocery Staples', icon: '🧺' },
+    electronics: { name: 'Electronics', icon: '📱' },
+    bakery: { name: 'Bakery', icon: '🥐' },
+    personal: { name: 'Personal Care', icon: '🧴' },
+    household: { name: 'Household', icon: '🧹' }
+  };
+  
   let allProducts = [];
   let bannerIndex = 0;
-  let bannerInterval;
   
-  // ========== FIREBASE: LOAD PRODUCTS ==========
-  async function loadProducts() {
-    try {
-      const snapshot = await db.collection('products').get();
-      allProducts = [];
-      snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
-      
-      // Sort: popular first
-      allProducts.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
-      
-      renderRecommended();
-      renderBestsellers();
-      renderPopular();
-      
-      console.log(`✅ Loaded ${allProducts.length} products`);
-    } catch (err) {
-      console.error('Firebase error:', err);
-      document.querySelectorAll('.loading-skeleton').forEach(el => {
-        el.innerHTML = '<p style="padding:20px;color:#6b7280;">Failed to load products</p>';
-      });
+  // ========== LOAD PRODUCTS & RENDER SECTIONS ==========
+  db.collection('products').where('active', '!=', false).onSnapshot(snapshot => {
+    allProducts = [];
+    snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
+    renderAllCategorySections();
+  });
+  
+  // ========== LOAD BANNERS ==========
+  db.collection('banners').where('active', '==', true).where('page', '==', 'home').onSnapshot(snapshot => {
+    const banners = [];
+    snapshot.forEach(doc => banners.push({ id: doc.id, ...doc.data() }));
+    renderBannerCarousel(banners);
+  });
+  
+  // ========== BANNER CAROUSEL ==========
+  function renderBannerCarousel(banners) {
+    const track = document.getElementById('bannerTrack');
+    const dots = document.getElementById('bannerDots');
+    
+    if (banners.length === 0) {
+      banners = [
+        { image: 'https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' },
+        { image: 'https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' },
+        { image: 'https://images.pexels.com/photos/1639556/pexels-photo-1639556.jpeg?auto=compress&cs=tinysrgb&w=600', link: '/offers.html' }
+      ];
     }
+    
+    track.innerHTML = banners.map((b, i) => `
+      <div class="banner-slide">
+        <a href="${b.link || '/offers.html'}">
+          <img src="${b.image}" alt="Offer" loading="${i === 0 ? 'eager' : 'lazy'}" onerror="this.src='https://via.placeholder.com/600x150?text=OK+Mart+Offer'">
+        </a>
+      </div>
+    `).join('');
+    
+    dots.innerHTML = banners.map((_, i) => `
+      <span class="banner-dot ${i === 0 ? 'active' : ''}" onclick="window.goToBanner(${i})"></span>
+    `).join('');
+    
+    if (banners.length > 1) startAutoSlide(banners.length);
   }
   
-  // ========== RENDER PRODUCT CARD ==========
+  function startAutoSlide(total) {
+    setInterval(() => {
+      bannerIndex = (bannerIndex + 1) % total;
+      document.getElementById('bannerTrack').style.transform = `translateX(-${bannerIndex * 100}%)`;
+      document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === bannerIndex));
+    }, 3000);
+  }
+  
+  window.goToBanner = (i) => {
+    bannerIndex = i;
+    document.getElementById('bannerTrack').style.transform = `translateX(-${bannerIndex * 100}%)`;
+    document.querySelectorAll('.banner-dot').forEach((d, j) => d.classList.toggle('active', j === i));
+  };
+  
+  // ========== RENDER CATEGORY SECTIONS ==========
+  function renderAllCategorySections() {
+    const container = document.getElementById('categorySections');
+    container.innerHTML = '';
+    
+    Object.entries(CATEGORY_CONFIG).forEach(([category, config]) => {
+      const products = allProducts.filter(p => p.category === category).slice(0, 10);
+      if (products.length === 0) return;
+      
+      const section = document.createElement('section');
+      section.className = 'category-section';
+      section.innerHTML = `
+        <div class="section-header">
+          <h2 class="section-title">${config.icon} ${config.name}</h2>
+          <a href="/categories/${category}.html" class="view-all">View All →</a>
+        </div>
+        <div class="product-slider" id="slider-${category}"></div>
+      `;
+      
+      container.appendChild(section);
+      
+      const slider = section.querySelector('.product-slider');
+      products.forEach(product => {
+        slider.appendChild(createProductCard(product));
+      });
+    });
+  }
+  
+  // ========== CREATE PRODUCT CARD ==========
   function createProductCard(product) {
     const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
     
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
-      <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
+      <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/150?text=OK'">
       ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
       <button class="wishlist-btn">${isInWishlist(product.id) ? '❤️' : '🤍'}</button>
       <button class="share-btn">📤</button>
@@ -56,57 +129,17 @@
       <button class="add-btn">ADD</button>
     `;
     
-    // Click → product detail
-    card.addEventListener('click', e => {
-      if (!e.target.closest('button')) location.href = `/product.html?id=${product.id}`;
-    });
-    
-    // Add to cart
-    card.querySelector('.add-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      addToCart(product);
-    });
-    
-    // Wishlist toggle
-    card.querySelector('.wishlist-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      toggleWishlist(product, e.target);
-    });
-    
-    // Share
-    card.querySelector('.share-btn').addEventListener('click', e => {
-      e.stopPropagation();
-      shareProduct(product);
-    });
+    card.addEventListener('click', e => { if (!e.target.closest('button')) location.href = `/product.html?id=${product.id}`; });
+    card.querySelector('.add-btn').addEventListener('click', e => { e.stopPropagation(); addToCart(product); });
+    card.querySelector('.wishlist-btn').addEventListener('click', e => { e.stopPropagation(); toggleWishlist(product, e.target); });
+    card.querySelector('.share-btn').addEventListener('click', e => { e.stopPropagation(); shareProduct(product); });
     
     return card;
   }
   
-  // ========== RENDER SECTIONS ==========
-  function renderRecommended() {
-    const slider = document.getElementById('recommendedSlider');
-    if (!slider) return;
-    slider.innerHTML = '';
-    allProducts.slice(0, 8).forEach(p => slider.appendChild(createProductCard(p)));
-  }
-  
-  function renderBestsellers() {
-    const grid = document.getElementById('bestsellerGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    allProducts.filter(p => p.popular).slice(0, 6).forEach(p => grid.appendChild(createProductCard(p)));
-  }
-  
-  function renderPopular() {
-    const slider = document.getElementById('popularSlider');
-    if (!slider) return;
-    slider.innerHTML = '';
-    allProducts.slice(4, 12).forEach(p => slider.appendChild(createProductCard(p)));
-  }
-  
-  // ========== CART FUNCTIONS ==========
+  // ========== CART ==========
   function getCart() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
-  function saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartUI(); }
+  function saveCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartUI(); }
   
   function addToCart(product) {
     const cart = getCart();
@@ -122,19 +155,14 @@
     const total = cart.reduce((s, i) => s + i.quantity, 0);
     const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
     
-    // Badge
     const badge = document.getElementById('cartBadge');
     if (badge) badge.textContent = total;
     
-    // Floating bar
     const bar = document.getElementById('floatingCartBar');
-    const barCount = document.getElementById('barCartCount');
-    const barTotal = document.getElementById('barCartTotal');
-    
     if (total > 0) {
       bar.classList.add('visible');
-      if (barCount) barCount.textContent = `${total} item${total !== 1 ? 's' : ''}`;
-      if (barTotal) barTotal.textContent = `₹${subtotal}`;
+      document.getElementById('barCartCount').textContent = `${total} item${total !== 1 ? 's' : ''}`;
+      document.getElementById('barCartTotal').textContent = '₹' + subtotal;
     } else {
       bar.classList.remove('visible');
     }
@@ -160,59 +188,17 @@
   }
   
   // ========== TOAST ==========
-  function showToast(msg, type = 'info') {
+  function showToast(msg, type) {
     const toast = document.getElementById('toastMessage');
     toast.textContent = msg;
     toast.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
     toast.style.color = 'white';
     toast.classList.add('show');
-    clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    clearTimeout(window._t);
+    window._t = setTimeout(() => toast.classList.remove('show'), 2500);
   }
   
-  // ========== BANNER CAROUSEL ==========
-  function startBannerCarousel() {
-    const track = document.getElementById('bannerTrack');
-    const dots = document.querySelectorAll('#bannerDots .dot');
-    const slides = document.querySelectorAll('.banner-slide');
-    if (!track || slides.length === 0) return;
-    
-    function goToSlide(index) {
-      bannerIndex = index;
-      track.style.transform = `translateX(-${bannerIndex * 100}%)`;
-      dots.forEach((d, i) => d.classList.toggle('active', i === bannerIndex));
-    }
-    
-    function nextSlide() {
-      bannerIndex = (bannerIndex + 1) % slides.length;
-      goToSlide(bannerIndex);
-    }
-    
-    dots.forEach((dot, i) => dot.addEventListener('click', () => goToSlide(i)));
-    
-    // Auto slide
-    bannerInterval = setInterval(nextSlide, 3000);
-    
-    // Touch swipe
-    let startX = 0;
-    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-    track.addEventListener('touchend', e => {
-      const diff = startX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) bannerIndex = (bannerIndex + 1) % slides.length;
-        else bannerIndex = (bannerIndex - 1 + slides.length) % slides.length;
-        goToSlide(bannerIndex);
-      }
-    });
-  }
-  
-  // ========== INIT ==========
-  async function init() {
-    await loadProducts();
-    updateCartUI();
-    startBannerCarousel();
-    console.log('✅ Home page ready');
-  }
-  
-  init();
+  // Init
+  updateCartUI();
+  console.log('✅ Home page ready');
 })();
