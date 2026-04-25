@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Offer Management | OK Mart Admin</title>
+  <title>Offers & Banners | OK Mart Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
@@ -22,28 +22,28 @@
     .main-content{flex:1;margin-left:250px;padding:24px}
     .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
     h1{font-size:1.8rem;font-weight:800}
+    h2{font-size:1.2rem;font-weight:700;margin:24px 0 16px}
     .add-btn{background:#2ecc71;color:white;border:none;padding:12px 20px;border-radius:12px;font-weight:600;cursor:pointer}
-    .offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-    .offer-card{background:white;border-radius:16px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid #e5e7eb}
-    .offer-header{display:flex;justify-content:space-between;margin-bottom:12px}
-    .offer-code{font-weight:700;font-family:monospace;font-size:1.2rem;color:#27ae60}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .card{background:white;border-radius:16px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid #e5e7eb}
+    .card-header{display:flex;justify-content:space-between;margin-bottom:10px}
+    .code{font-weight:700;font-family:monospace;font-size:1.1rem;color:#27ae60}
     .badge-active{background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600}
     .badge-inactive{background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:600}
-    .offer-desc{font-size:.9rem;margin-bottom:8px}
-    .offer-detail{font-size:.8rem;color:#6b7280;margin-bottom:12px}
-    .offer-actions{display:flex;gap:8px}
+    .card-actions{display:flex;gap:8px;margin-top:12px}
     .edit-btn,.delete-btn{padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:500}
     .edit-btn{background:#f8fafc;border:1px solid #e5e7eb}
     .delete-btn{background:#fee2e2;color:#ef4444;border:1px solid #ef4444}
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
     .modal-overlay.active{display:flex}
-    .modal-card{background:white;border-radius:20px;width:90%;max-width:450px;padding:24px}
+    .modal-card{background:white;border-radius:20px;width:90%;max-width:450px;padding:24px;max-height:80vh;overflow-y:auto}
     .modal-card h3{margin-bottom:16px}
     .form-group{margin-bottom:14px}
     .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
     .form-group input,.form-group select{width:100%;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem}
     .form-row{display:flex;gap:12px}.form-row .form-group{flex:1}
     .save-btn{width:100%;padding:14px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;cursor:pointer;margin-top:8px}
+    .banner-card img{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:10px}
     .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
     .toast.show{opacity:1;bottom:50px}.toast.success{background:#10b981}
     @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}}
@@ -65,74 +65,136 @@
       <div class="sidebar-footer"><button onclick="location.href='/'">🚪 Exit</button></div>
     </aside>
     <main class="main-content">
-      <div class="header-row"><h1>🏷️ Offer Management</h1><button class="add-btn" onclick="openModal()">+ Add Coupon</button></div>
-      <div class="offers-grid" id="offersGrid"><p>Loading...</p></div>
+      
+      <!-- Coupons Section -->
+      <div class="header-row"><h1>🏷️ Coupons</h1><button class="add-btn" onclick="openCouponModal()">+ Add Coupon</button></div>
+      <div class="cards-grid" id="couponsGrid"><p>Loading...</p></div>
+      
+      <!-- Banners Section -->
+      <h2>🖼️ Banners</h2>
+      <div class="header-row"><span></span><button class="add-btn" onclick="openBannerModal()">+ Add Banner</button></div>
+      <div class="cards-grid" id="bannersGrid"><p>Loading...</p></div>
     </main>
-    <div class="modal-overlay" id="offerModal">
+    
+    <!-- Coupon Modal -->
+    <div class="modal-overlay" id="couponModal">
       <div class="modal-card">
-        <h3 id="modalTitle">Add Coupon</h3>
-        <form id="offerForm">
-          <input type="hidden" id="offerId">
-          <div class="form-group"><label>Coupon Code *</label><input type="text" id="offerCode" required></div>
+        <h3 id="couponModalTitle">Add Coupon</h3>
+        <form id="couponForm">
+          <input type="hidden" id="couponId">
+          <div class="form-group"><label>Code *</label><input type="text" id="cCode" required></div>
           <div class="form-row">
-            <div class="form-group"><label>Type *</label><select id="offerType" required><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
-            <div class="form-group"><label>Discount *</label><input type="number" id="offerDiscount" required></div>
+            <div class="form-group"><label>Type *</label><select id="cType"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
+            <div class="form-group"><label>Discount *</label><input type="number" id="cDiscount" required></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Min Order (₹) *</label><input type="number" id="offerMin" required></div>
-            <div class="form-group"><label>Max Discount</label><input type="number" id="offerMax" placeholder="Optional"></div>
+            <div class="form-group"><label>Min Order *</label><input type="number" id="cMin" required></div>
+            <div class="form-group"><label>Max Discount</label><input type="number" id="cMax"></div>
           </div>
-          <div class="form-group"><label>Status</label><select id="offerActive"><option value="true">Active</option><option value="false">Inactive</option></select></div>
+          <div class="form-group"><label>Description</label><input type="text" id="cDesc"></div>
+          <div class="form-group"><label>Active</label><select id="cActive"><option value="true">Yes</option><option value="false">No</option></select></div>
           <button type="submit" class="save-btn">Save Coupon</button>
         </form>
       </div>
     </div>
+    
+    <!-- Banner Modal -->
+    <div class="modal-overlay" id="bannerModal">
+      <div class="modal-card">
+        <h3 id="bannerModalTitle">Add Banner</h3>
+        <form id="bannerForm">
+          <input type="hidden" id="bannerId">
+          <div class="form-group"><label>Title *</label><input type="text" id="bTitle" required></div>
+          <div class="form-group"><label>Image URL *</label><input type="text" id="bImage" required></div>
+          <div class="form-group"><label>Link</label><input type="text" id="bLink" placeholder="/offers.html"></div>
+          <div class="form-group"><label>Active</label><select id="bActive"><option value="true">Yes</option><option value="false">No</option></select></div>
+          <button type="submit" class="save-btn">Save Banner</button>
+        </form>
+      </div>
+    </div>
+    
     <div class="toast" id="toast"></div>
   </div>
   <script src="/js/firebase.js"></script>
   <script>
-    const modal=document.getElementById('offerModal');
-    let editingId=null;
-    function openModal(o=null){
-      editingId=o?.id||null;
-      document.getElementById('modalTitle').textContent=o?'Edit Coupon':'Add Coupon';
-      document.getElementById('offerId').value=o?.id||'';
-      document.getElementById('offerCode').value=o?.code||'';
-      document.getElementById('offerType').value=o?.type||'flat';
-      document.getElementById('offerDiscount').value=o?.discount||'';
-      document.getElementById('offerMin').value=o?.minOrder||'';
-      document.getElementById('offerMax').value=o?.maxDiscount||'';
-      document.getElementById('offerActive').value=o?.active!==false?'true':'false';
-      modal.classList.add('active');
+    // ===== COUPONS =====
+    const couponModal=document.getElementById('couponModal');
+    let couponEditId=null;
+    function openCouponModal(o=null){
+      couponEditId=o?.id||null;
+      document.getElementById('couponModalTitle').textContent=o?'Edit Coupon':'Add Coupon';
+      document.getElementById('couponId').value=o?.id||'';
+      document.getElementById('cCode').value=o?.code||'';
+      document.getElementById('cType').value=o?.type||'flat';
+      document.getElementById('cDiscount').value=o?.discount||'';
+      document.getElementById('cMin').value=o?.minOrder||'';
+      document.getElementById('cMax').value=o?.maxDiscount||'';
+      document.getElementById('cDesc').value=o?.description||'';
+      document.getElementById('cActive').value=o?.active!==false?'true':'false';
+      couponModal.classList.add('active');
     }
-    modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('active')});
-    document.getElementById('offerForm').addEventListener('submit',async e=>{
+    couponModal.addEventListener('click',e=>{if(e.target===couponModal)couponModal.classList.remove('active')});
+    document.getElementById('couponForm').addEventListener('submit',async e=>{
       e.preventDefault();
       const data={
-        code:document.getElementById('offerCode').value.toUpperCase().trim(),
-        type:document.getElementById('offerType').value,
-        discount:Number(document.getElementById('offerDiscount').value),
-        minOrder:Number(document.getElementById('offerMin').value),
-        maxDiscount:Number(document.getElementById('offerMax').value)||null,
-        active:document.getElementById('offerActive').value==='true'
+        code:document.getElementById('cCode').value.toUpperCase().trim(),
+        type:document.getElementById('cType').value,
+        discount:Number(document.getElementById('cDiscount').value),
+        minOrder:Number(document.getElementById('cMin').value),
+        maxDiscount:Number(document.getElementById('cMax').value)||null,
+        description:document.getElementById('cDesc').value.trim(),
+        active:document.getElementById('cActive').value==='true'
       };
-      try{
-        if(editingId) await db.collection('offers').doc(editingId).update(data);
-        else await db.collection('offers').add(data);
-        modal.classList.remove('active');
-        showToast(editingId?'Updated!':'Added!','success');
-      }catch(err){console.error(err)}
+      if(couponEditId) await db.collection('offers').doc(couponEditId).update(data);
+      else await db.collection('offers').add(data);
+      couponModal.classList.remove('active');
+      showToast(couponEditId?'Updated!':'Added!','success');
     });
-    function deleteOffer(id){if(confirm('Delete?'))db.collection('offers').doc(id).delete().then(()=>showToast('Deleted'))}
+    function deleteCoupon(id){if(confirm('Delete?'))db.collection('offers').doc(id).delete().then(()=>showToast('Deleted'))}
+    
     db.collection('offers').onSnapshot(s=>{
-      const grid=document.getElementById('offersGrid');
-      if(s.empty){grid.innerHTML='<p>No offers</p>';return}
+      const grid=document.getElementById('couponsGrid');
+      if(s.empty){grid.innerHTML='<p>No coupons</p>';return}
       grid.innerHTML='';
-      s.forEach(doc=>{
-        const d=doc.data();
-        grid.innerHTML+=`<div class="offer-card"><div class="offer-header"><span class="offer-code">${d.code}</span><span class="${d.active?'badge-active':'badge-inactive'}">${d.active?'Active':'Inactive'}</span></div><div class="offer-desc">${d.type==='flat'?'₹'+d.discount+' OFF':d.discount+'% OFF'}</div><div class="offer-detail">Min order: ₹${d.minOrder}${d.maxDiscount?' · Max discount: ₹'+d.maxDiscount:''}</div><div class="offer-actions"><button class="edit-btn" onclick="openModal({id:'${doc.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},active:${d.active}})">✏️ Edit</button><button class="delete-btn" onclick="deleteOffer('${doc.id}')">🗑️ Delete</button></div></div>`;
-      });
+      s.forEach(doc=>{const d=doc.data();grid.innerHTML+=`<div class="card"><div class="card-header"><span class="code">${d.code}</span><span class="${d.active?'badge-active':'badge-inactive'}">${d.active?'Active':'Inactive'}</span></div><p style="margin-bottom:6px;">${d.description||d.type==='flat'?'₹'+d.discount+' OFF':d.discount+'% OFF'}</p><p style="font-size:.8rem;color:#6b7280;">Min: ₹${d.minOrder}${d.maxDiscount?' · Max: ₹'+d.maxDiscount:''}</p><div class="card-actions"><button class="edit-btn" onclick="openCouponModal({id:'${doc.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},description:'${(d.description||'').replace(/'/g,"\\'")}',active:${d.active}})">✏️ Edit</button><button class="delete-btn" onclick="deleteCoupon('${doc.id}')">🗑️ Delete</button></div></div>`});
     });
+    
+    // ===== BANNERS =====
+    const bannerModal=document.getElementById('bannerModal');
+    let bannerEditId=null;
+    function openBannerModal(b=null){
+      bannerEditId=b?.id||null;
+      document.getElementById('bannerModalTitle').textContent=b?'Edit Banner':'Add Banner';
+      document.getElementById('bannerId').value=b?.id||'';
+      document.getElementById('bTitle').value=b?.title||'';
+      document.getElementById('bImage').value=b?.image||'';
+      document.getElementById('bLink').value=b?.link||'';
+      document.getElementById('bActive').value=b?.active!==false?'true':'false';
+      bannerModal.classList.add('active');
+    }
+    bannerModal.addEventListener('click',e=>{if(e.target===bannerModal)bannerModal.classList.remove('active')});
+    document.getElementById('bannerForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const data={
+        title:document.getElementById('bTitle').value.trim(),
+        image:document.getElementById('bImage').value.trim(),
+        link:document.getElementById('bLink').value.trim(),
+        active:document.getElementById('bActive').value==='true'
+      };
+      if(bannerEditId) await db.collection('banners').doc(bannerEditId).update(data);
+      else await db.collection('banners').add(data);
+      bannerModal.classList.remove('active');
+      showToast(bannerEditId?'Updated!':'Added!','success');
+    });
+    function deleteBanner(id){if(confirm('Delete?'))db.collection('banners').doc(id).delete().then(()=>showToast('Deleted'))}
+    
+    db.collection('banners').onSnapshot(s=>{
+      const grid=document.getElementById('bannersGrid');
+      if(s.empty){grid.innerHTML='<p>No banners</p>';return}
+      grid.innerHTML='';
+      s.forEach(doc=>{const d=doc.data();grid.innerHTML+=`<div class="card banner-card"><img src="${d.image}" onerror="this.src='https://via.placeholder.com/300x120'"><p style="font-weight:600;">${d.title}</p><p style="font-size:.8rem;color:#6b7280;">${d.link||'No link'}</p><span class="${d.active?'badge-active':'badge-inactive'}">${d.active?'Active':'Inactive'}</span><div class="card-actions" style="margin-top:10px;"><button class="edit-btn" onclick="openBannerModal({id:'${doc.id}',title:'${d.title.replace(/'/g,"\\'")}',image:'${d.image}',link:'${d.link||''}',active:${d.active}})">✏️ Edit</button><button class="delete-btn" onclick="deleteBanner('${doc.id}')">🗑️ Delete</button></div></div>`});
+    });
+    
     function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
   </script>
 </body>
