@@ -5,691 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Order Management | OK Mart Admin</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#2ecc71">
-  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    
-    .admin-container { display: flex; min-height: 100vh; }
-    
-    /* Sidebar */
-    .sidebar {
-      width: 260px;
-      background: #1a1e2b;
-      color: white;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.3s;
-    }
-    
-    .sidebar-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    
-    .sidebar-nav { flex: 1; padding: 20px 0; }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,0.7);
-      text-decoration: none;
-      transition: all 0.15s;
-      font-weight: 500;
-    }
-    
-    .sidebar-nav a:hover,
-    .sidebar-nav a.active {
-      background: rgba(255,255,255,0.08);
-      color: white;
-    }
-    
-    .sidebar-nav a.active { border-left: 3px solid var(--primary); }
-    
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-    
-    .logout-btn {
-      width: 100%; padding: 12px;
-      background: rgba(255,255,255,0.1);
-      border: none; color: white;
-      border-radius: 10px; cursor: pointer;
-      font-weight: 500; font-size: 0.9rem;
-    }
-    
-    .logout-btn:hover { background: rgba(239,68,68,0.2); }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 260px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 { font-size: 1.8rem; font-weight: 800; }
-    
-    .order-count { color: var(--muted); font-size: 0.95rem; }
-    
-    /* Filter Tabs */
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    
-    .filter-tab {
-      padding: 10px 18px;
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.85rem;
-      transition: all 0.15s;
-    }
-    
-    .filter-tab.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-    
-    .filter-tab .count {
-      background: rgba(0,0,0,0.1);
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-left: 4px;
-      font-size: 0.75rem;
-    }
-    
-    .filter-tab.active .count {
-      background: rgba(255,255,255,0.2);
-    }
-    
-    /* Search */
-    .search-box {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 0.9rem;
-      margin-bottom: 16px;
-    }
-    
-    /* Orders List */
-    .orders-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    
-    .order-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-      border: 1px solid var(--border);
-      transition: all 0.15s;
-    }
-    
-    .order-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
-    
-    .order-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    .order-id {
-      font-weight: 700;
-      font-family: monospace;
-      font-size: 1rem;
-      color: var(--primary-dark);
-    }
-    
-    .order-customer {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-    
-    .order-phone {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    
-    .order-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .order-total {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    
-    .order-date {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    
-    /* ===== STATUS DROPDOWN ===== */
-    .status-dropdown-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .status-dropdown-wrapper label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
-    
-    .status-select {
-      padding: 8px 32px 8px 12px;
-      border-radius: 8px;
-      border: 1.5px solid var(--border);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: white;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      transition: all 0.15s;
-    }
-    
-    .status-select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
-    }
-    
-    /* Status-based select colors */
-    .status-select.received {
-      background-color: #fef3c7;
-      border-color: #f59e0b;
-      color: #92400e;
-    }
-    
-    .status-select.preparing {
-      background-color: #dbeafe;
-      border-color: #3b82f6;
-      color: #1e40af;
-    }
-    
-    .status-select.outfordelivery {
-      background-color: #d1fae5;
-      border-color: #10b981;
-      color: #065f46;
-    }
-    
-    .status-select.delivered {
-      background-color: #e0e7ff;
-      border-color: #6366f1;
-      color: #3730a3;
-    }
-    
-    .status-select.cancelled {
-      background-color: #fee2e2;
-      border-color: #ef4444;
-      color: #991b1b;
-    }
-    
-    /* Saving indicator */
-    .saving-indicator {
-      font-size: 0.7rem;
-      color: var(--muted);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    
-    .saving-indicator.visible {
-      opacity: 1;
-    }
-    
-    .saving-indicator.success {
-      color: #10b981;
-    }
-    
-    /* Items Preview */
-    .items-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    
-    .items-row img {
-      width: 30px; height: 30px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 2px solid white;
-    }
-    
-    .items-count {
-      font-size: 0.75rem;
-      color: var(--muted);
-      align-self: center;
-    }
-    
-    /* Loading */
-    .loading-text { text-align: center; color: var(--muted); padding: 40px; }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      font-weight: 500;
-      z-index: 300;
-      opacity: 0;
-      transition: all 0.3s;
-      white-space: nowrap;
-    }
-    
-    .toast.show { opacity: 1; bottom: 50px; }
-    .toast.success { background: #10b981; }
-    .toast.error { background: #ef4444; }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { margin-left: 0; padding: 16px; }
-      .mobile-header { display: flex; }
-      .order-bottom { flex-direction: column; align-items: flex-start; }
-      .status-dropdown-wrapper { width: 100%; }
-      .status-select { width: 100%; }
-    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .admin-layout{display:flex;min-height:100vh}
+    .sidebar{width:250px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-brand span{font-size:1.2rem;font-weight:700}
+    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.6rem;text-transform:uppercase;font-weight:600}
+    .sidebar-nav{flex:1;padding:20px 0}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a.active{border-left:3px solid #2ecc71}
+    .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:250px;padding:24px}
+    h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+    .filter-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+    .filter-tab{padding:10px 18px;background:white;border:1.5px solid #e5e7eb;border-radius:40px;cursor:pointer;font-weight:500;font-size:.85rem}
+    .filter-tab.active{background:#2ecc71;color:white;border-color:#2ecc71}
+    .order-card{background:white;border-radius:16px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.04);margin-bottom:12px;border:1px solid #e5e7eb}
+    .order-top{display:flex;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap}
+    .order-id{font-weight:700;font-family:monospace;color:#27ae60}
+    .order-customer{font-weight:600}
+    .order-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .order-total{font-weight:700;font-size:1.1rem}
+    .order-date{font-size:.8rem;color:#6b7280}
+    .status-select{padding:8px 12px;border-radius:8px;border:1.5px solid #e5e7eb;font-size:.8rem;font-weight:600;cursor:pointer}
+    .status-received{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+    .status-preparing{background:#dbeafe;border-color:#3b82f6;color:#1e40af}
+    .status-outfordelivery{background:#d1fae5;border-color:#10b981;color:#065f46}
+    .status-delivered{background:#e0e7ff;border-color:#6366f1;color:#3730a3}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
+    .toast.show{opacity:1;bottom:50px}.toast.success{background:#10b981}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}}
   </style>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="admin-container">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <span class="sidebar-logo">🛒 OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html" class="active">📋 Orders</a>
         <a href="products.html">📦 Products</a>
-        <a href="/index.html" target="_blank">🏠 View Store</a>
+        <a href="orders.html" class="active">📋 Orders</a>
+        <a href="offers.html">🏷️ Offers</a>
       </nav>
-      <div class="sidebar-footer">
-        <button class="logout-btn" onclick="location.href='/index.html'">🚪 Exit Admin</button>
-      </div>
+      <div class="sidebar-footer"><button onclick="location.href='/'">🚪 Exit</button></div>
     </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Order Management</span>
-      <span></span>
-    </div>
-
-    <!-- Main Content -->
     <main class="main-content">
-      <div class="page-header">
-        <h1>📋 Order Management</h1>
-        <span class="order-count" id="totalOrdersCount">Loading...</span>
-      </div>
-
-      <!-- Search -->
-      <input type="text" class="search-box" id="searchOrders" placeholder="🔍 Search by Order ID, Name, or Phone...">
-
-      <!-- Status Filter Tabs -->
+      <h1>📋 Order Management</h1>
       <div class="filter-tabs" id="filterTabs">
-        <button class="filter-tab active" data-status="all">All <span class="count" id="countAll">0</span></button>
-        <button class="filter-tab" data-status="received">Received <span class="count" id="countReceived">0</span></button>
-        <button class="filter-tab" data-status="preparing">Preparing <span class="count" id="countPreparing">0</span></button>
-        <button class="filter-tab" data-status="outfordelivery">Out for Delivery <span class="count" id="countDelivery">0</span></button>
-        <button class="filter-tab" data-status="delivered">Delivered <span class="count" id="countDelivered">0</span></button>
+        <button class="filter-tab active" data-status="all">All</button>
+        <button class="filter-tab" data-status="received">Received</button>
+        <button class="filter-tab" data-status="preparing">Preparing</button>
+        <button class="filter-tab" data-status="outfordelivery">Out for Delivery</button>
+        <button class="filter-tab" data-status="delivered">Delivered</button>
       </div>
-
-      <!-- Orders List -->
-      <div class="orders-list" id="ordersList">
-        <p class="loading-text">Loading orders from Firebase...</p>
-      </div>
+      <div class="orders-list" id="ordersList"><p style="color:#6b7280;">Loading...</p></div>
     </main>
+    <div class="toast" id="toast"></div>
   </div>
-
-  <!-- Toast Notification -->
-  <div class="toast" id="toast"></div>
-
-  <!-- Firebase Config -->
   <script src="/js/firebase.js"></script>
-  
-  <!-- Orders JavaScript -->
   <script>
-    // ===== OK MART - ADMIN ORDERS WITH STATUS UPDATE =====
-    (function() {
-      
-      const db = window.db || firebase.firestore();
-      let allOrders = [];
-      let currentStatusFilter = 'all';
-      let currentSearchQuery = '';
-      
-      // ---------- LOAD ORDERS (REAL-TIME) ----------
-      
-      function loadOrders() {
-        db.collection('orders')
-          .orderBy('orderDate', 'desc')
-          .onSnapshot((snapshot) => {
-            allOrders = [];
-            
-            snapshot.forEach(doc => {
-              const data = doc.data();
-              allOrders.push({
-                id: doc.id,
-                orderId: data.orderId || doc.id.slice(-8).toUpperCase(),
-                customerName: data.customerName || data.name || 'Customer',
-                phone: data.customerPhone || data.phone || '-',
-                total: Number(data.total) || 0,
-                status: data.status || 'received',
-                date: data.orderDate || data.date || new Date().toISOString(),
-                items: data.items || [],
-                address: data.customerAddress || data.address || ''
-              });
-            });
-            
-            renderOrders();
-            updateFilterCounts();
-          }, (error) => {
-            console.error('Error loading orders:', error);
-            document.getElementById('ordersList').innerHTML = 
-              '<p class="loading-text" style="color:#ef4444;">Error loading orders. Check console.</p>';
-          });
-      }
-      
-      // ---------- FILTER & SEARCH ----------
-      
-      function getFilteredOrders() {
-        let filtered = [...allOrders];
-        
-        // Status filter
-        if (currentStatusFilter !== 'all') {
-          filtered = filtered.filter(o => o.status === currentStatusFilter);
-        }
-        
-        // Search filter
-        if (currentSearchQuery.trim()) {
-          const query = currentSearchQuery.toLowerCase().trim();
-          filtered = filtered.filter(o => 
-            o.orderId.toLowerCase().includes(query) ||
-            o.customerName.toLowerCase().includes(query) ||
-            o.phone.includes(query)
-          );
-        }
-        
-        return filtered;
-      }
-      
-      function updateFilterCounts() {
-        document.getElementById('countAll').textContent = allOrders.length;
-        document.getElementById('countReceived').textContent = allOrders.filter(o => o.status === 'received').length;
-        document.getElementById('countPreparing').textContent = allOrders.filter(o => o.status === 'preparing').length;
-        document.getElementById('countDelivery').textContent = allOrders.filter(o => o.status === 'outfordelivery').length;
-        document.getElementById('countDelivered').textContent = allOrders.filter(o => o.status === 'delivered').length;
-      }
-      
-      // ---------- RENDER ORDERS ----------
-      
-      function renderOrders() {
-        const filtered = getFilteredOrders();
-        const ordersList = document.getElementById('ordersList');
-        
-        document.getElementById('totalOrdersCount').textContent = `${allOrders.length} total orders`;
-        
-        if (filtered.length === 0) {
-          ordersList.innerHTML = '<p class="loading-text">No orders found</p>';
-          return;
-        }
-        
-        ordersList.innerHTML = filtered.map(order => {
-          const itemImages = (order.items || []).slice(0, 4).map(item => 
-            `<img src="${item.image || 'https://via.placeholder.com/30'}" alt="" onerror="this.src='https://via.placeholder.com/30?text=OK'">`
-          ).join('');
-          
-          return `
-            <div class="order-card" id="order-${order.id}">
-              <div class="order-card-top">
-                <div>
-                  <div class="order-id">#${order.orderId}</div>
-                  <div class="order-customer">${order.customerName}</div>
-                  <div class="order-phone">📱 ${order.phone}</div>
-                </div>
-              </div>
-              
-              <div class="order-bottom">
-                <div>
-                  <div class="order-total">₹${order.total.toLocaleString('en-IN')}</div>
-                  <div class="order-date">📅 ${new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
-                </div>
-                
-                <!-- STATUS DROPDOWN -->
-                <div class="status-dropdown-wrapper">
-                  <label>Status:</label>
-                  <select class="status-select ${order.status}" 
-                          data-order-id="${order.id}" 
-                          onchange="window.updateOrderStatus(this)" 
-                          aria-label="Update order status">
-                    <option value="received" ${order.status === 'received' ? 'selected' : ''}>📋 Order Received</option>
-                    <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>🟡 Preparing</option>
-                    <option value="outfordelivery" ${order.status === 'outfordelivery' ? 'selected' : ''}>🚚 Out for Delivery</option>
-                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
-                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
-                  </select>
-                  <span class="saving-indicator" id="saving-${order.id}"></span>
-                </div>
-              </div>
-              
-              ${itemImages ? `
-                <div class="items-row">
-                  ${itemImages}
-                  ${order.items.length > 4 ? `<span class="items-count">+${order.items.length - 4} more</span>` : ''}
-                </div>
-              ` : ''}
-            </div>
-          `;
-        }).join('');
-      }
-      
-      // ---------- UPDATE ORDER STATUS ----------
-      
-      window.updateOrderStatus = async function(selectElement) {
-        const orderId = selectElement.dataset.orderId;
-        const newStatus = selectElement.value;
-        const savingIndicator = document.getElementById(`saving-${orderId}`);
-        
-        // Show saving indicator
-        if (savingIndicator) {
-          savingIndicator.textContent = 'Saving...';
-          savingIndicator.classList.add('visible');
-        }
-        
-        try {
-          // Update Firebase
-          await db.collection('orders').doc(orderId).update({
-            status: newStatus
-          });
-          
-          // Update select styling
-          selectElement.className = `status-select ${newStatus}`;
-          
-          // Show success
-          if (savingIndicator) {
-            savingIndicator.textContent = '✓ Saved';
-            savingIndicator.classList.add('success');
-            setTimeout(() => {
-              savingIndicator.classList.remove('visible', 'success');
-            }, 2000);
-          }
-          
-          showToast(`Order #${orderId.slice(-6)} updated to "${newStatus}"`, 'success');
-          console.log(`✅ Order ${orderId} status updated to: ${newStatus}`);
-          
-        } catch (error) {
-          console.error('❌ Error updating status:', error);
-          
-          if (savingIndicator) {
-            savingIndicator.textContent = '✕ Failed';
-            savingIndicator.style.color = '#ef4444';
-            setTimeout(() => {
-              savingIndicator.classList.remove('visible');
-              savingIndicator.style.color = '';
-            }, 3000);
-          }
-          
-          showToast('Failed to update status', 'error');
-          
-          // Reset select to original value
-          const order = allOrders.find(o => o.id === orderId);
-          if (order) {
-            selectElement.value = order.status;
-            selectElement.className = `status-select ${order.status}`;
-          }
-        }
-      };
-      
-      // ---------- TOAST ----------
-      
-      function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        toast.classList.add('show');
-        
-        setTimeout(() => {
-          toast.classList.remove('show');
-        }, 3000);
-      }
-      
-      // ---------- EVENT LISTENERS ----------
-      
-      // Filter tabs
-      document.querySelectorAll('.filter-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          currentStatusFilter = tab.dataset.status;
-          renderOrders();
-        });
-      });
-      
-      // Search
-      document.getElementById('searchOrders').addEventListener('input', (e) => {
-        currentSearchQuery = e.target.value;
-        renderOrders();
-      });
-      
-      // Mobile menu
-      document.querySelector('.menu-toggle')?.addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('open');
-      });
-      
-      // ---------- INIT ----------
-      
-      loadOrders();
-      console.log('🔥 Admin Orders loaded with real-time status update');
-      
-    })();
+    let filter='all';
+    document.querySelectorAll('.filter-tab').forEach(t=>t.addEventListener('click',function(){
+      document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      filter=this.dataset.status;
+      renderOrders();
+    }));
+    db.collection('orders').orderBy('orderDate','desc').onSnapshot(s=>{
+      window._orders=[];
+      s.forEach(doc=>window._orders.push({id:doc.id,...doc.data()}));
+      renderOrders();
+    });
+    function renderOrders(){
+      let orders=window._orders||[];
+      if(filter!=='all') orders=orders.filter(o=>o.status===filter);
+      const list=document.getElementById('ordersList');
+      if(!orders.length){list.innerHTML='<p style="color:#6b7280;">No orders</p>';return}
+      list.innerHTML=orders.map(o=>`<div class="order-card"><div class="order-top"><span class="order-id">#${o.orderId||o.id.slice(-8)}</span><span class="order-customer">${o.customerName||'-'} · ${o.customerPhone||'-'}</span></div><div class="order-bottom"><div><span class="order-total">₹${(o.total||0).toLocaleString('en-IN')}</span><br><span class="order-date">${new Date(o.orderDate).toLocaleDateString('en-IN')}</span></div><select class="status-select status-${o.status||'received'}" onchange="updateStatus('${o.id}',this.value)"><option value="received" ${o.status==='received'?'selected':''}>📋 Received</option><option value="preparing" ${o.status==='preparing'?'selected':''}>🟡 Preparing</option><option value="outfordelivery" ${o.status==='outfordelivery'?'selected':''}>🚚 Out for Delivery</option><option value="delivered" ${o.status==='delivered'?'selected':''}>✅ Delivered</option></select></div></div>`).join('');
+    }
+    async function updateStatus(id,status){
+      try{
+        await db.collection('orders').doc(id).update({status});
+        showToast('Status updated!','success');
+      }catch(err){showToast('Error','error')}
+    }
+    function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
   </script>
 </body>
 </html>
