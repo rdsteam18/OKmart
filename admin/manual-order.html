@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Manual Order | OK Mart Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .admin-layout{display:flex;min-height:100vh}
+    .sidebar{width:250px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-brand span{font-size:1.2rem;font-weight:700}
+    .sidebar-badge{background:#2ecc71;padding:3px 10px;border-radius:20px;font-size:.6rem;text-transform:uppercase;font-weight:600}
+    .sidebar-nav{flex:1;padding:20px 0}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a.active{border-left:3px solid #2ecc71}
+    .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:250px;padding:24px}
+    h1{font-size:1.8rem;font-weight:800;margin-bottom:24px}
+    .section{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+    .section h3{margin-bottom:14px}
+    .form-row{display:flex;gap:12px;flex-wrap:wrap}
+    .form-group{flex:1;min-width:150px;margin-bottom:12px}
+    .form-group label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
+    .form-group input,.form-group textarea{width:100%;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem}
+    .search-box{width:100%;padding:12px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.9rem;margin-bottom:12px}
+    .search-results{max-height:200px;overflow-y:auto;margin-bottom:12px}
+    .search-item{padding:10px;cursor:pointer;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center}
+    .search-item:hover{background:#f8fafc}
+    .cart-items{margin-bottom:12px}
+    .cart-item-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb;align-items:center}
+    .qty-control{display:flex;align-items:center;gap:4px}
+    .qty-btn{width:26px;height:26px;border-radius:50%;background:white;border:1px solid #e5e7eb;cursor:pointer;font-weight:600}
+    .total-row{display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;padding:12px 0;border-top:1px solid #e5e7eb}
+    .place-btn{width:100%;padding:16px;background:#2ecc71;color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
+    .toast.show{opacity:1;bottom:50px}.toast.success{background:#10b981}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+      <nav class="sidebar-nav">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+        <a href="offers.html">🏷️ Offers</a>
+        <a href="settings.html">⚙️ Settings</a>
+        <a href="manual-order.html" class="active">✍️ Manual Order</a>
+      </nav>
+      <div class="sidebar-footer"><button onclick="logout()">🚪 Logout</button></div>
+    </aside>
+    <main class="main-content">
+      <h1>✍️ Manual Order Entry</h1>
+      
+      <div class="section"><h3>👤 Customer Details</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Name *</label><input type="text" id="custName" required></div>
+          <div class="form-group"><label>Phone *</label><input type="tel" id="custPhone" required></div>
+        </div>
+        <div class="form-group"><label>Address</label><textarea id="custAddress" rows="2"></textarea></div>
+      </div>
+      
+      <div class="section"><h3>🔍 Search Products</h3>
+        <input type="text" class="search-box" id="productSearch" placeholder="Search products..." oninput="searchProducts()">
+        <div class="search-results" id="searchResults"></div>
+        <div class="cart-items" id="orderCart"></div>
+        <div class="total-row"><span>Total</span><span id="orderTotal">₹0</span></div>
+      </div>
+      
+      <button class="place-btn" onclick="placeManualOrder()">📋 Place Order</button>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/admin-auth.js"></script>
+  <script>
+    function logout(){sessionStorage.removeItem('okmart_admin_logged');window.location.href='login.html'}
+    let cart=[],allProducts=[];
+    
+    db.collection('products').get().then(s=>{allProducts=[];s.forEach(d=>allProducts.push({id:d.id,...d.data()}));});
+    
+    function searchProducts(){
+      const q=document.getElementById('productSearch').value.toLowerCase();
+      const results=q.length>=2?allProducts.filter(p=>p.name.toLowerCase().includes(q)).slice(0,10):[];
+      document.getElementById('searchResults').innerHTML=results.map(p=>`<div class="search-item" onclick="addToOrder('${p.id}')"><span>${p.name}</span><span style="color:#27ae60;font-weight:700;">₹${p.price}</span></div>`).join('')||'<p style="color:#6b7280;padding:10px;">No matches</p>';
+    }
+    
+    function addToOrder(id){
+      const p=allProducts.find(p=>p.id===id);if(!p)return;
+      const existing=cart.find(i=>i.id===id);
+      if(existing)existing.qty++;else cart.push({...p,qty:1});
+      renderCart();
+    }
+    
+    function updateQty(id,delta){
+      const item=cart.find(i=>i.id===id);if(!item)return;
+      item.qty+=delta;if(item.qty<=0)cart=cart.filter(i=>i.id!==id);
+      renderCart();
+    }
+    
+    function renderCart(){
+      const total=cart.reduce((s,i)=>s+(i.price*i.qty),0);
+      document.getElementById('orderCart').innerHTML=cart.map(i=>`<div class="cart-item-row"><span>${i.name} x${i.qty}</span><div class="qty-control"><button class="qty-btn" onclick="updateQty('${i.id}',-1)">−</button><span>${i.qty}</span><button class="qty-btn" onclick="updateQty('${i.id}',1)">+</button></div><span>₹${i.price*i.qty}</span></div>`).join('');
+      document.getElementById('orderTotal').textContent='₹'+total.toLocaleString('en-IN');
+    }
+    
+    async function placeManualOrder(){
+      const name=document.getElementById('custName').value.trim();
+      const phone=document.getElementById('custPhone').value.trim();
+      if(!name||!phone||cart.length===0){showToast('Fill all fields and add items','error');return}
+      
+      const orderId='ORD-'+Date.now().toString(36).toUpperCase();
+      const total=cart.reduce((s,i)=>s+(i.price*i.qty),0);
+      const orderData={orderId,customerName:name,customerPhone:phone,phone,name,customerAddress:document.getElementById('custAddress').value,items:cart.map(i=>({id:i.id,name:i.name,price:i.price,quantity:i.qty,image:i.image})),total,subtotal:total,delivery:0,status:'received',orderDate:new Date().toISOString(),date:new Date().toISOString().split('T')[0],manualOrder:true};
+      
+      try{
+        await db.collection('orders').add(orderData);
+        showToast('Order placed! #'+orderId,'success');
+        cart=[];renderCart();
+        document.getElementById('custName').value='';document.getElementById('custPhone').value='';document.getElementById('custAddress').value='';
+      }catch(err){showToast('Error','error')}
+    }
+    
+    function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+  </script>
+</body>
+</html>
