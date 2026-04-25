@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Manage Orders | OK Mart Admin</title>
+  <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <link rel="stylesheet" href="css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-container">
+    
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">🛒 OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">📊</span><span>Dashboard</span>
+        </a>
+        <a href="products.html" class="nav-item">
+          <span class="nav-icon">📦</span><span>Products</span>
+        </a>
+        <a href="orders.html" class="nav-item active">
+          <span class="nav-icon">📋</span><span>Orders</span>
+        </a>
+        <a href="/index.html" class="nav-item" target="_blank">
+          <span class="nav-icon">🏠</span><span>View Store</span>
+        </a>
+      </nav>
+    </aside>
+
+    <header class="admin-mobile-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <span>Manage Orders</span>
+      <span></span>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>📋 Order Management</h1>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="order-filters">
+        <button class="filter-tab active" data-status="all">All</button>
+        <button class="filter-tab" data-status="received">Received</button>
+        <button class="filter-tab" data-status="preparing">Preparing</button>
+        <button class="filter-tab" data-status="outfordelivery">Delivery</button>
+        <button class="filter-tab" data-status="delivered">Delivered</button>
+      </div>
+
+      <!-- Orders List -->
+      <div class="orders-list" id="ordersList">
+        <p class="loading-text">Loading orders...</p>
+      </div>
+    </main>
+
+    <!-- Order Detail Modal -->
+    <div class="modal-overlay" id="orderDetailModal">
+      <div class="modal-card order-detail-modal">
+        <div class="modal-header">
+          <h3 id="detailOrderId">Order #OKM001</h3>
+          <button class="modal-close" id="closeDetailModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="customer-info" id="detailCustomerInfo"></div>
+          <div class="order-items-table" id="detailOrderItems"></div>
+          <div class="order-total-section" id="detailOrderTotal"></div>
+          
+          <!-- Status Update -->
+          <div class="status-update-section">
+            <label>Update Status:</label>
+            <select id="statusUpdate" class="status-select">
+              <option value="received">📋 Order Received</option>
+              <option value="preparing">🟡 Preparing</option>
+              <option value="outfordelivery">🚚 Out for Delivery</option>
+              <option value="delivered">✅ Delivered</option>
+            </select>
+            <button class="update-status-btn" id="updateStatusBtn">Update Status</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+  </script>
+  <script src="js/orders.js"></script>
+</body>
+</html>
