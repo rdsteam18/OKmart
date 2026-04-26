@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Sub Admin Dashboard | OK Mart</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#6366f1">
+  
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
+    .admin-layout{display:flex;min-height:100vh}
+    .sidebar{width:260px;background:#1a1e2b;color:white;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column}
+    .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+    .sidebar-brand span{font-size:1.2rem;font-weight:700}
+    .sidebar-badge{background:#6366f1;padding:3px 10px;border-radius:20px;font-size:.6rem;font-weight:600}
+    .sidebar-nav{flex:1;padding:20px 0}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:14px 24px;color:rgba(255,255,255,.7);text-decoration:none;font-weight:500}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(255,255,255,.08);color:white}
+    .sidebar-nav a.active{border-left:3px solid #6366f1}
+    .sidebar-footer{padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+    .sidebar-footer button{width:100%;padding:12px;background:rgba(255,255,255,.1);border:none;color:white;border-radius:10px;cursor:pointer}
+    .main-content{flex:1;margin-left:260px;padding:24px}
+    h1{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+    .categories-badge{display:inline-block;background:#eef2ff;color:#4f46e5;padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;margin-bottom:20px}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px}
+    .stat-card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .stat-value{font-size:1.8rem;font-weight:800;color:#6366f1}
+    .stat-label{color:#6b7280;font-size:.85rem}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:300;opacity:0;transition:.3s}
+    .toast.show{opacity:1;bottom:50px}
+    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="active">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+      </nav>
+      <div class="sidebar-footer"><button onclick="subAdminLogout()">🚪 Logout</button></div>
+    </aside>
+    <main class="main-content">
+      <h1>📊 Sub Admin Dashboard</h1>
+      <span class="categories-badge" id="categoriesBadge">Loading...</span>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="statOrders">0</div><div class="stat-label">Your Orders</div></div>
+        <div class="stat-card"><div class="stat-value" id="statRevenue">₹0</div><div class="stat-label">Revenue</div></div>
+        <div class="stat-card"><div class="stat-value" id="statProducts">0</div><div class="stat-label">Products</div></div>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/sub-admin-auth.js"></script>
+  <script>
+    const allowed=window.getAllowedCategories();
+    document.getElementById('categoriesBadge').textContent='📂 Categories: '+allowed.join(', ');
+    
+    let query=db.collection('products');
+    if(!allowed.includes('all'))query=query.where('category','in',allowed);
+    query.onSnapshot(snap=>{
+      document.getElementById('statProducts').textContent=snap.size;
+    });
+    
+    db.collection('orders').orderBy('orderDate','desc').onSnapshot(snap=>{
+      let orders=[],revenue=0;
+      snap.forEach(doc=>{
+        const d=doc.data();
+        orders.push(d);
+        revenue+=(Number(d.total)||0);
+      });
+      document.getElementById('statOrders').textContent=orders.length;
+      document.getElementById('statRevenue').textContent='₹'+revenue.toLocaleString('en-IN');
+    });
+  </script>
+</body>
+</html>
