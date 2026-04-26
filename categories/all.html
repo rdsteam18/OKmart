@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <title>Explore All Products | OK Mart</title>
+  <meta name="description" content="Explore all grocery products at OK Mart - dairy, snacks, beverages, fruits, vegetables & more.">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <link rel="stylesheet" href="/css/all.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="explore">
+  <div class="app-container">
+    
+    <!-- ========== HEADER ========== -->
+    <header class="explore-header">
+      <div class="header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="back-btn" aria-label="Back">←</a>
+          <h1 class="header-title">Explore 🛒</h1>
+        </div>
+        <div class="header-right">
+          <a href="/search.html" class="icon-btn" aria-label="Search">🔍</a>
+          <a href="/cart.html" class="cart-btn" aria-label="Cart">
+            <span>🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="explore-main">
+      
+      <!-- ========== SEARCH BAR ========== -->
+      <div class="search-bar-section">
+        <div class="search-bar-lg" onclick="location.href='/search.html'">
+          <span class="search-icon">🔍</span>
+          <span class="search-placeholder">Search anything...</span>
+        </div>
+      </div>
+
+      <!-- ========== QUICK FILTER CHIPS ========== -->
+      <div class="filter-chips-section">
+        <div class="filter-scroll" id="quickFilterScroll">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="under100">Under ₹100</button>
+          <button class="filter-chip" data-filter="discount">🏷️ Discount</button>
+          <button class="filter-chip" data-filter="popular">🔥 Popular</button>
+          <button class="filter-chip" data-filter="new">🆕 New</button>
+        </div>
+      </div>
+
+      <!-- ========== CATEGORY GRID (QUICK ACCESS) ========== -->
+      <section class="category-grid-section">
+        <h2 class="section-heading">📂 Shop by Category</h2>
+        <div class="category-grid" id="categoryGrid">
+          <!-- Rendered by JS -->
+        </div>
+      </section>
+
+      <!-- ========== TRENDING NOW ========== -->
+      <section class="trending-section" id="trendingSection">
+        <div class="section-header-row">
+          <h2 class="section-heading">🔥 Trending Now</h2>
+        </div>
+        <div class="product-slider" id="trendingSlider">
+          <div class="skeleton-scroll"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+        </div>
+      </section>
+
+      <!-- ========== BANNER INSERT ========== -->
+      <div class="banner-insert" id="bannerInsert">
+        <img src="https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Special Offer" onerror="this.style.display='none'">
+      </div>
+
+      <!-- ========== CATEGORY-WISE SCROLL SECTIONS ========== -->
+      <div id="categoryScrollSections">
+        <div class="skeleton-section"><div class="skeleton-title"></div><div class="skeleton-scroll"><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div>
+      </div>
+
+      <!-- ========== RECENTLY VIEWED ========== -->
+      <section class="recent-section" id="recentSection" style="display:none;">
+        <div class="section-header-row">
+          <h2 class="section-heading">👁️ Recently Viewed</h2>
+          <button class="clear-recent-btn" onclick="clearRecent()">Clear</button>
+        </div>
+        <div class="product-slider" id="recentSlider"></div>
+      </section>
+
+      <!-- ========== ALL PRODUCTS GRID ========== -->
+      <section class="all-products-section">
+        <div class="section-header-row">
+          <h2 class="section-heading">📋 All Products</h2>
+          <div class="sort-wrapper" style="position:relative;">
+            <button class="sort-btn-sm" onclick="toggleAllSort()">
+              <span id="allSortLabel">Popular</span> ▼
+            </button>
+            <div class="sort-dropdown" id="allSortDropdown">
+              <div class="sort-option active" data-sort="popular">🔥 Popular</div>
+              <div class="sort-option" data-sort="price-low">💰 Low to High</div>
+              <div class="sort-option" data-sort="price-high">💎 High to Low</div>
+              <div class="sort-option" data-sort="discount">🏷️ Best Discount</div>
+            </div>
+          </div>
+        </div>
+        <div class="product-grid" id="allProductsGrid">
+          <div class="skeleton-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+        </div>
+        <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Load More ↓</button>
+      </section>
+
+    </main>
+
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-emoji">🛒</span>
+          <div>
+            <span class="cart-bar-count" id="barCartCount">0 items</span>
+            <span class="cart-bar-total" id="barCartTotal">₹0</span>
+          </div>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">View Cart →</a>
+      </div>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
+    <a href="tel:+919982239821" class="fab-call">📞</a>
+
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/all.js"></script>
+</body>
+</html>
