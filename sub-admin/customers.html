@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Customer Management | OK Mart Sub Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#6366f1">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #eef2ff;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px; --transition: all .2s ease;
+    }
+    
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 260px; background: #1a1e2b; color: white; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform .3s; }
+    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
+    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
+    .sidebar-nav a.active { background: rgba(99,102,241,.12); color: #a5b4fc; border-left: 3px solid var(--primary); }
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
+    
+    .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1200px; }
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+    
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-mini { background: var(--card); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .stat-mini .value { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); display: block; }
+    .stat-mini .label { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+    
+    /* Controls */
+    .controls-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    .search-input:focus { outline: none; border-color: var(--primary); }
+    .filter-select { padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    
+    /* Customers Grid */
+    .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+    
+    .customer-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); cursor: pointer; transition: var(--transition); position: relative; }
+    .customer-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .customer-rank { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; }
+    .customer-rank.top { background: #fef3c7; color: #92400e; }
+    .customer-phone { font-family: monospace; font-size: .95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
+    .customer-name { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+    .customer-meta { display: flex; gap: 16px; font-size: .85rem; margin-bottom: 12px; flex-wrap: wrap; }
+    .customer-meta span { color: var(--muted); }
+    .customer-meta strong { color: var(--text); }
+    .customer-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-sm { padding: 8px 14px; border-radius: 20px; font-size: .75rem; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); display: flex; align-items: center; gap: 4px; }
+    .btn-offer { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid var(--primary); }
+    .btn-offer:hover { background: var(--primary); color: white; }
+    .btn-remind { background: #fef3c7; color: #92400e; border: 1.5px solid var(--warning); }
+    .btn-remind:hover { background: var(--warning); color: white; }
+    .btn-thanks { background: #dbeafe; color: #1e40af; border: 1.5px solid var(--info); }
+    .btn-thanks:hover { background: var(--info); color: white; }
+    .btn-orders { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+    
+    /* Order History Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-card { background: var(--card); border-radius: 24px; width: 95%; max-width: 550px; max-height: 80vh; overflow-y: auto; padding: 24px; animation: slideUp .3s ease; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.2rem; font-weight: 700; }
+    .modal-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); border: none; font-size: 1.2rem; cursor: pointer; }
+    
+    .order-mini { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+    .order-mini:last-child { border-bottom: none; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
+    .status-received { background: #fef3c7; color: #92400e; }
+    .status-preparing { background: #dbeafe; color: #1e40af; }
+    .status-outfordelivery { background: #d1fae5; color: #065f46; }
+    .status-delivered { background: #e0e7ff; color: #3730a3; }
+    
+    .item-filtered-note { background: #fef3c7; border: 1px solid #fcd34d; padding: 8px 12px; border-radius: 10px; font-size: .75rem; color: #92400e; margin-top: 8px; }
+    
+    .no-data { text-align: center; color: var(--muted); padding: 40px; }
+    
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
+    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: #10b981; }
+    
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } .customers-grid { grid-template-columns: 1fr; } .stats-row { grid-template-columns: 1fr 1fr; } }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
+      <nav class="sidebar-nav">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+        <a href="offers.html">🏷️ Offers</a>
+        <a href="customers.html" class="active">👥 Customers</a>
+      </nav>
+      <div class="sidebar-footer"><button onclick="subAdminLogout()">🚪 Logout</button></div>
+    </aside>
+
+    <div class="mobile-header">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">Customer Management</span><span></span>
+    </div>
+
+    <main class="main-content">
+      <h1>👥 Customer Management</h1>
+      <p class="subtitle" id="categorySubtitle">Loading...</p>
+      
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-mini"><span class="value" id="statTotal">0</span><span class="label">Your Customers</span></div>
+        <div class="stat-mini"><span class="value" id="statActive">0</span><span class="label">Active (30 days)</span></div>
+        <div class="stat-mini"><span class="value" id="statRevenue">₹0</span><span class="label">Your Revenue</span></div>
+      </div>
+      
+      <!-- Controls -->
+      <div class="controls-bar">
+        <input type="text" class="search-input" id="customerSearch" placeholder="🔍 Search by phone or name..." oninput="renderCustomers()">
+        <select class="filter-select" id="sortFilter" onchange="renderCustomers()">
+          <option value="spent-high">Highest Spending</option>
+          <option value="orders-high">Most Orders</option>
+          <option value="recent">Recently Active</option>
+        </select>
+      </div>
+      
+      <!-- Customers Grid -->
+      <div class="customers-grid" id="customersGrid"><p class="no-data">Loading customers...</p></div>
+    </main>
+  </div>
+
+  <!-- Order History Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>📋 Order History</h2>
+        <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+      </div>
+      <div style="margin-bottom:14px;"><strong id="historyCustomerInfo"></strong></div>
+      <div id="historyOrdersList"></div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn-sm btn-offer" onclick="messageFromHistory('offer')">💬 Send Offer</button>
+        <button class="btn-sm btn-remind" onclick="messageFromHistory('reminder')">🔔 Remind</button>
+        <button class="btn-sm btn-thanks" onclick="messageFromHistory('thanks')">🙏 Thanks</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/sub-admin-auth.js"></script>
+  <script>
+    // ===== SUB ADMIN CUSTOMER MANAGEMENT =====
+    
+    const allowedCategories = window.getAllowedCategories();
+    const STORE_URL = window.location.origin;
+    
+    document.getElementById('categorySubtitle').textContent = 
+      `Showing customers who ordered: ${allowedCategories.join(', ')}`;
+    
+    let allCustomers = [];
+    let currentHistoryPhone = null;
+    
+    // Message templates
+    const MESSAGE_TEMPLATES = {
+      offer: (name) => `🔥 *Special Offer for ${name || 'You'}!*\n\nGet amazing discounts on your favorite items from our store!\n\n🛒 Shop now: ${STORE_URL}\n\n📞 Contact: +91 99822 39821`,
+      reminder: (name) => `🛒 *Hey ${name || 'there'}!*\n\nCheck out new deals on products you love. Fresh stock available!\n\n👉 ${STORE_URL}\n\n📞 +91 99822 39821`,
+      thanks: (name) => `🙏 *Thank you ${name || 'for choosing us'}!*\n\nWe appreciate your orders. Come back for more great deals!\n\n⭐ ${STORE_URL}`
+    };
+    
+    // ========== HELPER FUNCTIONS ==========
+    function orderHasAllowedItems(order) {
+      if (!allowedCategories || allowedCategories.length === 0) return false;
+      if (allowedCategories.includes('all')) return true;
+      const items = order.items || [];
+      return items.some(item => {
+        const cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      });
+    }
+    
+    function getAllowedItems(order) {
+      const items = order.items || [];
+      if (allowedCategories.includes('all')) return items;
+      return items.filter(item => {
+        const cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      });
+    }
+    
+    // ========== LOAD & BUILD CUSTOMER LIST ==========
+    db.collection('orders').orderBy('orderDate', 'desc').onSnapshot(snapshot => {
+      const customerMap = {};
+      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+      
+      snapshot.forEach(doc => {
+        const order = { id: doc.id, ...doc.data() };
+        
+        // Only include orders with allowed items
+        if (!orderHasAllowedItems(order)) return;
+        
+        const phone = order.customerPhone || order.phone;
+        if (!phone) return;
+        
+        if (!customerMap[phone]) {
+          customerMap[phone] = {
+            phone: phone,
+            name: order.customerName || order.name || 'Customer',
+            totalOrders: 0,
+            totalSpent: 0,
+            lastOrderDate: null,
+            orders: [],
+            active: false
+          };
+        }
+        
+        const cust = customerMap[phone];
+        cust.totalOrders++;
+        
+        // Only sum allowed items total
+        const allowedItems = getAllowedItems(order);
+        const allowedTotal = allowedItems.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+        cust.totalSpent += allowedTotal;
+        cust.orders.push(order);
+        
+        if (order.customerName || order.name) cust.name = order.customerName || order.name;
+        
+        const orderDate = new Date(order.orderDate || order.date);
+        if (!cust.lastOrderDate || orderDate > new Date(cust.lastOrderDate)) {
+          cust.lastOrderDate = order.orderDate || order.date;
+        }
+        if (orderDate.getTime() > thirtyDaysAgo) cust.active = true;
+      });
+      
+      allCustomers = Object.values(customerMap);
+      updateStats();
+      renderCustomers();
+    });
+    
+    function updateStats() {
+      const total = allCustomers.length;
+      const active = allCustomers.filter(c => c.active).length;
+      const revenue = allCustomers.reduce((s, c) => s + c.totalSpent, 0);
+      
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statActive').textContent = active;
+      document.getElementById('statRevenue').textContent = '₹' + Math.round(revenue).toLocaleString('en-IN');
+    }
+    
+    // ========== RENDER CUSTOMERS ==========
+    function renderCustomers() {
+      const search = (document.getElementById('customerSearch')?.value || '').toLowerCase().trim();
+      const sort = document.getElementById('sortFilter')?.value || 'spent-high';
+      
+      let filtered = [...allCustomers];
+      
+      // Search
+      if (search) {
+        filtered = filtered.filter(c => 
+          c.phone.includes(search) || c.name.toLowerCase().includes(search)
+        );
+      }
+      
+      // Sort
+      switch(sort) {
+        case 'spent-high': filtered.sort((a, b) => b.totalSpent - a.totalSpent); break;
+        case 'orders-high': filtered.sort((a, b) => b.totalOrders - a.totalOrders); break;
+        case 'recent': filtered.sort((a, b) => new Date(b.lastOrderDate) - new Date(a.lastOrderDate)); break;
+      }
+      
+      const grid = document.getElementById('customersGrid');
+      
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p class="no-data">No customers found for your categories</p>';
+        return;
+      }
+      
+      grid.innerHTML = filtered.map((c, i) => {
+        const rank = (sort === 'spent-high' || sort === 'orders-high') ? i + 1 : null;
+        const rankClass = i < 3 ? 'top' : '';
+        
+        return `
+          <div class="customer-card">
+            ${rank ? `<div class="customer-rank ${rankClass}">${rank}</div>` : ''}
+            <div class="customer-phone">📱 ${c.phone}</div>
+            <div class="customer-name">${c.name}</div>
+            <div class="customer-meta">
+              <span>📦 <strong>${c.totalOrders}</strong> orders</span>
+              <span>💰 <strong>₹${Math.round(c.totalSpent).toLocaleString('en-IN')}</strong></span>
+              <span>📅 Last: <strong>${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : 'N/A'}</strong></span>
+              ${c.active ? '<span style="color:#10b981;">● Active</span>' : ''}
+            </div>
+            <div class="customer-actions">
+              <button class="btn-sm btn-orders" onclick="showOrderHistory('${c.phone}')">📋 History</button>
+              <button class="btn-sm btn-offer" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'offer')">💬 Offer</button>
+              <button class="btn-sm btn-remind" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'reminder')">🔔 Remind</button>
+              <button class="btn-sm btn-thanks" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'thanks')">🙏 Thanks</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // ========== ORDER HISTORY MODAL ==========
+    window.showOrderHistory = function(phone) {
+      const customer = allCustomers.find(c => c.phone === phone);
+      if (!customer) return;
+      
+      currentHistoryPhone = phone;
+      document.getElementById('historyCustomerInfo').textContent = `${customer.name} · 📱 ${phone}`;
+      
+      const ordersList = document.getElementById('historyOrdersList');
+      const orders = customer.orders.sort((a, b) => new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date));
+      
+      ordersList.innerHTML = orders.map(o => {
+        const status = o.status || 'received';
+        const allowedItems = getAllowedItems(o);
+        const allItems = o.items || [];
+        const hasFiltered = allowedItems.length < allItems.length;
+        const allowedTotal = allowedItems.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+        
+        let itemsPreview = allowedItems.slice(0, 3).map(i => i.name).join(', ');
+        if (allowedItems.length > 3) itemsPreview += ` +${allowedItems.length - 3} more`;
+        
+        return `
+          <div class="order-mini">
+            <div>
+              <strong>#${o.orderId || o.id?.slice(-8).toUpperCase()}</strong>
+              <span style="font-size:.8rem;color:var(--muted);margin-left:8px;">${new Date(o.orderDate || o.date).toLocaleDateString('en-IN')}</span>
+              ${hasFiltered ? '<br><span style="font-size:.7rem;color:#92400e;">📌 Some items hidden (other categories)</span>' : ''}
+              <br><span style="font-size:.8rem;color:var(--muted);">${itemsPreview}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-weight:700;">₹${allowedTotal.toLocaleString('en-IN')}</span>
+              <span class="status-badge status-${status}">${status}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('historyModal').classList.add('active');
+    };
+    
+    window.closeHistoryModal = function() {
+      document.getElementById('historyModal').classList.remove('active');
+      currentHistoryPhone = null;
+    };
+    
+    document.getElementById('historyModal').addEventListener('click', function(e) {
+      if (e.target === this) closeHistoryModal();
+    });
+    
+    // ========== MESSAGE FUNCTIONS ==========
+    window.sendMessage = function(phone, name, type) {
+      const message = MESSAGE_TEMPLATES[type](name);
+      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
+      showToast(`📱 Opening WhatsApp for ${phone}`, 'success');
+    };
+    
+    window.messageFromHistory = function(type) {
+      if (!currentHistoryPhone) return;
+      const customer = allCustomers.find(c => c.phone === currentHistoryPhone);
+      sendMessage(currentHistoryPhone, customer?.name || 'Customer', type);
+    };
+    
+    // ========== TOAST ==========
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    console.log('✅ Sub-admin customers ready | Categories:', allowedCategories.join(', '));
+  </script>
+</body>
+</html>
