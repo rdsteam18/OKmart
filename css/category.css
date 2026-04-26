@@ -1,4 +1,4 @@
-/* ===== OK Mart - Category Page Styles ===== */
+/* ===== OK Mart - Unified Category Page Styles ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -52,15 +52,28 @@ body {
 /* ========== CATEGORY HERO ========== */
 .category-hero {
   margin: 12px 14px; padding: 18px 20px;
-  background: linear-gradient(135deg, var(--primary-light), #d4fcdf);
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
   border-radius: var(--radius); display: flex; justify-content: space-between;
   align-items: center; flex-wrap: wrap; gap: 10px;
 }
+.vegetable-hero { background: linear-gradient(135deg, #e8f5e9, #dcedc8); }
 .hero-content { display: flex; align-items: center; gap: 12px; }
 .hero-icon { font-size: 2.5rem; }
 .hero-content h2 { font-size: 1.2rem; font-weight: 800; }
 .hero-content p { color: var(--muted); font-size: .8rem; }
 .hero-stats { display: flex; gap: 16px; font-size: .7rem; color: var(--primary-dark); font-weight: 600; }
+
+/* ========== QUICK FILTERS ========== */
+.quick-filters { padding: 8px 14px 4px; }
+.filter-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 0; }
+.filter-scroll::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0; padding: 9px 16px; background: var(--card);
+  border: 1.5px solid var(--border); border-radius: 24px;
+  font-size: .8rem; font-weight: 500; cursor: pointer; transition: var(--transition); white-space: nowrap;
+}
+.filter-chip:active { transform: scale(.94); }
+.filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 600; }
 
 /* ========== FILTER BAR ========== */
 .filter-bar {
@@ -128,7 +141,7 @@ body {
 .wishlist-heart, .share-mini { position: absolute; top: 6px; background: white; border: 1px solid var(--border); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: .72rem; z-index: 2; box-shadow: var(--shadow-sm); }
 .wishlist-heart { right: 36px; } .share-mini { right: 6px; }
 .product-badge { position: absolute; top: 6px; left: 6px; background: var(--primary-dark); color: white; padding: 3px 7px; border-radius: 20px; font-size: .58rem; font-weight: 600; z-index: 2; }
-.seasonal-badge { position: absolute; top: 6px; left: 6px; background: linear-gradient(135deg,#f59e0b,#d97706); color: white; padding: 3px 7px; border-radius: 20px; font-size: .55rem; font-weight: 600; z-index: 2; }
+.fresh-badge { position: absolute; top: 6px; left: 6px; background: linear-gradient(135deg,#10b981,#059669); color: white; padding: 3px 7px; border-radius: 20px; font-size: .55rem; font-weight: 600; z-index: 2; }
 
 /* ========== EMPTY STATE ========== */
 .empty-state { text-align: center; padding: 60px 20px; }
