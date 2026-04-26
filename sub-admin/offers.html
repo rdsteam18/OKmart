@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Offers & Banners | OK Mart Sub Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#6366f1">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #eef2ff;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px; --transition: all .2s ease;
+    }
+    
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 260px; background: #1a1e2b; color: white; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform .3s; }
+    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
+    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
+    .sidebar-nav a.active { background: rgba(99,102,241,.12); color: #a5b4fc; border-left: 3px solid var(--primary); }
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
+    
+    .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1200px; }
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--card); border-radius: 14px; padding: 4px; border: 1px solid var(--border); }
+    .tab-btn { flex: 1; padding: 12px 20px; border: none; background: none; border-radius: 12px; font-weight: 600; font-size: .9rem; cursor: pointer; transition: var(--transition); color: var(--muted); }
+    .tab-btn.active { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .add-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    
+    /* Cards */
+    .card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .card-code { font-weight: 700; font-family: monospace; font-size: 1.1rem; color: var(--primary-dark); }
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+    .badge-active { background: #d1fae5; color: #065f46; }
+    .badge-inactive { background: #fee2e2; color: #991b1b; }
+    .card-desc { font-size: .9rem; margin-bottom: 8px; color: var(--text); }
+    .card-info { font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+    .card-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-sm { padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: .75rem; font-weight: 500; border: 1px solid var(--border); background: var(--bg); }
+    .btn-sm.edit:hover { background: var(--primary-light); }
+    .btn-sm.delete:hover { background: #fee2e2; color: var(--danger); border-color: var(--danger); }
+    
+    .banner-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
+    .banner-title { font-weight: 600; margin-bottom: 4px; }
+    .banner-info { font-size: .8rem; color: var(--muted); }
+    
+    /* Permission Denied */
+    .permission-denied { background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 12px; font-size: .85rem; font-weight: 500; margin-bottom: 12px; display: none; }
+    .permission-denied.show { display: block; }
+    
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: var(--card); border-radius: 24px; width: 95%; max-width: 500px; max-height: 85vh; overflow-y: auto; padding: 28px; animation: slideUp .3s ease; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.2rem; font-weight: 700; }
+    .modal-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); border: none; font-size: 1.2rem; cursor: pointer; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; font-family: inherit; }
+    .form-row { display: flex; gap: 12px; } .form-row .form-group { flex: 1; }
+    .form-check { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+    .form-check input { accent-color: var(--primary); width: 18px; height: 18px; }
+    .save-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
+    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: var(--success); } .toast.error { background: var(--danger); }
+    
+    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } .form-row { flex-direction: column; } }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
+      <nav class="sidebar-nav">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+        <a href="offers.html" class="active">🏷️ Offers</a>
+      </nav>
+      <div class="sidebar-footer"><button onclick="subAdminLogout()">🚪 Logout</button></div>
+    </aside>
+
+    <div class="mobile-header">
+      <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">Offers & Banners</span><span></span>
+    </div>
+
+    <main class="main-content">
+      <h1>🏷️ Offers & Banners</h1>
+      
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('coupons')">🎟️ Coupons</button>
+        <button class="tab-btn" onclick="switchTab('banners')">🖼️ Banners</button>
+      </div>
+
+      <!-- Permission Denied -->
+      <div class="permission-denied" id="permissionDenied"></div>
+
+      <!-- COUPONS TAB -->
+      <div class="tab-content active" id="tab-coupons">
+        <div class="header-row"><h2>Coupon Codes</h2><button class="add-btn" onclick="openCouponModal()">➕ Add Coupon</button></div>
+        <div class="card-grid" id="couponsGrid"><p style="color:var(--muted);">Loading coupons...</p></div>
+      </div>
+
+      <!-- BANNERS TAB -->
+      <div class="tab-content" id="tab-banners">
+        <div class="header-row"><h2>Promo Banners</h2><button class="add-btn" onclick="openBannerModal()">➕ Add Banner</button></div>
+        <div class="card-grid" id="bannersGrid"><p style="color:var(--muted);">Loading banners...</p></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Coupon Modal -->
+  <div class="modal-overlay" id="couponModal">
+    <div class="modal-card">
+      <div class="modal-header"><h2 id="couponModalTitle">Add Coupon</h2><button class="modal-close" onclick="closeCouponModal()">✕</button></div>
+      <form id="couponForm"><input type="hidden" id="couponId">
+        <div class="form-group"><label>Code *</label><input type="text" id="cCode" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Type *</label><select id="cType"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
+          <div class="form-group"><label>Discount *</label><input type="number" id="cDiscount" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Min Order *</label><input type="number" id="cMin"></div>
+          <div class="form-group"><label>Max Discount</label><input type="number" id="cMax"></div>
+        </div>
+        <div class="form-group"><label>Category *</label><select id="cCategory" required></select></div>
+        <div class="form-group"><label>Description</label><input type="text" id="cDesc"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Usage Limit</label><input type="number" id="cUsage"></div>
+          <div class="form-group"><label>Per User</label><input type="number" id="cPerUser"></div>
+        </div>
+        <div class="form-check"><input type="checkbox" id="cActive" checked><label>Active</label></div>
+        <button type="submit" class="save-btn">💾 Save Coupon</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Banner Modal -->
+  <div class="modal-overlay" id="bannerModal">
+    <div class="modal-card">
+      <div class="modal-header"><h2 id="bannerModalTitle">Add Banner</h2><button class="modal-close" onclick="closeBannerModal()">✕</button></div>
+      <form id="bannerForm"><input type="hidden" id="bannerId">
+        <div class="form-group"><label>Title *</label><input type="text" id="bTitle" required></div>
+        <div class="form-group"><label>Image URL *</label><input type="url" id="bImage" required></div>
+        <div class="form-group"><label>Link</label><input type="text" id="bLink"></div>
+        <div class="form-group"><label>Category *</label><select id="bCategory" required></select></div>
+        <div class="form-group"><label>Show On</label><select id="bPage"><option value="home">Home</option><option value="category">Category Page</option></select></div>
+        <div class="form-check"><input type="checkbox" id="bActive" checked><label>Active</label></div>
+        <button type="submit" class="save-btn">💾 Save Banner</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/sub-admin-auth.js"></script>
+  <script>
+    const allowedCategories = window.getAllowedCategories();
+    const permissionDenied = document.getElementById('permissionDenied');
+    
+    const catIcons = { electronics:'📱', household:'🧹', personal:'🧴', dairy:'🥛', fruits:'🍎', snacks:'🍿', beverages:'🥤', grocery:'🧺', bakery:'🥐', vegetables:'🥬' };
+    
+    // Build category dropdowns
+    function buildCatDropdown(selectId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      select.innerHTML = '<option value="">Select Category</option>';
+      allowedCategories.forEach(cat => {
+        select.innerHTML += `<option value="${cat}">${catIcons[cat]||'📦'} ${cat.charAt(0).toUpperCase()+cat.slice(1)}</option>`;
+      });
+    }
+    buildCatDropdown('cCategory');
+    buildCatDropdown('bCategory');
+    
+    // ========== TABS ==========
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.tab-btn:nth-child(${tab==='coupons'?1:2})`).classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    };
+    
+    // ========== COUPONS ==========
+    const couponModal = document.getElementById('couponModal');
+    let couponEditId = null;
+    
+    window.openCouponModal = function(c = null) {
+      couponEditId = c?.id || null;
+      document.getElementById('couponModalTitle').textContent = c ? 'Edit Coupon' : 'Add Coupon';
+      document.getElementById('couponId').value = c?.id || '';
+      document.getElementById('cCode').value = c?.code || '';
+      document.getElementById('cType').value = c?.type || 'flat';
+      document.getElementById('cDiscount').value = c?.discount || '';
+      document.getElementById('cMin').value = c?.minOrder || '';
+      document.getElementById('cMax').value = c?.maxDiscount || '';
+      document.getElementById('cCategory').value = c?.category || '';
+      document.getElementById('cDesc').value = c?.description || '';
+      document.getElementById('cUsage').value = c?.usageLimit || '';
+      document.getElementById('cPerUser').value = c?.perUserLimit || '';
+      document.getElementById('cActive').checked = c?.active !== false;
+      permissionDenied.classList.remove('show');
+      couponModal.classList.add('active');
+    };
+    
+    function closeCouponModal() { couponModal.classList.remove('active'); }
+    couponModal.addEventListener('click', e => { if (e.target === couponModal) closeCouponModal(); });
+    
+    document.getElementById('couponForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const category = document.getElementById('cCategory').value;
+      
+      if (!allowedCategories.includes(category)) {
+        showPermissionDenied('coupon');
+        return;
+      }
+      
+      const data = {
+        code: document.getElementById('cCode').value.toUpperCase().trim(),
+        type: document.getElementById('cType').value,
+        discount: Number(document.getElementById('cDiscount').value),
+        minOrder: Number(document.getElementById('cMin').value) || 0,
+        maxDiscount: Number(document.getElementById('cMax').value) || null,
+        category: category,
+        description: document.getElementById('cDesc').value.trim(),
+        usageLimit: Number(document.getElementById('cUsage').value) || null,
+        perUserLimit: Number(document.getElementById('cPerUser').value) || null,
+        active: document.getElementById('cActive').checked
+      };
+      
+      try {
+        if (couponEditId) await db.collection('offers').doc(couponEditId).update(data);
+        else await db.collection('offers').add(data);
+        closeCouponModal();
+        showToast(couponEditId ? 'Coupon updated!' : 'Coupon added!', 'success');
+      } catch(err) { console.error(err); showToast('Error saving', 'error'); }
+    });
+    
+    function deleteCoupon(id, category) {
+      if (!allowedCategories.includes(category)) { showToast('❌ Permission denied', 'error'); return; }
+      if (confirm('Delete this coupon?')) db.collection('offers').doc(id).delete().then(() => showToast('Deleted'));
+    }
+    
+    // Load coupons (filtered)
+    db.collection('offers').onSnapshot(s => {
+      const grid = document.getElementById('couponsGrid');
+      let filtered = [];
+      s.forEach(doc => {
+        const d = doc.data();
+        if (allowedCategories.includes(d.category) || !d.category) {
+          filtered.push({ id: doc.id, ...d });
+        }
+      });
+      if (!filtered.length) { grid.innerHTML = '<p style="color:var(--muted);">No coupons in your categories</p>'; return; }
+      grid.innerHTML = filtered.map(d => `
+        <div class="card">
+          <div class="card-header"><span class="card-code">${d.code}</span><span class="badge ${d.active!==false?'badge-active':'badge-inactive'}">${d.active!==false?'Active':'Inactive'}</span></div>
+          <div class="card-desc">${d.description||(d.type==='flat'?'₹'+d.discount+' OFF':d.discount+'% OFF')}</div>
+          <div class="card-info">📂 ${d.category||'All'} · Min: ₹${d.minOrder}${d.maxDiscount?' · Max: ₹'+d.maxDiscount:''}</div>
+          <div class="card-actions">
+            <button class="btn-sm edit" onclick="openCouponModal({id:'${d.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},category:'${d.category||''}',description:'${(d.description||'').replace(/'/g,"\\'")}',usageLimit:${d.usageLimit||0},perUserLimit:${d.perUserLimit||0},active:${d.active!==false}})">✏️ Edit</button>
+            <button class="btn-sm delete" onclick="deleteCoupon('${d.id}','${d.category||''}')">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('');
+    });
+    
+    // ========== BANNERS ==========
+    const bannerModal = document.getElementById('bannerModal');
+    let bannerEditId = null;
+    
+    window.openBannerModal = function(b = null) {
+      bannerEditId = b?.id || null;
+      document.getElementById('bannerModalTitle').textContent = b ? 'Edit Banner' : 'Add Banner';
+      document.getElementById('bannerId').value = b?.id || '';
+      document.getElementById('bTitle').value = b?.title || '';
+      document.getElementById('bImage').value = b?.image || '';
+      document.getElementById('bLink').value = b?.link || '';
+      document.getElementById('bCategory').value = b?.category || '';
+      document.getElementById('bPage').value = b?.page || 'home';
+      document.getElementById('bActive').checked = b?.active !== false;
+      permissionDenied.classList.remove('show');
+      bannerModal.classList.add('active');
+    };
+    
+    function closeBannerModal() { bannerModal.classList.remove('active'); }
+    bannerModal.addEventListener('click', e => { if (e.target === bannerModal) closeBannerModal(); });
+    
+    document.getElementById('bannerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const category = document.getElementById('bCategory').value;
+      
+      if (!allowedCategories.includes(category)) {
+        showPermissionDenied('banner');
+        return;
+      }
+      
+      const data = {
+        title: document.getElementById('bTitle').value.trim(),
+        image: document.getElementById('bImage').value.trim(),
+        link: document.getElementById('bLink').value.trim(),
+        category: category,
+        page: document.getElementById('bPage').value,
+        active: document.getElementById('bActive').checked
+      };
+      
+      try {
+        if (bannerEditId) await db.collection('banners').doc(bannerEditId).update(data);
+        else await db.collection('banners').add(data);
+        closeBannerModal();
+        showToast(bannerEditId ? 'Banner updated!' : 'Banner added!', 'success');
+      } catch(err) { showToast('Error saving', 'error'); }
+    });
+    
+    function deleteBanner(id, category) {
+      if (!allowedCategories.includes(category)) { showToast('❌ Permission denied', 'error'); return; }
+      if (confirm('Delete?')) db.collection('banners').doc(id).delete().then(() => showToast('Deleted'));
+    }
+    
+    // Load banners (filtered)
+    db.collection('banners').onSnapshot(s => {
+      const grid = document.getElementById('bannersGrid');
+      let filtered = [];
+      s.forEach(doc => {
+        const d = doc.data();
+        if (allowedCategories.includes(d.category) || !d.category) {
+          filtered.push({ id: doc.id, ...d });
+        }
+      });
+      if (!filtered.length) { grid.innerHTML = '<p style="color:var(--muted);">No banners in your categories</p>'; return; }
+      grid.innerHTML = filtered.map(d => `
+        <div class="card banner-card">
+          <img src="${d.image}" onerror="this.src='https://placehold.co/400x140'">
+          <div class="banner-title">${d.title}</div>
+          <div class="banner-info">📂 ${d.category||'All'} · 📍 ${d.page||'home'} · <span class="badge ${d.active!==false?'badge-active':'badge-inactive'}">${d.active!==false?'Active':'Inactive'}</span></div>
+          <div class="card-actions">
+            <button class="btn-sm edit" onclick="openBannerModal({id:'${d.id}',title:'${d.title.replace(/'/g,"\\'")}',image:'${d.image}',link:'${d.link||''}',category:'${d.category||''}',page:'${d.page||'home'}',active:${d.active!==false}})">✏️ Edit</button>
+            <button class="btn-sm delete" onclick="deleteBanner('${d.id}','${d.category||''}')">🗑️ Delete</button>
+          </div>
+        </div>
+      `).join('');
+    });
+    
+    // ========== HELPERS ==========
+    function showPermissionDenied(type) {
+      permissionDenied.textContent = `⚠️ You can only create ${type}s for: ${allowedCategories.join(', ')}`;
+      permissionDenied.classList.add('show');
+      setTimeout(() => permissionDenied.classList.remove('show'), 4000);
+    }
+    
+    function showToast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = `toast ${type}`; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
