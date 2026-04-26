@@ -2,223 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
   
-  <!-- SEO Meta Tags -->
-  <title>Buy Fresh Bakery Items Online | Bread, Cakes, Pastries | OK Mart</title>
-  <meta name="description" content="Order fresh bakery items online - bread, cakes, pastries, buns, cookies. Fast delivery from OK Mart. Freshly baked daily.">
-  <meta name="keywords" content="bakery online, fresh bread delivery, cakes online, pastries delivery, buns, cookies, baked goods, OK Mart">
+  <title>Bakery & Fresh Items | OK Mart</title>
+  <meta name="description" content="Buy fresh bakery items online - bread, cakes, eggs, biscuits. Fast delivery from OK Mart.">
   <meta name="theme-color" content="#2ecc71">
   
-  <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
   
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://okmart.netlify.app/categories/bakery.html">
-  <meta property="og:title" content="Buy Fresh Bakery Items Online | OK Mart">
-  <meta property="og:description" content="Fresh bread, cakes, pastries delivered fast.">
-  <meta property="og:image" content="https://okmart.netlify.app/assets/images/bakery-og.jpg">
-  
-  <!-- Canonical -->
-  <link rel="canonical" href="https://okmart.netlify.app/categories/bakery.html">
-  
-  <!-- Unified Category CSS -->
-  <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
   
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body data-category="bakery">
-  <!-- App Container -->
   <div class="app-container">
     
-    <!-- Sticky Header -->
-    <header class="app-header category-header">
-      <div class="header-container">
+    <!-- ========== HEADER ========== -->
+    <header class="category-header">
+      <div class="header-inner">
         <div class="header-left">
-          <a href="/index.html" class="back-button" aria-label="Back to home">
-            <span class="back-icon">←</span>
-          </a>
-          <a href="/index.html" class="logo-link">
-            <span class="logo-text">🛒 OK Mart</span>
-          </a>
+          <a href="/index.html" class="back-btn" aria-label="Back">←</a>
+          <h1 class="header-title" id="pageTitle">Bakery & Fresh</h1>
         </div>
-        <div class="header-actions">
-          <a href="/wishlist.html" class="wishlist-icon-link" aria-label="Wishlist">
-            <span class="wishlist-icon">❤️</span>
-            <span class="wishlist-badge" id="wishlistCountBadge">0</span>
-          </a>
-          <a href="/cart.html" class="cart-icon-link" aria-label="Cart">
-            <span class="cart-icon">🛒</span>
-            <span class="cart-badge" id="cartCountPlaceholder">0</span>
+        <div class="header-right">
+          <a href="/search.html" class="icon-btn" aria-label="Search">🔍</a>
+          <a href="/wishlist.html" class="icon-btn" aria-label="Wishlist">❤️</a>
+          <a href="/cart.html" class="cart-btn" aria-label="Cart">
+            <span>🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
           </a>
         </div>
       </div>
     </header>
 
+    <!-- ========== BAKERY HERO ========== -->
+    <div class="category-hero bakery-hero">
+      <div class="hero-bg-emoji">🍞🥐🎂🥖</div>
+      <div class="hero-content">
+        <span class="hero-icon">🥐</span>
+        <div>
+          <h2>Bakery & Fresh Items</h2>
+          <p>Fresh bread, cakes, eggs & biscuits delivered daily</p>
+        </div>
+      </div>
+      <div class="hero-offer-tag" style="background:#d97706;">🌅 Morning Fresh</div>
+    </div>
+
+    <!-- ========== FRESH STRIP ========== -->
+    <div class="combo-strip bakery-strip">
+      <div class="combo-content">
+        <span>🌅</span>
+        <span>Order before 10 AM for fresh morning delivery!</span>
+        <span>🍞</span>
+      </div>
+    </div>
+
+    <!-- ========== QUICK FILTER CHIPS ========== -->
+    <div class="quick-filters">
+      <div class="filter-scroll" id="typeFilterScroll">
+        <button class="filter-chip active" data-filter="all">🥐 All</button>
+        <button class="filter-chip" data-filter="bread">🍞 Bread</button>
+        <button class="filter-chip" data-filter="cakes">🎂 Cakes</button>
+        <button class="filter-chip" data-filter="eggs">🥚 Eggs</button>
+        <button class="filter-chip" data-filter="biscuits">🍪 Biscuits</button>
+        <button class="filter-chip" data-filter="rusk">🥖 Rusk</button>
+      </div>
+    </div>
+
+    <!-- ========== FILTER & SORT BAR ========== -->
+    <div class="filter-bar">
+      <div class="filter-info">
+        <span class="product-count" id="productCount">0 products</span>
+      </div>
+      <div class="sort-wrapper">
+        <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+          <span>📊</span> <span id="sortLabel">Fresh First</span> <span>▼</span>
+        </button>
+        <div class="sort-dropdown" id="sortDropdown">
+          <div class="sort-option active" data-sort="fresh">🌅 Fresh First</div>
+          <div class="sort-option" data-sort="popular">🔥 Popular</div>
+          <div class="sort-option" data-sort="price-low">💰 Price: Low to High</div>
+          <div class="sort-option" data-sort="price-high">💎 Price: High to Low</div>
+          <div class="sort-option" data-sort="discount">🏷️ Best Discount</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MAIN CONTENT ========== -->
     <main class="category-main">
-      <!-- Category Hero with Animation -->
-      <div class="category-hero animate-slide-up">
-        <div class="category-icon-wrapper">
-          <span class="category-icon">🥐</span>
-          <div class="icon-ring"></div>
-        </div>
-        <h1 class="category-title">Bakery & Baked Goods</h1>
-        <p class="category-description">Freshly baked bread, cakes, pastries & cookies daily</p>
-        <div class="category-stats">
-          <span class="stat-item">
-            <span class="stat-value" id="productCount">0</span>
-            <span class="stat-label">Products</span>
-          </span>
-          <span class="stat-item">
-            <span class="stat-value">🚚</span>
-            <span class="stat-label">12 min</span>
-          </yan>
-          <span class="stat-item">
-            <span class="stat-value">🔥</span>
-            <span class="stat-label">Fresh</span>
-          </span>
-        </div>
+      
+      <div class="loading-grid" id="loadingGrid">
+        <div class="skeleton-card"></div><div class="skeleton-card"></div>
+        <div class="skeleton-card"></div><div class="skeleton-card"></div>
+        <div class="skeleton-card"></div><div class="skeleton-card"></div>
       </div>
-
-      <!-- Search Bar -->
-      <div class="search-container animate-slide-up" style="animation-delay: 0.05s;">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            id="categorySearchInput" 
-            class="search-input" 
-            placeholder="Search for bread, cakes, pastries..."
-            autocomplete="off"
-            aria-label="Search bakery items"
-          >
-          <button class="clear-search" id="clearCategorySearch" aria-label="Clear search">✕</button>
-        </div>
-      </div>
-
-      <!-- Quick Filters -->
-      <div class="quick-filters animate-slide-up" style="animation-delay: 0.1s;">
-        <div class="filter-scroll">
-          <button class="filter-chip active" data-filter="all">All</button>
-          <button class="filter-chip" data-filter="bread">🍞 Bread</button>
-          <button class="filter-chip" data-filter="cakes">🎂 Cakes</button>
-          <button class="filter-chip" data-filter="pastries">🥧 Pastries</button>
-          <button class="filter-chip" data-filter="buns">🍔 Buns & Pav</button>
-          <button class="filter-chip" data-filter="cookies">🍪 Cookies</button>
-          <button class="filter-chip" data-filter="rusk">🥖 Rusk</button>
-          <button class="filter-chip" data-filter="muffins">🧁 Muffins</button>
-        </div>
-      </div>
-
-      <!-- Results Header -->
-      <div class="results-header animate-slide-up" style="animation-delay: 0.15s;">
-        <div class="results-info">
-          <span class="results-count" id="categoryResultsCount">0 items found</span>
-        </div>
-        <div class="sort-container">
-          <button class="sort-btn" id="sortToggleBtn" aria-label="Sort products">
-            <span>📊</span>
-            <span id="sortLabel">Popular</span>
-            <span>▼</span>
-          </button>
-          <div class="sort-dropdown" id="sortDropdown" style="display: none;">
-            <button class="sort-option active" data-sort="popular">🔥 Popular First</button>
-            <button class="sort-option" data-sort="price-low">💰 Price: Low to High</button>
-            <button class="sort-option" data-sort="price-high">💎 Price: High to Low</button>
-            <button class="sort-option" data-sort="discount">🏷️ Best Discount</button>
-            <button class="sort-option" data-sort="newest">🆕 Freshly Baked</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Morning Bake Banner -->
-      <div class="category-banner animate-slide-up" style="animation-delay: 0.18s;">
-        <div class="banner-content">
-          <span class="banner-icon">🌅</span>
-          <span class="banner-text">Morning Fresh: Order before 10 AM for fresh breakfast bread!</span>
-          <span class="banner-icon">🍞</span>
-        </div>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-state" id="categoryLoadingState">
-        <div class="loading-animation">
-          <div class="category-loader">
-            <span>🥐</span><span>🍞</span><span>🎂</span><span>🥖</span>
-          </div>
-          <p>Loading fresh bakery items...</p>
-        </div>
-      </div>
-
-      <!-- Product Grid -->
-      <div class="product-grid category-grid" id="categoryProductGrid" style="display: none;">
-        <!-- Products will be dynamically rendered here -->
-      </div>
-
-      <!-- Empty State -->
+      
+      <div class="product-grid" id="productGrid" style="display: none;"></div>
+      
       <div class="empty-state" id="emptyState" style="display: none;">
-        <div class="empty-animation">
-          <span class="empty-icon">🥐</span>
-        </div>
-        <h3>No bakery items found</h3>
-        <p id="emptyStateMessage">Try adjusting your search or filters</p>
-        <button class="reset-btn" id="resetFiltersBtn">Reset Filters</button>
+        <span class="empty-icon">🥐</span>
+        <h3>No bakery items available</h3>
+        <p>Fresh stock baking! Check back soon.</p>
+        <a href="/index.html" class="browse-btn">Browse All Categories →</a>
       </div>
-
-      <!-- Popular in Bakery Section -->
-      <section class="popular-in-category animate-slide-up" id="popularSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🔥 Popular Bakery Items</h2>
-        </div>
-        <div class="popular-grid" id="popularGrid"></div>
-      </section>
-
-      <!-- Breakfast Combos Section -->
-      <section class="value-packs-section animate-slide-up" id="combosSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🌅 Breakfast Combos</h2>
-          <span class="value-badge">Save More</span>
-        </div>
-        <div class="value-grid" id="combosGrid"></div>
-      </section>
+      
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-emoji">🛒</span>
+          <div>
+            <span class="cart-bar-count" id="barCartCount">0 items</span>
+            <span class="cart-bar-total" id="barCartTotal">₹0</span>
+          </div>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">View Cart →</a>
+      </div>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
     <nav class="bottom-nav">
       <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
       <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
       <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/orders.html" class="nav-item">📋<span>Orders</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
       <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
     </nav>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-      <span>💬</span>
-    </a>
+    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank">💬</a>
+    <a href="tel:+919982239821" class="fab-call">📞</a>
 
-    <!-- Toast Notification -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
 
-  <!-- Scripts -->
-  <script src="/js/common.js"></script>
+  <script src="/js/firebase.js"></script>
   <script src="/js/category.js"></script>
-  
-  <!-- PWA Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('[SW] Registered'))
-        .catch(err => console.log('[SW] Failed:', err));
-    }
-  </script>
 </body>
 </html>
