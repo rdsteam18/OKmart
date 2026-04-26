@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Order Management | OK Mart Sub Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#6366f1">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #eef2ff;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px;
+      --transition: all .2s ease;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .admin-layout { display: flex; min-height: 100vh; }
+    
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 260px; background: #1a1e2b; color: white;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 100; display: flex; flex-direction: column;
+      transition: transform .3s;
+    }
+    
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 14px 24px;
+      color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition);
+    }
+    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
+    .sidebar-nav a.active { background: rgba(99,102,241,.12); color: #a5b4fc; border-left: 3px solid var(--primary); }
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; font-weight: 500; }
+    .sidebar-footer button:hover { background: rgba(239,68,68,.2); color: var(--danger); }
+    
+    /* ===== MOBILE HEADER ===== */
+    .mobile-header {
+      display: none; padding: 12px 16px; background: var(--card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+      align-items: center; justify-content: space-between;
+    }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    
+    /* ===== MAIN CONTENT ===== */
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1300px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 800; }
+    .order-count { color: var(--muted); font-size: .9rem; }
+    
+    /* ===== CONTROLS ===== */
+    .controls-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-input { flex: 1; min-width: 200px; padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    .search-input:focus { outline: none; border-color: var(--primary); }
+    .filter-select { padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    
+    /* ===== FILTER TABS ===== */
+    .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-tab { padding: 10px 18px; background: var(--card); border: 1.5px solid var(--border); border-radius: 40px; cursor: pointer; font-weight: 500; font-size: .85rem; transition: var(--transition); position: relative; }
+    .filter-tab:hover { border-color: var(--primary); }
+    .filter-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .filter-tab .count { background: rgba(0,0,0,.08); padding: 2px 8px; border-radius: 20px; margin-left: 6px; font-size: .75rem; }
+    .filter-tab.active .count { background: rgba(255,255,255,.2); }
+    
+    /* ===== ORDERS LIST ===== */
+    .orders-list { display: flex; flex-direction: column; gap: 12px; }
+    
+    .order-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border); overflow: hidden; transition: var(--transition); }
+    .order-card:hover { box-shadow: var(--shadow-md); }
+    
+    .order-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; cursor: pointer; flex-wrap: wrap; gap: 10px;
+    }
+    .order-card-header:active { background: var(--bg); }
+    
+    .order-id-section { display: flex; align-items: center; gap: 12px; }
+    .order-id { font-weight: 700; font-family: monospace; font-size: .95rem; color: var(--primary-dark); }
+    .order-customer { font-weight: 600; }
+    .order-phone { font-size: .85rem; color: var(--muted); }
+    .order-total { font-weight: 700; font-size: 1.05rem; }
+    .order-date { font-size: .8rem; color: var(--muted); }
+    
+    .expand-arrow { font-size: 1.2rem; color: var(--muted); transition: transform .3s; }
+    .expand-arrow.open { transform: rotate(180deg); }
+    
+    /* ===== ORDER DETAILS ===== */
+    .order-details { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); animation: slideDown .3s ease; }
+    @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 1000px; } }
+    .order-details.open { display: block; }
+    
+    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+    
+    .detail-section h4 { font-size: .9rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    
+    .items-list { display: flex; flex-direction: column; gap: 6px; }
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: .9rem; }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-weight: 500; }
+    .item-qty { color: var(--muted); font-size: .8rem; }
+    .item-price { font-weight: 600; }
+    
+    .item-filtered-notice {
+      background: #fef3c7; border: 1px solid #fcd34d;
+      padding: 8px 12px; border-radius: 10px;
+      font-size: .75rem; color: #92400e; margin-top: 8px;
+    }
+    
+    .address-box { background: var(--bg); border-radius: 12px; padding: 14px; font-size: .9rem; line-height: 1.6; }
+    .address-box strong { display: block; margin-bottom: 4px; }
+    
+    /* ===== STATUS CONTROL ===== */
+    .status-control-section {
+      margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .status-control-section label { font-weight: 600; font-size: .85rem; }
+    
+    .status-select { padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border); font-size: .85rem; font-weight: 600; cursor: pointer; background: white; }
+    .status-select.received { background: #fef3c7; border-color: var(--warning); color: #92400e; }
+    .status-select.preparing { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    .status-select.outfordelivery { background: #d1fae5; border-color: #10b981; color: #065f46; }
+    .status-select.delivered { background: #e0e7ff; border-color: #6366f1; color: #3730a3; }
+    
+    .status-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: .7rem; font-weight: 600; text-transform: capitalize; }
+    .status-received { background: #fef3c7; color: #92400e; }
+    .status-preparing { background: #dbeafe; color: #1e40af; }
+    .status-outfordelivery { background: #d1fae5; color: #065f46; }
+    .status-delivered { background: #e0e7ff; color: #3730a3; }
+    
+    .action-btn { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: .8rem; cursor: pointer; border: 1.5px solid var(--border); background: var(--bg); transition: var(--transition); }
+    .action-btn.cancel-btn { background: #fee2e2; border-color: var(--danger); color: var(--danger); }
+    .action-btn.cancel-btn:hover { background: var(--danger); color: white; }
+    
+    .no-orders { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .no-orders span { font-size: 3rem; display: block; margin-bottom: 12px; opacity: .5; }
+    
+    /* ===== TOAST ===== */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
+    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: #10b981; }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; }
+      .details-grid { grid-template-columns: 1fr; }
+      .order-card-header { flex-direction: column; align-items: flex-start; }
+      .status-control-section { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
+      <nav class="sidebar-nav">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="orders.html" class="active">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button onclick="subAdminLogout()">🚪 Logout</button>
+        <button onclick="location.href='/'" style="margin-top:8px;">🏠 View Store</button>
+      </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">Order Management</span>
+      <span></span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <div class="page-header">
+        <h1>📋 Order Management</h1>
+        <span class="order-count" id="totalOrdersCount">Loading...</span>
+      </div>
+
+      <!-- Search -->
+      <div class="controls-bar">
+        <input type="text" class="search-input" id="searchOrders" placeholder="🔍 Search by Order ID or Phone..." oninput="renderOrders()">
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-status="all">All My Orders</button>
+        <button class="filter-tab" data-status="received">Received</button>
+        <button class="filter-tab" data-status="preparing">Preparing</button>
+        <button class="filter-tab" data-status="outfordelivery">Out for Delivery</button>
+        <button class="filter-tab" data-status="delivered">Delivered</button>
+      </div>
+
+      <!-- Orders List -->
+      <div class="orders-list" id="ordersList">
+        <div class="no-orders"><span>📋</span><p>Loading orders...</p></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/sub-admin-auth.js"></script>
+  <script>
+    // ===== SUB ADMIN ORDER MANAGEMENT =====
+    
+    const allowedCategories = window.getAllowedCategories();
+    let allOrders = [];
+    let activeFilter = 'all';
+    let expandedOrderId = null;
+    
+    // ========== HELPER: Check if order has allowed items ==========
+    function orderHasAllowedItems(order) {
+      if (!allowedCategories || allowedCategories.length === 0) return false;
+      if (allowedCategories.includes('all')) return true;
+      
+      const items = order.items || [];
+      return items.some(item => {
+        const cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      });
+    }
+    
+    // ========== GET ALLOWED ITEMS FROM ORDER ==========
+    function getAllowedItems(order) {
+      const items = order.items || [];
+      if (allowedCategories.includes('all')) return items;
+      
+      return items.filter(item => {
+        const cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      });
+    }
+    
+    // ========== LOAD ORDERS ==========
+    db.collection('orders').orderBy('orderDate', 'desc').onSnapshot((snapshot) => {
+      allOrders = [];
+      snapshot.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
+      renderOrders();
+    });
+    
+    // ========== FILTER TABS ==========
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        activeFilter = this.dataset.status;
+        expandedOrderId = null;
+        renderOrders();
+      });
+    });
+    
+    // ========== RENDER ORDERS ==========
+    function renderOrders() {
+      const search = (document.getElementById('searchOrders')?.value || '').toLowerCase().trim();
+      
+      // Filter by allowed categories
+      let filtered = allOrders.filter(order => orderHasAllowedItems(order));
+      
+      // Filter by status
+      if (activeFilter !== 'all') {
+        filtered = filtered.filter(o => o.status === activeFilter);
+      }
+      
+      // Search
+      if (search) {
+        filtered = filtered.filter(o => 
+          (o.orderId || '').toLowerCase().includes(search) ||
+          (o.customerPhone || o.phone || '').includes(search) ||
+          (o.id || '').toLowerCase().includes(search)
+        );
+      }
+      
+      document.getElementById('totalOrdersCount').textContent = 
+        `${filtered.length} order${filtered.length !== 1 ? 's' : ''} (your categories)`;
+      
+      const list = document.getElementById('ordersList');
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="no-orders"><span>📋</span><p>No orders found for your categories</p></div>';
+        return;
+      }
+      
+      list.innerHTML = filtered.map(order => {
+        const status = order.status || 'received';
+        const isExpanded = expandedOrderId === order.id;
+        const allowedItems = getAllowedItems(order);
+        const allItems = order.items || [];
+        const hasFilteredItems = allowedItems.length < allItems.length;
+        
+        // Calculate total for allowed items only
+        const allowedTotal = allowedItems.reduce((sum, item) => 
+          sum + ((item.price || 0) * (item.quantity || 1)), 0
+        );
+        const displayTotal = allowedTotal; // Show only relevant total
+        
+        const itemsHTML = allowedItems.map(item => `
+          <div class="item-row">
+            <div>
+              <span class="item-name">${item.name}</span>
+              <span class="item-qty"> × ${item.quantity || 1}</span>
+            </div>
+            <span class="item-price">₹${(item.price || 0) * (item.quantity || 1)}</span>
+          </div>
+        `).join('');
+        
+        return `
+          <div class="order-card">
+            <div class="order-card-header" onclick="toggleOrder('${order.id}')">
+              <div class="order-id-section">
+                <span class="order-id">#${order.orderId || order.id.slice(-8).toUpperCase()}</span>
+                <span class="status-badge status-${status}">${status}</span>
+              </div>
+              <div>
+                <span class="order-customer">${order.customerName || order.name || 'Customer'}</span>
+                <span class="order-phone"> · 📱 ${order.customerPhone || order.phone || '-'}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;">
+                <span class="order-total">₹${displayTotal.toLocaleString('en-IN')}</span>
+                <span class="order-date">${new Date(order.orderDate || order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="expand-arrow ${isExpanded ? 'open' : ''}">▼</span>
+              </div>
+            </div>
+            
+            <div class="order-details ${isExpanded ? 'open' : ''}" id="details-${order.id}">
+              <div class="details-grid">
+                
+                <!-- Items (only allowed categories) -->
+                <div class="detail-section">
+                  <h4>🛒 Items (${allowedItems.length} in your categories)</h4>
+                  <div class="items-list">${itemsHTML || '<p style="color:var(--muted);font-size:.85rem;">No items in your categories</p>'}</div>
+                  
+                  ${hasFilteredItems ? `
+                    <div class="item-filtered-notice">
+                      📌 This order has ${allItems.length - allowedItems.length} more items in other categories (not shown).
+                    </div>
+                  ` : ''}
+                </div>
+                
+                <!-- Address -->
+                <div class="detail-section">
+                  <h4>📍 Delivery Address</h4>
+                  <div class="address-box">
+                    <strong>${order.customerName || order.name || 'Customer'}</strong>
+                    📱 ${order.customerPhone || order.phone || '-'}<br>
+                    🏠 ${order.customerAddress || order.address || 'No address'}<br>
+                    📅 ${new Date(order.orderDate || order.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Status Control -->
+              <div class="status-control-section">
+                <label>Update Status:</label>
+                <select class="status-select ${status}" id="status-${order.id}" onchange="updateStatus('${order.id}', this.value)">
+                  <option value="received" ${status === 'received' ? 'selected' : ''}>📋 Order Received</option>
+                  <option value="preparing" ${status === 'preparing' ? 'selected' : ''}>🟡 Preparing</option>
+                  <option value="outfordelivery" ${status === 'outfordelivery' ? 'selected' : ''}>🚚 Out for Delivery</option>
+                  <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
+                </select>
+                
+                <button class="action-btn cancel-btn" onclick="updateStatus('${order.id}', 'cancelled')">❌ Cancel Order</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // ========== TOGGLE ORDER EXPAND ==========
+    window.toggleOrder = function(orderId) {
+      expandedOrderId = expandedOrderId === orderId ? null : orderId;
+      renderOrders();
+    };
+    
+    // ========== UPDATE STATUS ==========
+    window.updateStatus = async function(orderId, newStatus) {
+      try {
+        await db.collection('orders').doc(orderId).update({ status: newStatus });
+        
+        const select = document.getElementById('status-' + orderId);
+        if (select) {
+          select.className = 'status-select ' + newStatus;
+          select.value = newStatus;
+        }
+        
+        showToast(`Status updated to "${newStatus}"`, 'success');
+        console.log(`✅ Order ${orderId} → ${newStatus}`);
+      } catch (err) {
+        console.error('Status update error:', err);
+        showToast('Failed to update status', 'error');
+      }
+    };
+    
+    // ========== TOAST ==========
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    console.log('✅ Sub-admin orders page ready | Categories:', allowedCategories.join(', '));
+  </script>
+</body>
+</html>
