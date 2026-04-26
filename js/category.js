@@ -1,5 +1,5 @@
-// ===== OK Mart - UNIFIED CATEGORY.JS =====
-// Works for ALL categories: fruits, dairy, snacks, etc.
+// ===== OK Mart - Unified Category.js =====
+// Works for ALL categories: vegetables, fruits, dairy, etc.
 
 (function() {
   'use strict';
@@ -7,13 +7,14 @@
   const CART_KEY = 'okmart_cart';
   const WISHLIST_KEY = 'okmart_wishlist';
   
-  // Category config - auto-detected from body data attribute
-  const category = document.body.dataset.category || 'fruits';
+  // Auto-detect category from body attribute
+  const category = document.body.dataset.category || 'vegetables';
   
+  // Category configuration
   const categoryConfig = {
+    vegetables: { title: 'Fresh Vegetables', icon: '🥬', desc: 'Farm fresh vegetables delivered to your doorstep' },
     fruits: { title: 'Fresh Fruits', icon: '🍎', desc: 'Handpicked fresh fruits delivered daily' },
     dairy: { title: 'Dairy & Eggs', icon: '🥛', desc: 'Fresh milk, butter, paneer & more' },
-    vegetables: { title: 'Fresh Vegetables', icon: '🥕', desc: 'Farm fresh vegetables delivered daily' },
     snacks: { title: 'Snacks & Munchies', icon: '🍿', desc: 'Chips, biscuits, namkeen & more' },
     beverages: { title: 'Beverages', icon: '🥤', desc: 'Soft drinks, juices, tea & coffee' },
     grocery: { title: 'Grocery Staples', icon: '🧺', desc: 'Atta, rice, dal, oils & essentials' },
@@ -23,39 +24,75 @@
     household: { title: 'Household', icon: '🧹', desc: 'Cleaning & kitchen essentials' }
   };
   
+  // Quick filter mappings per category
+  const quickFilterMap = {
+    vegetables: { leafy: ['spinach','palak','coriander','methi','lettuce','cabbage','fenugreek'], root: ['carrot','beetroot','radish','turnip','potato','sweet potato'], gourd: ['gourd','lauki','bitter gourd','karela','cucumber','tinda','pumpkin'], onion: ['onion','garlic','shallot','spring onion'], tomato: ['tomato','cherry tomato'] },
+    fruits: { apple: ['apple'], banana: ['banana'], mango: ['mango'], citrus: ['orange','lemon','lime'], berries: ['strawberry','blueberry','berry'], exotic: ['kiwi','avocado','dragon'] }
+  };
+  
   const config = categoryConfig[category] || { title: category, icon: '🛒', desc: 'Quality products' };
+  const filterMap = quickFilterMap[category] || {};
   
   let allProducts = [];
-  let currentSort = 'popular';
+  let currentSort = 'fresh';
+  let currentFilter = 'all';
   let sortOpen = false;
   
-  // ========== UPDATE UI ==========
+  // ========== UPDATE PAGE UI ==========
   document.title = `${config.title} | OK Mart`;
-  const titleEl = document.getElementById('pageTitle');
-  const heroIcon = document.querySelector('.hero-icon');
-  const heroTitle = document.querySelector('.hero-content h2');
-  const heroDesc = document.querySelector('.hero-content p');
-  if (titleEl) titleEl.textContent = config.title;
-  if (heroIcon) heroIcon.textContent = config.icon;
-  if (heroTitle) heroTitle.textContent = config.title;
-  if (heroDesc) heroDesc.textContent = config.desc;
+  document.getElementById('pageTitle').textContent = config.title;
+  document.querySelector('.hero-icon').textContent = config.icon;
+  document.querySelector('.hero-content h2').textContent = config.title;
+  document.querySelector('.hero-content p').textContent = config.desc;
   
-  // ========== LOAD PRODUCTS ==========
-  db.collection('products').where('category', '==', category).where('active', '!=', false).onSnapshot(snap => {
-    allProducts = []; snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-    sortAndRender();
-  });
+  // Render quick filter chips
+  const filterScroll = document.querySelector('.filter-scroll');
+  if (filterScroll && Object.keys(filterMap).length > 0) {
+    filterScroll.innerHTML = `<button class="filter-chip active" data-filter="all">${config.icon} All</button>` + 
+      Object.entries(filterMap).map(([key, _]) => 
+        `<button class="filter-chip" data-filter="${key}">${getFilterIcon(key)} ${key.charAt(0).toUpperCase()+key.slice(1)}</button>`
+      ).join('');
+  }
   
-  // ========== SORT ==========
-  function sortAndRender() {
-    let sorted = [...allProducts];
+  function getFilterIcon(key) {
+    const icons = { leafy:'🥗', root:'🥕', gourd:'🥒', onion:'🧅', tomato:'🍅', apple:'🍎', banana:'🍌', mango:'🥭', citrus:'🍊', berries:'🫐', exotic:'🥝' };
+    return icons[key] || '📦';
+  }
+  
+  // ========== LOAD PRODUCTS FROM FIREBASE ==========
+  db.collection('products')
+    .where('category', '==', category)
+    .where('active', '!=', false)
+    .onSnapshot(snap => {
+      allProducts = []; snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+      sortAndRender();
+    });
+  
+  // ========== FILTER & SORT ==========
+  function getFilteredProducts() {
+    let filtered = [...allProducts];
+    if (currentFilter !== 'all' && filterMap[currentFilter]) {
+      const keywords = filterMap[currentFilter];
+      filtered = filtered.filter(p => keywords.some(kw => p.name.toLowerCase().includes(kw)));
+    }
+    return filtered;
+  }
+  
+  function sortProducts(products) {
+    let sorted = [...products];
     switch(currentSort) {
+      case 'fresh': sorted.sort((a,b) => (b.seasonal?1:0) - (a.seasonal?1:0) || (b.popular?1:0) - (a.popular?1:0)); break;
       case 'popular': sorted.sort((a,b) => (b.popular?1:0) - (a.popular?1:0)); break;
       case 'price-low': sorted.sort((a,b) => a.price - b.price); break;
       case 'price-high': sorted.sort((a,b) => b.price - a.price); break;
       case 'discount': sorted.sort((a,b) => { const da=a.mrp?((a.mrp-a.price)/a.mrp):0, db2=b.mrp?((b.mrp-b.price)/b.mrp):0; return db2-da; }); break;
-      case 'name': sorted.sort((a,b) => a.name.localeCompare(b.name)); break;
     }
+    return sorted;
+  }
+  
+  function sortAndRender() {
+    let filtered = getFilteredProducts();
+    let sorted = sortProducts(filtered);
     renderProducts(sorted);
   }
   
@@ -78,10 +115,11 @@
     const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
     const card = document.createElement('div');
     card.className = 'product-card';
-    if (product.seasonal) card.innerHTML += '<span class="seasonal-badge">🌟 Seasonal</span>';
-    card.innerHTML += `
+    
+    card.innerHTML = `
       <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://placehold.co/200/eee/999?text=🛒'">
-      ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
+      ${product.fresh ? '<span class="fresh-badge">🌱 Fresh</span>' : ''}
+      ${product.popular && !product.fresh ? '<span class="product-badge">🔥</span>' : ''}
       <button class="wishlist-heart">${isInWishlist(product.id)?'❤️':'🤍'}</button>
       <button class="share-mini">📤</button>
       <h3 class="product-name">${product.name}</h3>
@@ -151,6 +189,16 @@
     });
   });
   
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.filter;
+      sortAndRender();
+    });
+  });
+  
   document.addEventListener('click', e => { if (!e.target.closest('.sort-wrapper')) { document.getElementById('sortDropdown').classList.remove('show'); sortOpen = false; } });
   
   // ========== TOAST ==========
@@ -160,7 +208,6 @@
     t.classList.add('show'); clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.remove('show'), 2500);
   }
   
-  // ========== INIT ==========
   updateCartUI();
   console.log(`✅ ${config.title} category ready`);
 })();
