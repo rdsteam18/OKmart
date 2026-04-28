@@ -31,7 +31,7 @@
     .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
     .sidebar-nav a.active { background: rgba(99,102,241,.12); color: #a5b4fc; border-left: 3px solid var(--primary); }
     .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
-    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; font-weight: 500; }
     
     .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
     .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
@@ -51,6 +51,14 @@
     .search-input { flex: 1; min-width: 200px; padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
     .search-input:focus { outline: none; border-color: var(--primary); }
     .filter-select { padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    
+    /* Broadcast */
+    .broadcast-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .broadcast-btn { padding: 10px 18px; border-radius: 20px; font-weight: 600; font-size: .8rem; cursor: pointer; border: none; transition: var(--transition); }
+    .broadcast-offer { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid var(--primary); }
+    .broadcast-offer:hover { background: var(--primary); color: white; }
+    .broadcast-remind { background: #fef3c7; color: #92400e; border: 1.5px solid var(--warning); }
+    .broadcast-remind:hover { background: var(--warning); color: white; }
     
     /* Customers Grid */
     .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
@@ -91,6 +99,7 @@
     .status-preparing { background: #dbeafe; color: #1e40af; }
     .status-outfordelivery { background: #d1fae5; color: #065f46; }
     .status-delivered { background: #e0e7ff; color: #3730a3; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
     
     .item-filtered-note { background: #fef3c7; border: 1px solid #fcd34d; padding: 8px 12px; border-radius: 10px; font-size: .75rem; color: #92400e; margin-top: 8px; }
     
@@ -103,12 +112,15 @@
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="admin-layout">
     
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
       <nav class="sidebar-nav">
@@ -121,11 +133,13 @@
       <div class="sidebar-footer"><button onclick="subAdminLogout()">🚪 Logout</button></div>
     </aside>
 
+    <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
       <span style="font-weight:700;">Customer Management</span><span></span>
     </div>
 
+    <!-- Main Content -->
     <main class="main-content">
       <h1>👥 Customer Management</h1>
       <p class="subtitle" id="categorySubtitle">Loading...</p>
@@ -135,6 +149,12 @@
         <div class="stat-mini"><span class="value" id="statTotal">0</span><span class="label">Your Customers</span></div>
         <div class="stat-mini"><span class="value" id="statActive">0</span><span class="label">Active (30 days)</span></div>
         <div class="stat-mini"><span class="value" id="statRevenue">₹0</span><span class="label">Your Revenue</span></div>
+      </div>
+      
+      <!-- Broadcast -->
+      <div class="broadcast-bar">
+        <button class="broadcast-btn broadcast-offer" onclick="broadcastToAll('offer')">📢 Broadcast Offer</button>
+        <button class="broadcast-btn broadcast-remind" onclick="broadcastToAll('reminder')">🔔 Remind All</button>
       </div>
       
       <!-- Controls -->
@@ -169,61 +189,78 @@
     </div>
   </div>
 
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
+  <!-- Firebase Config -->
   <script src="/js/firebase.js"></script>
-  <script src="/js/sub-admin-auth.js"></script>
+  
+  <!-- Role System -->
+  <script src="/js/role.js"></script>
+  
+  <!-- Customers Script -->
   <script>
-    // ===== SUB ADMIN CUSTOMER MANAGEMENT =====
+    // ===== SUB ADMIN - CUSTOMER MANAGEMENT =====
     
-    const allowedCategories = window.getAllowedCategories();
-    const STORE_URL = window.location.origin;
+    var allowedCategories = window.getAllowedCategories();
+    var STORE_URL = window.location.origin;
+    var allCustomers = [];
+    var currentHistoryPhone = null;
     
-    document.getElementById('categorySubtitle').textContent = 
-      `Showing customers who ordered: ${allowedCategories.join(', ')}`;
+    document.getElementById('categorySubtitle').textContent = 'Showing customers who ordered: ' + allowedCategories.join(', ');
     
-    let allCustomers = [];
-    let currentHistoryPhone = null;
+    console.log('📂 Sub-admin categories for customers:', allowedCategories);
     
     // Message templates
-    const MESSAGE_TEMPLATES = {
-      offer: (name) => `🔥 *Special Offer for ${name || 'You'}!*\n\nGet amazing discounts on your favorite items from our store!\n\n🛒 Shop now: ${STORE_URL}\n\n📞 Contact: +91 99822 39821`,
-      reminder: (name) => `🛒 *Hey ${name || 'there'}!*\n\nCheck out new deals on products you love. Fresh stock available!\n\n👉 ${STORE_URL}\n\n📞 +91 99822 39821`,
-      thanks: (name) => `🙏 *Thank you ${name || 'for choosing us'}!*\n\nWe appreciate your orders. Come back for more great deals!\n\n⭐ ${STORE_URL}`
+    var MESSAGE_TEMPLATES = {
+      offer: function(name) {
+        return '🔥 *Special Offer for ' + (name || 'You') + '!*\n\nGet amazing discounts on your favorite items!\n\n🛒 Shop now: ' + STORE_URL + '\n\n📞 Contact: +91 99822 39821';
+      },
+      reminder: function(name) {
+        return '🛒 *Hey ' + (name || 'there') + '!*\n\nCheck out new deals on products you love.\n\n👉 ' + STORE_URL + '\n\n📞 +91 99822 39821';
+      },
+      thanks: function(name) {
+        return '🙏 *Thank you ' + (name || 'for choosing us') + '!*\n\nWe appreciate your orders.\n\n⭐ ' + STORE_URL;
+      }
     };
     
     // ========== HELPER FUNCTIONS ==========
     function orderHasAllowedItems(order) {
       if (!allowedCategories || allowedCategories.length === 0) return false;
       if (allowedCategories.includes('all')) return true;
-      const items = order.items || [];
-      return items.some(item => {
-        const cat = (item.category || '').toLowerCase();
-        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      var items = order.items || [];
+      return items.some(function(item) {
+        var cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(function(ac) {
+          return cat.includes(ac) || ac.includes(cat);
+        });
       });
     }
     
     function getAllowedItems(order) {
-      const items = order.items || [];
+      var items = order.items || [];
       if (allowedCategories.includes('all')) return items;
-      return items.filter(item => {
-        const cat = (item.category || '').toLowerCase();
-        return allowedCategories.some(ac => cat.includes(ac) || ac.includes(cat));
+      return items.filter(function(item) {
+        var cat = (item.category || '').toLowerCase();
+        return allowedCategories.some(function(ac) {
+          return cat.includes(ac) || ac.includes(cat);
+        });
       });
     }
     
     // ========== LOAD & BUILD CUSTOMER LIST ==========
-    db.collection('orders').orderBy('orderDate', 'desc').onSnapshot(snapshot => {
-      const customerMap = {};
-      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    db.collection('orders').orderBy('orderDate', 'desc').onSnapshot(function(snapshot) {
+      var customerMap = {};
+      var thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
       
-      snapshot.forEach(doc => {
-        const order = { id: doc.id, ...doc.data() };
+      snapshot.forEach(function(doc) {
+        var order = doc.data();
+        order.id = doc.id;
         
         // Only include orders with allowed items
         if (!orderHasAllowedItems(order)) return;
         
-        const phone = order.customerPhone || order.phone;
+        var phone = order.customerPhone || order.phone;
         if (!phone) return;
         
         if (!customerMap[phone]) {
@@ -238,18 +275,20 @@
           };
         }
         
-        const cust = customerMap[phone];
+        var cust = customerMap[phone];
         cust.totalOrders++;
         
         // Only sum allowed items total
-        const allowedItems = getAllowedItems(order);
-        const allowedTotal = allowedItems.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+        var allowedItems = getAllowedItems(order);
+        var allowedTotal = allowedItems.reduce(function(s, i) {
+          return s + ((i.price || 0) * (i.quantity || 1));
+        }, 0);
         cust.totalSpent += allowedTotal;
         cust.orders.push(order);
         
         if (order.customerName || order.name) cust.name = order.customerName || order.name;
         
-        const orderDate = new Date(order.orderDate || order.date);
+        var orderDate = new Date(order.orderDate || order.date);
         if (!cust.lastOrderDate || orderDate > new Date(cust.lastOrderDate)) {
           cust.lastOrderDate = order.orderDate || order.date;
         }
@@ -259,12 +298,14 @@
       allCustomers = Object.values(customerMap);
       updateStats();
       renderCustomers();
+      
+      console.log('📊 Loaded', allCustomers.length, 'customers');
     });
     
     function updateStats() {
-      const total = allCustomers.length;
-      const active = allCustomers.filter(c => c.active).length;
-      const revenue = allCustomers.reduce((s, c) => s + c.totalSpent, 0);
+      var total = allCustomers.length;
+      var active = allCustomers.filter(function(c) { return c.active; }).length;
+      var revenue = allCustomers.reduce(function(s, c) { return s + c.totalSpent; }, 0);
       
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statActive').textContent = active;
@@ -273,94 +314,130 @@
     
     // ========== RENDER CUSTOMERS ==========
     function renderCustomers() {
-      const search = (document.getElementById('customerSearch')?.value || '').toLowerCase().trim();
-      const sort = document.getElementById('sortFilter')?.value || 'spent-high';
+      var search = (document.getElementById('customerSearch').value || '').toLowerCase().trim();
+      var sort = document.getElementById('sortFilter').value || 'spent-high';
       
-      let filtered = [...allCustomers];
+      var filtered = allCustomers.slice();
       
       // Search
       if (search) {
-        filtered = filtered.filter(c => 
-          c.phone.includes(search) || c.name.toLowerCase().includes(search)
-        );
+        filtered = filtered.filter(function(c) {
+          return c.phone.includes(search) || c.name.toLowerCase().includes(search);
+        });
       }
       
       // Sort
-      switch(sort) {
-        case 'spent-high': filtered.sort((a, b) => b.totalSpent - a.totalSpent); break;
-        case 'orders-high': filtered.sort((a, b) => b.totalOrders - a.totalOrders); break;
-        case 'recent': filtered.sort((a, b) => new Date(b.lastOrderDate) - new Date(a.lastOrderDate)); break;
+      if (sort === 'spent-high') {
+        filtered.sort(function(a, b) { return b.totalSpent - a.totalSpent; });
+      } else if (sort === 'orders-high') {
+        filtered.sort(function(a, b) { return b.totalOrders - a.totalOrders; });
+      } else if (sort === 'recent') {
+        filtered.sort(function(a, b) { return new Date(b.lastOrderDate) - new Date(a.lastOrderDate); });
       }
       
-      const grid = document.getElementById('customersGrid');
+      var grid = document.getElementById('customersGrid');
       
       if (filtered.length === 0) {
         grid.innerHTML = '<p class="no-data">No customers found for your categories</p>';
         return;
       }
       
-      grid.innerHTML = filtered.map((c, i) => {
-        const rank = (sort === 'spent-high' || sort === 'orders-high') ? i + 1 : null;
-        const rankClass = i < 3 ? 'top' : '';
+      grid.innerHTML = '';
+      
+      filtered.forEach(function(c, i) {
+        var rank = (sort === 'spent-high' || sort === 'orders-high') ? (i + 1) : null;
+        var rankClass = (i < 3) ? 'top' : '';
         
-        return `
-          <div class="customer-card">
-            ${rank ? `<div class="customer-rank ${rankClass}">${rank}</div>` : ''}
-            <div class="customer-phone">📱 ${c.phone}</div>
-            <div class="customer-name">${c.name}</div>
-            <div class="customer-meta">
-              <span>📦 <strong>${c.totalOrders}</strong> orders</span>
-              <span>💰 <strong>₹${Math.round(c.totalSpent).toLocaleString('en-IN')}</strong></span>
-              <span>📅 Last: <strong>${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : 'N/A'}</strong></span>
-              ${c.active ? '<span style="color:#10b981;">● Active</span>' : ''}
-            </div>
-            <div class="customer-actions">
-              <button class="btn-sm btn-orders" onclick="showOrderHistory('${c.phone}')">📋 History</button>
-              <button class="btn-sm btn-offer" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'offer')">💬 Offer</button>
-              <button class="btn-sm btn-remind" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'reminder')">🔔 Remind</button>
-              <button class="btn-sm btn-thanks" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'thanks')">🙏 Thanks</button>
-            </div>
-          </div>
-        `;
-      }).join('');
+        var card = document.createElement('div');
+        card.className = 'customer-card';
+        
+        var rankHTML = rank ? '<div class="customer-rank ' + rankClass + '">' + rank + '</div>' : '';
+        
+        card.innerHTML = 
+          rankHTML +
+          '<div class="customer-phone">📱 ' + c.phone + '</div>' +
+          '<div class="customer-name">' + c.name + '</div>' +
+          '<div class="customer-meta">' +
+            '<span>📦 <strong>' + c.totalOrders + '</strong> orders</span>' +
+            '<span>💰 <strong>₹' + Math.round(c.totalSpent).toLocaleString('en-IN') + '</strong></span>' +
+            '<span>📅 Last: <strong>' + (c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : 'N/A') + '</strong></span>' +
+            (c.active ? '<span style="color:#10b981;">● Active</span>' : '') +
+          '</div>' +
+          '<div class="customer-actions">' +
+            '<button class="btn-sm btn-orders history-btn">📋 History</button>' +
+            '<button class="btn-sm btn-offer offer-btn">💬 Offer</button>' +
+            '<button class="btn-sm btn-remind remind-btn">🔔 Remind</button>' +
+            '<button class="btn-sm btn-thanks thanks-btn">🙏 Thanks</button>' +
+          '</div>';
+        
+        // Add event listeners
+        card.querySelector('.history-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          showOrderHistory(c.phone);
+        });
+        
+        card.querySelector('.offer-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          sendMessage(c.phone, c.name, 'offer');
+        });
+        
+        card.querySelector('.remind-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          sendMessage(c.phone, c.name, 'reminder');
+        });
+        
+        card.querySelector('.thanks-btn').addEventListener('click', function(e) {
+          e.stopPropagation();
+          sendMessage(c.phone, c.name, 'thanks');
+        });
+        
+        grid.appendChild(card);
+      });
     }
     
     // ========== ORDER HISTORY MODAL ==========
     window.showOrderHistory = function(phone) {
-      const customer = allCustomers.find(c => c.phone === phone);
+      var customer = allCustomers.find(function(c) { return c.phone === phone; });
       if (!customer) return;
       
       currentHistoryPhone = phone;
-      document.getElementById('historyCustomerInfo').textContent = `${customer.name} · 📱 ${phone}`;
+      document.getElementById('historyCustomerInfo').textContent = customer.name + ' · 📱 ' + phone;
       
-      const ordersList = document.getElementById('historyOrdersList');
-      const orders = customer.orders.sort((a, b) => new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date));
+      var ordersList = document.getElementById('historyOrdersList');
+      var orders = customer.orders.sort(function(a, b) {
+        return new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date);
+      });
       
-      ordersList.innerHTML = orders.map(o => {
-        const status = o.status || 'received';
-        const allowedItems = getAllowedItems(o);
-        const allItems = o.items || [];
-        const hasFiltered = allowedItems.length < allItems.length;
-        const allowedTotal = allowedItems.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+      ordersList.innerHTML = '';
+      
+      orders.forEach(function(o) {
+        var status = o.status || 'received';
+        var allowedItems = getAllowedItems(o);
+        var allItems = o.items || [];
+        var hasFiltered = allowedItems.length < allItems.length;
+        var allowedTotal = allowedItems.reduce(function(s, i) {
+          return s + ((i.price || 0) * (i.quantity || 1));
+        }, 0);
         
-        let itemsPreview = allowedItems.slice(0, 3).map(i => i.name).join(', ');
-        if (allowedItems.length > 3) itemsPreview += ` +${allowedItems.length - 3} more`;
+        var itemsPreview = allowedItems.slice(0, 3).map(function(i) { return i.name; }).join(', ');
+        if (allowedItems.length > 3) itemsPreview += ' +' + (allowedItems.length - 3) + ' more';
         
-        return `
-          <div class="order-mini">
-            <div>
-              <strong>#${o.orderId || o.id?.slice(-8).toUpperCase()}</strong>
-              <span style="font-size:.8rem;color:var(--muted);margin-left:8px;">${new Date(o.orderDate || o.date).toLocaleDateString('en-IN')}</span>
-              ${hasFiltered ? '<br><span style="font-size:.7rem;color:#92400e;">📌 Some items hidden (other categories)</span>' : ''}
-              <br><span style="font-size:.8rem;color:var(--muted);">${itemsPreview}</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <span style="font-weight:700;">₹${allowedTotal.toLocaleString('en-IN')}</span>
-              <span class="status-badge status-${status}">${status}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
+        var row = document.createElement('div');
+        row.className = 'order-mini';
+        row.innerHTML = 
+          '<div>' +
+            '<strong>#' + (o.orderId || o.id.slice(-8).toUpperCase()) + '</strong>' +
+            '<span style="font-size:.8rem;color:var(--muted);margin-left:8px;">' + new Date(o.orderDate || o.date).toLocaleDateString('en-IN') + '</span>' +
+            (hasFiltered ? '<br><span style="font-size:.7rem;color:#92400e;">📌 Some items hidden (other categories)</span>' : '') +
+            '<br><span style="font-size:.8rem;color:var(--muted);">' + itemsPreview + '</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;">' +
+            '<span style="font-weight:700;">₹' + allowedTotal.toLocaleString('en-IN') + '</span>' +
+            '<span class="status-badge status-' + status + '">' + status + '</span>' +
+          '</div>';
+        
+        ordersList.appendChild(row);
+      });
       
       document.getElementById('historyModal').classList.add('active');
     };
@@ -371,32 +448,52 @@
     };
     
     document.getElementById('historyModal').addEventListener('click', function(e) {
-      if (e.target === this) closeHistoryModal();
+      if (e.target === document.getElementById('historyModal')) {
+        closeHistoryModal();
+      }
     });
     
     // ========== MESSAGE FUNCTIONS ==========
     window.sendMessage = function(phone, name, type) {
-      const message = MESSAGE_TEMPLATES[type](name);
-      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
-      showToast(`📱 Opening WhatsApp for ${phone}`, 'success');
+      var message = MESSAGE_TEMPLATES[type](name);
+      window.open('https://wa.me/91' + phone + '?text=' + encodeURIComponent(message), '_blank');
+      showToast('📱 Opening WhatsApp for ' + phone, 'success');
     };
     
     window.messageFromHistory = function(type) {
       if (!currentHistoryPhone) return;
-      const customer = allCustomers.find(c => c.phone === currentHistoryPhone);
-      sendMessage(currentHistoryPhone, customer?.name || 'Customer', type);
+      var customer = allCustomers.find(function(c) { return c.phone === currentHistoryPhone; });
+      sendMessage(currentHistoryPhone, customer ? customer.name : 'Customer', type);
+    };
+    
+    // ========== BROADCAST ==========
+    window.broadcastToAll = function(type) {
+      var topCustomers = allCustomers.slice(0, 10);
+      if (topCustomers.length === 0) {
+        showToast('No customers to send', 'error');
+        return;
+      }
+      
+      topCustomers.forEach(function(c, i) {
+        setTimeout(function() {
+          sendMessage(c.phone, c.name, type);
+        }, i * 1500);
+      });
+      
+      showToast('📢 Sending to top ' + topCustomers.length + ' customers...', 'success');
     };
     
     // ========== TOAST ==========
-    function showToast(msg, type = 'info') {
-      const toast = document.getElementById('toast');
+    function showToast(msg, type) {
+      var toast = document.getElementById('toast');
+      if (!toast) return;
       toast.textContent = msg;
-      toast.className = `toast ${type}`;
+      toast.className = 'toast ' + (type || 'info');
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
     
-    console.log('✅ Sub-admin customers ready | Categories:', allowedCategories.join(', '));
+    console.log('✅ Sub-admin customers page ready');
   </script>
 </body>
 </html>
