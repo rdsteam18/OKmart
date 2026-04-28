@@ -12,7 +12,7 @@
     id: 'free_onion',
     name: 'Onion (FREE)',
     price: 0, mrp: 30,
-    image: 'https://images.pexels.com/photos/144248/pexels-photo-144248.jpeg?auto=compress&cs=tinysrgb&w=200',
+    image: 'https://www.jiomart.com/images/product/original/590011678/onion-1-kg-pack-product-images-o590011678-p611163418-0-202503161707.jpg?im=Resize=(420,420)',
     unit: '1 kg', quantity: 1, isFree: true
   };
   
