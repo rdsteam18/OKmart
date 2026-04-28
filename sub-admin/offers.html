@@ -25,13 +25,13 @@
     .sidebar { width: 260px; background: #1a1e2b; color: white; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column; transition: transform .3s; }
     .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
     .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
-    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; text-transform: uppercase; }
     .sidebar-nav { flex: 1; padding: 20px 0; }
     .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
     .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
     .sidebar-nav a.active { background: rgba(99,102,241,.12); color: #a5b4fc; border-left: 3px solid var(--primary); }
     .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
-    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
+    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; font-weight: 500; }
     
     .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
     .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
@@ -49,6 +49,7 @@
     
     .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .add-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
     
     /* Cards */
@@ -96,12 +97,15 @@
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="admin-layout">
     
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
       <nav class="sidebar-nav">
@@ -109,18 +113,22 @@
         <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
         <a href="offers.html" class="active">🏷️ Offers</a>
+        <a href="customers.html">👥 Customers</a>
       </nav>
       <div class="sidebar-footer"><button onclick="subAdminLogout()">🚪 Logout</button></div>
     </aside>
 
+    <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
       <span style="font-weight:700;">Offers & Banners</span><span></span>
     </div>
 
+    <!-- Main Content -->
     <main class="main-content">
       <h1>🏷️ Offers & Banners</h1>
       
+      <!-- Tabs -->
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('coupons')">🎟️ Coupons</button>
         <button class="tab-btn" onclick="switchTab('banners')">🖼️ Banners</button>
@@ -148,17 +156,17 @@
     <div class="modal-card">
       <div class="modal-header"><h2 id="couponModalTitle">Add Coupon</h2><button class="modal-close" onclick="closeCouponModal()">✕</button></div>
       <form id="couponForm"><input type="hidden" id="couponId">
-        <div class="form-group"><label>Code *</label><input type="text" id="cCode" required></div>
+        <div class="form-group"><label>Code *</label><input type="text" id="cCode" required placeholder="e.g., SAVE20"></div>
         <div class="form-row">
           <div class="form-group"><label>Type *</label><select id="cType"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div>
-          <div class="form-group"><label>Discount *</label><input type="number" id="cDiscount" required></div>
+          <div class="form-group"><label>Discount *</label><input type="number" id="cDiscount" required placeholder="20"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Min Order *</label><input type="number" id="cMin"></div>
-          <div class="form-group"><label>Max Discount</label><input type="number" id="cMax"></div>
+          <div class="form-group"><label>Min Order (₹)</label><input type="number" id="cMin" placeholder="250"></div>
+          <div class="form-group"><label>Max Discount</label><input type="number" id="cMax" placeholder="Optional"></div>
         </div>
         <div class="form-group"><label>Category *</label><select id="cCategory" required></select></div>
-        <div class="form-group"><label>Description</label><input type="text" id="cDesc"></div>
+        <div class="form-group"><label>Description</label><input type="text" id="cDesc" placeholder="Save ₹20 on orders above ₹250"></div>
         <div class="form-row">
           <div class="form-group"><label>Usage Limit</label><input type="number" id="cUsage"></div>
           <div class="form-group"><label>Per User</label><input type="number" id="cPerUser"></div>
@@ -174,82 +182,108 @@
     <div class="modal-card">
       <div class="modal-header"><h2 id="bannerModalTitle">Add Banner</h2><button class="modal-close" onclick="closeBannerModal()">✕</button></div>
       <form id="bannerForm"><input type="hidden" id="bannerId">
-        <div class="form-group"><label>Title *</label><input type="text" id="bTitle" required></div>
-        <div class="form-group"><label>Image URL *</label><input type="url" id="bImage" required></div>
-        <div class="form-group"><label>Link</label><input type="text" id="bLink"></div>
+        <div class="form-group"><label>Title *</label><input type="text" id="bTitle" required placeholder="Big Sale"></div>
+        <div class="form-group"><label>Image URL *</label><input type="url" id="bImage" required placeholder="https://..."></div>
+        <div class="form-group"><label>Link</label><input type="text" id="bLink" placeholder="/offers.html"></div>
         <div class="form-group"><label>Category *</label><select id="bCategory" required></select></div>
-        <div class="form-group"><label>Show On</label><select id="bPage"><option value="home">Home</option><option value="category">Category Page</option></select></div>
+        <div class="form-group"><label>Show On</label><select id="bPage"><option value="home">Home Page</option><option value="category">Category Page</option></select></div>
         <div class="form-check"><input type="checkbox" id="bActive" checked><label>Active</label></div>
         <button type="submit" class="save-btn">💾 Save Banner</button>
       </form>
     </div>
   </div>
 
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
+  <!-- Firebase Config -->
   <script src="/js/firebase.js"></script>
-  <script src="/js/sub-admin-auth.js"></script>
+  
+  <!-- Role System -->
+  <script src="/js/role.js"></script>
+  
+  <!-- Offers Script -->
   <script>
-    const allowedCategories = window.getAllowedCategories();
-    const permissionDenied = document.getElementById('permissionDenied');
+    // ===== SUB ADMIN - OFFERS & BANNERS =====
     
-    const catIcons = { electronics:'📱', household:'🧹', personal:'🧴', dairy:'🥛', fruits:'🍎', snacks:'🍿', beverages:'🥤', grocery:'🧺', bakery:'🥐', vegetables:'🥬' };
+    var allowedCategories = window.getAllowedCategories();
+    var catIcons = { electronics: '📱', household: '🧹', personal: '🧴', dairy: '🥛', fruits: '🍎', snacks: '🍿', beverages: '🥤', grocery: '🧺', bakery: '🥐', vegetables: '🥬' };
     
-    // Build category dropdowns
-    function buildCatDropdown(selectId) {
-      const select = document.getElementById(selectId);
+    console.log('📂 Sub-admin categories for offers:', allowedCategories);
+    
+    // ========== BUILD CATEGORY DROPDOWNS ==========
+    function buildCategoryDropdown(selectId) {
+      var select = document.getElementById(selectId);
       if (!select) return;
       select.innerHTML = '<option value="">Select Category</option>';
-      allowedCategories.forEach(cat => {
-        select.innerHTML += `<option value="${cat}">${catIcons[cat]||'📦'} ${cat.charAt(0).toUpperCase()+cat.slice(1)}</option>`;
+      allowedCategories.forEach(function(cat) {
+        var icon = catIcons[cat] || '📦';
+        var label = cat.charAt(0).toUpperCase() + cat.slice(1);
+        select.innerHTML += '<option value="' + cat + '">' + icon + ' ' + label + '</option>';
       });
     }
-    buildCatDropdown('cCategory');
-    buildCatDropdown('bCategory');
+    
+    buildCategoryDropdown('cCategory');
+    buildCategoryDropdown('bCategory');
     
     // ========== TABS ==========
     window.switchTab = function(tab) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelector(`.tab-btn:nth-child(${tab==='coupons'?1:2})`).classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+      
+      if (tab === 'coupons') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('tab-coupons').classList.add('active');
+      } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('tab-banners').classList.add('active');
+      }
     };
     
-    // ========== COUPONS ==========
-    const couponModal = document.getElementById('couponModal');
-    let couponEditId = null;
+    // ========== PERMISSION DENIED ==========
+    function showPermissionDenied(type) {
+      var el = document.getElementById('permissionDenied');
+      el.textContent = '⚠️ You can only create ' + type + 's for: ' + allowedCategories.join(', ');
+      el.classList.add('show');
+      setTimeout(function() { el.classList.remove('show'); }, 4000);
+    }
     
-    window.openCouponModal = function(c = null) {
-      couponEditId = c?.id || null;
+    // ========== COUPONS ==========
+    var couponModal = document.getElementById('couponModal');
+    var couponEditId = null;
+    
+    window.openCouponModal = function(c) {
+      c = c || null;
+      couponEditId = c ? c.id : null;
       document.getElementById('couponModalTitle').textContent = c ? 'Edit Coupon' : 'Add Coupon';
-      document.getElementById('couponId').value = c?.id || '';
-      document.getElementById('cCode').value = c?.code || '';
-      document.getElementById('cType').value = c?.type || 'flat';
-      document.getElementById('cDiscount').value = c?.discount || '';
-      document.getElementById('cMin').value = c?.minOrder || '';
-      document.getElementById('cMax').value = c?.maxDiscount || '';
-      document.getElementById('cCategory').value = c?.category || '';
-      document.getElementById('cDesc').value = c?.description || '';
-      document.getElementById('cUsage').value = c?.usageLimit || '';
-      document.getElementById('cPerUser').value = c?.perUserLimit || '';
-      document.getElementById('cActive').checked = c?.active !== false;
-      permissionDenied.classList.remove('show');
+      document.getElementById('couponId').value = c ? c.id : '';
+      document.getElementById('cCode').value = c ? c.code : '';
+      document.getElementById('cType').value = c ? c.type : 'flat';
+      document.getElementById('cDiscount').value = c ? c.discount : '';
+      document.getElementById('cMin').value = c ? c.minOrder : '';
+      document.getElementById('cMax').value = c ? c.maxDiscount : '';
+      document.getElementById('cCategory').value = c ? c.category : '';
+      document.getElementById('cDesc').value = c ? c.description : '';
+      document.getElementById('cUsage').value = c ? c.usageLimit : '';
+      document.getElementById('cPerUser').value = c ? c.perUserLimit : '';
+      document.getElementById('cActive').checked = c ? c.active !== false : true;
+      document.getElementById('permissionDenied').classList.remove('show');
       couponModal.classList.add('active');
     };
     
     function closeCouponModal() { couponModal.classList.remove('active'); }
-    couponModal.addEventListener('click', e => { if (e.target === couponModal) closeCouponModal(); });
+    couponModal.addEventListener('click', function(e) { if (e.target === couponModal) closeCouponModal(); });
     
     document.getElementById('couponForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const category = document.getElementById('cCategory').value;
+      var category = document.getElementById('cCategory').value;
       
       if (!allowedCategories.includes(category)) {
         showPermissionDenied('coupon');
         return;
       }
       
-      const data = {
+      var data = {
         code: document.getElementById('cCode').value.toUpperCase().trim(),
         type: document.getElementById('cType').value,
         discount: Number(document.getElementById('cDiscount').value),
@@ -263,73 +297,115 @@
       };
       
       try {
-        if (couponEditId) await db.collection('offers').doc(couponEditId).update(data);
-        else await db.collection('offers').add(data);
+        if (couponEditId) {
+          await db.collection('offers').doc(couponEditId).update(data);
+        } else {
+          await db.collection('offers').add(data);
+        }
         closeCouponModal();
-        showToast(couponEditId ? 'Coupon updated!' : 'Coupon added!', 'success');
-      } catch(err) { console.error(err); showToast('Error saving', 'error'); }
+        showToast(couponEditId ? '✅ Coupon updated!' : '✅ Coupon added!', 'success');
+      } catch(err) {
+        console.error(err);
+        showToast('❌ Error saving', 'error');
+      }
     });
     
     function deleteCoupon(id, category) {
-      if (!allowedCategories.includes(category)) { showToast('❌ Permission denied', 'error'); return; }
-      if (confirm('Delete this coupon?')) db.collection('offers').doc(id).delete().then(() => showToast('Deleted'));
+      if (!allowedCategories.includes(category)) {
+        showToast('❌ Permission denied', 'error');
+        return;
+      }
+      if (confirm('Delete this coupon?')) {
+        db.collection('offers').doc(id).delete().then(function() {
+          showToast('🗑️ Deleted');
+        });
+      }
     }
     
-    // Load coupons (filtered)
-    db.collection('offers').onSnapshot(s => {
-      const grid = document.getElementById('couponsGrid');
-      let filtered = [];
-      s.forEach(doc => {
-        const d = doc.data();
+    // Load coupons
+    db.collection('offers').onSnapshot(function(snapshot) {
+      var grid = document.getElementById('couponsGrid');
+      var filtered = [];
+      
+      snapshot.forEach(function(doc) {
+        var d = doc.data();
+        d.id = doc.id;
         if (allowedCategories.includes(d.category) || !d.category) {
-          filtered.push({ id: doc.id, ...d });
+          filtered.push(d);
         }
       });
-      if (!filtered.length) { grid.innerHTML = '<p style="color:var(--muted);">No coupons in your categories</p>'; return; }
-      grid.innerHTML = filtered.map(d => `
-        <div class="card">
-          <div class="card-header"><span class="card-code">${d.code}</span><span class="badge ${d.active!==false?'badge-active':'badge-inactive'}">${d.active!==false?'Active':'Inactive'}</span></div>
-          <div class="card-desc">${d.description||(d.type==='flat'?'₹'+d.discount+' OFF':d.discount+'% OFF')}</div>
-          <div class="card-info">📂 ${d.category||'All'} · Min: ₹${d.minOrder}${d.maxDiscount?' · Max: ₹'+d.maxDiscount:''}</div>
-          <div class="card-actions">
-            <button class="btn-sm edit" onclick="openCouponModal({id:'${d.id}',code:'${d.code}',type:'${d.type}',discount:${d.discount},minOrder:${d.minOrder},maxDiscount:${d.maxDiscount||0},category:'${d.category||''}',description:'${(d.description||'').replace(/'/g,"\\'")}',usageLimit:${d.usageLimit||0},perUserLimit:${d.perUserLimit||0},active:${d.active!==false}})">✏️ Edit</button>
-            <button class="btn-sm delete" onclick="deleteCoupon('${d.id}','${d.category||''}')">🗑️ Delete</button>
-          </div>
-        </div>
-      `).join('');
+      
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p style="color:var(--muted);">No coupons in your categories</p>';
+        return;
+      }
+      
+      grid.innerHTML = '';
+      filtered.forEach(function(d) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = 
+          '<div class="card-header">' +
+            '<span class="card-code">' + d.code + '</span>' +
+            '<span class="badge ' + (d.active !== false ? 'badge-active' : 'badge-inactive') + '">' + (d.active !== false ? 'Active' : 'Inactive') + '</span>' +
+          '</div>' +
+          '<div class="card-desc">' + (d.description || (d.type === 'flat' ? '₹' + d.discount + ' OFF' : d.discount + '% OFF')) + '</div>' +
+          '<div class="card-info">📂 ' + (d.category || 'All') + ' · Min: ₹' + d.minOrder + (d.maxDiscount ? ' · Max: ₹' + d.maxDiscount : '') + '</div>' +
+          '<div class="card-actions">' +
+            '<button class="btn-sm edit">✏️ Edit</button>' +
+            '<button class="btn-sm delete">🗑️ Delete</button>' +
+          '</div>';
+        
+        // Add event listeners
+        card.querySelector('.edit').addEventListener('click', function() {
+          openCouponModal({
+            id: d.id, code: d.code, type: d.type, discount: d.discount,
+            minOrder: d.minOrder, maxDiscount: d.maxDiscount, category: d.category,
+            description: d.description, usageLimit: d.usageLimit, perUserLimit: d.perUserLimit,
+            active: d.active
+          });
+        });
+        
+        card.querySelector('.delete').addEventListener('click', function() {
+          deleteCoupon(d.id, d.category);
+        });
+        
+        grid.appendChild(card);
+      });
     });
     
     // ========== BANNERS ==========
-    const bannerModal = document.getElementById('bannerModal');
-    let bannerEditId = null;
+    var bannerModal = document.getElementById('bannerModal');
+    var bannerEditId = null;
     
-    window.openBannerModal = function(b = null) {
-      bannerEditId = b?.id || null;
+    window.openBannerModal = function(b) {
+      b = b || null;
+      bannerEditId = b ? b.id : null;
       document.getElementById('bannerModalTitle').textContent = b ? 'Edit Banner' : 'Add Banner';
-      document.getElementById('bannerId').value = b?.id || '';
-      document.getElementById('bTitle').value = b?.title || '';
-      document.getElementById('bImage').value = b?.image || '';
-      document.getElementById('bLink').value = b?.link || '';
-      document.getElementById('bCategory').value = b?.category || '';
-      document.getElementById('bPage').value = b?.page || 'home';
-      document.getElementById('bActive').checked = b?.active !== false;
-      permissionDenied.classList.remove('show');
+      document.getElementById('bannerId').value = b ? b.id : '';
+      document.getElementById('bTitle').value = b ? b.title : '';
+      document.getElementById('bImage').value = b ? b.image : '';
+      document.getElementById('bLink').value = b ? b.link : '';
+      document.getElementById('bCategory').value = b ? b.category : '';
+      document.getElementById('bPage').value = b ? b.page : 'home';
+      document.getElementById('bActive').checked = b ? b.active !== false : true;
+      document.getElementById('permissionDenied').classList.remove('show');
       bannerModal.classList.add('active');
     };
     
     function closeBannerModal() { bannerModal.classList.remove('active'); }
-    bannerModal.addEventListener('click', e => { if (e.target === bannerModal) closeBannerModal(); });
+    bannerModal.addEventListener('click', function(e) { if (e.target === bannerModal) closeBannerModal(); });
     
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const category = document.getElementById('bCategory').value;
+      var category = document.getElementById('bCategory').value;
       
       if (!allowedCategories.includes(category)) {
         showPermissionDenied('banner');
         return;
       }
       
-      const data = {
+      var data = {
         title: document.getElementById('bTitle').value.trim(),
         image: document.getElementById('bImage').value.trim(),
         link: document.getElementById('bLink').value.trim(),
@@ -339,54 +415,87 @@
       };
       
       try {
-        if (bannerEditId) await db.collection('banners').doc(bannerEditId).update(data);
-        else await db.collection('banners').add(data);
+        if (bannerEditId) {
+          await db.collection('banners').doc(bannerEditId).update(data);
+        } else {
+          await db.collection('banners').add(data);
+        }
         closeBannerModal();
-        showToast(bannerEditId ? 'Banner updated!' : 'Banner added!', 'success');
-      } catch(err) { showToast('Error saving', 'error'); }
+        showToast(bannerEditId ? '✅ Banner updated!' : '✅ Banner added!', 'success');
+      } catch(err) {
+        showToast('❌ Error saving', 'error');
+      }
     });
     
     function deleteBanner(id, category) {
-      if (!allowedCategories.includes(category)) { showToast('❌ Permission denied', 'error'); return; }
-      if (confirm('Delete?')) db.collection('banners').doc(id).delete().then(() => showToast('Deleted'));
+      if (!allowedCategories.includes(category)) {
+        showToast('❌ Permission denied', 'error');
+        return;
+      }
+      if (confirm('Delete this banner?')) {
+        db.collection('banners').doc(id).delete().then(function() {
+          showToast('🗑️ Deleted');
+        });
+      }
     }
     
-    // Load banners (filtered)
-    db.collection('banners').onSnapshot(s => {
-      const grid = document.getElementById('bannersGrid');
-      let filtered = [];
-      s.forEach(doc => {
-        const d = doc.data();
+    // Load banners
+    db.collection('banners').onSnapshot(function(snapshot) {
+      var grid = document.getElementById('bannersGrid');
+      var filtered = [];
+      
+      snapshot.forEach(function(doc) {
+        var d = doc.data();
+        d.id = doc.id;
         if (allowedCategories.includes(d.category) || !d.category) {
-          filtered.push({ id: doc.id, ...d });
+          filtered.push(d);
         }
       });
-      if (!filtered.length) { grid.innerHTML = '<p style="color:var(--muted);">No banners in your categories</p>'; return; }
-      grid.innerHTML = filtered.map(d => `
-        <div class="card banner-card">
-          <img src="${d.image}" onerror="this.src='https://placehold.co/400x140'">
-          <div class="banner-title">${d.title}</div>
-          <div class="banner-info">📂 ${d.category||'All'} · 📍 ${d.page||'home'} · <span class="badge ${d.active!==false?'badge-active':'badge-inactive'}">${d.active!==false?'Active':'Inactive'}</span></div>
-          <div class="card-actions">
-            <button class="btn-sm edit" onclick="openBannerModal({id:'${d.id}',title:'${d.title.replace(/'/g,"\\'")}',image:'${d.image}',link:'${d.link||''}',category:'${d.category||''}',page:'${d.page||'home'}',active:${d.active!==false}})">✏️ Edit</button>
-            <button class="btn-sm delete" onclick="deleteBanner('${d.id}','${d.category||''}')">🗑️ Delete</button>
-          </div>
-        </div>
-      `).join('');
+      
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p style="color:var(--muted);">No banners in your categories</p>';
+        return;
+      }
+      
+      grid.innerHTML = '';
+      filtered.forEach(function(d) {
+        var card = document.createElement('div');
+        card.className = 'card banner-card';
+        card.innerHTML = 
+          '<img src="' + d.image + '" onerror="this.src=\'https://placehold.co/400x140\'">' +
+          '<div class="banner-title">' + d.title + '</div>' +
+          '<div class="banner-info">📂 ' + (d.category || 'All') + ' · 📍 ' + (d.page || 'home') + ' · <span class="badge ' + (d.active !== false ? 'badge-active' : 'badge-inactive') + '">' + (d.active !== false ? 'Active' : 'Inactive') + '</span></div>' +
+          '<div class="card-actions">' +
+            '<button class="btn-sm edit">✏️ Edit</button>' +
+            '<button class="btn-sm delete">🗑️ Delete</button>' +
+          '</div>';
+        
+        card.querySelector('.edit').addEventListener('click', function() {
+          openBannerModal({
+            id: d.id, title: d.title, image: d.image, link: d.link,
+            category: d.category, page: d.page, active: d.active
+          });
+        });
+        
+        card.querySelector('.delete').addEventListener('click', function() {
+          deleteBanner(d.id, d.category);
+        });
+        
+        grid.appendChild(card);
+      });
     });
     
-    // ========== HELPERS ==========
-    function showPermissionDenied(type) {
-      permissionDenied.textContent = `⚠️ You can only create ${type}s for: ${allowedCategories.join(', ')}`;
-      permissionDenied.classList.add('show');
-      setTimeout(() => permissionDenied.classList.remove('show'), 4000);
+    // ========== TOAST ==========
+    function showToast(msg, type) {
+      var toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.className = 'toast ' + (type || 'info');
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
     
-    function showToast(msg, type) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.className = `toast ${type}`; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
+    console.log('✅ Sub-admin offers page ready');
   </script>
 </body>
 </html>
