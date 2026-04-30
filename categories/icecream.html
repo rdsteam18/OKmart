@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  
+  <title>🍦 Ice Cream Zone | OK Mart</title>
+  <meta name="description" content="Buy delicious ice creams online - vanilla, chocolate, strawberry & more. Fast delivery from OK Mart.">
+  <meta name="theme-color" content="#f472b6">
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  
+  <link rel="stylesheet" href="/css/icecream.css">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- ========== FLOATING ICE CREAM PARTICLES ========== -->
+    <div class="floating-particles">
+      <span class="particle p1">🍦</span>
+      <span class="particle p2">🍨</span>
+      <span class="particle p3">🍧</span>
+      <span class="particle p4">🧊</span>
+      <span class="particle p5">🍦</span>
+      <span class="particle p6">🍨</span>
+    </div>
+
+    <!-- ========== HEADER ========== -->
+    <header class="icecream-header">
+      <div class="header-inner">
+        <div class="header-left">
+          <a href="/index.html" class="back-btn" aria-label="Back">←</a>
+          <h1 class="header-title">🍦 Ice Cream Zone</h1>
+        </div>
+        <div class="header-right">
+          <a href="/search.html" class="icon-btn" aria-label="Search">🔍</a>
+          <a href="/wishlist.html" class="icon-btn" aria-label="Wishlist">❤️</a>
+          <a href="/cart.html" class="cart-btn" aria-label="Cart">
+            <span>🛒</span>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="icecream-main">
+      
+      <!-- ========== HERO BANNER ========== -->
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-text">
+            <span class="hero-badge">❄️ Summer Special</span>
+            <h2>Cool Down with<br>Ice Cream 🍦</h2>
+            <p>Delicious ice creams delivered to your doorstep</p>
+            <div class="hero-offers">
+              <span>🚚 Free Delivery above ₹199</span>
+              <span>⏱️ 12 min delivery</span>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-icecream">🍦</div>
+            <div class="hero-sparkles">
+              <span>✨</span><span>✨</span><span>✨</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-wave"></div>
+      </div>
+
+      <!-- ========== QUICK STATS STRIP ========== -->
+      <div class="stats-strip">
+        <div class="stat-item">
+          <span class="stat-icon">🍦</span>
+          <span class="stat-text">Premium Quality</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">❄️</span>
+          <span class="stat-text">Fresh & Chilled</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🚚</span>
+          <span class="stat-text">Fast Delivery</span>
+        </div>
+      </div>
+
+      <!-- ========== TRENDING SECTION ========== -->
+      <section class="trending-section" id="trendingSection" style="display:none;">
+        <div class="section-header">
+          <h2 class="section-title">🔥 Popular Ice Creams</h2>
+          <span class="section-badge">Best Sellers</span>
+        </div>
+        <div class="product-slider" id="trendingSlider"></div>
+      </section>
+
+      <!-- ========== ALL ICE CREAMS ========== -->
+      <section class="all-products-section">
+        <div class="section-header">
+          <h2 class="section-title">🍨 All Ice Creams</h2>
+          <span class="product-count" id="productCount">0 items</span>
+        </div>
+        
+        <!-- Loading State -->
+        <div class="loading-grid" id="loadingGrid">
+          <div class="skeleton-card"></div><div class="skeleton-card"></div>
+          <div class="skeleton-card"></div><div class="skeleton-card"></div>
+          <div class="skeleton-card"></div><div class="skeleton-card"></div>
+        </div>
+        
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid" style="display: none;"></div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-animation">
+            <span class="empty-icon">🍦</span>
+            <span class="empty-icon-2">🍨</span>
+          </div>
+          <h3>No Ice Cream Available 🍦</h3>
+          <p>Stay tuned! New flavors coming soon.</p>
+          <a href="/index.html" class="browse-btn">Browse Store →</a>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========== FLOATING CART BAR ========== -->
+    <div class="floating-cart-bar" id="floatingCartBar">
+      <div class="cart-bar-inner">
+        <div class="cart-bar-info">
+          <span class="cart-bar-emoji">🛒</span>
+          <div>
+            <span class="cart-bar-count" id="barCartCount">0 items</span>
+            <span class="cart-bar-total" id="barCartTotal">₹0</span>
+          </div>
+        </div>
+        <a href="/cart.html" class="cart-bar-btn">View Cart →</a>
+      </div>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Firebase Config -->
+  <script src="/js/firebase.js"></script>
+  
+  <!-- Ice Cream Script -->
+  <script src="/js/icecream.js"></script>
+</body>
+</html>
