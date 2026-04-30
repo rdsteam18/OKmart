@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
   
-  <!-- SEO Meta Tags -->
   <title>Product Details | OK Mart</title>
-  <meta name="description" content="Buy fresh groceries online at OK Mart. Fast delivery in 10-15 minutes.">
+  <meta name="description" content="Buy fresh groceries online at OK Mart. Fast delivery in 12 minutes.">
   <meta name="theme-color" content="#2ecc71">
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
   
   <!-- Open Graph for social sharing -->
   <meta property="og:type" content="product">
@@ -16,16 +19,164 @@
   <meta property="og:description" id="ogDescription" content="">
   <meta property="og:image" id="ogImage" content="">
   
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #e8f8ef;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+      --radius: 18px; --radius-sm: 14px; --transition: all .2s cubic-bezier(.4,0,.2,1);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.5;
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    
+    .app-container { max-width: 480px; margin: 0 auto; position: relative; min-height: 100vh; }
+    
+    /* ========== HEADER ========== */
+    .product-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.97); backdrop-filter: blur(20px);
+      padding: 8px 14px; border-bottom: 1px solid var(--border);
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .back-btn, .icon-btn, .cart-btn {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 1.1rem; cursor: pointer; border: none;
+      transition: var(--transition); position: relative; color: var(--text);
+    }
+    .back-btn:active, .icon-btn:active { background: var(--border); transform: scale(.92); }
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+    .cart-badge { position: absolute; top: -4px; right: -4px; background: var(--primary); color: white; font-size: .55rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 18px; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+    
+    /* ========== LOADING ========== */
+    .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 20px; color: var(--muted); }
+    .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* ========== PRODUCT IMAGE ========== */
+    .product-image-section { position: relative; background: white; }
+    .main-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+    .image-overlay-badges { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; }
+    .stock-badge { background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+    .delivery-badge { background: white; padding: 5px 12px; border-radius: 20px; font-size: .7rem; font-weight: 600; box-shadow: var(--shadow-sm); }
+    .image-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .image-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.5); }
+    .image-dot.active { background: white; width: 20px; border-radius: 10px; }
+    
+    /* ========== PRODUCT INFO ========== */
+    .product-info-section { padding: 16px 16px 0; }
+    
+    .product-title-row { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+    .product-title { font-size: 1.5rem; font-weight: 800; line-height: 1.3; flex: 1; }
+    .wishlist-btn-large { width: 44px; height: 44px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; flex-shrink: 0; margin-left: 10px; transition: var(--transition); }
+    .wishlist-btn-large:active { background: #fee2e2; border-color: var(--danger); }
+    
+    .product-unit { font-size: .9rem; color: var(--muted); display: block; margin-bottom: 12px; }
+    
+    /* Rating */
+    .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .stars { color: #fbbf24; font-size: .95rem; letter-spacing: 1px; }
+    .rating-value { font-weight: 700; font-size: .9rem; }
+    .rating-count { color: var(--muted); font-size: .8rem; }
+    .rating-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; margin: 0 8px; }
+    .rating-bar-fill { height: 100%; background: #fbbf24; border-radius: 2px; width: 90%; }
+    
+    /* Price Section */
+    .price-section { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+    .current-price { font-size: 2rem; font-weight: 800; color: var(--text); }
+    .mrp-price { font-size: 1rem; color: var(--muted); text-decoration: line-through; }
+    .discount-badge-large { background: #fee2e2; color: #dc2626; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: .9rem; }
+    
+    .savings-text { color: #10b981; font-weight: 600; font-size: .85rem; margin-bottom: 16px; }
+    
+    /* ========== OFFER STRIPS ========== */
+    .offer-strips { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .offer-strip { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: .8rem; font-weight: 500; }
+    .offer-strip.green { background: #d1fae5; color: #065f46; }
+    .offer-strip.yellow { background: #fef3c7; color: #92400e; }
+    .offer-strip.blue { background: #dbeafe; color: #1e40af; }
+    
+    /* ========== QUANTITY SECTION ========== */
+    .quantity-section { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .quantity-label { font-weight: 700; font-size: 1rem; }
+    .quantity-controls { display: flex; align-items: center; gap: 8px; background: var(--bg); padding: 6px; border-radius: 40px; }
+    .qty-btn { width: 44px; height: 44px; border-radius: 50%; background: white; border: 1.5px solid var(--border); font-size: 1.5rem; font-weight: 600; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+    .qty-btn:active { background: var(--primary); color: white; }
+    .qty-number { min-width: 40px; text-align: center; font-weight: 700; font-size: 1.2rem; }
+    
+    /* ========== ADD TO CART BUTTONS ========== */
+    .add-to-cart-primary { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 60px; font-weight: 700; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(46,204,113,.3); transition: var(--transition); }
+    .add-to-cart-primary:active { transform: scale(.97); }
+    .add-to-cart-primary .btn-icon { font-size: 1.3rem; }
+    
+    .buy-now-btn { width: 100%; padding: 16px; background: white; color: var(--primary-dark); border: 2px solid var(--primary); border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); }
+    .buy-now-btn:active { background: var(--primary-light); transform: scale(.97); }
+    
+    /* ========== DELIVERY INFO CARDS ========== */
+    .delivery-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+    .delivery-card { background: white; border-radius: var(--radius-sm); padding: 14px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .delivery-card-icon { font-size: 1.5rem; }
+    .delivery-card-text strong { font-size: .8rem; display: block; }
+    .delivery-card-text span { font-size: .7rem; color: var(--muted); }
+    
+    /* ========== GUARANTEE ========== */
+    .guarantee-section { display: flex; gap: 12px; padding: 14px 0; border-top: 1px solid var(--border); margin-bottom: 20px; }
+    .guarantee-item { display: flex; align-items: center; gap: 5px; font-size: .75rem; color: var(--muted); }
+    .guarantee-check { color: var(--primary); font-weight: 700; }
+    
+    /* ========== DESCRIPTION ========== */
+    .description-section { margin-bottom: 24px; }
+    .description-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .description-text { color: var(--muted); font-size: .9rem; line-height: 1.7; }
+    .description-highlights { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .highlight-tag { background: var(--bg); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: .75rem; font-weight: 500; color: var(--muted); }
+    
+    /* ========== RELATED PRODUCTS ========== */
+    .related-section { padding: 20px 0 100px; }
+    .related-header { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; margin-bottom: 14px; }
+    .related-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .view-all-link { color: var(--primary); font-size: .85rem; font-weight: 600; text-decoration: none; }
+    .related-slider { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 4px 16px; scroll-snap-type: x mandatory; }
+    .related-slider::-webkit-scrollbar { display: none; }
+    
+    /* Mini Product Card */
+    .mini-card { background: white; border-radius: var(--radius); padding: 10px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); flex: 0 0 150px; scroll-snap-align: start; cursor: pointer; transition: var(--transition); }
+    .mini-card:active { transform: scale(.97); }
+    .mini-card-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; margin-bottom: 8px; background: #f1f5f9; }
+    .mini-card-name { font-weight: 700; font-size: .8rem; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .mini-card-price { font-weight: 700; color: var(--primary-dark); font-size: .85rem; }
+    .mini-add-btn { width: 100%; padding: 7px; background: var(--primary-light); border: 1.5px solid var(--primary); border-radius: 20px; color: var(--primary-dark); font-weight: 700; font-size: .65rem; text-transform: uppercase; cursor: pointer; margin-top: 6px; }
+    .mini-add-btn:active { background: var(--primary); color: white; }
+    
+    /* ========== STICKY BOTTOM BAR ========== */
+    .sticky-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: white; padding: 12px 16px; box-shadow: 0 -4px 20px rgba(0,0,0,.08); z-index: 95; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .sticky-bar .sticky-price { font-weight: 800; font-size: 1.3rem; }
+    .sticky-bar .sticky-mrp { font-size: .75rem; color: var(--muted); text-decoration: line-through; }
+    .sticky-bar .sticky-add-btn { flex: 1; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 30px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    .sticky-bar .sticky-add-btn:active { background: var(--primary-dark); }
+    
+    /* ========== ERROR STATE ========== */
+    .error-state { text-align: center; padding: 80px 20px; }
+    .error-icon { font-size: 4rem; opacity: .5; display: block; margin-bottom: 16px; }
+    .error-state h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .error-state p { color: var(--muted); margin-bottom: 24px; }
+    .browse-btn { display: inline-block; background: var(--primary); color: white; padding: 14px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; }
+    
+    /* Toast */
+    .toast-message { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px); padding: 12px 22px; border-radius: 30px; font-weight: 500; font-size: .88rem; z-index: 999; opacity: 0; transition: all .3s; white-space: nowrap; pointer-events: none; background: var(--text); color: white; }
+    .toast-message.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    
+    @media (min-width: 500px) { .app-container { max-width: 500px; } }
+  </style>
   
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/product.css">
-  
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Firebase SDK -->
@@ -33,24 +184,20 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- App Container -->
   <div class="app-container">
     
     <!-- ========== HEADER ========== -->
     <header class="product-header">
       <div class="header-inner">
-        <button class="back-btn" onclick="history.back()" aria-label="Back">
-          <span>←</span>
-        </button>
-        <h1 class="header-title">Product Details</h1>
+        <div class="header-left">
+          <button class="back-btn" onclick="history.back()" aria-label="Back">←</button>
+        </div>
         <div class="header-actions">
-          <button class="header-wishlist-btn" id="headerWishlistBtn" aria-label="Wishlist">
+          <button class="icon-btn" id="headerShareBtn" aria-label="Share">📤</button>
+          <button class="icon-btn" id="headerWishlistBtn" aria-label="Wishlist">
             <span id="headerWishlistIcon">🤍</span>
           </button>
-          <button class="header-share-btn" id="headerShareBtn" aria-label="Share">
-            <span>📤</span>
-          </button>
-          <a href="/cart.html" class="cart-btn" aria-label="View Cart">
+          <a href="/cart.html" class="cart-btn" aria-label="Cart">
             <span>🛒</span>
             <span class="cart-badge" id="cartBadge">0</span>
           </a>
@@ -59,150 +206,154 @@
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
-    <main class="product-main">
+    <main>
       
-      <!-- Loading State -->
+      <!-- Loading -->
       <div class="loading-state" id="loadingState">
         <div class="spinner"></div>
         <p>Loading product details...</p>
       </div>
 
       <!-- Product Content -->
-      <div class="product-content" id="productContent" style="display: none;">
+      <div id="productContent" style="display:none;">
         
         <!-- Product Image -->
-        <div class="product-image-container">
-          <img id="productImage" src="" alt="" class="product-image-main" loading="eager">
-          <div class="image-badges">
-            <span class="delivery-badge">🚚 12 min delivery</span>
-            <span class="stock-badge" id="stockBadge">In Stock</span>
+        <div class="product-image-section">
+          <img id="productImage" src="" alt="" class="main-image">
+          <div class="image-overlay-badges">
+            <span class="stock-badge" id="stockBadge">✓ In Stock</span>
+            <span class="delivery-badge">🚚 12 min</span>
           </div>
+          <div class="image-dots"><span class="image-dot active"></span></div>
         </div>
 
         <!-- Product Info -->
         <div class="product-info-section">
-          <h1 id="productName" class="product-title"></h1>
-          <span id="productUnit" class="product-unit"></span>
+          <div class="product-title-row">
+            <h1 class="product-title" id="productName"></h1>
+            <button class="wishlist-btn-large" id="wishlistBtnLarge">
+              <span id="wishlistIconLarge">🤍</span>
+            </button>
+          </div>
+          <span class="product-unit" id="productUnit"></span>
           
           <!-- Rating -->
           <div class="rating-row">
             <span class="stars">★★★★½</span>
             <span class="rating-value">4.5</span>
-            <span class="rating-count">(500+ ratings)</span>
+            <div class="rating-bar"><div class="rating-bar-fill"></div></div>
+            <span class="rating-count">500+ ratings</span>
           </div>
-
+          
           <!-- Price -->
           <div class="price-section">
-            <div class="price-main">
-              <span id="productPrice" class="current-price"></span>
-              <span id="productMrp" class="mrp-price"></span>
-            </div>
-            <span id="discountBadge" class="discount-badge-large"></span>
+            <span class="current-price" id="productPrice"></span>
+            <span class="mrp-price" id="productMrp"></span>
+            <span class="discount-badge-large" id="discountBadge" style="display:none;"></span>
           </div>
-
-          <!-- Savings -->
-          <div class="savings-info" id="savingsInfo" style="display: none;">
-            You save <span id="savingsAmount">₹0</span> on this item
+          <p class="savings-text" id="savingsText" style="display:none;"></p>
+          
+          <!-- Offer Strips -->
+          <div class="offer-strips">
+            <div class="offer-strip green">🚚 Free delivery on orders above ₹199</div>
+            <div class="offer-strip yellow">🏷️ Use code SAVE20 for ₹20 off on ₹250+</div>
+            <div class="offer-strip blue">⏱️ Delivery in 10-15 minutes</div>
           </div>
-
-          <!-- Quantity Selector -->
+          
+          <!-- Quantity -->
           <div class="quantity-section">
             <span class="quantity-label">Quantity</span>
             <div class="quantity-controls">
-              <button class="qty-btn" id="qtyMinus" aria-label="Decrease">−</button>
+              <button class="qty-btn" id="qtyMinus">−</button>
               <span class="qty-number" id="qtyNumber">1</span>
-              <button class="qty-btn" id="qtyPlus" aria-label="Increase">+</button>
+              <button class="qty-btn" id="qtyPlus">+</button>
             </div>
           </div>
-
-          <!-- Add to Cart Button -->
-          <button class="add-to-cart-btn" id="addToCartBtn">
+          
+          <!-- Add to Cart -->
+          <button class="add-to-cart-primary" id="addToCartBtn">
             <span class="btn-icon">🛒</span>
-            <span class="btn-text">Add to Cart</span>
-            <span class="btn-price">· <span id="itemTotal">₹0</span></span>
+            <span>Add to Cart</span>
+            <span>·</span>
+            <span id="btnTotal">₹0</span>
           </button>
-
+          <button class="buy-now-btn" id="buyNowBtn">⚡ Buy Now</button>
+          
           <!-- Delivery Info -->
-          <div class="delivery-info-cards">
+          <div class="delivery-cards">
             <div class="delivery-card">
-              <span>🚚</span>
-              <div>
+              <span class="delivery-card-icon">🚚</span>
+              <div class="delivery-card-text">
                 <strong>Free Delivery</strong>
-                <p>On orders above ₹199</p>
+                <span>Above ₹199</span>
               </div>
             </div>
             <div class="delivery-card">
-              <span>⏱️</span>
-              <div>
-                <strong>10-15 mins</strong>
-                <p>Fast delivery</p>
+              <span class="delivery-card-icon">⏱️</span>
+              <div class="delivery-card-text">
+                <strong>12 Min Delivery</strong>
+                <span>Super fast</span>
+              </div>
+            </div>
+            <div class="delivery-card">
+              <span class="delivery-card-icon">🔄</span>
+              <div class="delivery-card-text">
+                <strong>Easy Returns</strong>
+                <span>No questions</span>
+              </div>
+            </div>
+            <div class="delivery-card">
+              <span class="delivery-card-icon">✓</span>
+              <div class="delivery-card-text">
+                <strong>Fresh Guarantee</strong>
+                <span>100% quality</span>
               </div>
             </div>
           </div>
-
-          <!-- Satisfaction Guarantee -->
+          
+          <!-- Guarantee -->
           <div class="guarantee-section">
-            <div class="guarantee-item"><span>✓</span> 100% Satisfaction</div>
-            <div class="guarantee-item"><span>🔄</span> Easy Returns</div>
-            <div class="guarantee-item"><span>📦</span> Fresh Products</div>
+            <span class="guarantee-item"><span class="guarantee-check">✓</span> 100% Satisfaction</span>
+            <span class="guarantee-item"><span class="guarantee-check">🔄</span> Easy Returns</span>
+            <span class="guarantee-item"><span class="guarantee-check">🚚</span> Fast Delivery</span>
+            <span class="guarantee-item"><span class="guarantee-check">📦</span> Fresh Products</span>
           </div>
-
+          
           <!-- Description -->
           <div class="description-section">
             <h3>📝 Product Description</h3>
-            <p id="productDescription">Fresh and high-quality product sourced directly from trusted suppliers.</p>
+            <p class="description-text" id="productDescription"></p>
+            <div class="description-highlights" id="descriptionHighlights"></div>
           </div>
         </div>
-
+        
         <!-- Related Products -->
-        <section class="related-section">
-          <div class="section-header">
-            <h3>❤️ You might also like</h3>
-            <a href="/index.html" class="view-all">View All ›</a>
+        <div class="related-section">
+          <div class="related-header">
+            <h3>❤️ You May Also Like</h3>
+            <a href="/index.html" class="view-all-link">View All →</a>
           </div>
-          <div class="related-slider" id="relatedSlider">
-            <div class="loading-skeleton">
-              <div class="skeleton-card"></div>
-              <div class="skeleton-card"></div>
-              <div class="skeleton-card"></div>
-            </div>
-          </div>
-        </section>
-
+          <div class="related-slider" id="relatedSlider"></div>
+        </div>
+        
       </div>
 
       <!-- Error State -->
-      <div class="error-state" id="errorState" style="display: none;">
+      <div class="error-state" id="errorState" style="display:none;">
         <span class="error-icon">🔍</span>
         <h2>Product Not Found</h2>
         <p>The product you're looking for doesn't exist or has been removed.</p>
-        <div class="error-actions">
-          <a href="/index.html" class="browse-btn">Browse Products</a>
-          <button class="go-back-btn" onclick="history.back()">Go Back</button>
-        </div>
+        <a href="/index.html" class="browse-btn">Browse Products</a>
       </div>
     </main>
 
-    <!-- ========== STICKY BOTTOM BAR ========== -->
-    <div class="sticky-bottom-bar" id="stickyBottomBar">
-      <div class="sticky-product-info">
-        <span class="sticky-product-name" id="stickyProductName"></span>
-        <span class="sticky-product-price" id="stickyProductPrice"></span>
+    <!-- Sticky Bottom Bar -->
+    <div class="sticky-bar" id="stickyBar" style="display:none;">
+      <div>
+        <div class="sticky-price" id="stickyPrice">₹0</div>
+        <div class="sticky-mrp" id="stickyMrp"></div>
       </div>
-      <button class="sticky-add-btn" id="stickyAddBtn">
-        ADD · <span id="stickyItemTotal">₹0</span>
-      </button>
-    </div>
-
-    <!-- ========== FLOATING CART BAR ========== -->
-    <div class="floating-cart-bar" id="floatingCartBar">
-      <div class="cart-bar-inner">
-        <div class="cart-bar-info">
-          <span class="cart-bar-icon">🛒</span>
-          <span class="cart-bar-count" id="barCartCount">0 items</span>
-        </div>
-        <a href="/cart.html" class="cart-bar-btn">View Cart · <span id="barCartTotal">₹0</span></a>
-      </div>
+      <button class="sticky-add-btn" id="stickyAddBtn">Add to Cart · ₹0</button>
     </div>
 
     <!-- Toast -->
@@ -210,9 +361,10 @@
     
   </div>
 
-  <!-- Scripts -->
+  <!-- Firebase Config -->
   <script src="/js/firebase.js"></script>
-  <script src="/js/common.js"></script>
+  
+  <!-- Product Script -->
   <script src="/js/product.js"></script>
 </body>
 </html>
