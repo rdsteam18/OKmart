@@ -13,6 +13,7 @@
     { id: 'vegetables', name: 'Vegetables', icon: '🥕', slug: 'vegetables' },
     { id: 'snacks', name: 'Snacks', icon: '🍿', slug: 'snacks' },
     { id: 'beverages', name: 'Beverages', icon: '🥤', slug: 'beverages' },
+    { id: 'Dairy', name: 'Ice Cream', icon: '🍦', slug: 'ice-cream' },
     { id: 'electronics', name: 'Electronics', icon: '📱', slug: 'electronics' },
     { id: 'grocery', name: 'Grocery', icon: '🧺', slug: 'grocery' },
     { id: 'personal', name: 'Personal Care', icon: '🧴', slug: 'personal-care' },
