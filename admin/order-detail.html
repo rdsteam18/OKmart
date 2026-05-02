@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Order Details · OK Mart Admin</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/order-detail.css">
+  
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Admin Header -->
+<header class="admin-header">
+  <div class="header-container">
+    <div class="logo-area">
+      <a href="dashboard.html" class="logo-link">
+        <span class="logo-text">🛒 OK Mart</span>
+        <span class="admin-badge">Admin</span>
+      </a>
+    </div>
+    <div class="header-actions">
+      <a href="orders.html" class="back-btn">← Back to Orders</a>
+    </div>
+  </div>
+</header>
+
+<main class="order-detail-main">
+  <!-- Loading State -->
+  <div id="loadingState" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading order details...</p>
+  </div>
+
+  <!-- Order Detail Container -->
+  <div id="orderDetailContainer" style="display: none;">
+    
+    <!-- Order Header with Status -->
+    <div class="order-header-card">
+      <div class="order-id-section">
+        <h1 class="order-id" id="orderId">#ORDER-001</h1>
+        <span class="order-date" id="orderDate"></span>
+      </div>
+      <div class="order-status-section">
+        <select id="orderStatusSelect" class="status-select">
+          <option value="pending">⏳ Pending</option>
+          <option value="confirmed">✅ Confirmed</option>
+          <option value="preparing">🍳 Preparing</option>
+          <option value="out_for_delivery">🛵 Out for Delivery</option>
+          <option value="delivered">🎉 Delivered</option>
+          <option value="cancelled">❌ Cancelled</option>
+        </select>
+        <button id="updateStatusBtn" class="btn-update">Update Status</button>
+      </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="order-detail-grid">
+      
+      <!-- LEFT COLUMN - Customer Info + Map -->
+      <div class="order-left-col">
+        
+        <!-- Customer Info Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <span class="card-icon">👤</span>
+          <h3>Customer Information</h3>
+          </div>
+          <div class="info-content">
+            <div class="info-row">
+              <span class="info-label">Name:</span>
+              <span class="info-value" id="customerName">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span class="info-value" id="customerPhone">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value" id="customerEmail">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Address:</span>
+              <span class="info-value" id="customerAddress">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Pincode:</span>
+              <span class="info-value" id="customerPincode">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Info Card -->
+        <div class="info-card">
+          <div class="card-header">
+            <span class="card-icon">🚚</span>
+          <h3>Delivery Information</h3>
+          </div>
+          <div class="info-content">
+            <div class="info-row">
+              <span class="info-label">Delivery Type:</span>
+              <span class="info-value" id="deliveryType">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Delivery Slot:</span>
+              <span class="info-value" id="deliverySlot">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Delivery Charge:</span>
+              <span class="info-value" id="deliveryCharge">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Distance:</span>
+              <span class="info-value" id="deliveryDistance">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Card -->
+        <div class="info-card map-card">
+          <div class="card-header">
+            <span class="card-icon">📍</span>
+          <h3>Delivery Location</h3>
+          </div>
+          <div id="orderMap" class="order-map"></div>
+          <div class="map-actions">
+            <a href="#" id="openInGoogleMaps" class="map-link" target="_blank">Open in Google Maps →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN - Order Items + Summary -->
+      <div class="order-right-col">
+        
+        <!-- Order Items Card -->
+        <div class="info-card items-card">
+          <div class="card-header">
+            <span class="card-icon">🛍️</span>
+          <h3>Order Items</h3>
+            <span class="items-count" id="itemsCount">0 items</span>
+          </div>
+          <div class="items-list" id="orderItemsList">
+            <!-- Items will be injected here -->
+          </div>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="info-card summary-card">
+          <div class="card-header">
+            <span class="card-icon">💰</span>
+          <h3>Order Summary</h3>
+          </div>
+          <div class="summary-content">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Fee:</span>
+              <span id="summaryDeliveryFee">₹0</span>
+            </div>
+            <div class="summary-row discount-row">
+              <span>Discount:</span>
+              <span id="discountAmount">-₹0</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total:</span>
+              <span id="orderTotal">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button id="printOrderBtn" class="btn-secondary">🖨️ Print Order</button>
+          <button id="deleteOrderBtn" class="btn-danger">🗑️ Delete Order</button>
+          <button id="whatsappBtn" class="btn-whatsapp">📱 Send WhatsApp</button>
+        </div>
+
+        <!-- Order Timeline -->
+        <div class="info-card timeline-card">
+          <div class="card-header">
+            <span class="card-icon">⏱️</span>
+          <h3>Order Timeline</h3>
+          </div>
+          <div class="timeline" id="orderTimeline">
+            <!-- Timeline items will be injected -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="error-state" style="display: none;">
+    <div class="error-icon">⚠️</div>
+    <h3>Order Not Found</h3>
+    <p>The order you're looking for doesn't exist or has been deleted.</p>
+    <a href="orders.html" class="btn-primary">Back to Orders</a>
+  </div>
+</main>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="../js/firebase.js"></script>
+<script src="../js/order-detail.js"></script>
+</body>
+</html>
