@@ -5,217 +5,509 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Order Details · OK Mart Admin</title>
   
-  <!-- CSS -->
-  <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="../css/order-detail.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #e8f8ef;
+      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
+      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    
+    /* Header */
+    .admin-header { background: var(--card); padding: 16px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+    .admin-badge { background: var(--primary); color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; }
+    .back-btn { background: var(--bg); border: 1px solid var(--border); padding: 8px 20px; border-radius: 30px; text-decoration: none; color: var(--text); font-weight: 500; }
+    
+    /* Main */
+    .order-detail-main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    
+    /* Loading & Error */
+    .loading-state, .error-state { text-align: center; padding: 80px; background: var(--card); border-radius: var(--radius); }
+    .loading-spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Order Header */
+    .order-header-card { background: var(--card); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+    .order-id-section h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    .order-date { color: var(--muted); font-size: 0.85rem; }
+    .order-status-section { display: flex; gap: 12px; align-items: center; }
+    .status-select { padding: 10px 16px; border-radius: 30px; border: 1.5px solid var(--border); font-weight: 500; cursor: pointer; }
+    .btn-update { background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+    
+    /* Grid */
+    .order-detail-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; }
+    @media (max-width: 900px) { .order-detail-grid { grid-template-columns: 1fr; } }
+    
+    /* Cards */
+    .info-card { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--bg); }
+    .card-header h3 { font-size: 1rem; font-weight: 600; flex: 1; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--bg); }
+    .info-label { color: var(--muted); font-size: 0.85rem; }
+    .info-value { font-weight: 600; }
+    
+    /* Map */
+    .order-map { height: 250px; border-radius: 12px; overflow: hidden; margin-top: 12px; background: var(--bg); }
+    .map-link { display: inline-block; margin-top: 12px; color: var(--primary); text-decoration: none; font-size: 0.85rem; }
+    
+    /* Items */
+    .items-list { max-height: 500px; overflow-y: auto; }
+    .order-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bg); }
+    .item-image { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; background: var(--bg); }
+    .item-details { flex: 1; }
+    .item-name { font-weight: 600; margin-bottom: 4px; }
+    .item-unit { font-size: 0.7rem; color: var(--muted); }
+    .item-price-row { display: flex; justify-content: space-between; margin-top: 6px; }
+    .item-total { font-weight: 700; }
+    
+    /* Summary */
+    .summary-content { display: flex; flex-direction: column; gap: 12px; }
+    .summary-row { display: flex; justify-content: space-between; padding: 8px 0; }
+    .total-row { font-weight: 800; font-size: 1.2rem; border-top: 2px solid var(--border); margin-top: 8px; padding-top: 12px; }
+    
+    /* Timeline */
+    .timeline { display: flex; flex-direction: column; gap: 16px; }
+    .timeline-item { display: flex; gap: 12px; position: relative; }
+    .timeline-item::before { content: ''; position: absolute; left: 16px; top: 30px; width: 2px; height: calc(100% - 10px); background: var(--border); }
+    .timeline-item:last-child::before { display: none; }
+    .timeline-icon { width: 34px; height: 34px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; }
+    .timeline-icon.completed { background: var(--primary); color: white; }
+    .timeline-content { flex: 1; padding-bottom: 12px; }
+    .timeline-title { font-weight: 600; margin-bottom: 4px; }
+    .timeline-time { font-size: 0.7rem; color: var(--muted); }
+    
+    /* Action Buttons */
+    .action-buttons { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .btn-secondary { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .btn-danger { flex: 1; background: #fee2e2; color: var(--danger); border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .btn-whatsapp { flex: 1; background: #25D366; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    
+    /* Status Badges */
+    .status-badge { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .status-pending, .status-received { background: #fef3c7; color: #d97706; }
+    .status-confirmed, .status-preparing { background: #dbeafe; color: #2563eb; }
+    .status-out_for_delivery { background: #e0e7ff; color: #4338ca; }
+    .status-delivered { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #dc2626; }
+  </style>
   
-  <!-- Leaflet CSS for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<!-- Admin Header -->
 <header class="admin-header">
   <div class="header-container">
     <div class="logo-area">
-      <a href="dashboard.html" class="logo-link">
+      <a href="dashboard.html" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
         <span class="logo-text">🛒 OK Mart</span>
         <span class="admin-badge">Admin</span>
       </a>
     </div>
-    <div class="header-actions">
+    <div>
       <a href="orders.html" class="back-btn">← Back to Orders</a>
     </div>
   </div>
 </header>
 
 <main class="order-detail-main">
-  <!-- Loading State -->
+  
   <div id="loadingState" class="loading-state">
     <div class="loading-spinner"></div>
     <p>Loading order details...</p>
   </div>
-
-  <!-- Order Detail Container -->
-  <div id="orderDetailContainer" style="display: none;">
-    
-    <!-- Order Header with Status -->
-    <div class="order-header-card">
-      <div class="order-id-section">
-        <h1 class="order-id" id="orderId">#ORDER-001</h1>
-        <span class="order-date" id="orderDate"></span>
-      </div>
-      <div class="order-status-section">
-        <select id="orderStatusSelect" class="status-select">
-          <option value="pending">⏳ Pending</option>
-          <option value="confirmed">✅ Confirmed</option>
-          <option value="preparing">🍳 Preparing</option>
-          <option value="out_for_delivery">🛵 Out for Delivery</option>
-          <option value="delivered">🎉 Delivered</option>
-          <option value="cancelled">❌ Cancelled</option>
-        </select>
-        <button id="updateStatusBtn" class="btn-update">Update Status</button>
-      </div>
-    </div>
-
-    <!-- Two Column Layout -->
-    <div class="order-detail-grid">
-      
-      <!-- LEFT COLUMN - Customer Info + Map -->
-      <div class="order-left-col">
-        
-        <!-- Customer Info Card -->
-        <div class="info-card">
-          <div class="card-header">
-            <span class="card-icon">👤</span>
-          <h3>Customer Information</h3>
-          </div>
-          <div class="info-content">
-            <div class="info-row">
-              <span class="info-label">Name:</span>
-              <span class="info-value" id="customerName">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Phone:</span>
-              <span class="info-value" id="customerPhone">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Email:</span>
-              <span class="info-value" id="customerEmail">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Address:</span>
-              <span class="info-value" id="customerAddress">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Pincode:</span>
-              <span class="info-value" id="customerPincode">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Delivery Info Card -->
-        <div class="info-card">
-          <div class="card-header">
-            <span class="card-icon">🚚</span>
-          <h3>Delivery Information</h3>
-          </div>
-          <div class="info-content">
-            <div class="info-row">
-              <span class="info-label">Delivery Type:</span>
-              <span class="info-value" id="deliveryType">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Delivery Slot:</span>
-              <span class="info-value" id="deliverySlot">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Delivery Charge:</span>
-              <span class="info-value" id="deliveryCharge">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Distance:</span>
-              <span class="info-value" id="deliveryDistance">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Map Card -->
-        <div class="info-card map-card">
-          <div class="card-header">
-            <span class="card-icon">📍</span>
-          <h3>Delivery Location</h3>
-          </div>
-          <div id="orderMap" class="order-map"></div>
-          <div class="map-actions">
-            <a href="#" id="openInGoogleMaps" class="map-link" target="_blank">Open in Google Maps →</a>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT COLUMN - Order Items + Summary -->
-      <div class="order-right-col">
-        
-        <!-- Order Items Card -->
-        <div class="info-card items-card">
-          <div class="card-header">
-            <span class="card-icon">🛍️</span>
-          <h3>Order Items</h3>
-            <span class="items-count" id="itemsCount">0 items</span>
-          </div>
-          <div class="items-list" id="orderItemsList">
-            <!-- Items will be injected here -->
-          </div>
-        </div>
-
-        <!-- Order Summary Card -->
-        <div class="info-card summary-card">
-          <div class="card-header">
-            <span class="card-icon">💰</span>
-          <h3>Order Summary</h3>
-          </div>
-          <div class="summary-content">
-            <div class="summary-row">
-              <span>Subtotal:</span>
-              <span id="subtotal">₹0</span>
-            </div>
-            <div class="summary-row">
-              <span>Delivery Fee:</span>
-              <span id="summaryDeliveryFee">₹0</span>
-            </div>
-            <div class="summary-row discount-row">
-              <span>Discount:</span>
-              <span id="discountAmount">-₹0</span>
-            </div>
-            <div class="summary-row total-row">
-              <span>Total:</span>
-              <span id="orderTotal">₹0</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-          <button id="printOrderBtn" class="btn-secondary">🖨️ Print Order</button>
-          <button id="deleteOrderBtn" class="btn-danger">🗑️ Delete Order</button>
-          <button id="whatsappBtn" class="btn-whatsapp">📱 Send WhatsApp</button>
-        </div>
-
-        <!-- Order Timeline -->
-        <div class="info-card timeline-card">
-          <div class="card-header">
-            <span class="card-icon">⏱️</span>
-          <h3>Order Timeline</h3>
-          </div>
-          <div class="timeline" id="orderTimeline">
-            <!-- Timeline items will be injected -->
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Error State -->
+  
+  <div id="orderDetailContainer" style="display: none;"></div>
+  
   <div id="errorState" class="error-state" style="display: none;">
-    <div class="error-icon">⚠️</div>
+    <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
     <h3>Order Not Found</h3>
-    <p>The order you're looking for doesn't exist or has been deleted.</p>
-    <a href="orders.html" class="btn-primary">Back to Orders</a>
+    <p>The order you're looking for doesn't exist.</p>
+    <a href="orders.html" class="back-btn" style="display: inline-block; margin-top: 20px;">Go to Orders</a>
   </div>
 </main>
 
-<!-- Scripts -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="../js/firebase.js"></script>
-<script src="../js/order-detail.js"></script>
+<script>
+  // ===== ORDER DETAIL PAGE WITH DEEP LINK SUPPORT =====
+  
+  let currentOrder = null;
+  let map = null;
+  let mapMarker = null;
+  
+  // Get Order ID from URL
+  function getOrderId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+  }
+  
+  // Initialize
+  async function init() {
+    const orderId = getOrderId();
+    if (!orderId) {
+      showError();
+      return;
+    }
+    await loadOrder(orderId);
+  }
+  
+  // Load Order from Firestore
+  async function loadOrder(orderId) {
+    try {
+      showLoading(true);
+      
+      const orderDoc = await db.collection('orders').doc(orderId).get();
+      
+      if (!orderDoc.exists) {
+        showError();
+        return;
+      }
+      
+      currentOrder = { id: orderDoc.id, ...orderDoc.data() };
+      renderOrderPage(currentOrder);
+      
+      showLoading(false);
+      showContainer(true);
+      
+    } catch (error) {
+      console.error('Error:', error);
+      showError();
+    }
+  }
+  
+  // Render Full Page
+  function renderOrderPage(order) {
+    const container = document.getElementById('orderDetailContainer');
+    const status = order.status || 'received';
+    const isLocked = (status === 'delivered' || status === 'cancelled');
+    
+    // Calculate totals
+    const items = order.items || [];
+    const subtotal = items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
+    const deliveryCharge = order.deliveryCharge || 0;
+    const discount = order.discount || 0;
+    const total = subtotal + deliveryCharge - discount;
+    
+    // Items HTML
+    const itemsHTML = items.map(item => `
+      <div class="order-item">
+        <img src="${item.image || 'https://via.placeholder.com/55'}" class="item-image" onerror="this.src='https://via.placeholder.com/55'">
+        <div class="item-details">
+          <div class="item-name">${item.name}</div>
+          <div class="item-unit">${item.unit || ''}</div>
+          <div class="item-price-row">
+            <span>Qty: ${item.quantity || 1} × ₹${item.price || 0}</span>
+            <span class="item-total">₹${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    // Timeline HTML
+    const timelineHTML = renderTimeline(order);
+    
+    container.innerHTML = `
+      <!-- Order Header -->
+      <div class="order-header-card">
+        <div class="order-id-section">
+          <h1>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</h1>
+          <div class="order-date">${formatDate(order.orderDate || order.createdAt)}</div>
+        </div>
+        <div class="order-status-section">
+          <select class="status-select" id="orderStatusSelect" ${isLocked ? 'disabled' : ''}>
+            <option value="received" ${status === 'received' ? 'selected' : ''}>📋 Received</option>
+            <option value="preparing" ${status === 'preparing' ? 'selected' : ''}>🍳 Preparing</option>
+            <option value="out_for_delivery" ${status === 'out_for_delivery' ? 'selected' : ''}>🛵 Out for Delivery</option>
+            <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>🎉 Delivered</option>
+            <option value="cancelled" ${status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+          </select>
+          <button class="btn-update" id="updateStatusBtn" ${isLocked ? 'disabled' : ''}>Update Status</button>
+        </div>
+      </div>
+      
+      <!-- Two Column Grid -->
+      <div class="order-detail-grid">
+        
+        <!-- LEFT COLUMN -->
+        <div class="order-left-col">
+          
+          <!-- Customer Info -->
+          <div class="info-card">
+            <div class="card-header"><span>👤</span><h3>Customer Information</h3></div>
+            <div class="info-content">
+              <div class="info-row"><span class="info-label">Name:</span><span class="info-value">${order.customerName || order.name || 'N/A'}</span></div>
+              <div class="info-row"><span class="info-label">Phone:</span><span class="info-value">${order.customerPhone || order.phone || 'N/A'}</span></div>
+              <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${order.email || 'N/A'}</span></div>
+              <div class="info-row"><span class="info-label">Address:</span><span class="info-value">${order.customerAddress || order.address || 'N/A'}</span></div>
+              <div class="info-row"><span class="info-label">Pincode:</span><span class="info-value">${order.pincode || 'N/A'}</span></div>
+            </div>
+          </div>
+          
+          <!-- Delivery Info -->
+          <div class="info-card">
+            <div class="card-header"><span>🚚</span><h3>Delivery Information</h3></div>
+            <div class="info-content">
+              <div class="info-row"><span class="info-label">Type:</span><span class="info-value">${order.deliveryType || 'Quick'}</span></div>
+              <div class="info-row"><span class="info-label">Slot:</span><span class="info-value">${order.deliverySlot || 'ASAP'}</span></div>
+              <div class="info-row"><span class="info-label">Charge:</span><span class="info-value">₹${deliveryCharge}</span></div>
+              <div class="info-row"><span class="info-label">Distance:</span><span class="info-value">${order.distance ? order.distance.toFixed(1) + ' km' : 'N/A'}</span></div>
+            </div>
+          </div>
+          
+          <!-- Map -->
+          <div class="info-card">
+            <div class="card-header"><span>📍</span><h3>Delivery Location</h3></div>
+            <div id="orderMap" class="order-map"></div>
+            <a href="#" id="googleMapsLink" class="map-link" target="_blank">Open in Google Maps →</a>
+          </div>
+          
+        </div>
+        
+        <!-- RIGHT COLUMN -->
+        <div class="order-right-col">
+          
+          <!-- Order Items -->
+          <div class="info-card">
+            <div class="card-header"><span>🛍️</span><h3>Order Items</h3><span>${items.length} items</span></div>
+            <div class="items-list">${itemsHTML || '<p>No items</p>'}</div>
+          </div>
+          
+          <!-- Order Summary -->
+          <div class="info-card">
+            <div class="card-header"><span>💰</span><h3>Order Summary</h3></div>
+            <div class="summary-content">
+              <div class="summary-row"><span>Subtotal:</span><span>₹${subtotal.toFixed(2)}</span></div>
+              <div class="summary-row"><span>Delivery Fee:</span><span>₹${deliveryCharge}</span></div>
+              ${discount > 0 ? `<div class="summary-row" style="color: var(--primary);"><span>Discount:</span><span>-₹${discount}</span></div>` : ''}
+              <div class="summary-row total-row"><span>Total:</span><span>₹${total.toFixed(2)}</span></div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn-secondary" id="printOrderBtn">🖨️ Print</button>
+            <button class="btn-whatsapp" id="whatsappBtn">📱 WhatsApp</button>
+            <button class="btn-danger" id="deleteOrderBtn" ${isLocked ? 'disabled' : ''}>🗑️ Delete</button>
+          </div>
+          
+          <!-- Order Timeline -->
+          <div class="info-card">
+            <div class="card-header"><span>⏱️</span><h3>Order Timeline</h3></div>
+            <div class="timeline" id="orderTimeline">${timelineHTML}</div>
+          </div>
+          
+        </div>
+      </div>
+    `;
+    
+    // Initialize Map if coordinates exist
+    if (order.location && order.location.lat && order.location.lng) {
+      initMap(order.location.lat, order.location.lng);
+      setupGoogleMapsLink(order.location.lat, order.location.lng);
+    } else {
+      document.querySelector('#orderMap') && (document.querySelector('#orderMap').innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);">📍 No location data available</div>');
+    }
+    
+    // Setup event listeners
+    setupEventListeners();
+  }
+  
+  // Render Timeline
+  function renderTimeline(order) {
+    const status = order.status || 'received';
+    const createdAt = order.orderDate || order.createdAt;
+    
+    const steps = [
+      { key: 'received', title: 'Order Received', icon: '📋' },
+      { key: 'preparing', title: 'Preparing', icon: '🍳' },
+      { key: 'out_for_delivery', title: 'Out for Delivery', icon: '🛵' },
+      { key: 'delivered', title: 'Delivered', icon: '🎉' }
+    ];
+    
+    let currentReached = false;
+    
+    return steps.map(step => {
+      let isCompleted = false;
+      let timeStr = '';
+      
+      if (!currentReached) {
+        if (step.key === status) {
+          isCompleted = true;
+          currentReached = true;
+          timeStr = 'Now';
+        } else if (status === 'delivered' && step.key === 'delivered') {
+          isCompleted = true;
+          timeStr = formatDate(order.deliveredAt);
+        } else if (status === 'cancelled') {
+          isCompleted = false;
+        } else if (step.key === 'received') {
+          isCompleted = true;
+          timeStr = formatTime(createdAt);
+        } else if (status === 'preparing' && step.key === 'received') {
+          isCompleted = true;
+        }
+      }
+      
+      if (status === 'delivered' && step.key !== 'delivered' && step.key !== 'received') {
+        isCompleted = true;
+      }
+      
+      if (status === 'cancelled' && step.key === 'received') {
+        isCompleted = true;
+      }
+      
+      return `
+        <div class="timeline-item">
+          <div class="timeline-icon ${isCompleted ? 'completed' : ''}">${step.icon}</div>
+          <div class="timeline-content">
+            <div class="timeline-title">${step.title}</div>
+            ${timeStr ? `<div class="timeline-time">${timeStr}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // Initialize Map
+  function initMap(lat, lng) {
+    const mapContainer = document.getElementById('orderMap');
+    if (!mapContainer) return;
+    
+    if (map) map.remove();
+    
+    map = L.map('orderMap').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+    }).addTo(map);
+    
+    mapMarker = L.marker([lat, lng]).addTo(map);
+    L.circle([lat, lng], { radius: 500, color: '#2ecc71', fillColor: '#2ecc71', fillOpacity: 0.1 }).addTo(map);
+  }
+  
+  function setupGoogleMapsLink(lat, lng) {
+    const link = document.getElementById('googleMapsLink');
+    if (link) link.href = `https://www.google.com/maps?q=${lat},${lng}`;
+  }
+  
+  // Update Status
+  async function updateOrderStatus() {
+    const newStatus = document.getElementById('orderStatusSelect').value;
+    const confirmed = confirm(`Change order status to "${newStatus}"?`);
+    if (!confirmed) return;
+    
+    try {
+      const updateData = { status: newStatus, updatedAt: new Date().toISOString() };
+      if (newStatus === 'delivered') updateData.deliveredAt = new Date().toISOString();
+      
+      await db.collection('orders').doc(currentOrder.id).update(updateData);
+      currentOrder.status = newStatus;
+      if (newStatus === 'delivered') currentOrder.deliveredAt = new Date().toISOString();
+      
+      renderOrderPage(currentOrder);
+      showToast('Status updated!', 'success');
+    } catch (error) {
+      showToast('Error updating status', 'error');
+    }
+  }
+  
+  // Delete Order
+  async function deleteOrder() {
+    const confirmed = confirm('⚠️ Are you SURE you want to DELETE this order?\nThis cannot be undone!');
+    if (!confirmed) return;
+    
+    try {
+      await db.collection('orders').doc(currentOrder.id).delete();
+      showToast('Order deleted!', 'success');
+      setTimeout(() => window.location.href = 'orders.html', 1500);
+    } catch (error) {
+      showToast('Error deleting order', 'error');
+    }
+  }
+  
+  // Print Order
+  function printOrder() {
+    const printContent = document.getElementById('orderDetailContainer').cloneNode(true);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html><head><title>Order_${currentOrder.id.slice(0,8)}</title>
+      <style>${Array.from(document.styleSheets).map(sheet => { try { return Array.from(sheet.cssRules || []).map(rule => rule.cssText).join(''); } catch(e) { return ''; } }).join('')}
+      .action-buttons, .btn-update, .status-select, .back-btn { display: none; }
+      </style></head>
+      <body>${printContent.innerHTML}</body></html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+  
+  // WhatsApp
+  function sendWhatsApp() {
+    const phone = currentOrder.customerPhone || currentOrder.phone;
+    if (!phone) { showToast('No phone number found', 'error'); return; }
+    
+    const message = `🛒 *OK Mart Order Update*\n\nOrder ID: #${currentOrder.id.slice(0,8)}\nStatus: ${currentOrder.status}\nTotal: ₹${currentOrder.total || 0}\n\nThank you for shopping with OK Mart! 🚀`;
+    window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+  
+  function setupEventListeners() {
+    document.getElementById('updateStatusBtn')?.addEventListener('click', updateOrderStatus);
+    document.getElementById('deleteOrderBtn')?.addEventListener('click', deleteOrder);
+    document.getElementById('printOrderBtn')?.addEventListener('click', printOrder);
+    document.getElementById('whatsappBtn')?.addEventListener('click', sendWhatsApp);
+  }
+  
+  // Helper Functions
+  function formatDate(timestamp) {
+    if (!timestamp) return 'N/A';
+    let date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  
+  function formatTime(timestamp) {
+    if (!timestamp) return '';
+    let date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  }
+  
+  function showToast(msg, type) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1a1e2b;color:white;padding:12px 24px;border-radius:40px;z-index:1000;opacity:0;transition:0.3s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.background = type === 'error' ? '#ef4444' : '#10b981';
+    setTimeout(() => toast.style.opacity = '0', 3000);
+  }
+  
+  function showLoading(show) {
+    document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+  }
+  
+  function showContainer(show) {
+    document.getElementById('orderDetailContainer').style.display = show ? 'block' : 'none';
+  }
+  
+  function showError() {
+    showLoading(false);
+    document.getElementById('errorState').style.display = 'block';
+  }
+  
+  // Start
+  init();
+</script>
 </body>
 </html>
