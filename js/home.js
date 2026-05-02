@@ -190,26 +190,3 @@
   console.log('🚀 OK Mart Premium Home ready');
 })();
 
-async function initNotifications() {
-  try {
-    const permission = await Notification.requestPermission();
-
-    if (permission === "granted") {
-      console.log("Notification permission granted");
-
-      const token = await getToken(messaging, {
-        vapidKey: "BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE"
-      });
-
-      console.log("FCM Token:", token);
-
-    } else {
-      console.log("Permission denied");
-    }
-
-  } catch (err) {
-    console.error("Notification error:", err);
-  }
-}
-
-initNotifications();
