@@ -129,3 +129,108 @@ async function initNotifications() {
 }
 
 initNotifications();
+
+
+// Add these functions to your existing common.js
+
+// ============================================
+// SKELETON LOADING HELPERS
+// ============================================
+
+window.showProductSkeleton = function(containerId, count = 6) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  const skeletons = [];
+  for (let i = 0; i < count; i++) {
+    skeletons.push(`
+      <div class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text-sm"></div>
+        <div class="skeleton-button"></div>
+      </div>
+    `);
+  }
+  container.innerHTML = skeletons.join('');
+};
+
+window.hideSkeleton = function(containerId) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.innerHTML = '';
+  }
+};
+
+// ============================================
+// ANIMATE NUMBER COUNTER
+// ============================================
+
+window.animateNumber = function(element, start, end, duration = 1000) {
+  if (!element) return;
+  
+  const range = end - start;
+  const increment = range / (duration / 16);
+  let current = start;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= end) {
+      element.textContent = end;
+      clearInterval(timer);
+    } else {
+      element.textContent = Math.floor(current);
+    }
+  }, 16);
+};
+
+// ============================================
+// CONFETTI EFFECT (for order success)
+// ============================================
+
+window.showConfetti = function() {
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  } else {
+    // Simple confetti fallback
+    console.log('🎉 Congratulations!');
+  }
+};
+
+// ============================================
+// COPY TO CLIPBOARD
+// ============================================
+
+window.copyToClipboard = async function(text, successMessage = 'Copied!') {
+  try {
+    await navigator.clipboard.writeText(text);
+    window.OKMart.showToast(successMessage, 'success');
+    return true;
+  } catch (err) {
+    window.OKMart.showToast('Failed to copy', 'error');
+    return false;
+  }
+};
+
+// ============================================
+// SHARE FUNCTION (Web Share API)
+// ============================================
+
+window.shareContent = async function(title, text, url) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  } else {
+    // Fallback - copy to clipboard
+    await window.copyToClipboard(url, 'Link copied!');
+    return false;
+  }
+};
