@@ -1,7 +1,6 @@
 // ===== OK Mart - Firebase Configuration (FIXED) =====
-// Firebase v9 Compat SDK
 
-// Your Firebase configuration
+// Firebase config
 var firebaseConfig = {
   apiKey: "AIzaSyDHvki4jXafwzLAXJSrLQt4QodiNi5JXCw",
   authDomain: "okmart-e6219.firebaseapp.com",
@@ -12,137 +11,132 @@ var firebaseConfig = {
   measurementId: "G-2497DJLP1Q"
 };
 
-// Check if Firebase is already initialized
-if (!firebase.apps.length) {
+// Initialize Firebase (only if not already initialized)
+if (!firebase.apps || !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
-  console.log('🔥 Firebase initialized');
-} else {
-  console.log('🔥 Firebase already initialized');
 }
 
 // Initialize Firestore
 var db = firebase.firestore();
 
-// Enable offline persistence (only once)
+// Enable offline persistence
 try {
   db.enablePersistence({ synchronizeTabs: true })
     .then(function() {
-      console.log('🔥 Firestore persistence enabled');
+      console.log('🔥 Firestore persistence ON');
     })
     .catch(function(err) {
-      if (err.code === 'failed-precondition') {
-        console.warn('⚠️ Multiple tabs - persistence disabled');
-      } else if (err.code === 'unimplemented') {
-        console.warn('⚠️ Browser not supported');
-      }
+      console.warn('⚠️ Persistence:', err.code);
     });
 } catch(e) {
-  console.warn('⚠️ Persistence already set');
+  console.warn('⚠️ Persistence error');
 }
 
 // ============================================
-// FIREBASE CLOUD MESSAGING (FCM)
+// CLOUD MESSAGING (FCM)
 // ============================================
+
+// VAPID Key - Firebase Console se copy karo
+var VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
 
 var messaging = null;
 
 // Check if messaging is supported
-if (firebase.messaging && typeof firebase.messaging.isSupported === 'function') {
-  if (firebase.messaging.isSupported()) {
-    messaging = firebase.messaging();
-    console.log('📨 Firebase Messaging initialized');
-  } else {
-    console.warn('⚠️ Messaging not supported in this browser');
-  }
+if (firebase.messaging && firebase.messaging.isSupported && firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+  console.log('📨 Messaging ready');
 } else {
-  console.warn('⚠️ Messaging SDK not loaded');
+  console.warn('⚠️ Messaging not supported');
 }
 
-// VAPID Key - Get from Firebase Console
-var VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
-
 /**
- * Request notification permission and get FCM token
+ * NOTIFICATION PERMISSION MAANGO
+ * Ye function call karo jab user "Enable" button click kare
  */
 function requestNotificationPermission(callback) {
   if (!messaging) {
     console.warn('⚠️ Messaging not available');
-    if (callback) callback(null, 'Messaging not supported');
+    if (callback) callback(null, 'Not supported');
     return;
   }
 
-  // Request browser permission first
+  // Step 1: Browser permission maango
   Notification.requestPermission()
     .then(function(permission) {
       console.log('🔔 Permission:', permission);
       
       if (permission === 'granted') {
-        // Get FCM token using compat API
+        // Step 2: FCM token lo
         messaging.getToken({ vapidKey: VAPID_KEY })
-          .then(function(currentToken) {
-            if (currentToken) {
-              console.log('📨 FCM Token:', currentToken);
-              localStorage.setItem('okmart_fcm_token', currentToken);
-              
-              if (callback) callback(currentToken, null);
-            } else {
-              console.warn('⚠️ No registration token available');
-              if (callback) callback(null, 'No token');
-            }
+          .then(function(token) {
+            console.log('📨 Token mil gaya:', token);
+            
+            // Token save karo localStorage mein
+            localStorage.setItem('okmart_fcm_token', token);
+            
+            // Callback - success
+            if (callback) callback(token, null);
           })
           .catch(function(err) {
-            console.error('❌ Error getting token:', err);
+            console.error('❌ Token error:', err);
             if (callback) callback(null, err.message);
           });
       } else {
-        console.log('❌ Permission denied');
-        if (callback) callback(null, 'Permission denied');
+        console.log('❌ User ne deny kiya');
+        if (callback) callback(null, 'denied');
       }
     });
 }
 
 /**
- * Get stored FCM token
+ * Stored token nikalo
  */
 function getStoredFCMToken() {
   return localStorage.getItem('okmart_fcm_token') || null;
 }
 
-/**
- * Delete FCM token
- */
-function deleteFCMToken(callback) {
-  var token = getStoredFCMToken();
-  if (token && messaging) {
-    messaging.deleteToken(token)
-      .then(function() {
-        console.log('✅ Token deleted');
-        localStorage.removeItem('okmart_fcm_token');
-        if (callback) callback(true);
-      })
-      .catch(function(err) {
-        console.error('❌ Error deleting token:', err);
-        if (callback) callback(false);
-      });
-  }
-}
-
-// Foreground message handler
+// Foreground message handle karo
 if (messaging) {
   messaging.onMessage(function(payload) {
-    console.log('📨 Foreground message:', payload);
+    console.log('📨 Message aaya:', payload);
     
-    var notification = payload.notification || {};
+    var title = payload.notification ? payload.notification.title : 'OK Mart';
+    var body = payload.notification ? payload.notification.body : '';
     
-    // Show in-app notification if function exists
+    // Toast notification dikhao
     if (window.showToast) {
-      window.showToast('🔔 ' + (notification.title || 'New Update') + ': ' + (notification.body || ''), 'info');
+      window.showToast('🔔 ' + title, 'info');
+    }
+    
+    // Agar koi custom notification function hai to call karo
+    if (typeof showBrowserNotification === 'function') {
+      showBrowserNotification(title, body);
     }
   });
 }
 
 // ============================================
-// FIREBASE COLLECTIONS REFERENCE
+// SERVICE WORKER REGISTER KARO
+// ============================================
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then(function(reg) {
+      console.log('✅ Service Worker registered');
+      
+      // Messaging ko service worker ke saath link karo
+      if (messaging && reg) {
+        // Compat SDK mein useServiceWorker nahi hota
+        // Service worker auto-detect hota hai
+      }
+    })
+    .catch(function(err) {
+      console.warn('⚠️ SW registration:', err.message);
+    });
+}
+
+// ============================================
+// COLLECTIONS REFERENCE
 // ============================================
 
 var collections = {
@@ -151,97 +145,56 @@ var collections = {
   offers: db.collection('offers'),
   banners: db.collection('banners'),
   admins: db.collection('admins'),
-  settings: db.collection('settings'),
-  blockedUsers: db.collection('blockedUsers'),
-  fcmTokens: db.collection('fcm_tokens')
+  settings: db.collection('settings')
 };
 
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
 
-function getAllDocuments(collectionName) {
-  return db.collection(collectionName).get()
-    .then(function(snapshot) {
-      var docs = [];
-      snapshot.forEach(function(doc) {
-        docs.push({ id: doc.id, data: doc.data() });
-      });
-      return docs;
-    });
-}
-
-function getDocumentById(collectionName, docId) {
-  return db.collection(collectionName).doc(docId).get()
-    .then(function(doc) {
-      return doc.exists ? { id: doc.id, data: doc.data() } : null;
-    });
-}
-
-function addDocument(collectionName, data) {
-  data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-  return db.collection(collectionName).add(data);
-}
-
-function updateDocument(collectionName, docId, data) {
-  data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-  return db.collection(collectionName).doc(docId).update(data);
-}
-
-function deleteDocument(collectionName, docId) {
-  return db.collection(collectionName).doc(docId).delete();
-}
-
-function queryDocuments(collectionName, field, operator, value) {
-  return db.collection(collectionName).where(field, operator, value).get()
-    .then(function(snapshot) {
-      var docs = [];
-      snapshot.forEach(function(doc) {
-        docs.push({ id: doc.id, data: doc.data() });
-      });
-      return docs;
-    });
-}
-
-function listenToCollection(collectionName, callback, filters) {
-  var query = db.collection(collectionName);
-  if (filters && Array.isArray(filters)) {
-    filters.forEach(function(f) {
-      query = query.where(f.field, f.operator, f.value);
-    });
-  }
-  return query.onSnapshot(function(snapshot) {
+function getAllDocs(colName) {
+  return db.collection(colName).get().then(function(snap) {
     var docs = [];
-    snapshot.forEach(function(doc) {
-      docs.push({ id: doc.id, data: doc.data() });
-    });
-    callback(docs);
+    snap.forEach(function(d) { docs.push({ id: d.id, data: d.data() }); });
+    return docs;
   });
 }
 
+function getDoc(colName, id) {
+  return db.collection(colName).doc(id).get().then(function(d) {
+    return d.exists ? { id: d.id, data: d.data() } : null;
+  });
+}
+
+function addDoc(colName, data) {
+  return db.collection(colName).add(data);
+}
+
+function updateDoc(colName, id, data) {
+  return db.collection(colName).doc(id).update(data);
+}
+
+function deleteDoc(colName, id) {
+  return db.collection(colName).doc(id).delete();
+}
+
 // ============================================
-// EXPORT TO GLOBAL SCOPE
+// GLOBAL EXPORT
 // ============================================
 
 window.db = db;
-window.firestoreCollections = collections;
 window.messaging = messaging;
+window.collections = collections;
 
 window.FirebaseHelper = {
-  getAllDocuments: getAllDocuments,
-  getDocumentById: getDocumentById,
-  addDocument: addDocument,
-  updateDocument: updateDocument,
-  deleteDocument: deleteDocument,
-  queryDocuments: queryDocuments,
-  listenToCollection: listenToCollection,
-  collections: collections,
-  requestNotificationPermission: requestNotificationPermission,
-  getStoredFCMToken: getStoredFCMToken,
-  deleteFCMToken: deleteFCMToken,
-  VAPID_KEY: VAPID_KEY
+  requestPermission: requestNotificationPermission,
+  getToken: getStoredFCMToken,
+  getAllDocs: getAllDocs,
+  getDoc: getDoc,
+  addDoc: addDoc,
+  updateDoc: updateDoc,
+  deleteDoc: deleteDoc,
+  collections: collections
 };
 
-console.log('🔥 Firebase ready');
-console.log('📦 Collections:', Object.keys(collections).join(', '));
-console.log('📨 Messaging:', messaging ? 'Available' : 'Not Available');
+console.log('✅ Firebase ready | Messaging:', messaging ? 'OK' : 'N/A');
