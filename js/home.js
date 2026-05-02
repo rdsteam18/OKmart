@@ -18,6 +18,7 @@
     { id: 'vegetables',  name: 'Vegetables',          icon: '🥬', slug: 'vegetables' },
     { id: 'snacks',      name: 'Snacks & Munchies',   icon: '🍿', slug: 'snacks' },
     { id: 'beverages',   name: 'Beverages',           icon: '🥤', slug: 'beverages' },
+    { id: 'icecream',   name: 'Icecream',           icon: '🍦', slug: 'icecream' },
     { id: 'electronics', name: 'Electronics',         icon: '📱', slug: 'electronics' },
     { id: 'grocery',     name: 'Grocery Staples',     icon: '🧺', slug: 'grocery' },
     { id: 'bakery',      name: 'Bakery & Fresh',      icon: '🥐', slug: 'bakery' },
