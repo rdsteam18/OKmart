@@ -2,38 +2,682 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   
   <title>Track Your Order | OK Mart</title>
-  <meta name="description" content="Track your OK Mart grocery order status. Enter phone number or order ID.">
+  <meta name="description" content="Track your OK Mart grocery order status in real-time. Enter phone number or order ID to get live updates.">
   <meta name="theme-color" content="#2ecc71">
   
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/tracking.css">
-  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Leaflet for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 20px;
+      --transition: all .2s ease;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Header */
+    .tracking-header {
+      background: var(--card);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .header-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+    
+    .back-btn:active { transform: scale(.95); }
+    
+    .header-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    
+    .refresh-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .refresh-btn:active { transform: rotate(90deg); }
+    
+    /* Main Content */
+    .tracking-main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: calc(100vh - 70px);
+    }
+    
+    /* Search Section */
+    .search-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      animation: fadeIn .3s ease;
+    }
+    
+    .search-icon-large {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+    
+    .search-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    
+    .search-section p {
+      color: var(--muted);
+      font-size: .85rem;
+      margin-bottom: 20px;
+    }
+    
+    .search-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .track-input {
+      flex: 2;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 1rem;
+      transition: var(--transition);
+      background: var(--bg);
+    }
+    
+    .track-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    
+    .track-btn {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .track-btn:active { transform: scale(.97); }
+    
+    .btn-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid white;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    
+    .search-tips {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    
+    .tip {
+      font-size: .7rem;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    
+    /* Loading State */
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    /* Order Card */
+    .order-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
+      animation: slideUp .4s ease;
+    }
+    
+    .order-header {
+      background: linear-gradient(135deg, var(--primary-light), var(--card));
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .order-id {
+      font-weight: 800;
+      font-family: monospace;
+      font-size: 1rem;
+      color: var(--primary-dark);
+    }
+    
+    .order-date {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    
+    .status-pending { background: #fef3c7; color: #d97706; }
+    .status-confirmed { background: #dbeafe; color: #2563eb; }
+    .status-preparing { background: #fef3c7; color: #d97706; }
+    .status-out_for_delivery { background: #e0e7ff; color: #4338ca; }
+    .status-delivered { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #dc2626; }
+    
+    /* Delivery Progress */
+    .delivery-progress {
+      margin: 20px;
+      background: var(--bg);
+      border-radius: 30px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: linear-gradient(90deg, var(--primary-light), var(--primary));
+      width: 0%;
+      transition: width .5s ease;
+      border-radius: 30px;
+    }
+    
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 20px;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    
+    .progress-step {
+      text-align: center;
+      flex: 1;
+    }
+    
+    .progress-step.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    /* Info Sections */
+    .order-info-section, .timeline-section, .map-section, .items-section {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section-title {
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .info-label {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    
+    .info-value {
+      font-weight: 600;
+    }
+    
+    /* Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 10px;
+      width: 2px;
+      height: calc(100% - 20px);
+      background: var(--border);
+    }
+    
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .timeline-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      border: 2px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .timeline-icon.completed {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    
+    .timeline-icon.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      animation: pulse 1.5s ease infinite;
+    }
+    
+    .timeline-content {
+      flex: 1;
+      padding-bottom: 8px;
+    }
+    
+    .timeline-step {
+      font-weight: 700;
+      font-size: .9rem;
+      margin-bottom: 4px;
+    }
+    
+    .timeline-time {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    
+    /* Map */
+    .map-container {
+      height: 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg);
+      margin-top: 12px;
+    }
+    
+    /* Items */
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .order-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 14px;
+    }
+    
+    .item-image {
+      width: 55px;
+      height: 55px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #e2e8f0;
+    }
+    
+    .item-details {
+      flex: 1;
+    }
+    
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .item-price {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    
+    .item-quantity {
+      font-weight: 600;
+    }
+    
+    /* Summary */
+    .order-summary {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+    
+    .summary-total {
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      padding-top: 12px;
+      color: var(--primary-dark);
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      padding: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-whatsapp, .btn-home {
+      flex: 1;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      border: none;
+    }
+    
+    .btn-home {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .btn-whatsapp:active, .btn-home:active { transform: scale(.97); }
+    
+    /* Multiple Orders */
+    .multiple-orders {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+    }
+    
+    .multiple-orders h3 {
+      margin-bottom: 16px;
+    }
+    
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .order-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .order-list-item:active { transform: scale(.98); background: var(--border); }
+    
+    /* Recent Orders */
+    .recent-orders-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+    }
+    
+    .recent-orders-section h3 {
+      margin-bottom: 16px;
+    }
+    
+    .recent-orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .recent-order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .recent-order-item:active { transform: scale(.98); }
+    
+    .recent-order-id {
+      font-family: monospace;
+      font-weight: 600;
+      font-size: .85rem;
+    }
+    
+    /* No Result */
+    .no-result {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    .no-result-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    
+    .retry-btn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Toast */
+    .toast-message {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transition: .3s;
+      white-space: nowrap;
+      pointer-events: none;
+      background: var(--text);
+      color: white;
+    }
+    
+    .toast-message.show {
+      opacity: 1;
+      bottom: 90px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .tracking-main { padding: 16px; }
+      .search-section { padding: 24px 16px; }
+      .search-input-group { flex-direction: column; }
+      .order-header { flex-direction: column; text-align: center; }
+      .progress-steps { font-size: .6rem; }
+      .action-buttons { flex-direction: column; }
+      .toast-message { white-space: normal; text-align: center; max-width: 80%; }
+      .search-tips { flex-direction: column; align-items: center; }
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
     
-    <!-- ========== HEADER ========== -->
+    <!-- HEADER -->
     <header class="tracking-header">
       <div class="header-inner">
-        <a href="/index.html" class="back-btn">←</a>
+        <a class="back-btn" href="/">←</a>
         <h1 class="header-title">Track Your Order</h1>
-        <span></span>
+        <button class="refresh-btn" id="refreshBtn">🔄</button>
       </div>
     </header>
 
-    <!-- ========== MAIN CONTENT ========== -->
+    <!-- MAIN CONTENT -->
     <main class="tracking-main">
       
       <!-- Search Section -->
-      <div class="search-section">
+      <div class="search-section" id="searchSection">
         <div class="search-icon-large">📦</div>
         <h2>Track Your Order</h2>
         <p>Enter your phone number or order ID to check status</p>
@@ -43,7 +687,7 @@
             type="text" 
             id="trackInput" 
             class="track-input" 
-            placeholder="Phone number or Order ID (e.g., ORD-XXX)"
+            placeholder="📱 Phone number or 🔢 Order ID"
             autocomplete="off"
           >
           <button class="track-btn" id="trackBtn">
@@ -52,7 +696,10 @@
           </button>
         </div>
         
-        <p class="search-hint">Try: 9876543210 or ORD-XXXXXX</p>
+        <div class="search-tips">
+          <span class="tip">💡 Try: 9876543210</span>
+          <span class="tip">💡 Try: ORD-XXXXXX</span>
+        </div>
       </div>
 
       <!-- Loading State -->
@@ -62,7 +709,7 @@
       </div>
 
       <!-- Single Order Result -->
-      <div class="order-result" id="singleOrderResult" style="display: none;"></div>
+      <div id="singleOrderResult" style="display: none;"></div>
 
       <!-- Multiple Orders -->
       <div class="multiple-orders" id="multipleOrders" style="display: none;">
@@ -75,25 +722,537 @@
         <span class="no-result-icon">🔍</span>
         <h3>No order found</h3>
         <p>We couldn't find any order with this information</p>
-        <button class="retry-btn" onclick="document.getElementById('trackInput').focus()">Try Again</button>
+        <button class="retry-btn" onclick="resetAndTryAgain()">Try Again</button>
       </div>
 
-      <!-- Recent Orders (from localStorage) -->
+      <!-- Recent Orders -->
       <div class="recent-orders-section" id="recentOrdersSection">
         <h3>📋 Your Recent Orders</h3>
         <div class="recent-orders-list" id="recentOrdersList">
-          <p class="no-orders-text" id="noRecentOrders">No recent orders on this device</p>
+          <p class="no-orders-text" id="noRecentOrders" style="text-align:center;color:var(--muted);">No recent orders on this device</p>
         </div>
       </div>
 
     </main>
-
-    <!-- Toast -->
-    <div class="toast-message" id="toastMessage"></div>
-    
   </div>
 
+  <!-- Toast -->
+  <div class="toast-message" id="toastMessage"></div>
+
   <script src="/js/firebase.js"></script>
-  <script src="/js/tracking.js"></script>
+  <script>
+    // ===== COMPLETE TRACKING SYSTEM =====
+    
+    let currentOrders = [];
+    let unsubscribeOrder = null;
+    let currentMap = null;
+    let currentMarker = null;
+    
+    // DOM Elements
+    const trackInput = document.getElementById('trackInput');
+    const trackBtn = document.getElementById('trackBtn');
+    const trackBtnText = document.getElementById('trackBtnText');
+    const trackSpinner = document.getElementById('trackSpinner');
+    const loadingState = document.getElementById('loadingState');
+    const singleOrderResult = document.getElementById('singleOrderResult');
+    const multipleOrdersDiv = document.getElementById('multipleOrders');
+    const noResultDiv = document.getElementById('noResult');
+    const recentOrdersSection = document.getElementById('recentOrdersSection');
+    const recentOrdersList = document.getElementById('recentOrdersList');
+    const refreshBtn = document.getElementById('refreshBtn');
+    
+    // ========== LOAD RECENT ORDERS ==========
+    function loadRecentOrders() {
+      try {
+        const recent = JSON.parse(localStorage.getItem('okmart_recent_orders') || '[]');
+        if (recent.length === 0) {
+          document.getElementById('noRecentOrders').style.display = 'block';
+          return;
+        }
+        
+        recentOrdersList.innerHTML = recent.slice(0, 5).map(order => `
+          <div class="recent-order-item" onclick="trackOrderById('${order.id}')">
+            <span class="recent-order-id">#${order.id.slice(0, 8).toUpperCase()}</span>
+            <span class="status-badge status-${order.status}">${order.status}</span>
+            <span>₹${order.total}</span>
+          </div>
+        `).join('');
+      } catch(e) { console.warn('Recent orders error:', e); }
+    }
+    
+    // Save to recent orders
+    function saveToRecentOrders(order) {
+      try {
+        let recent = JSON.parse(localStorage.getItem('okmart_recent_orders') || '[]');
+        recent = recent.filter(o => o.id !== order.id);
+        recent.unshift({ id: order.id, status: order.status || 'pending', total: order.total || 0, date: new Date().toISOString() });
+        recent = recent.slice(0, 10);
+        localStorage.setItem('okmart_recent_orders', JSON.stringify(recent));
+        loadRecentOrders();
+      } catch(e) {}
+    }
+    
+    // Track by ID
+    window.trackOrderById = function(orderId) {
+      if (!orderId) return;
+      trackInput.value = orderId;
+      trackOrder();
+    };
+    
+    // Reset and try again
+    window.resetAndTryAgain = function() {
+      trackInput.value = '';
+      trackInput.focus();
+      hideAllResults();
+      document.getElementById('searchSection').style.display = 'block';
+      recentOrdersSection.style.display = 'block';
+    };
+    
+    // ========== MAIN TRACK FUNCTION ==========
+    async function trackOrder() {
+      const query = trackInput.value.trim();
+      if (!query) {
+        showToast('Please enter phone number or order ID', 'error');
+        return;
+      }
+      
+      // Clear previous
+      hideAllResults();
+      showLoading(true);
+      document.getElementById('searchSection').style.display = 'none';
+      recentOrdersSection.style.display = 'none';
+      
+      // Unsubscribe from previous listener
+      if (unsubscribeOrder) {
+        unsubscribeOrder();
+        unsubscribeOrder = null;
+      }
+      
+      try {
+        let orders = [];
+        
+        // Check if query is phone number (10 digits)
+        if (query.match(/^\d{10}$/)) {
+          // Search by phone number
+          let snapshot = await db.collection('orders')
+            .where('phone', '==', query)
+            .orderBy('orderDate', 'desc')
+            .get();
+          
+          if (snapshot.empty) {
+            snapshot = await db.collection('orders')
+              .where('customerPhone', '==', query)
+              .orderBy('orderDate', 'desc')
+              .get();
+          }
+          
+          orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          
+        } else {
+          // Search by order ID
+          const cleanId = query.replace(/^#/, '');
+          
+          // Try exact match
+          const doc = await db.collection('orders').doc(cleanId).get();
+          if (doc.exists) {
+            orders = [{ id: doc.id, ...doc.data() }];
+          } else {
+            // Try orderId field
+            const snapshot = await db.collection('orders')
+              .where('orderId', '==', cleanId)
+              .limit(1)
+              .get();
+            orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          }
+        }
+        
+        showLoading(false);
+        
+        if (orders.length === 0) {
+          showNoResult();
+          return;
+        }
+        
+        if (orders.length === 1) {
+          // Single order - setup real-time listener
+          setupRealTimeTracking(orders[0].id);
+        } else {
+          // Multiple orders
+          showMultipleOrders(orders);
+        }
+        
+      } catch (error) {
+        console.error('Track error:', error);
+        showLoading(false);
+        showToast('Error finding order. Please try again.', 'error');
+      }
+    }
+    
+    // Setup real-time tracking
+    function setupRealTimeTracking(orderId) {
+      if (unsubscribeOrder) {
+        unsubscribeOrder();
+      }
+      
+      unsubscribeOrder = db.collection('orders').doc(orderId).onSnapshot((doc) => {
+        if (doc.exists) {
+          const order = { id: doc.id, ...doc.data() };
+          saveToRecentOrders(order);
+          renderOrderDetails(order);
+          hideMultipleOrders();
+          hideNoResult();
+        } else {
+          showNoResult();
+        }
+      }, (error) => {
+        console.error('Snapshot error:', error);
+        showToast('Error loading order updates', 'error');
+      });
+    }
+    
+    // Render single order
+    function renderOrderDetails(order) {
+      singleOrderResult.style.display = 'block';
+      singleOrderResult.innerHTML = createOrderHTML(order);
+      
+      // Initialize map if coordinates exist
+      if (order.location?.lat && order.location?.lng && order.status !== 'delivered' && order.status !== 'cancelled') {
+        setTimeout(() => initTrackingMap(order.location.lat, order.location.lng, order.status), 100);
+      }
+      
+      // Animate progress bar
+      const progressBar = document.querySelector('.progress-bar');
+      if (progressBar) {
+        const percent = getProgressPercent(order.status);
+        setTimeout(() => { progressBar.style.width = `${percent}%`; }, 50);
+      }
+    }
+    
+    // Create Order HTML
+    function createOrderHTML(order) {
+      const status = order.status || 'pending';
+      const progressPercent = getProgressPercent(status);
+      const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+      
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">#${order.orderId || order.id.slice(0, 8).toUpperCase()}</div>
+              <div class="order-date">${orderDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+            </div>
+            <div class="status-badge status-${status === 'out_for_delivery' ? 'out_for_delivery' : status}">
+              ${getStatusIcon(status)} ${getStatusText(status)}
+            </div>
+          </div>
+          
+          ${status !== 'cancelled' ? `
+            <div class="delivery-progress">
+              <div class="progress-bar" style="width: ${progressPercent}%"></div>
+              <div class="progress-steps">
+                <div class="progress-step ${progressPercent >= 25 ? 'active' : ''}">📋 Order</div>
+                <div class="progress-step ${progressPercent >= 50 ? 'active' : ''}">🍳 Prep</div>
+                <div class="progress-step ${progressPercent >= 75 ? 'active' : ''}">🛵 Delivery</div>
+                <div class="progress-step ${progressPercent >= 100 ? 'active' : ''}">✅ Done</div>
+              </div>
+            </div>
+          ` : ''}
+          
+          <div class="order-info-section">
+            <div class="section-title">📍 Delivery Information</div>
+            <div class="info-row"><span class="info-label">Customer</span><span class="info-value">${escapeHtml(order.customerName || order.name || 'N/A')}</span></div>
+            <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${order.customerPhone || order.phone || 'N/A'}</span></div>
+            <div class="info-row"><span class="info-label">Address</span><span class="info-value">${escapeHtml(order.customerAddress || order.address || 'N/A')}</span></div>
+            <div class="info-row"><span class="info-label">Pincode</span><span class="info-value">${order.pincode || 'N/A'}</span></div>
+            <div class="info-row"><span class="info-label">Delivery Type</span><span class="info-value">${order.deliveryType === 'quick' ? '⚡ Quick (10-15 mins)' : '📅 Scheduled'}</span></div>
+          </div>
+          
+          ${order.location?.lat && status !== 'cancelled' ? `
+            <div class="map-section">
+              <div class="section-title">📍 Delivery Location</div>
+              <div id="trackMap" class="map-container"></div>
+            </div>
+          ` : ''}
+          
+          <div class="timeline-section">
+            <div class="section-title">⏱️ Order Timeline</div>
+            <div class="timeline">${createTimelineHTML(order)}</div>
+          </div>
+          
+          <div class="items-section">
+            <div class="section-title">🛍️ Order Items (${order.items?.length || 0})</div>
+            <div class="items-list">${createItemsHTML(order.items || [])}</div>
+            ${createSummaryHTML(order)}
+          </div>
+          
+          <div class="action-buttons">
+            <a href="https://wa.me/${order.customerPhone || order.phone}" target="_blank" class="btn-whatsapp">💬 WhatsApp Support</a>
+            <a href="/" class="btn-home">🏠 Continue Shopping</a>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Create Timeline
+    function createTimelineHTML(order) {
+      const status = order.status || 'pending';
+      const createdAt = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+      const confirmedAt = order.confirmedAt?.toDate ? order.confirmedAt.toDate() : null;
+      const preparingAt = order.preparingAt?.toDate ? order.preparingAt.toDate() : null;
+      const outForDeliveryAt = order.outForDeliveryAt?.toDate ? order.outForDeliveryAt.toDate() : null;
+      const deliveredAt = order.deliveredAt?.toDate ? order.deliveredAt.toDate() : null;
+      
+      const steps = [
+        { key: 'pending', title: 'Order Placed', icon: '📋', time: createdAt, completed: true },
+        { key: 'confirmed', title: 'Order Confirmed', icon: '✅', time: confirmedAt, completed: status !== 'pending' && status !== 'cancelled' },
+        { key: 'preparing', title: 'Preparing Your Order', icon: '🍳', time: preparingAt, completed: status === 'preparing' || status === 'out_for_delivery' || status === 'delivered' },
+        { key: 'out_for_delivery', title: 'Out for Delivery', icon: '🛵', time: outForDeliveryAt, completed: status === 'out_for_delivery' || status === 'delivered' },
+        { key: 'delivered', title: 'Delivered', icon: '🎉', time: deliveredAt, completed: status === 'delivered' }
+      ];
+      
+      let currentReached = false;
+      
+      return steps.map(step => {
+        let isCompleted = step.completed;
+        let isActive = false;
+        
+        if (!currentReached && !isCompleted && step.key !== 'delivered') {
+          isActive = true;
+          currentReached = true;
+        }
+        
+        if (status === 'cancelled') {
+          isCompleted = false;
+          isActive = false;
+        }
+        
+        const timeStr = step.time ? step.time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
+        
+        return `
+          <div class="timeline-item">
+            <div class="timeline-icon ${isCompleted ? 'completed' : (isActive ? 'active' : '')}">${step.icon}</div>
+            <div class="timeline-content">
+              <div class="timeline-step">${step.title}</div>
+              ${timeStr ? `<div class="timeline-time">${timeStr}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Create Items HTML
+    function createItemsHTML(items) {
+      if (!items || items.length === 0) return '<div style="text-align:center;color:var(--muted);">No items found</div>';
+      
+      return items.map(item => `
+        <div class="order-item">
+          <img src="${item.image || 'https://via.placeholder.com/55'}" class="item-image" onerror="this.src='https://via.placeholder.com/55'">
+          <div class="item-details">
+            <div class="item-name">${escapeHtml(item.name)}</div>
+            <div class="item-price">₹${item.price} × ${item.quantity}</div>
+          </div>
+          <div class="item-quantity">₹${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+    }
+    
+    // Create Summary
+    function createSummaryHTML(order) {
+      const subtotal = order.subtotal || (order.items?.reduce((s, i) => s + (i.price * (i.quantity || 1)), 0) || 0);
+      const deliveryCharge = order.deliveryCharge || 0;
+      const discount = order.discount || 0;
+      const total = (subtotal + deliveryCharge) - discount;
+      
+      return `
+        <div class="order-summary">
+          <div class="summary-row"><span>Subtotal</span><span>₹${subtotal}</span></div>
+          <div class="summary-row"><span>Delivery Charge</span><span>₹${deliveryCharge}</span></div>
+          ${discount > 0 ? `<div class="summary-row" style="color: var(--primary);"><span>Discount</span><span>-₹${discount}</span></div>` : ''}
+          <div class="summary-row summary-total"><span>Total Paid</span><span>₹${total}</span></div>
+        </div>
+      `;
+    }
+    
+    // Show multiple orders
+    function showMultipleOrders(orders) {
+      multipleOrdersDiv.style.display = 'block';
+      const orderList = document.getElementById('orderList');
+      
+      orderList.innerHTML = orders.map(order => `
+        <div class="order-list-item" onclick="trackOrderById('${order.id}')">
+          <div>
+            <strong>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</strong>
+            <div style="font-size:.7rem;color:var(--muted);">${new Date(order.orderDate?.toDate()).toLocaleDateString()}</div>
+          </div>
+          <div class="status-badge status-${order.status || 'pending'}">${order.status || 'pending'}</div>
+          <div>₹${order.total || 0}</div>
+        </div>
+      `).join('');
+    }
+    
+    // Initialize Map
+    function initTrackingMap(lat, lng, status) {
+      const mapContainer = document.getElementById('trackMap');
+      if (!mapContainer) return;
+      
+      if (currentMap) {
+        currentMap.remove();
+        currentMap = null;
+      }
+      
+      currentMap = L.map('trackMap').setView([lat, lng], 14);
+      
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(currentMap);
+      
+      // Destination marker
+      const destinationIcon = L.divIcon({
+        html: '📍',
+        className: 'custom-marker',
+        iconSize: [30, 30],
+        popupAnchor: [0, -15]
+      });
+      
+      currentMarker = L.marker([lat, lng], { icon: destinationIcon }).addTo(currentMap);
+      currentMarker.bindPopup('<b>Delivery Location</b>').openPopup();
+      
+      // Delivery radius
+      L.circle([lat, lng], {
+        radius: 500,
+        color: '#2ecc71',
+        fillColor: '#2ecc71',
+        fillOpacity: 0.1
+      }).addTo(currentMap);
+      
+      // Out for delivery - show delivery partner
+      if (status === 'out_for_delivery') {
+        const deliveryLat = lat + 0.002;
+        const deliveryLng = lng - 0.001;
+        
+        const deliveryIcon = L.divIcon({
+          html: '🛵',
+          className: 'custom-marker',
+          iconSize: [30, 30]
+        });
+        
+        const deliveryMarker = L.marker([deliveryLat, deliveryLng], { icon: deliveryIcon }).addTo(currentMap);
+        deliveryMarker.bindPopup('<b>Delivery Partner</b><br>On the way!').openPopup();
+        
+        const bounds = L.latLngBounds([[lat, lng], [deliveryLat, deliveryLng]]);
+        currentMap.fitBounds(bounds, { padding: [50, 50] });
+      } else {
+        currentMap.setView([lat, lng], 15);
+      }
+    }
+    
+    // Helper Functions
+    function getProgressPercent(status) {
+      const map = { pending: 10, confirmed: 25, preparing: 50, out_for_delivery: 75, delivered: 100 };
+      return map[status] || 0;
+    }
+    
+    function getStatusIcon(status) {
+      const icons = { pending: '⏳', confirmed: '✅', preparing: '🍳', out_for_delivery: '🛵', delivered: '🎉', cancelled: '❌' };
+      return icons[status] || '📋';
+    }
+    
+    function getStatusText(status) {
+      const texts = { pending: 'Pending', confirmed: 'Confirmed', preparing: 'Preparing', out_for_delivery: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled' };
+      return texts[status] || status;
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+    
+    // UI Functions
+    function hideAllResults() {
+      singleOrderResult.style.display = 'none';
+      multipleOrdersDiv.style.display = 'none';
+      noResultDiv.style.display = 'none';
+    }
+    
+    function hideMultipleOrders() {
+      multipleOrdersDiv.style.display = 'none';
+    }
+    
+    function hideNoResult() {
+      noResultDiv.style.display = 'none';
+    }
+    
+    function showLoading(show) {
+      loadingState.style.display = show ? 'flex' : 'none';
+      if (show) {
+        trackBtnText.textContent = 'Searching...';
+        trackSpinner.style.display = 'inline-block';
+        trackBtn.disabled = true;
+      } else {
+        trackBtnText.textContent = '🔍 Track Order';
+        trackSpinner.style.display = 'none';
+        trackBtn.disabled = false;
+      }
+    }
+    
+    function showNoResult() {
+      noResultDiv.style.display = 'block';
+      singleOrderResult.style.display = 'none';
+      multipleOrdersDiv.style.display = 'none';
+      document.getElementById('searchSection').style.display = 'block';
+      recentOrdersSection.style.display = 'block';
+    }
+    
+    function showToast(msg, type) {
+      const toast = document.getElementById('toastMessage');
+      toast.textContent = msg;
+      toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#1a1e2b';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // Refresh function
+    function refreshPage() {
+      if (unsubscribeOrder) {
+        unsubscribeOrder();
+        unsubscribeOrder = null;
+      }
+      if (currentMap) {
+        currentMap.remove();
+        currentMap = null;
+      }
+      trackInput.value = '';
+      hideAllResults();
+      document.getElementById('searchSection').style.display = 'block';
+      recentOrdersSection.style.display = 'block';
+      loadRecentOrders();
+      showToast('Refreshed!', 'success');
+    }
+    
+    // Event Listeners
+    trackBtn.addEventListener('click', trackOrder);
+    trackInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackOrder(); });
+    refreshBtn.addEventListener('click', refreshPage);
+    
+    // Initialize
+    loadRecentOrders();
+    
+    // Check URL for order ID parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderIdParam = urlParams.get('id');
+    if (orderIdParam) {
+      trackInput.value = orderIdParam;
+      setTimeout(() => trackOrder(), 500);
+    }
+    
+    console.log('✅ Tracking system ready!');
+  </script>
 </body>
 </html>
