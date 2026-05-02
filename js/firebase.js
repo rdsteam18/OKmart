@@ -1,4 +1,4 @@
-// ===== OK Mart - Firebase Configuration (FIXED) =====
+// ===== OK Mart - Firebase Configuration (FULLY FIXED) =====
 
 // Firebase config
 var firebaseConfig = {
@@ -36,7 +36,6 @@ try {
 // CLOUD MESSAGING (FCM)
 // ============================================
 
-// VAPID Key - Firebase Console se copy karo
 var VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
 
 var messaging = null;
@@ -49,9 +48,48 @@ if (firebase.messaging && firebase.messaging.isSupported && firebase.messaging.i
   console.warn('⚠️ Messaging not supported');
 }
 
+// ============================================
+// SERVICE WORKER REGISTRATION (FIXED - NO useServiceWorker)
+// ============================================
+
+if ('serviceWorker' in navigator) {
+  // Register the Firebase messaging service worker
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then(function(registration) {
+      console.log('✅ Service Worker registered:', registration.scope);
+      console.log('✅ SW active:', registration.active ? 'YES' : 'NO');
+      
+      // ⚠️ IMPORTANT: Modular SDK mein useServiceWorker() ki ZAROORAT NAHI HAI
+      // Firebase automatically detects and uses the service worker
+      // Yahan sirf registration confirm karna hai
+      
+      return navigator.serviceWorker.ready;
+    })
+    .then(function() {
+      console.log('✅ Service Worker is ready (notifications will work)');
+    })
+    .catch(function(err) {
+      console.error('❌ Service Worker registration failed:', err.message);
+      
+      // Try alternative path
+      navigator.serviceWorker.register('./firebase-messaging-sw.js')
+        .then(function(reg) {
+          console.log('✅ SW registered with alt path:', reg.scope);
+        })
+        .catch(function(err2) {
+          console.error('❌ Alt registration also failed:', err2.message);
+        });
+    });
+} else {
+  console.warn('⚠️ Service Workers not supported');
+}
+
+// ============================================
+// NOTIFICATION PERMISSION & TOKEN
+// ============================================
+
 /**
  * NOTIFICATION PERMISSION MAANGO
- * Ye function call karo jab user "Enable" button click kare
  */
 function requestNotificationPermission(callback) {
   if (!messaging) {
@@ -60,29 +98,25 @@ function requestNotificationPermission(callback) {
     return;
   }
 
-  // Step 1: Browser permission maango
   Notification.requestPermission()
     .then(function(permission) {
       console.log('🔔 Permission:', permission);
       
       if (permission === 'granted') {
-        // Step 2: FCM token lo
-        messaging.getToken({ vapidKey: VAPID_KEY })
-          .then(function(token) {
-            console.log('📨 Token mil gaya:', token);
-            
-            // Token save karo localStorage mein
-            localStorage.setItem('okmart_fcm_token', token);
-            
-            // Callback - success
-            if (callback) callback(token, null);
-          })
-          .catch(function(err) {
-            console.error('❌ Token error:', err);
-            if (callback) callback(null, err.message);
-          });
+        // Wait a bit for service worker to be fully ready
+        setTimeout(function() {
+          messaging.getToken({ vapidKey: VAPID_KEY })
+            .then(function(token) {
+              console.log('📨 Token:', token);
+              localStorage.setItem('okmart_fcm_token', token);
+              if (callback) callback(token, null);
+            })
+            .catch(function(err) {
+              console.error('❌ Token error:', err);
+              if (callback) callback(null, err.message);
+            });
+        }, 1000);
       } else {
-        console.log('❌ User ne deny kiya');
         if (callback) callback(null, 'denied');
       }
     });
@@ -95,77 +129,27 @@ function getStoredFCMToken() {
   return localStorage.getItem('okmart_fcm_token') || null;
 }
 
-// Foreground message handle karo
+// ============================================
+// FOREGROUND MESSAGES
+// ============================================
+
 if (messaging) {
   messaging.onMessage(function(payload) {
-    console.log('📨 Message aaya:', payload);
+    console.log('📨 Foreground message:', payload);
     
     var title = payload.notification ? payload.notification.title : 'OK Mart';
     var body = payload.notification ? payload.notification.body : '';
     
-    // Toast notification dikhao
-    if (window.showToast) {
+    // Agar custom notification function hai
+    if (typeof window.showToast === 'function') {
       window.showToast('🔔 ' + title, 'info');
     }
     
-    // Agar koi custom notification function hai to call karo
-    if (typeof showBrowserNotification === 'function') {
-      showBrowserNotification(title, body);
+    // Browser notification bhi dikhao (optional)
+    if (Notification.permission === 'granted') {
+      new Notification(title, { body: body, icon: '/assets/icons/icon-192x192.png' });
     }
   });
-}
-
-// ============================================
-// SERVICE WORKER REGISTER KARO
-// ============================================
-
-// ============================================
-// SERVICE WORKER REGISTRATION (FIXED)
-// ============================================
-
-if ('serviceWorker' in navigator) {
-  // Unregister old service workers first (cleanup)
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    registrations.forEach(function(registration) {
-      // Only unregister if it's not our current one
-      if (registration.active && registration.active.scriptURL.includes('firebase-messaging-sw.js')) {
-        console.log('✅ Found existing FCM service worker');
-      }
-    });
-  });
-
-  // Register the Firebase messaging service worker
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(function(registration) {
-      console.log('✅ Service Worker registered:', registration.scope);
-      
-      // Wait for service worker to be ready
-      return navigator.serviceWorker.ready;
-    })
-    .then(function(registration) {
-      console.log('✅ Service Worker is ready');
-      
-      // Give messaging the service worker registration
-      if (messaging) {
-        // For compat SDK, use the service worker registration directly
-        messaging.useServiceWorker(registration);
-        console.log('✅ Messaging linked with Service Worker');
-      }
-    })
-    .catch(function(err) {
-      console.error('❌ Service Worker registration failed:', err.message);
-      
-      // Try alternative registration path
-      navigator.serviceWorker.register('./firebase-messaging-sw.js')
-        .then(function(reg) {
-          console.log('✅ SW registered with alt path:', reg.scope);
-        })
-        .catch(function(err2) {
-          console.error('❌ Alt registration also failed:', err2.message);
-        });
-    });
-} else {
-  console.warn('⚠️ Service Workers not supported in this browser');
 }
 
 // ============================================
