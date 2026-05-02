@@ -536,27 +536,93 @@
   init();
   
 })();
+// ============================================
+// NOTIFICATION SETUP (FIXED)
+// ============================================
 
-async function initNotifications() {
-  try {
-    const permission = await Notification.requestPermission();
-
-    if (permission === "granted") {
-      console.log("Notification permission granted");
-
-      const token = await getToken(messaging, {
-        vapidKey: "BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE"
+/**
+ * Notification permission maango
+ * Ye function FirebaseHelper ka use karta hai
+ */
+function initNotifications() {
+  console.log('🔔 Checking notification permission...');
+  console.log('Permission status:', Notification.permission);
+  
+  // Agar permission already granted hai to token lo
+  if (Notification.permission === 'granted') {
+    console.log('✅ Already granted');
+    
+    // FirebaseHelper se token maango
+    if (window.FirebaseHelper && window.FirebaseHelper.requestPermission) {
+      window.FirebaseHelper.requestPermission(function(token, error) {
+        if (token) {
+          console.log('📨 FCM Token:', token);
+          // Token mil gaya - kuch nahi karna
+        } else if (error) {
+          console.log('⚠️ Token error:', error);
+        }
       });
-
-      console.log("FCM Token:", token);
-
     } else {
-      console.log("Permission denied");
+      console.warn('⚠️ FirebaseHelper not found');
     }
+    return;
+  }
+  
+  // Agar permission denied hai
+  if (Notification.permission === 'denied') {
+    console.log('❌ Permission denied by user');
+    return;
+  }
+  
+  // Agar permission 'default' hai (user ne abhi tak decide nahi kiya)
+  // Notification popup automatically show hoga notification-popup.js se
+  console.log('⏳ Waiting for user to allow (popup will show)');
+}
 
-  } catch (err) {
-    console.error("Notification error:", err);
+// ============================================
+// BROWSER NOTIFICATION DIKHANE KA FUNCTION
+// ============================================
+
+/**
+ * Agar website open hai to browser notification dikhao
+ */
+function showBrowserNotification(title, body) {
+  if (Notification.permission === 'granted') {
+    try {
+      var notification = new Notification(title, {
+        body: body,
+        icon: '/assets/icons/icon-192x192.png',
+        badge: '/assets/icons/badge-72x72.png',
+        vibrate: [200, 100, 200]
+      });
+      
+      // Click notification to focus window
+      notification.onclick = function() {
+        window.focus();
+        notification.close();
+      };
+      
+      // Auto close after 5 seconds
+      setTimeout(function() {
+        notification.close();
+      }, 5000);
+      
+    } catch(e) {
+      console.warn('⚠️ Notification error:', e);
+    }
   }
 }
 
-initNotifications();
+// Make it global
+window.showBrowserNotification = showBrowserNotification;
+
+// ============================================
+// INITIALIZATION (EXISTING CODE KE BAAD ADD KARO)
+// ============================================
+
+// Ye aapke existing init function ke andar ya baad mein add karo
+setTimeout(function() {
+  initNotifications();
+}, 1000);
+
+console.log('🔔 Notification module ready');
