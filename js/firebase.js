@@ -119,20 +119,53 @@ if (messaging) {
 // SERVICE WORKER REGISTER KARO
 // ============================================
 
+// ============================================
+// SERVICE WORKER REGISTRATION (FIXED)
+// ============================================
+
 if ('serviceWorker' in navigator) {
+  // Unregister old service workers first (cleanup)
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    registrations.forEach(function(registration) {
+      // Only unregister if it's not our current one
+      if (registration.active && registration.active.scriptURL.includes('firebase-messaging-sw.js')) {
+        console.log('✅ Found existing FCM service worker');
+      }
+    });
+  });
+
+  // Register the Firebase messaging service worker
   navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(function(reg) {
-      console.log('✅ Service Worker registered');
+    .then(function(registration) {
+      console.log('✅ Service Worker registered:', registration.scope);
       
-      // Messaging ko service worker ke saath link karo
-      if (messaging && reg) {
-        // Compat SDK mein useServiceWorker nahi hota
-        // Service worker auto-detect hota hai
+      // Wait for service worker to be ready
+      return navigator.serviceWorker.ready;
+    })
+    .then(function(registration) {
+      console.log('✅ Service Worker is ready');
+      
+      // Give messaging the service worker registration
+      if (messaging) {
+        // For compat SDK, use the service worker registration directly
+        messaging.useServiceWorker(registration);
+        console.log('✅ Messaging linked with Service Worker');
       }
     })
     .catch(function(err) {
-      console.warn('⚠️ SW registration:', err.message);
+      console.error('❌ Service Worker registration failed:', err.message);
+      
+      // Try alternative registration path
+      navigator.serviceWorker.register('./firebase-messaging-sw.js')
+        .then(function(reg) {
+          console.log('✅ SW registered with alt path:', reg.scope);
+        })
+        .catch(function(err2) {
+          console.error('❌ Alt registration also failed:', err2.message);
+        });
     });
+} else {
+  console.warn('⚠️ Service Workers not supported in this browser');
 }
 
 // ============================================
