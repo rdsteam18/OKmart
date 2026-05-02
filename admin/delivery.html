@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Delivery Management | OK Mart Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px;
+      --transition: all .2s ease;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(-20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
+    .admin-layout { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
+      color: white;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .sidebar-logo { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
+    
+    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 24px; color: rgba(255,255,255,.7);
+      text-decoration: none; font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .sidebar-nav a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: rgba(46,204,113,.1);
+      transition: width .3s;
+    }
+    .sidebar-nav a:hover::before { width: 100%; }
+    .sidebar-nav a:hover { color: white; padding-left: 28px; }
+    .sidebar-nav a.active { background: rgba(46,204,113,.15); color: var(--primary); border-left: 3px solid var(--primary); }
+    
+    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
+    .sidebar-footer button {
+      width: 100%; padding: 12px; background: rgba(255,255,255,.08);
+      border: none; color: rgba(255,255,255,.7); border-radius: 10px;
+      cursor: pointer; transition: var(--transition);
+    }
+    .sidebar-footer button:hover { background: rgba(239,68,68,.2); color: var(--danger); transform: translateY(-2px); }
+    
+    .mobile-header {
+      display: none; padding: 12px 16px; background: var(--card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
+      align-items: center; justify-content: space-between;
+    }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+    
+    /* Main Content */
+    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1400px; animation: fadeIn .3s ease; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--text), var(--primary-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .add-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border: none; padding: 12px 24px; border-radius: 30px;
+      font-weight: 600; cursor: pointer; transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(46,204,113,.3);
+    }
+    .add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46,204,113,.4); }
+    
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 24px;
+      background: var(--card); padding: 6px; border-radius: 60px;
+      border: 1px solid var(--border);
+    }
+    .tab-btn {
+      flex: 1; padding: 12px 20px; border: none; background: none;
+      border-radius: 40px; font-weight: 600; font-size: .9rem;
+      cursor: pointer; transition: var(--transition); color: var(--muted);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; box-shadow: var(--shadow-sm);
+    }
+    
+    .tab-content { display: none; animation: fadeIn .3s ease; }
+    .tab-content.active { display: block; }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card); border-radius: var(--radius);
+      padding: 20px; border: 1px solid var(--border);
+      transition: var(--transition); cursor: pointer;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+    .stat-card .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .stat-card .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+    
+    /* Controls Bar */
+    .controls-bar {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+      background: var(--card); padding: 16px; border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .search-input {
+      flex: 2; min-width: 200px; padding: 12px 16px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; transition: var(--transition);
+    }
+    .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    
+    /* Pincode Grid */
+    .pincode-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px; animation: fadeIn .4s ease;
+    }
+    .pincode-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+      transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .pincode-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    
+    .pincode-header {
+      background: linear-gradient(135deg, var(--primary-light), var(--card));
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .pincode-code { font-size: 1.3rem; font-weight: 800; font-family: monospace; color: var(--primary-dark); }
+    
+    .pincode-body { padding: 16px 20px; }
+    .delivery-badge {
+      display: inline-flex; padding: 4px 12px; border-radius: 20px;
+      font-size: .75rem; font-weight: 600; margin: 4px 0;
+    }
+    .delivery-quick { background: #d1fae5; color: #065f46; }
+    .delivery-scheduled { background: #dbeafe; color: #1e40af; }
+    .price-tag { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); }
+    
+    .pincode-footer {
+      padding: 12px 20px; background: var(--bg);
+      display: flex; justify-content: flex-end; gap: 8px;
+      border-top: 1px solid var(--border);
+    }
+    
+    /* Global Settings Card */
+    .settings-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px; border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-weight: 700; margin-bottom: 4px; }
+    .setting-desc { font-size: .75rem; color: var(--muted); }
+    .setting-value { font-weight: 600; color: var(--primary); }
+    
+    .toggle-switch {
+      width: 52px; height: 28px; background: #cbd5e1; border-radius: 14px;
+      position: relative; cursor: pointer; transition: .3s; flex-shrink: 0;
+    }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 24px; height: 24px; background: white; border-radius: 50%;
+      transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-switch.active::after { left: 26px; }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,.5); z-index: 200;
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { display: flex; animation: fadeIn .2s ease; }
+    .modal-card {
+      background: var(--card); border-radius: 24px;
+      width: 95%; max-width: 500px; max-height: 85vh;
+      overflow-y: auto; padding: 28px; animation: slideIn .3s ease;
+    }
+    .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.3rem; font-weight: 700; }
+    .modal-close {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--bg);
+      border: none; cursor: pointer; transition: var(--transition);
+    }
+    .modal-close:hover { transform: rotate(90deg); background: var(--border); }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 12px; background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: 12px;
+      font-size: .9rem; transition: var(--transition);
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+    .form-check { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+    .save-btn {
+      width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; border: none; border-radius: 12px; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
+    }
+    .save-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(46,204,113,.3); }
+    
+    .bulk-actions { display: flex; gap: 8px; margin-left: auto; }
+    .bulk-btn {
+      padding: 10px 16px; border-radius: 10px; font-weight: 500;
+      cursor: pointer; transition: var(--transition); border: none;
+    }
+    .bulk-btn-success { background: #d1fae5; color: var(--success); }
+    .bulk-btn-danger { background: #fee2e2; color: var(--danger); }
+    .bulk-btn:hover { transform: translateY(-2px); }
+    
+    .select-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+    .no-data { text-align: center; padding: 60px; color: var(--muted); }
+    
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: white; padding: 12px 24px;
+      border-radius: 40px; font-weight: 500; z-index: 300;
+      opacity: 0; transition: all .3s ease;
+    }
+    .toast.show { opacity: 1; bottom: 50px; }
+    .toast.success { background: #10b981; }
+    .toast.error { background: var(--danger); }
+    
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); display: flex; }
+      .main-content { margin-left: 0; padding: 16px; }
+      .mobile-header { display: flex; }
+      .form-row { flex-direction: column; }
+      .pincode-grid { grid-template-columns: 1fr; }
+      .bulk-actions { margin-left: 0; width: 100%; justify-content: center; }
+    }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="admin-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo">🛒 OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+        <a href="offers.html">🏷️ Offers</a>
+        <a href="delivery.html" class="active">🚚 Delivery</a>
+        <a href="settings.html">⚙️ Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button onclick="adminLogout()">🚪 Logout</button>
+        <button onclick="location.href='/'" style="margin-top:8px;">🏠 View Store</button>
+      </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">🚚 Delivery</span>
+      <button class="add-btn" onclick="openPincodeModal()" style="padding:8px 16px;">➕ Add</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>🚚 Delivery Management</h1>
+        <button class="add-btn" onclick="openPincodeModal()">➕ Add Pincode</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="pincodes">📍 Pincode Management</button>
+        <button class="tab-btn" data-tab="settings">⚙️ Delivery Settings</button>
+        <button class="tab-btn" data-tab="tracking">🛵 Live Orders</button>
+      </div>
+
+      <!-- ==================== PINCODE TAB ==================== -->
+      <div class="tab-content active" id="tab-pincodes">
+        
+        <!-- Stats -->
+        <div class="stats-grid" id="pincodeStats">
+          <div class="stat-card"><div class="stat-value" id="totalPincodes">0</div><div class="stat-label">Serviceable Pincodes</div></div>
+          <div class="stat-card"><div class="stat-value" id="quickPincodes">0</div><div class="stat-label">Quick Delivery</div></div>
+          <div class="stat-card"><div class="stat-value" id="scheduledPincodes">0</div><div class="stat-label">Scheduled Only</div></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+          <input type="text" class="search-input" id="pincodeSearch" placeholder="🔍 Search pincode...">
+          <select class="filter-select" id="deliveryTypeFilter">
+            <option value="">All Types</option>
+            <option value="quick">Quick Delivery</option>
+            <option value="scheduled">Scheduled Only</option>
+          </select>
+          <div class="bulk-actions" id="bulkActions" style="display:none;">
+            <button class="bulk-btn bulk-btn-success" onclick="bulkDeletePincodes()">🗑️ Delete Selected</button>
+          </div>
+        </div>
+
+        <!-- Pincodes Grid -->
+        <div class="pincode-grid" id="pincodesGrid">
+          <div class="no-data">Loading pincodes...</div>
+        </div>
+      </div>
+
+      <!-- ==================== SETTINGS TAB ==================== -->
+      <div class="tab-content" id="tab-settings">
+        <div class="settings-card">
+          <div class="setting-row">
+            <div><div class="setting-label">🚚 Delivery Service</div><div class="setting-desc">Enable/disable delivery service globally</div></div>
+            <div class="toggle-switch" id="deliveryEnabledToggle" onclick="toggleDeliverySetting('deliveryEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">⚡ Quick Delivery</div><div class="setting-desc">Enable 10-minute delivery option</div></div>
+            <div class="toggle-switch" id="quickDeliveryToggle" onclick="toggleDeliverySetting('quickDeliveryEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">📅 Scheduled Delivery</div><div class="setting-desc">Enable scheduled delivery slots</div></div>
+            <div class="toggle-switch" id="scheduledDeliveryToggle" onclick="toggleDeliverySetting('scheduledDeliveryEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">💰 Free Delivery Threshold</div><div class="setting-desc">Order above this amount gets free delivery</div></div>
+            <div><input type="number" id="freeDeliveryThreshold" style="width:120px;padding:8px;border-radius:8px;border:1px solid var(--border);" value="499" onchange="updateFreeDeliveryThreshold()"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🚀 Base Delivery Charge</div><div class="setting-desc">Default delivery charge (if not set per pincode)</div></div>
+            <div><input type="number" id="baseDeliveryCharge" style="width:100px;padding:8px;border-radius:8px;border:1px solid var(--border);" value="39" onchange="updateBaseDeliveryCharge()"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🕐 Quick Delivery Time (mins)</div><div class="setting-desc">Estimated delivery time for quick delivery</div></div>
+            <div><input type="number" id="quickDeliveryTime" style="width:100px;padding:8px;border-radius:8px;border:1px solid var(--border);" value="10" onchange="updateQuickDeliveryTime()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== LIVE TRACKING TAB ==================== -->
+      <div class="tab-content" id="tab-tracking">
+        <div class="stats-grid" id="trackingStats">
+          <div class="stat-card"><div class="stat-value" id="activeDeliveries">0</div><div class="stat-label">Active Deliveries</div></div>
+          <div class="stat-card"><div class="stat-value" id="outForDelivery">0</div><div class="stat-label">Out for Delivery</div></div>
+          <div class="stat-card"><div class="stat-value" id="pendingPickup">0</div><div class="stat-label">Pending Pickup</div></div>
+        </div>
+        
+        <div class="controls-bar">
+          <input type="text" class="search-input" id="deliverySearch" placeholder="🔍 Search by order ID, customer...">
+          <select class="filter-select" id="deliveryStatusFilter">
+            <option value="">All Status</option>
+            <option value="preparing">Preparing</option>
+            <option value="out_for_delivery">Out for Delivery</option>
+            <option value="delivered">Delivered</option>
+          </select>
+        </div>
+        
+        <div class="pincode-grid" id="liveOrdersGrid">
+          <div class="no-data">Loading live orders...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pincode Modal -->
+  <div class="modal-overlay" id="pincodeModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="pincodeModalTitle">Add Serviceable Pincode</h2>
+        <button class="modal-close" onclick="closePincodeModal()">✕</button>
+      </div>
+      <form id="pincodeForm">
+        <input type="hidden" id="pincodeDocId">
+        <div class="form-group"><label>Pincode *</label><input type="text" id="pincode" required placeholder="e.g., 380001" maxlength="6" pattern="[0-9]{6}"></div>
+        <div class="form-group"><label>City</label><input type="text" id="city" placeholder="Ahmedabad"></div>
+        <div class="form-group"><label>Area</label><input type="text" id="area" placeholder="Satellite, CG Road"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Delivery Type *</label><select id="deliveryType"><option value="quick">Quick Delivery (10-15 mins)</option><option value="scheduled">Scheduled Only (2-4 hours)</option><option value="both">Both Available</option></select></div>
+          <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="deliveryCharge" value="39" placeholder="39"></div>
+        </div>
+        <div class="form-group"><label>Free Delivery Above (₹)</label><input type="number" id="freeAbove" placeholder="499" value="499"></div>
+        <div class="form-check"><input type="checkbox" id="isActive" checked><label>✅ Active (serviceable)</label></div>
+        <button type="submit" class="save-btn">💾 Save Pincode</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-card" style="text-align:center;max-width:400px;">
+      <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
+      <h3>Delete Pincode?</h3>
+      <p id="deleteMessage" style="margin:12px 0;color:var(--muted);">This will remove delivery service for this pincode.</p>
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button class="bulk-btn" style="flex:1;" onclick="closeDeleteModal()">Cancel</button>
+        <button class="bulk-btn bulk-btn-danger" style="flex:1;" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="../js/firebase.js"></script>
+  <script>
+    // ===== COMPLETE DELIVERY MANAGEMENT SYSTEM =====
+    
+    let allPincodes = [];
+    let allOrders = [];
+    let deliverySettings = {};
+    let selectedPincodes = new Set();
+    let currentDeleteId = null;
+    let editingPincodeId = null;
+    
+    // ========== TAB SWITCHING ==========
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      
+      if (tabId === 'tracking') loadLiveOrders();
+    }
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    
+    // ========== LOAD DATA ==========
+    if (db && db.collection) {
+      // Load Pincodes
+      db.collection('pincodes').onSnapshot(snapshot => {
+        allPincodes = [];
+        snapshot.forEach(doc => {
+          allPincodes.push({ id: doc.id, ...doc.data() });
+        });
+        updatePincodeStats();
+        renderPincodes();
+      });
+      
+      // Load Orders for tracking
+      db.collection('orders').where('status', 'in', ['preparing', 'out_for_delivery', 'delivered']).onSnapshot(snapshot => {
+        allOrders = [];
+        snapshot.forEach(doc => {
+          allOrders.push({ id: doc.id, ...doc.data() });
+        });
+        updateTrackingStats();
+        if (document.querySelector('.tab-btn[data-tab="tracking"]').classList.contains('active')) {
+          renderLiveOrders();
+        }
+      });
+      
+      // Load Delivery Settings
+      db.collection('settings').doc('delivery').onSnapshot(doc => {
+        if (doc.exists) {
+          deliverySettings = doc.data();
+          updateSettingsUI();
+        } else {
+          // Default settings
+          deliverySettings = {
+            deliveryEnabled: true,
+            quickDeliveryEnabled: true,
+            scheduledDeliveryEnabled: true,
+            freeDeliveryThreshold: 499,
+            baseDeliveryCharge: 39,
+            quickDeliveryTime: 10
+          };
+          db.collection('settings').doc('delivery').set(deliverySettings);
+        }
+      });
+    }
+    
+    // ========== PINCODE FUNCTIONS ==========
+    function updatePincodeStats() {
+      const total = allPincodes.filter(p => p.active !== false).length;
+      const quick = allPincodes.filter(p => (p.deliveryType === 'quick' || p.deliveryType === 'both') && p.active !== false).length;
+      const scheduled = allPincodes.filter(p => (p.deliveryType === 'scheduled' || p.deliveryType === 'both') && p.active !== false).length;
+      
+      document.getElementById('totalPincodes').textContent = total;
+      document.getElementById('quickPincodes').textContent = quick;
+      document.getElementById('scheduledPincodes').textContent = scheduled;
+    }
+    
+    function renderPincodes() {
+      const search = document.getElementById('pincodeSearch')?.value.toLowerCase() || '';
+      const type = document.getElementById('deliveryTypeFilter')?.value || '';
+      
+      let filtered = allPincodes.filter(p => {
+        if (search && !p.pincode?.includes(search) && !(p.city || '').toLowerCase().includes(search)) return false;
+        if (type === 'quick' && p.deliveryType === 'scheduled') return false;
+        if (type === 'scheduled' && p.deliveryType === 'quick') return false;
+        return true;
+      });
+      
+      const showBulk = selectedPincodes.size > 0;
+      document.getElementById('bulkActions').style.display = showBulk ? 'flex' : 'none';
+      
+      const grid = document.getElementById('pincodesGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="no-data">📍 No pincodes found. Click "Add Pincode" to add serviceable areas.</div>';
+        return;
+      }
+      
+      grid.innerHTML = filtered.map(p => {
+        const isActive = p.active !== false;
+        const deliveryTypeDisplay = p.deliveryType === 'quick' ? '⚡ Quick (10-15 mins)' : (p.deliveryType === 'scheduled' ? '📅 Scheduled (2-4 hrs)' : '🚀 Both Available');
+        const deliveryTypeClass = p.deliveryType === 'quick' ? 'delivery-quick' : 'delivery-scheduled';
+        
+        return `
+          <div class="pincode-card">
+            <div class="pincode-header">
+              <div class="pincode-code">📍 ${p.pincode}</div>
+              <div style="font-size:.8rem;color:var(--muted);">${p.city || ''} ${p.area ? `- ${p.area}` : ''}</div>
+            </div>
+            <div class="pincode-body">
+              <div><span class="delivery-badge ${deliveryTypeClass}">${deliveryTypeDisplay}</span></div>
+              <div style="margin-top:12px;">
+                <span class="price-tag">₹${p.deliveryCharge || 39}</span> delivery charge
+                ${p.freeAbove ? `<span style="margin-left:12px;">Free above ₹${p.freeAbove}</span>` : ''}
+              </div>
+              <div style="margin-top:8px;"><span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? 'Active' : 'Inactive'}</span></div>
+            </div>
+            <div class="pincode-footer">
+              <button class="action-btn edit" onclick="editPincode('${p.id}')">✏️ Edit</button>
+              <button class="action-btn delete" onclick="openDeleteModal('${p.id}')">🗑️ Delete</button>
+              <input type="checkbox" class="select-checkbox" data-id="${p.id}" ${selectedPincodes.has(p.id) ? 'checked' : ''} onchange="togglePincodeSelect('${p.id}', this.checked)">
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function togglePincodeSelect(id, checked) {
+      if (checked) selectedPincodes.add(id);
+      else selectedPincodes.delete(id);
+      renderPincodes();
+    }
+    
+    async function bulkDeletePincodes() {
+      if (confirm(`Delete ${selectedPincodes.size} pincodes?`)) {
+        for (let id of selectedPincodes) {
+          await db.collection('pincodes').doc(id).delete();
+        }
+        showToast(`🗑️ ${selectedPincodes.size} pincodes deleted`, 'success');
+        selectedPincodes.clear();
+      }
+    }
+    
+    function openPincodeModal(pincode = null) {
+      editingPincodeId = pincode?.id || null;
+      document.getElementById('pincodeModalTitle').textContent = pincode ? 'Edit Pincode' : 'Add Serviceable Pincode';
+      document.getElementById('pincodeDocId').value = pincode?.id || '';
+      document.getElementById('pincode').value = pincode?.pincode || '';
+      document.getElementById('city').value = pincode?.city || '';
+      document.getElementById('area').value = pincode?.area || '';
+      document.getElementById('deliveryType').value = pincode?.deliveryType || 'quick';
+      document.getElementById('deliveryCharge').value = pincode?.deliveryCharge || deliverySettings.baseDeliveryCharge || 39;
+      document.getElementById('freeAbove').value = pincode?.freeAbove || deliverySettings.freeDeliveryThreshold || 499;
+      document.getElementById('isActive').checked = pincode?.active !== false;
+      document.getElementById('pincodeModal').classList.add('active');
+    }
+    
+    function editPincode(id) {
+      const pincode = allPincodes.find(p => p.id === id);
+      if (pincode) openPincodeModal(pincode);
+    }
+    
+    function closePincodeModal() { document.getElementById('pincodeModal').classList.remove('active'); }
+    
+    document.getElementById('pincodeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const data = {
+        pincode: document.getElementById('pincode').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        area: document.getElementById('area').value.trim(),
+        deliveryType: document.getElementById('deliveryType').value,
+        deliveryCharge: Number(document.getElementById('deliveryCharge').value) || 39,
+        freeAbove: Number(document.getElementById('freeAbove').value) || null,
+        active: document.getElementById('isActive').checked,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (!data.pincode || data.pincode.length !== 6) {
+        showToast('Please enter a valid 6-digit pincode', 'error');
+        return;
+      }
+      
+      try {
+        if (editingPincodeId) {
+          await db.collection('pincodes').doc(editingPincodeId).update(data);
+          showToast('✅ Pincode updated!', 'success');
+        } else {
+          data.createdAt = new Date().toISOString();
+          await db.collection('pincodes').add(data);
+          showToast('✅ Pincode added!', 'success');
+        }
+        closePincodeModal();
+      } catch (err) { showToast('Error saving pincode', 'error'); }
+    });
+    
+    // ========== DELIVERY SETTINGS ==========
+    function updateSettingsUI() {
+      const toggles = ['deliveryEnabled', 'quickDeliveryEnabled', 'scheduledDeliveryEnabled'];
+      toggles.forEach(t => {
+        const el = document.getElementById(`${t}Toggle`);
+        if (el && deliverySettings[t] !== undefined) {
+          if (deliverySettings[t]) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+      
+      document.getElementById('freeDeliveryThreshold').value = deliverySettings.freeDeliveryThreshold || 499;
+      document.getElementById('baseDeliveryCharge').value = deliverySettings.baseDeliveryCharge || 39;
+      document.getElementById('quickDeliveryTime').value = deliverySettings.quickDeliveryTime || 10;
+    }
+    
+    window.toggleDeliverySetting = async function(setting) {
+      const newValue = !deliverySettings[setting];
+      await db.collection('settings').doc('delivery').update({ [setting]: newValue });
+      deliverySettings[setting] = newValue;
+      updateSettingsUI();
+      showToast(`${setting} ${newValue ? 'enabled' : 'disabled'}`, 'success');
+    };
+    
+    async function updateFreeDeliveryThreshold() {
+      const value = Number(document.getElementById('freeDeliveryThreshold').value);
+      await db.collection('settings').doc('delivery').update({ freeDeliveryThreshold: value });
+      deliverySettings.freeDeliveryThreshold = value;
+      showToast('Free delivery threshold updated', 'success');
+    }
+    
+    async function updateBaseDeliveryCharge() {
+      const value = Number(document.getElementById('baseDeliveryCharge').value);
+      await db.collection('settings').doc('delivery').update({ baseDeliveryCharge: value });
+      deliverySettings.baseDeliveryCharge = value;
+      showToast('Base delivery charge updated', 'success');
+    }
+    
+    async function updateQuickDeliveryTime() {
+      const value = Number(document.getElementById('quickDeliveryTime').value);
+      await db.collection('settings').doc('delivery').update({ quickDeliveryTime: value });
+      deliverySettings.quickDeliveryTime = value;
+      showToast('Quick delivery time updated', 'success');
+    }
+    
+    // ========== TRACKING FUNCTIONS ==========
+    function updateTrackingStats() {
+      const active = allOrders.filter(o => o.status === 'preparing' || o.status === 'out_for_delivery').length;
+      const outForDelivery = allOrders.filter(o => o.status === 'out_for_delivery').length;
+      const pendingPickup = allOrders.filter(o => o.status === 'preparing').length;
+      
+      document.getElementById('activeDeliveries').textContent = active;
+      document.getElementById('outForDelivery').textContent = outForDelivery;
+      document.getElementById('pendingPickup').textContent = pendingPickup;
+    }
+    
+    function loadLiveOrders() {
+      renderLiveOrders();
+    }
+    
+    function renderLiveOrders() {
+      const search = document.getElementById('deliverySearch')?.value.toLowerCase() || '';
+      const status = document.getElementById('deliveryStatusFilter')?.value || '';
+      
+      let filtered = allOrders.filter(o => {
+        if (search && !o.id?.toLowerCase().includes(search) && !(o.customerName || '').toLowerCase().includes(search)) return false;
+        if (status && o.status !== status) return false;
+        return true;
+      });
+      
+      const grid = document.getElementById('liveOrdersGrid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="no-data">🛵 No active deliveries at the moment</div>';
+        return;
+      }
+      
+      grid.innerHTML = filtered.map(o => {
+        const statusIcon = o.status === 'preparing' ? '🍳' : (o.status === 'out_for_delivery' ? '🛵' : '✅');
+        const statusText = o.status === 'preparing' ? 'Preparing' : (o.status === 'out_for_delivery' ? 'Out for Delivery' : 'Delivered');
+        
+        return `
+          <div class="pincode-card">
+            <div class="pincode-header">
+              <div class="pincode-code">${statusIcon} #${o.orderId || o.id.slice(0, 8).toUpperCase()}</div>
+              <div style="font-size:.8rem;color:var(--muted);">${new Date(o.orderDate?.toDate()).toLocaleString() || 'Just now'}</div>
+            </div>
+            <div class="pincode-body">
+              <div><strong>${o.customerName || o.name}</strong></div>
+              <div style="font-size:.85rem;color:var(--muted);">📱 ${o.phone || o.customerPhone}</div>
+              <div style="font-size:.85rem;color:var(--muted);">🏠 ${o.address || o.customerAddress}</div>
+              <div style="margin-top:8px;"><span class="delivery-badge ${o.status === 'out_for_delivery' ? 'delivery-quick' : 'delivery-scheduled'}">${statusText}</span></div>
+              <div style="margin-top:8px;">💰 Total: ₹${o.total || 0}</div>
+            </div>
+            <div class="pincode-footer">
+              <button class="action-btn edit" onclick="window.location.href='order-detail.html?id=${o.id}'">📄 View Details</button>
+              ${o.status === 'out_for_delivery' ? '<button class="action-btn" style="background:var(--success);color:white;" onclick="markDelivered(\'' + o.id + '\')">✅ Mark Delivered</button>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    window.markDelivered = async function(orderId) {
+      if (confirm('Mark this order as delivered?')) {
+        await db.collection('orders').doc(orderId).update({ status: 'delivered', deliveredAt: new Date().toISOString() });
+        showToast('✅ Order marked as delivered', 'success');
+        loadLiveOrders();
+      }
+    };
+    
+    // ========== DELETE FUNCTIONS ==========
+    function openDeleteModal(id) {
+      currentDeleteId = id;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('active'); }
+    
+    window.confirmDelete = async function() {
+      if (currentDeleteId) {
+        await db.collection('pincodes').doc(currentDeleteId).delete();
+        showToast('🗑️ Pincode deleted', 'success');
+        currentDeleteId = null;
+      }
+      closeDeleteModal();
+    };
+    
+    // ========== COMMON ==========
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    window.adminLogout = function() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    };
+    
+    // Event listeners
+    document.getElementById('pincodeSearch')?.addEventListener('input', renderPincodes);
+    document.getElementById('deliveryTypeFilter')?.addEventListener('change', renderPincodes);
+    document.getElementById('deliverySearch')?.addEventListener('input', renderLiveOrders);
+    document.getElementById('deliveryStatusFilter')?.addEventListener('change', renderLiveOrders);
+    
+    // Close modals on overlay click
+    document.getElementById('pincodeModal').addEventListener('click', e => { if (e.target === document.getElementById('pincodeModal')) closePincodeModal(); });
+    document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === document.getElementById('deleteModal')) closeDeleteModal(); });
+    
+    console.log('✅ Delivery management system ready!');
+  </script>
+</body>
+</html>
