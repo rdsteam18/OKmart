@@ -21,3 +21,8 @@ db.enablePersistence({ synchronizeTabs: true })
   .catch(err => console.warn('Persistence error:', err.code));
 
 console.log('✅ Firebase OK Mart ready');
+
+
+import { getMessaging, getToken } from "firebase/messaging";
+
+const messaging = getMessaging(app);
