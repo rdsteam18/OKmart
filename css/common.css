@@ -1,5 +1,5 @@
-/* ===== OK MART - COMMON.CSS ===== */
-/* Global styles - FIXED FOR SCROLLING */
+/* ===== OK MART - COMPLETE COMMON CSS ===== */
+/* Global styles with UI/UX improvements */
 
 * {
   margin: 0;
@@ -21,11 +21,15 @@
   --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
   --radius-card: 14px;
   --radius-btn: 30px;
+  --transition-fast: all 0.15s ease;
+  --transition-normal: all 0.25s ease;
+  --transition-slow: all 0.4s ease;
 }
 
 html {
   width: 100%;
   height: 100%;
+  scroll-behavior: smooth;
 }
 
 /* CRITICAL: Body must allow scrolling */
@@ -38,7 +42,6 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Allow scrolling */
   overflow-y: visible !important;
   overflow-x: hidden !important;
   position: relative;
@@ -54,6 +57,7 @@ a {
   text-decoration: none;
   color: inherit;
   -webkit-tap-highlight-color: transparent;
+  transition: var(--transition-fast);
 }
 
 button {
@@ -61,22 +65,89 @@ button {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  transition: var(--transition-fast);
+  border: none;
+  background: none;
+}
+
+button:active {
+  transform: scale(0.96);
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 input, textarea, select {
   font-family: inherit;
   font-size: 1rem;
   -webkit-tap-highlight-color: transparent;
+  transition: var(--transition-fast);
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* Page Transition */
+.page-transition {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
 
 .spinner {
   width: 40px;
@@ -87,8 +158,13 @@ input:focus, textarea:focus, select:focus {
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 
 .loading-state {
@@ -105,31 +181,74 @@ input:focus, textarea:focus, select:focus {
   font-size: 0.9rem;
 }
 
-.skeleton-card {
-  width: 140px;
-  height: 180px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: var(--radius-card);
-  flex-shrink: 0;
+  border-radius: 8px;
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+.skeleton-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  padding: 12px;
+  border: 1px solid var(--border-light);
+}
+
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-text {
+  height: 16px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.skeleton-text-sm {
+  height: 12px;
+  width: 60%;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.skeleton-button {
+  height: 40px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 30px;
+  margin-top: 12px;
 }
 
 .loading-placeholder {
   display: flex;
   gap: 12px;
   padding: 10px 0;
+  overflow-x: auto;
 }
+
+/* ============================================
+   EMPTY STATES
+   ============================================ */
 
 .empty-state {
   text-align: center;
   padding: 50px 20px;
   color: var(--text-muted);
+  animation: fadeIn 0.3s ease;
 }
 
 .empty-state-icon {
@@ -150,6 +269,19 @@ input:focus, textarea:focus, select:focus {
   margin-bottom: 20px;
 }
 
+.empty-state .btn-primary {
+  display: inline-block;
+  padding: 10px 24px;
+  background: var(--primary);
+  color: white;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
 .toast-message {
   position: fixed;
   bottom: 100px;
@@ -162,11 +294,14 @@ input:focus, textarea:focus, select:focus {
   font-weight: 500;
   font-size: 0.9rem;
   opacity: 0;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   z-index: 1000;
   white-space: nowrap;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   pointer-events: none;
+  max-width: 90%;
+  white-space: normal;
+  text-align: center;
 }
 
 .toast-message.show {
@@ -175,8 +310,20 @@ input:focus, textarea:focus, select:focus {
 }
 
 .toast-message.success {
-  background: var(--primary-dark);
+  background: #10b981;
 }
+
+.toast-message.error {
+  background: #ef4444;
+}
+
+.toast-message.warning {
+  background: #f59e0b;
+}
+
+/* ============================================
+   STICKY CART BAR
+   ============================================ */
 
 .sticky-cart-bar {
   position: fixed;
@@ -188,7 +335,7 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   z-index: 200;
   transform: translateY(100%);
-  transition: transform 0.3s;
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   border-top: 2px solid var(--primary);
   max-width: 480px;
   margin: 0 auto;
@@ -202,18 +349,21 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .sticky-cart-info {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cart-item-count-small {
   background: var(--primary);
   color: white;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 40px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -222,17 +372,28 @@ input:focus, textarea:focus, select:focus {
 .cart-total-small {
   font-weight: 700;
   font-size: 1.1rem;
+  color: var(--primary-dark);
 }
 
 .view-cart-btn {
   background: var(--primary);
   color: white;
   text-decoration: none;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border-radius: var(--radius-btn);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  transition: var(--transition-fast);
 }
+
+.view-cart-btn:active {
+  transform: scale(0.96);
+  background: var(--primary-dark);
+}
+
+/* ============================================
+   BOTTOM NAVIGATION
+   ============================================ */
 
 .bottom-nav {
   position: fixed;
@@ -247,6 +408,8 @@ input:focus, textarea:focus, select:focus {
   z-index: 90;
   max-width: 480px;
   margin: 0 auto;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .nav-item {
@@ -256,13 +419,15 @@ input:focus, textarea:focus, select:focus {
   text-decoration: none;
   color: var(--text-muted);
   font-size: 0.65rem;
-  gap: 2px;
+  gap: 4px;
   padding: 6px 14px;
   border-radius: 40px;
+  transition: var(--transition-fast);
 }
 
 .nav-icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  transition: var(--transition-fast);
 }
 
 .nav-item.active {
@@ -270,6 +435,14 @@ input:focus, textarea:focus, select:focus {
   font-weight: 600;
   background: var(--primary-light);
 }
+
+.nav-item:active {
+  transform: scale(0.92);
+}
+
+/* ============================================
+   FLOATING ACTION BUTTONS
+   ============================================ */
 
 .fab-whatsapp {
   position: fixed;
@@ -285,10 +458,16 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 8px 20px rgba(37, 211, 102, 0.35);
   z-index: 150;
   text-decoration: none;
+  transition: var(--transition-fast);
+  animation: bounce 2s ease infinite;
 }
 
 .fab-whatsapp span {
   font-size: 26px;
+}
+
+.fab-whatsapp:active {
+  transform: scale(0.92);
 }
 
 .fab-call {
@@ -306,11 +485,120 @@ input:focus, textarea:focus, select:focus {
   z-index: 150;
   text-decoration: none;
   border: 1px solid var(--border-light);
+  transition: var(--transition-fast);
 }
 
 .fab-call span {
   font-size: 20px;
+  color: var(--primary);
 }
+
+.fab-call:active {
+  transform: scale(0.92);
+}
+
+/* Back to Top Button */
+.back-to-top {
+  position: fixed;
+  bottom: 90px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  background: var(--card-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  z-index: 150;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  transition: var(--transition-fast);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+}
+
+.back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:active {
+  transform: scale(0.92);
+}
+
+.back-to-top span {
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
+/* ============================================
+   PULL TO REFRESH
+   ============================================ */
+
+.pull-to-refresh {
+  position: fixed;
+  top: -60px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-light);
+  transition: top 0.3s;
+  z-index: 1001;
+  font-size: 0.85rem;
+  color: var(--primary-dark);
+  gap: 10px;
+}
+
+.pull-to-refresh.active {
+  top: 0;
+}
+
+.pull-to-refresh .spinner-small {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ============================================
+   OFFLINE INDICATOR
+   ============================================ */
+
+.offline-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ef4444;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transform: translateY(-100%);
+  transition: transform 0.3s;
+  z-index: 1002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.offline-indicator.show {
+  transform: translateY(0);
+}
+
+/* ============================================
+   PRODUCT CARD
+   ============================================ */
 
 .product-card {
   background: var(--card-bg);
@@ -320,6 +608,16 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid var(--border-light);
   cursor: pointer;
   position: relative;
+  transition: var(--transition-normal);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.product-card:active {
+  transform: scale(0.98);
 }
 
 .product-image {
@@ -329,6 +627,11 @@ input:focus, textarea:focus, select:focus {
   border-radius: 12px;
   margin-bottom: 10px;
   background: #f1f5f9;
+  transition: var(--transition-fast);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.02);
 }
 
 .product-name {
@@ -390,6 +693,13 @@ input:focus, textarea:focus, select:focus {
   font-size: 0.8rem;
   text-transform: uppercase;
   cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.add-btn:active, .add-to-cart-btn:active {
+  transform: scale(0.96);
+  background: var(--primary);
+  color: white;
 }
 
 .product-badge {
@@ -418,9 +728,97 @@ input:focus, textarea:focus, select:focus {
   z-index: 2;
 }
 
-.hidden {
-  display: none !important;
+/* Wishlist Button */
+.wishlist-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+  cursor: pointer;
+  transition: var(--transition-fast);
 }
+
+.wishlist-btn:active {
+  transform: scale(0.88);
+}
+
+/* Share Button */
+.share-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Wishlist Header Button */
+.wishlist-header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.wishlist-header-btn:active {
+  background: #fee2e2;
+  transform: scale(0.92);
+}
+
+/* ============================================
+   RIPPLE EFFECT
+   ============================================ */
+
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 
 @media (min-width: 500px) {
   body {
@@ -440,25 +838,111 @@ input:focus, textarea:focus, select:focus {
   .sticky-cart-bar.visible {
     transform: translateX(-50%) translateY(0);
   }
+  
+  .fab-whatsapp {
+    right: calc(50% - 230px);
+  }
+  
+  .fab-call {
+    right: calc(50% - 230px);
+  }
+  
+  .back-to-top {
+    left: calc(50% - 230px);
+  }
 }
 
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
 
+.hidden {
+  display: none !important;
+}
 
-.wishlist-header-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--bg-light);
-  border: 1px solid var(--border-light);
-  font-size: 1.2rem;
-  cursor: pointer;
+.visible {
+  display: block !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+.mt-5 { margin-top: 20px; }
+
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-5 { margin-bottom: 20px; }
+
+.p-1 { padding: 4px; }
+.p-2 { padding: 8px; }
+.p-3 { padding: 12px; }
+.p-4 { padding: 16px; }
+.p-5 { padding: 20px; }
+
+.flex {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
 }
 
-.wishlist-header-btn:active {
-  background: #fee2e2;
-  transform: scale(0.92);
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+/* ============================================
+   SCROLLBAR (Desktop)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--border-light);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-dark);
 }
