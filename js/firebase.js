@@ -59,7 +59,7 @@ if (firebase.messaging && typeof firebase.messaging.isSupported === 'function') 
 }
 
 // VAPID Key - Get from Firebase Console
-var VAPID_KEY = 'BPLxX9qGdT8xZ2WqGvY5kLmNpR3sT7vX1yA6bD9eF0hJ4cK8oQ2rS5uW8zA1bC3dE6fG9hI0jL2mN4pR6tV8xY';
+var VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
 
 /**
  * Request notification permission and get FCM token
