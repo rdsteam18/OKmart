@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Coupon Management | OK Mart Admin</title>
+  <title>Offers & Banners | OK Mart Admin</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
   
@@ -43,19 +43,14 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    
     @keyframes slideIn {
       from { transform: translateX(-20px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
     
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
     
     .admin-layout { display: flex; min-height: 100vh; }
@@ -82,13 +77,7 @@
     }
     
     .sidebar-logo { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: .65rem;
-      font-weight: 600;
-    }
+    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
     
     .sidebar-nav { flex: 1; padding: 20px 0; }
     .sidebar-nav a {
@@ -111,11 +100,7 @@
     }
     .sidebar-nav a:hover::before { width: 100%; }
     .sidebar-nav a:hover { color: white; padding-left: 28px; }
-    .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
+    .sidebar-nav a.active { background: rgba(46,204,113,.15); color: var(--primary); border-left: 3px solid var(--primary); }
     
     .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
     .sidebar-footer button {
@@ -130,10 +115,7 @@
       border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50;
       align-items: center; justify-content: space-between;
     }
-    .menu-toggle {
-      background: var(--bg); border: 1px solid var(--border);
-      padding: 8px 14px; border-radius: 8px; cursor: pointer;
-    }
+    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
     
     /* Main Content */
     .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1400px; animation: fadeIn .3s ease; }
@@ -147,22 +129,39 @@
       box-shadow: 0 4px 12px rgba(46,204,113,.3);
     }
     .add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46,204,113,.4); }
-    .add-btn:active { transform: translateY(0); }
+    
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 24px;
+      background: var(--card); padding: 6px; border-radius: 60px;
+      border: 1px solid var(--border);
+    }
+    .tab-btn {
+      flex: 1; padding: 12px 20px; border: none; background: none;
+      border-radius: 40px; font-weight: 600; font-size: .9rem;
+      cursor: pointer; transition: var(--transition); color: var(--muted);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white; box-shadow: var(--shadow-sm);
+    }
+    
+    .tab-content { display: none; animation: fadeIn .3s ease; }
+    .tab-content.active { display: block; }
     
     /* Stats Grid */
     .stats-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px; margin-bottom: 24px;
     }
     .stat-card {
       background: var(--card); border-radius: var(--radius);
-      padding: 20px; border: 1px solid var(--border);
-      transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
+      padding: 16px 20px; border: 1px solid var(--border);
+      transition: var(--transition); cursor: pointer;
     }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
-    .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
-    .stat-card .stat-label { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+    .stat-card .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .stat-card .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
     
     /* Controls Bar */
     .controls-bar {
@@ -176,51 +175,31 @@
       border-radius: 12px; transition: var(--transition);
     }
     .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-    
     .filter-select {
       padding: 12px 16px; background: var(--bg);
-      border: 1.5px solid var(--border); border-radius: 12px;
-      cursor: pointer;
+      border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer;
     }
-    
-    .bulk-actions {
-      display: flex; gap: 8px; margin-left: auto;
-      animation: fadeIn .3s ease;
-    }
-    .bulk-btn {
-      padding: 10px 16px; border-radius: 10px; font-weight: 500;
-      cursor: pointer; transition: var(--transition); border: none;
-    }
-    .bulk-btn-success { background: #d1fae5; color: var(--success); }
-    .bulk-btn-warning { background: #fef3c7; color: var(--warning); }
-    .bulk-btn-danger { background: #fee2e2; color: var(--danger); }
-    .bulk-btn:hover { transform: translateY(-2px); }
     
     /* Coupon Grid */
-    .coupon-grid {
+    .coupon-grid, .banner-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 20px; animation: fadeIn .4s ease;
     }
-    .coupon-card {
+    
+    /* Coupon Card */
+    .coupon-card, .banner-card {
       background: var(--card); border-radius: var(--radius);
       border: 1px solid var(--border); overflow: hidden;
       transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: fadeIn .3s ease;
     }
-    .coupon-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+    .coupon-card:hover, .banner-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
     
     .coupon-header {
       background: linear-gradient(135deg, var(--primary-light), var(--card));
-      padding: 20px; position: relative;
-      border-bottom: 2px dashed var(--border);
+      padding: 20px; position: relative; border-bottom: 2px dashed var(--border);
     }
-    .coupon-code {
-      font-size: 1.6rem; font-weight: 800; font-family: monospace;
-      letter-spacing: 2px; color: var(--primary-dark);
-    }
-    .coupon-badge {
-      position: absolute; top: 20px; right: 20px;
-    }
+    .coupon-code { font-size: 1.4rem; font-weight: 800; font-family: monospace; letter-spacing: 2px; color: var(--primary-dark); }
+    .coupon-badge { position: absolute; top: 20px; right: 20px; }
     .badge {
       padding: 4px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600;
     }
@@ -228,22 +207,25 @@
     .badge-inactive { background: #fee2e2; color: #991b1b; }
     .badge-flat { background: #dbeafe; color: #1e40af; }
     .badge-percent { background: #ede9fe; color: #5b21b6; }
-    .badge-expired { background: #f1f5f9; color: #64748b; }
     
     .coupon-body { padding: 20px; }
-    .coupon-discount { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .coupon-discount { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
     .coupon-desc { color: var(--muted); margin: 8px 0; }
-    .coupon-info { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; font-size: .8rem; }
+    .coupon-info { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; font-size: .75rem; }
     .info-tag { background: var(--bg); padding: 4px 10px; border-radius: 20px; color: var(--muted); }
-    .usage-bar { margin: 12px 0; }
-    .usage-progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .usage-progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width .3s; }
     
-    .coupon-footer {
+    .coupon-footer, .banner-footer {
       padding: 16px 20px; background: var(--bg);
       display: flex; justify-content: space-between; align-items: center;
       border-top: 1px solid var(--border);
     }
+    
+    /* Banner Card */
+    .banner-card img { width: 100%; height: 140px; object-fit: cover; }
+    .banner-title { font-weight: 700; font-size: 1rem; padding: 12px 16px 4px; }
+    .banner-meta { padding: 0 16px 12px; font-size: .75rem; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; }
+    
+    /* Action Buttons */
     .action-btns { display: flex; gap: 8px; }
     .action-btn {
       padding: 6px 12px; border-radius: 8px; font-size: .75rem;
@@ -253,6 +235,30 @@
     .action-btn:hover { transform: translateY(-2px); }
     .action-btn.edit:hover { background: var(--primary-light); border-color: var(--primary); }
     .action-btn.delete:hover { background: #fee2e2; border-color: var(--danger); color: var(--danger); }
+    
+    /* Settings */
+    .settings-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px; border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { font-weight: 700; margin-bottom: 4px; }
+    .setting-desc { font-size: .75rem; color: var(--muted); }
+    .toggle-switch {
+      width: 52px; height: 28px; background: #cbd5e1; border-radius: 14px;
+      position: relative; cursor: pointer; transition: .3s; flex-shrink: 0;
+    }
+    .toggle-switch.active { background: var(--primary); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 24px; height: 24px; background: white; border-radius: 50%;
+      transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle-switch.active::after { left: 26px; }
     
     /* Modal */
     .modal-overlay {
@@ -265,8 +271,7 @@
     .modal-card {
       background: var(--card); border-radius: 24px;
       width: 95%; max-width: 550px; max-height: 85vh;
-      overflow-y: auto; padding: 28px;
-      animation: slideIn .3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto; padding: 28px; animation: slideIn .3s ease;
     }
     .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
     .modal-header h2 { font-size: 1.3rem; font-weight: 700; }
@@ -283,27 +288,30 @@
       border: 1.5px solid var(--border); border-radius: 12px;
       font-size: .9rem; transition: var(--transition);
     }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+    }
     .form-row { display: flex; gap: 12px; }
     .form-row .form-group { flex: 1; }
     .form-check { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
     .save-btn {
       width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;
-      transition: var(--transition);
+      color: white; border: none; border-radius: 12px; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
     }
     .save-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(46,204,113,.3); }
     
-    /* Checkbox */
-    .select-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-    
-    /* Loading Shimmer */
-    .shimmer-card {
-      background: var(--card); border-radius: var(--radius); padding: 20px;
-      border: 1px solid var(--border);
+    .bulk-actions { display: flex; gap: 8px; margin-left: auto; }
+    .bulk-btn {
+      padding: 10px 16px; border-radius: 10px; font-weight: 500;
+      cursor: pointer; transition: var(--transition); border: none;
     }
-    .shimmer { background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    .bulk-btn-success { background: #d1fae5; color: var(--success); }
+    .bulk-btn-warning { background: #fef3c7; color: var(--warning); }
+    .bulk-btn-danger { background: #fee2e2; color: var(--danger); }
+    .bulk-btn:hover { transform: translateY(-2px); }
     
+    .select-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
     .no-data { text-align: center; padding: 60px; color: var(--muted); }
     
     .toast {
@@ -322,7 +330,8 @@
       .main-content { margin-left: 0; padding: 16px; }
       .mobile-header { display: flex; }
       .form-row { flex-direction: column; }
-      .coupon-grid { grid-template-columns: 1fr; }
+      .coupon-grid, .banner-grid { grid-template-columns: 1fr; }
+      .bulk-actions { margin-left: 0; width: 100%; justify-content: center; }
     }
   </style>
   
@@ -343,7 +352,7 @@
         <a href="dashboard.html">📊 Dashboard</a>
         <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
-        <a href="offers.html" class="active">🏷️ Coupons</a>
+        <a href="offers.html" class="active">🏷️ Offers</a>
         <a href="settings.html">⚙️ Settings</a>
       </nav>
       <div class="sidebar-footer">
@@ -355,8 +364,8 @@
     <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">🏷️ Coupons</span>
-      <button class="add-btn" onclick="openCouponModal()" style="padding:8px 16px;">➕ Add</button>
+      <span style="font-weight:700;">🏷️ Offers & Banners</span>
+      <button class="add-btn" onclick="handleMobileAdd()" style="padding:8px 16px;">➕ Add</button>
     </div>
 
     <!-- Main Content -->
@@ -364,147 +373,185 @@
       
       <!-- Page Header -->
       <div class="page-header">
-        <h1>🏷️ Coupon Management</h1>
-        <button class="add-btn" onclick="openCouponModal()">➕ Create Coupon</button>
+        <h1>🏷️ Offers & Banners</h1>
+        <button class="add-btn" id="desktopAddBtn">➕ Create New</button>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card"><div class="stat-value" id="totalCoupons">0</div><div class="stat-label">Total Coupons</div></div>
-        <div class="stat-card"><div class="stat-value" id="activeCoupons">0</div><div class="stat-label">Active</div></div>
-        <div class="stat-card"><div class="stat-value" id="totalUses">0</div><div class="stat-label">Total Uses</div></div>
-        <div class="stat-card"><div class="stat-value" id="expiredCoupons">0</div><div class="stat-label">Expired</div></div>
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="coupons">🎟️ Coupons</button>
+        <button class="tab-btn" data-tab="banners">🖼️ Banners</button>
+        <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
       </div>
 
-      <!-- Controls Bar -->
-      <div class="controls-bar">
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by coupon code..." oninput="filterCoupons()">
-        <select class="filter-select" id="typeFilter" onchange="filterCoupons()">
-          <option value="">All Types</option>
-          <option value="flat">Flat (₹)</option>
-          <option value="percent">Percent (%)</option>
-        </select>
-        <select class="filter-select" id="statusFilter" onchange="filterCoupons()">
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="expired">Expired</option>
-        </select>
-        <div class="bulk-actions" id="bulkActions" style="display:none;">
-          <button class="bulk-btn bulk-btn-success" onclick="bulkActivate()">✅ Activate</button>
-          <button class="bulk-btn bulk-btn-warning" onclick="bulkDeactivate()">⛔ Deactivate</button>
-          <button class="bulk-btn bulk-btn-danger" onclick="bulkDelete()">🗑️ Delete</button>
+      <!-- ==================== COUPONS TAB ==================== -->
+      <div class="tab-content active" id="tab-coupons">
+        
+        <!-- Coupon Stats -->
+        <div class="stats-grid" id="couponStats">
+          <div class="stat-card"><div class="stat-value" id="totalCoupons">0</div><div class="stat-label">Total Coupons</div></div>
+          <div class="stat-card"><div class="stat-value" id="activeCoupons">0</div><div class="stat-label">Active</div></div>
+          <div class="stat-card"><div class="stat-value" id="totalUses">0</div><div class="stat-label">Total Uses</div></div>
+          <div class="stat-card"><div class="stat-value" id="expiredCoupons">0</div><div class="stat-label">Expired</div></div>
+        </div>
+
+        <!-- Coupon Controls -->
+        <div class="controls-bar">
+          <input type="text" class="search-input" id="couponSearch" placeholder="🔍 Search coupon code...">
+          <select class="filter-select" id="couponTypeFilter">
+            <option value="">All Types</option>
+            <option value="flat">Flat (₹)</option>
+            <option value="percent">Percent (%)</option>
+          </select>
+          <select class="filter-select" id="couponStatusFilter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="expired">Expired</option>
+          </select>
+          <div class="bulk-actions" id="couponBulkActions" style="display:none;">
+            <button class="bulk-btn bulk-btn-success" onclick="bulkActivateCoupons()">✅ Activate</button>
+            <button class="bulk-btn bulk-btn-warning" onclick="bulkDeactivateCoupons()">⛔ Deactivate</button>
+            <button class="bulk-btn bulk-btn-danger" onclick="bulkDeleteCoupons()">🗑️ Delete</button>
+          </div>
+        </div>
+
+        <!-- Coupons Grid -->
+        <div class="coupon-grid" id="couponsGrid">
+          <div class="no-data">Loading coupons...</div>
         </div>
       </div>
 
-      <!-- Coupons Grid -->
-      <div class="coupon-grid" id="couponsGrid">
-        <div class="shimmer-card"><div class="shimmer" style="height:200px;"></div></div>
+      <!-- ==================== BANNERS TAB ==================== -->
+      <div class="tab-content" id="tab-banners">
+        
+        <!-- Banner Stats -->
+        <div class="stats-grid" id="bannerStats">
+          <div class="stat-card"><div class="stat-value" id="totalBanners">0</div><div class="stat-label">Total Banners</div></div>
+          <div class="stat-card"><div class="stat-value" id="activeBanners">0</div><div class="stat-label">Active</div></div>
+          <div class="stat-card"><div class="stat-value" id="homeBanners">0</div><div class="stat-label">Home Page</div></div>
+        </div>
+
+        <!-- Banner Controls -->
+        <div class="controls-bar">
+          <input type="text" class="search-input" id="bannerSearch" placeholder="🔍 Search banners...">
+          <select class="filter-select" id="bannerPageFilter">
+            <option value="">All Pages</option>
+            <option value="home">Home Page</option>
+            <option value="category">Category Pages</option>
+            <option value="product">Product Page</option>
+            <option value="offers">Offers Page</option>
+          </select>
+          <select class="filter-select" id="bannerStatusFilter">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <div class="bulk-actions" id="bannerBulkActions" style="display:none;">
+            <button class="bulk-btn bulk-btn-success" onclick="bulkActivateBanners()">✅ Activate</button>
+            <button class="bulk-btn bulk-btn-warning" onclick="bulkDeactivateBanners()">⛔ Deactivate</button>
+            <button class="bulk-btn bulk-btn-danger" onclick="bulkDeleteBanners()">🗑️ Delete</button>
+          </div>
+        </div>
+
+        <!-- Banners Grid -->
+        <div class="banner-grid" id="bannersGrid">
+          <div class="no-data">Loading banners...</div>
+        </div>
+      </div>
+
+      <!-- ==================== SETTINGS TAB ==================== -->
+      <div class="tab-content" id="tab-settings">
+        <div class="settings-card">
+          <div class="setting-row">
+            <div><div class="setting-label">🌐 Website Active</div><div class="setting-desc">Turn entire website ON/OFF for maintenance</div></div>
+            <div class="toggle-switch" id="siteActiveToggle" onclick="toggleSetting('siteActive')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🎟️ Offers/Coupons Enabled</div><div class="setting-desc">Show coupons and discounts on store</div></div>
+            <div class="toggle-switch" id="offersEnabledToggle" onclick="toggleSetting('offersEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🖼️ Banners Enabled</div><div class="setting-desc">Show promotional banners on store</div></div>
+            <div class="toggle-switch" id="bannersEnabledToggle" onclick="toggleSetting('bannersEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🚚 Delivery Enabled</div><div class="setting-desc">Enable/disable delivery service</div></div>
+            <div class="toggle-switch" id="deliveryEnabledToggle" onclick="toggleSetting('deliveryEnabled')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">🔔 Notifications Enabled</div><div class="setting-desc">Send push notifications to customers</div></div>
+            <div class="toggle-switch" id="notificationsEnabledToggle" onclick="toggleSetting('notificationsEnabled')"></div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
-  <!-- Coupon Modal -->
+  <!-- ==================== COUPON MODAL ==================== -->
   <div class="modal-overlay" id="couponModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 id="modalTitle">Create Coupon</h2>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2 id="couponModalTitle">Create Coupon</h2>
+        <button class="modal-close" onclick="closeCouponModal()">✕</button>
       </div>
       <form id="couponForm">
         <input type="hidden" id="couponId">
-        
-        <div class="form-group">
-          <label>Coupon Code *</label>
-          <input type="text" id="couponCode" required placeholder="e.g., SAVE20" style="text-transform:uppercase;">
-        </div>
-        
+        <div class="form-group"><label>Coupon Code *</label><input type="text" id="couponCode" required placeholder="e.g., SAVE20" style="text-transform:uppercase;"></div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Type *</label>
-            <select id="couponType" required>
-              <option value="flat">Flat Discount (₹)</option>
-              <option value="percent">Percentage Discount (%)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Discount Value *</label>
-            <input type="number" id="couponDiscount" required placeholder="20">
-          </div>
+          <div class="form-group"><label>Type *</label><select id="couponType"><option value="flat">Flat Discount (₹)</option><option value="percent">Percentage (%)</option></select></div>
+          <div class="form-group"><label>Value *</label><input type="number" id="couponValue" required placeholder="20"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label>Min Order (₹)</label>
-            <input type="number" id="couponMinOrder" placeholder="250" value="0">
-          </div>
-          <div class="form-group">
-            <label>Max Discount (₹)</label>
-            <input type="number" id="couponMaxDiscount" placeholder="Optional">
-          </div>
+          <div class="form-group"><label>Min Order</label><input type="number" id="couponMinOrder" placeholder="0" value="0"></div>
+          <div class="form-group"><label>Max Discount</label><input type="number" id="couponMaxDiscount" placeholder="Optional"></div>
         </div>
-        
-        <div class="form-group">
-          <label>Description</label>
-          <input type="text" id="couponDesc" placeholder="Save ₹20 on orders above ₹250">
-        </div>
-        
+        <div class="form-group"><label>Description</label><input type="text" id="couponDesc" placeholder="Save ₹20 on orders above ₹250"></div>
         <div class="form-row">
-          <div class="form-group">
-            <label>Valid From</label>
-            <input type="datetime-local" id="couponValidFrom">
-          </div>
-          <div class="form-group">
-            <label>Valid To</label>
-            <input type="datetime-local" id="couponValidTo">
-          </div>
+          <div class="form-group"><label>Valid From</label><input type="datetime-local" id="couponValidFrom"></div>
+          <div class="form-group"><label>Valid To</label><input type="datetime-local" id="couponValidTo"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label>Apply to Category</label>
-            <select id="couponCategory">
-              <option value="">All Categories</option>
-              <option value="dairy">🥛 Dairy</option>
-              <option value="fruits">🍎 Fruits</option>
-              <option value="snacks">🍿 Snacks</option>
-              <option value="beverages">🥤 Beverages</option>
-              <option value="grocery">🛒 Grocery</option>
-              <option value="vegetables">🥬 Vegetables</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Apply to Product ID</label>
-            <input type="text" id="couponProductId" placeholder="Optional product ID">
-          </div>
+          <div class="form-group"><label>Category Specific</label><select id="couponCategory"><option value="">All Categories</option><option value="dairy">🥛 Dairy</option><option value="fruits">🍎 Fruits</option><option value="snacks">🍿 Snacks</option><option value="beverages">🥤 Beverages</option><option value="grocery">🛒 Grocery</option></select></div>
+          <div class="form-group"><label>Product ID</label><input type="text" id="couponProductId" placeholder="Optional"></div>
         </div>
-        
         <div class="form-row">
-          <div class="form-group">
-            <label>Total Usage Limit</label>
-            <input type="number" id="couponUsageLimit" placeholder="Unlimited">
-          </div>
-          <div class="form-group">
-            <label>Per User Limit</label>
-            <input type="number" id="couponPerUserLimit" placeholder="1" value="1">
-          </div>
+          <div class="form-group"><label>Usage Limit</label><input type="number" id="couponUsageLimit" placeholder="Unlimited"></div>
+          <div class="form-group"><label>Per User Limit</label><input type="number" id="couponPerUserLimit" value="1"></div>
         </div>
-        
-        <div class="form-check">
-          <input type="checkbox" id="couponActive" checked>
-          <label>✅ Active (visible to customers)</label>
-        </div>
-        
+        <div class="form-check"><input type="checkbox" id="couponActive" checked><label>✅ Active</label></div>
         <button type="submit" class="save-btn">💾 Save Coupon</button>
       </form>
     </div>
   </div>
 
-  <!-- Delete Confirm Modal -->
+  <!-- ==================== BANNER MODAL ==================== -->
+  <div class="modal-overlay" id="bannerModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="bannerModalTitle">Create Banner</h2>
+        <button class="modal-close" onclick="closeBannerModal()">✕</button>
+      </div>
+      <form id="bannerForm">
+        <input type="hidden" id="bannerId">
+        <div class="form-group"><label>Title *</label><input type="text" id="bannerTitle" required placeholder="Big Summer Sale"></div>
+        <div class="form-group"><label>Image URL *</label><input type="url" id="bannerImage" required placeholder="https://..."></div>
+        <div class="form-group"><label>Link URL</label><input type="text" id="bannerLink" placeholder="/offers.html"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Page *</label><select id="bannerPage"><option value="home">Home Page</option><option value="category">Category Pages</option><option value="product">Product Page</option><option value="offers">Offers Page</option></select></div>
+          <div class="form-group"><label>Sort Order</label><input type="number" id="bannerOrder" placeholder="0"></div>
+        </div>
+        <div class="form-check"><input type="checkbox" id="bannerActive" checked><label>✅ Active</label></div>
+        <button type="submit" class="save-btn">💾 Save Banner</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
   <div class="modal-overlay" id="deleteModal">
     <div class="modal-card" style="text-align:center;max-width:400px;">
       <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
-      <h3>Delete Coupon?</h3>
+      <h3>Delete Item?</h3>
       <p id="deleteMessage" style="margin:12px 0;color:var(--muted);">This action cannot be undone.</p>
       <div style="display:flex;gap:12px;margin-top:20px;">
         <button class="bulk-btn" style="flex:1;" onclick="closeDeleteModal()">Cancel</button>
@@ -517,34 +564,92 @@
 
   <script src="../js/firebase.js"></script>
   <script>
-    // ===== ADVANCED COUPON MANAGEMENT SYSTEM =====
+    // ===== COMPLETE OFFERS & BANNERS SYSTEM =====
     
+    // State variables
     let allCoupons = [];
-    let editingId = null;
-    let deleteId = null;
-    let deleteMultipleIds = [];
+    let allBanners = [];
+    let settingsData = {};
     let selectedCoupons = new Set();
-    let filteredCoupons = [];
+    let selectedBanners = new Set();
+    let currentDeleteTarget = { type: null, id: null, name: null };
+    let editingCouponId = null;
+    let editingBannerId = null;
     
-    // ========== LOAD COUPONS ==========
+    let couponFiltered = [];
+    let bannerFiltered = [];
+    
+    // ========== TAB SWITCHING ==========
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      
+      if (tabId === 'coupons') renderCoupons();
+      if (tabId === 'banners') renderBanners();
+    }
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    
+    // Mobile add button handler
+    function handleMobileAdd() {
+      const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+      if (activeTab === 'coupons') openCouponModal();
+      else if (activeTab === 'banners') openBannerModal();
+    }
+    
+    document.getElementById('desktopAddBtn').addEventListener('click', () => {
+      const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+      if (activeTab === 'coupons') openCouponModal();
+      else if (activeTab === 'banners') openBannerModal();
+    });
+    
+    // ========== LOAD DATA ==========
     if (db && db.collection) {
-      db.collection('offers').onSnapshot((snapshot) => {
+      // Load Coupons
+      db.collection('offers').onSnapshot(snapshot => {
         allCoupons = [];
         snapshot.forEach(doc => {
           const data = doc.data();
           allCoupons.push({ id: doc.id, ...data, usageCount: data.usageCount || 0 });
         });
-        updateStats();
+        updateCouponStats();
         filterCoupons();
+      });
+      
+      // Load Banners
+      db.collection('banners').onSnapshot(snapshot => {
+        allBanners = [];
+        snapshot.forEach(doc => {
+          allBanners.push({ id: doc.id, ...doc.data() });
+        });
+        updateBannerStats();
+        filterBanners();
+      });
+      
+      // Load Settings
+      db.collection('settings').doc('global').onSnapshot(doc => {
+        if (doc.exists) {
+          settingsData = doc.data();
+          updateSettingsUI();
+        }
       });
     }
     
-    // ========== UPDATE STATISTICS ==========
-    function updateStats() {
+    // ========== COUPON FUNCTIONS ==========
+    function isCouponExpired(coupon) {
+      if (coupon.validTo) return new Date(coupon.validTo) < new Date();
+      return false;
+    }
+    
+    function updateCouponStats() {
       const total = allCoupons.length;
-      const active = allCoupons.filter(c => c.active === true && !isExpired(c)).length;
+      const active = allCoupons.filter(c => c.active === true && !isCouponExpired(c)).length;
       const totalUses = allCoupons.reduce((sum, c) => sum + (c.usageCount || 0), 0);
-      const expired = allCoupons.filter(c => isExpired(c)).length;
+      const expired = allCoupons.filter(c => isCouponExpired(c)).length;
       
       document.getElementById('totalCoupons').textContent = total;
       document.getElementById('activeCoupons').textContent = active;
@@ -552,59 +657,43 @@
       document.getElementById('expiredCoupons').textContent = expired;
     }
     
-    // ========== CHECK EXPIRY ==========
-    function isExpired(coupon) {
-      if (coupon.validTo) {
-        const expiryDate = new Date(coupon.validTo);
-        return expiryDate < new Date();
-      }
-      return false;
-    }
-    
-    // ========== FILTER COUPONS ==========
     function filterCoupons() {
-      const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
-      const type = document.getElementById('typeFilter')?.value || '';
-      const status = document.getElementById('statusFilter')?.value || '';
+      const search = document.getElementById('couponSearch')?.value.toLowerCase() || '';
+      const type = document.getElementById('couponTypeFilter')?.value || '';
+      const status = document.getElementById('couponStatusFilter')?.value || '';
       
-      filteredCoupons = allCoupons.filter(c => {
+      couponFiltered = allCoupons.filter(c => {
         if (search && !c.code?.toLowerCase().includes(search)) return false;
         if (type && c.type !== type) return false;
-        if (status === 'active' && (c.active !== true || isExpired(c))) return false;
-        if (status === 'inactive' && c.active === true && !isExpired(c)) return false;
-        if (status === 'expired' && !isExpired(c)) return false;
+        if (status === 'active' && (c.active !== true || isCouponExpired(c))) return false;
+        if (status === 'inactive' && c.active === true && !isCouponExpired(c)) return false;
+        if (status === 'expired' && !isCouponExpired(c)) return false;
         return true;
       });
       
       renderCoupons();
     }
     
-    // ========== RENDER COUPONS ==========
     function renderCoupons() {
       const grid = document.getElementById('couponsGrid');
       const showBulk = selectedCoupons.size > 0;
-      document.getElementById('bulkActions').style.display = showBulk ? 'flex' : 'none';
+      document.getElementById('couponBulkActions').style.display = showBulk ? 'flex' : 'none';
       
-      if (filteredCoupons.length === 0) {
-        grid.innerHTML = '<div class="no-data">🏷️ No coupons found. Click "Create Coupon" to add one.</div>';
+      if (couponFiltered.length === 0) {
+        grid.innerHTML = '<div class="no-data">🏷️ No coupons found. Click "Create New" to add one.</div>';
         return;
       }
       
-      grid.innerHTML = filteredCoupons.map(c => {
-        const expired = isExpired(c);
+      grid.innerHTML = couponFiltered.map(c => {
+        const expired = isCouponExpired(c);
         const isActive = c.active === true && !expired;
-        const usagePercent = c.usageLimit ? ((c.usageCount || 0) / c.usageLimit) * 100 : 0;
         const discountDisplay = c.type === 'flat' ? `₹${c.discount} OFF` : `${c.discount}% OFF`;
         
         return `
-          <div class="coupon-card" style="animation: fadeIn .3s ease;">
+          <div class="coupon-card">
             <div class="coupon-header">
               <div class="coupon-code">${c.code}</div>
-              <div class="coupon-badge">
-                <span class="badge ${isActive ? 'badge-active' : (expired ? 'badge-expired' : 'badge-inactive')}">
-                  ${isActive ? 'Active' : (expired ? 'Expired' : 'Inactive')}
-                </span>
-              </div>
+              <div class="coupon-badge"><span class="badge ${isActive ? 'badge-active' : (expired ? 'badge-inactive' : 'badge-inactive')}">${isActive ? 'Active' : (expired ? 'Expired' : 'Inactive')}</span></div>
             </div>
             <div class="coupon-body">
               <div class="coupon-discount">${discountDisplay}</div>
@@ -614,133 +703,80 @@
                 <span class="info-tag ${c.type === 'flat' ? 'badge-flat' : 'badge-percent'}">${c.type === 'flat' ? '💰 Flat' : '📊 Percent'}</span>
                 ${c.category ? `<span class="info-tag">📁 ${c.category}</span>` : ''}
               </div>
-              ${c.usageLimit ? `
-                <div class="usage-bar">
-                  <div class="usage-progress"><div class="usage-progress-fill" style="width: ${Math.min(usagePercent, 100)}%"></div></div>
-                  <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Used ${c.usageCount || 0} / ${c.usageLimit} times</div>
-                </div>
-              ` : ''}
-              ${c.validTo ? `<div class="info-tag" style="background:var(--bg);padding:4px 10px;border-radius:20px;font-size:.7rem;">📅 Valid till: ${new Date(c.validTo).toLocaleDateString()}</div>` : ''}
+              ${c.validTo ? `<div class="info-tag" style="margin-top:8px;">📅 Valid till: ${new Date(c.validTo).toLocaleDateString()}</div>` : ''}
+              <div class="info-tag" style="margin-top:8px;">🎯 Used: ${c.usageCount || 0} times</div>
             </div>
             <div class="coupon-footer">
               <div class="action-btns">
-                <button class="action-btn edit" onclick="openEditModal('${c.id}')">✏️ Edit</button>
-                <button class="action-btn delete" onclick="openDeleteModal('${c.id}', '${c.code}')">🗑️ Delete</button>
+                <button class="action-btn edit" onclick="editCoupon('${c.id}')">✏️ Edit</button>
+                <button class="action-btn delete" onclick="openDeleteModal('coupon', '${c.id}', '${c.code}')">🗑️ Delete</button>
               </div>
-              <input type="checkbox" class="select-checkbox" data-id="${c.id}" ${selectedCoupons.has(c.id) ? 'checked' : ''} onchange="toggleSelect('${c.id}', this.checked)">
+              <input type="checkbox" class="select-checkbox" data-id="${c.id}" ${selectedCoupons.has(c.id) ? 'checked' : ''} onchange="toggleCouponSelect('${c.id}', this.checked)">
             </div>
           </div>
         `;
       }).join('');
     }
     
-    // ========== SELECTION HANDLERS ==========
-    function toggleSelect(id, checked) {
+    function toggleCouponSelect(id, checked) {
       if (checked) selectedCoupons.add(id);
       else selectedCoupons.delete(id);
       renderCoupons();
     }
     
-    function toggleSelectAll() {
-      if (selectedCoupons.size === filteredCoupons.length) {
-        selectedCoupons.clear();
-      } else {
-        filteredCoupons.forEach(c => selectedCoupons.add(c.id));
-      }
-      renderCoupons();
-    }
-    
-    // ========== BULK ACTIONS ==========
-    async function bulkActivate() {
-      for (let id of selectedCoupons) {
-        await db.collection('offers').doc(id).update({ active: true });
-      }
+    async function bulkActivateCoupons() {
+      for (let id of selectedCoupons) await db.collection('offers').doc(id).update({ active: true });
       showToast(`✅ ${selectedCoupons.size} coupons activated`, 'success');
       selectedCoupons.clear();
     }
     
-    async function bulkDeactivate() {
-      for (let id of selectedCoupons) {
-        await db.collection('offers').doc(id).update({ active: false });
-      }
+    async function bulkDeactivateCoupons() {
+      for (let id of selectedCoupons) await db.collection('offers').doc(id).update({ active: false });
       showToast(`⛔ ${selectedCoupons.size} coupons deactivated`, 'success');
       selectedCoupons.clear();
     }
     
-    async function bulkDelete() {
+    async function bulkDeleteCoupons() {
       if (confirm(`Delete ${selectedCoupons.size} coupons permanently?`)) {
-        for (let id of selectedCoupons) {
-          await db.collection('offers').doc(id).delete();
-        }
+        for (let id of selectedCoupons) await db.collection('offers').doc(id).delete();
         showToast(`🗑️ ${selectedCoupons.size} coupons deleted`, 'success');
         selectedCoupons.clear();
       }
     }
     
-    // ========== MODAL FUNCTIONS ==========
-    function openCouponModal() {
-      editingId = null;
-      document.getElementById('modalTitle').textContent = 'Create Coupon';
-      document.getElementById('couponForm').reset();
-      document.getElementById('couponId').value = '';
-      document.getElementById('couponActive').checked = true;
-      document.getElementById('couponPerUserLimit').value = 1;
-      document.getElementById('couponMinOrder').value = 0;
+    function openCouponModal(coupon = null) {
+      editingCouponId = coupon?.id || null;
+      document.getElementById('couponModalTitle').textContent = coupon ? 'Edit Coupon' : 'Create Coupon';
+      document.getElementById('couponId').value = coupon?.id || '';
+      document.getElementById('couponCode').value = coupon?.code || '';
+      document.getElementById('couponType').value = coupon?.type || 'flat';
+      document.getElementById('couponValue').value = coupon?.discount || '';
+      document.getElementById('couponMinOrder').value = coupon?.minOrder || 0;
+      document.getElementById('couponMaxDiscount').value = coupon?.maxDiscount || '';
+      document.getElementById('couponDesc').value = coupon?.description || '';
+      document.getElementById('couponCategory').value = coupon?.category || '';
+      document.getElementById('couponProductId').value = coupon?.productId || '';
+      document.getElementById('couponUsageLimit').value = coupon?.usageLimit || '';
+      document.getElementById('couponPerUserLimit').value = coupon?.perUserLimit || 1;
+      document.getElementById('couponActive').checked = coupon?.active !== false;
+      if (coupon?.validFrom) document.getElementById('couponValidFrom').value = coupon.validFrom.slice(0, 16);
+      if (coupon?.validTo) document.getElementById('couponValidTo').value = coupon.validTo.slice(0, 16);
       document.getElementById('couponModal').classList.add('active');
     }
     
-    window.openEditModal = function(id) {
-      const c = allCoupons.find(c => c.id === id);
-      if (!c) return;
-      
-      editingId = id;
-      document.getElementById('modalTitle').textContent = 'Edit Coupon';
-      document.getElementById('couponId').value = c.id;
-      document.getElementById('couponCode').value = c.code || '';
-      document.getElementById('couponType').value = c.type || 'flat';
-      document.getElementById('couponDiscount').value = c.discount || '';
-      document.getElementById('couponMinOrder').value = c.minOrder || 0;
-      document.getElementById('couponMaxDiscount').value = c.maxDiscount || '';
-      document.getElementById('couponDesc').value = c.description || '';
-      document.getElementById('couponCategory').value = c.category || '';
-      document.getElementById('couponProductId').value = c.productId || '';
-      document.getElementById('couponUsageLimit').value = c.usageLimit || '';
-      document.getElementById('couponPerUserLimit').value = c.perUserLimit || 1;
-      document.getElementById('couponActive').checked = c.active !== false;
-      
-      if (c.validFrom) document.getElementById('couponValidFrom').value = c.validFrom.slice(0, 16);
-      if (c.validTo) document.getElementById('couponValidTo').value = c.validTo.slice(0, 16);
-      
-      document.getElementById('couponModal').classList.add('active');
-    };
+    function editCoupon(id) {
+      const coupon = allCoupons.find(c => c.id === id);
+      if (coupon) openCouponModal(coupon);
+    }
     
-    function closeModal() { document.getElementById('couponModal').classList.remove('active'); }
+    function closeCouponModal() { document.getElementById('couponModal').classList.remove('active'); }
     
-    window.openDeleteModal = function(id, code) {
-      deleteId = id;
-      document.getElementById('deleteMessage').innerHTML = `Delete coupon "<strong>${code}</strong>"? This action cannot be undone.`;
-      document.getElementById('deleteModal').classList.add('active');
-    };
-    
-    function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('active'); }
-    
-    window.confirmDelete = async function() {
-      if (deleteId) {
-        await db.collection('offers').doc(deleteId).delete();
-        showToast('🗑️ Coupon deleted', 'success');
-        deleteId = null;
-      }
-      closeDeleteModal();
-    };
-    
-    // ========== SAVE COUPON ==========
-    document.getElementById('couponForm').addEventListener('submit', async function(e) {
+    document.getElementById('couponForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
       const data = {
         code: document.getElementById('couponCode').value.toUpperCase().trim(),
         type: document.getElementById('couponType').value,
-        discount: Number(document.getElementById('couponDiscount').value),
+        discount: Number(document.getElementById('couponValue').value),
         minOrder: Number(document.getElementById('couponMinOrder').value) || 0,
         maxDiscount: Number(document.getElementById('couponMaxDiscount').value) || null,
         description: document.getElementById('couponDesc').value.trim(),
@@ -753,19 +789,11 @@
         validTo: document.getElementById('couponValidTo').value || null,
         updatedAt: new Date().toISOString()
       };
-      
-      if (!data.code || !data.discount) {
-        showToast('Please fill all required fields', 'error');
-        return;
-      }
-      
-      const saveBtn = document.querySelector('#couponForm .save-btn');
-      saveBtn.textContent = '⏳ Saving...';
-      saveBtn.disabled = true;
+      if (!data.code || !data.discount) { showToast('Please fill required fields', 'error'); return; }
       
       try {
-        if (editingId) {
-          await db.collection('offers').doc(editingId).update(data);
+        if (editingCouponId) {
+          await db.collection('offers').doc(editingCouponId).update(data);
           showToast('✅ Coupon updated!', 'success');
         } else {
           data.createdAt = new Date().toISOString();
@@ -773,16 +801,177 @@
           await db.collection('offers').add(data);
           showToast('✅ Coupon created!', 'success');
         }
-        closeModal();
-      } catch (err) {
-        showToast('❌ Error saving coupon', 'error');
-      }
-      
-      saveBtn.textContent = '💾 Save Coupon';
-      saveBtn.disabled = false;
+        closeCouponModal();
+      } catch (err) { showToast('Error saving coupon', 'error'); }
     });
     
-    // ========== TOAST ==========
+    // ========== BANNER FUNCTIONS ==========
+    function updateBannerStats() {
+      const total = allBanners.length;
+      const active = allBanners.filter(b => b.active !== false).length;
+      const home = allBanners.filter(b => b.page === 'home' && b.active !== false).length;
+      document.getElementById('totalBanners').textContent = total;
+      document.getElementById('activeBanners').textContent = active;
+      document.getElementById('homeBanners').textContent = home;
+    }
+    
+    function filterBanners() {
+      const search = document.getElementById('bannerSearch')?.value.toLowerCase() || '';
+      const page = document.getElementById('bannerPageFilter')?.value || '';
+      const status = document.getElementById('bannerStatusFilter')?.value || '';
+      
+      bannerFiltered = allBanners.filter(b => {
+        if (search && !b.title?.toLowerCase().includes(search)) return false;
+        if (page && b.page !== page) return false;
+        if (status === 'active' && b.active !== true) return false;
+        if (status === 'inactive' && b.active !== false) return false;
+        return true;
+      });
+      
+      renderBanners();
+    }
+    
+    function renderBanners() {
+      const grid = document.getElementById('bannersGrid');
+      const showBulk = selectedBanners.size > 0;
+      document.getElementById('bannerBulkActions').style.display = showBulk ? 'flex' : 'none';
+      
+      if (bannerFiltered.length === 0) {
+        grid.innerHTML = '<div class="no-data">🖼️ No banners found. Click "Create New" to add one.</div>';
+        return;
+      }
+      
+      grid.innerHTML = bannerFiltered.map(b => `
+        <div class="banner-card">
+          <img src="${b.image}" onerror="this.src='https://via.placeholder.com/400x140'">
+          <div class="banner-title">${b.title}</div>
+          <div class="banner-meta">
+            <span class="info-tag">📍 ${b.page || 'home'}</span>
+            <span class="badge ${b.active !== false ? 'badge-active' : 'badge-inactive'}">${b.active !== false ? 'Active' : 'Inactive'}</span>
+            ${b.link ? `<span class="info-tag">🔗 ${b.link}</span>` : ''}
+          </div>
+          <div class="coupon-footer">
+            <div class="action-btns">
+              <button class="action-btn edit" onclick="editBanner('${b.id}')">✏️ Edit</button>
+              <button class="action-btn delete" onclick="openDeleteModal('banner', '${b.id}', '${b.title.replace(/'/g, "\\'")}')">🗑️ Delete</button>
+            </div>
+            <input type="checkbox" class="select-checkbox" data-id="${b.id}" ${selectedBanners.has(b.id) ? 'checked' : ''} onchange="toggleBannerSelect('${b.id}', this.checked)">
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function toggleBannerSelect(id, checked) {
+      if (checked) selectedBanners.add(id);
+      else selectedBanners.delete(id);
+      renderBanners();
+    }
+    
+    async function bulkActivateBanners() {
+      for (let id of selectedBanners) await db.collection('banners').doc(id).update({ active: true });
+      showToast(`✅ ${selectedBanners.size} banners activated`, 'success');
+      selectedBanners.clear();
+    }
+    
+    async function bulkDeactivateBanners() {
+      for (let id of selectedBanners) await db.collection('banners').doc(id).update({ active: false });
+      showToast(`⛔ ${selectedBanners.size} banners deactivated`, 'success');
+      selectedBanners.clear();
+    }
+    
+    async function bulkDeleteBanners() {
+      if (confirm(`Delete ${selectedBanners.size} banners permanently?`)) {
+        for (let id of selectedBanners) await db.collection('banners').doc(id).delete();
+        showToast(`🗑️ ${selectedBanners.size} banners deleted`, 'success');
+        selectedBanners.clear();
+      }
+    }
+    
+    function openBannerModal(banner = null) {
+      editingBannerId = banner?.id || null;
+      document.getElementById('bannerModalTitle').textContent = banner ? 'Edit Banner' : 'Create Banner';
+      document.getElementById('bannerId').value = banner?.id || '';
+      document.getElementById('bannerTitle').value = banner?.title || '';
+      document.getElementById('bannerImage').value = banner?.image || '';
+      document.getElementById('bannerLink').value = banner?.link || '';
+      document.getElementById('bannerPage').value = banner?.page || 'home';
+      document.getElementById('bannerOrder').value = banner?.order || 0;
+      document.getElementById('bannerActive').checked = banner?.active !== false;
+      document.getElementById('bannerModal').classList.add('active');
+    }
+    
+    function editBanner(id) {
+      const banner = allBanners.find(b => b.id === id);
+      if (banner) openBannerModal(banner);
+    }
+    
+    function closeBannerModal() { document.getElementById('bannerModal').classList.remove('active'); }
+    
+    document.getElementById('bannerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        title: document.getElementById('bannerTitle').value.trim(),
+        image: document.getElementById('bannerImage').value.trim(),
+        link: document.getElementById('bannerLink').value.trim(),
+        page: document.getElementById('bannerPage').value,
+        order: Number(document.getElementById('bannerOrder').value) || 0,
+        active: document.getElementById('bannerActive').checked,
+        updatedAt: new Date().toISOString()
+      };
+      if (!data.title || !data.image) { showToast('Please fill required fields', 'error'); return; }
+      
+      try {
+        if (editingBannerId) {
+          await db.collection('banners').doc(editingBannerId).update(data);
+          showToast('✅ Banner updated!', 'success');
+        } else {
+          data.createdAt = new Date().toISOString();
+          await db.collection('banners').add(data);
+          showToast('✅ Banner created!', 'success');
+        }
+        closeBannerModal();
+      } catch (err) { showToast('Error saving banner', 'error'); }
+    });
+    
+    // ========== SETTINGS FUNCTIONS ==========
+    function updateSettingsUI() {
+      const toggles = ['siteActive', 'offersEnabled', 'bannersEnabled', 'deliveryEnabled', 'notificationsEnabled'];
+      toggles.forEach(t => {
+        const el = document.getElementById(`${t}Toggle`);
+        if (el && settingsData[t] !== undefined) {
+          if (settingsData[t]) el.classList.add('active');
+          else el.classList.remove('active');
+        }
+      });
+    }
+    
+    window.toggleSetting = async function(setting) {
+      const newValue = !settingsData[setting];
+      await db.collection('settings').doc('global').set({ [setting]: newValue }, { merge: true });
+      settingsData[setting] = newValue;
+      updateSettingsUI();
+      showToast(`${setting} ${newValue ? 'enabled' : 'disabled'}`, 'success');
+    };
+    
+    // ========== DELETE FUNCTIONS ==========
+    function openDeleteModal(type, id, name) {
+      currentDeleteTarget = { type, id, name };
+      document.getElementById('deleteMessage').innerHTML = `Delete "<strong>${name}</strong>"? This action cannot be undone.`;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('active'); }
+    
+    window.confirmDelete = async function() {
+      const { type, id } = currentDeleteTarget;
+      if (type === 'coupon') await db.collection('offers').doc(id).delete();
+      else if (type === 'banner') await db.collection('banners').doc(id).delete();
+      showToast(`🗑️ Deleted`, 'success');
+      closeDeleteModal();
+      currentDeleteTarget = { type: null, id: null, name: null };
+    };
+    
+    // ========== COMMON ==========
     function showToast(msg, type) {
       const toast = document.getElementById('toast');
       toast.textContent = msg;
@@ -791,17 +980,25 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    // ========== LOGOUT ==========
     window.adminLogout = function() {
       localStorage.clear();
       window.location.href = 'login.html';
     };
     
+    // Event listeners for filters
+    document.getElementById('couponSearch')?.addEventListener('input', filterCoupons);
+    document.getElementById('couponTypeFilter')?.addEventListener('change', filterCoupons);
+    document.getElementById('couponStatusFilter')?.addEventListener('change', filterCoupons);
+    document.getElementById('bannerSearch')?.addEventListener('input', filterBanners);
+    document.getElementById('bannerPageFilter')?.addEventListener('change', filterBanners);
+    document.getElementById('bannerStatusFilter')?.addEventListener('change', filterBanners);
+    
     // Close modals on overlay click
-    document.getElementById('couponModal').addEventListener('click', e => { if (e.target === document.getElementById('couponModal')) closeModal(); });
+    document.getElementById('couponModal').addEventListener('click', e => { if (e.target === document.getElementById('couponModal')) closeCouponModal(); });
+    document.getElementById('bannerModal').addEventListener('click', e => { if (e.target === document.getElementById('bannerModal')) closeBannerModal(); });
     document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === document.getElementById('deleteModal')) closeDeleteModal(); });
     
-    console.log('✅ Advanced coupon system ready!');
+    console.log('✅ Complete offers & banners system ready!');
   </script>
 </body>
 </html>
