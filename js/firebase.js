@@ -1,9 +1,8 @@
 // ===== OK Mart - Firebase Configuration =====
 // Firebase v9 Compat (Modular SDK via CDN)
-// This file initializes Firebase and exports the db instance
+// Includes Firestore + Cloud Messaging (FCM)
 
 // Your web app's Firebase configuration
-// Replace these values with your actual Firebase project credentials
 var firebaseConfig = {
   apiKey: "AIzaSyDHvki4jXafwzLAXJSrLQt4QodiNi5JXCw",
   authDomain: "okmart-e6219.firebaseapp.com",
@@ -17,20 +16,18 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Initialize Cloud Firestore and get a reference to the service
+// Initialize Cloud Firestore
 var db = firebase.firestore();
 
-// Enable offline persistence (caches data for offline use)
+// Enable offline persistence
 db.enablePersistence({ synchronizeTabs: true })
   .then(function() {
     console.log('🔥 Firestore offline persistence enabled');
   })
   .catch(function(err) {
     if (err.code === 'failed-precondition') {
-      // Multiple tabs open, persistence can only be enabled in one tab at a time
       console.warn('⚠️ Multiple tabs detected - Offline persistence disabled');
     } else if (err.code === 'unimplemented') {
-      // The current browser does not support offline persistence
       console.warn('⚠️ Browser does not support offline persistence');
     } else {
       console.warn('⚠️ Persistence error:', err.code);
@@ -38,10 +35,224 @@ db.enablePersistence({ synchronizeTabs: true })
   });
 
 // ============================================
+// FIREBASE CLOUD MESSAGING (FCM)
+// ============================================
+
+// Initialize Messaging
+var messaging = null;
+
+// Check if messaging is supported (requires HTTPS)
+if (firebase.messaging && firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+  
+  console.log('📨 Firebase Messaging initialized');
+} else {
+  console.warn('⚠️ Firebase Messaging not supported in this browser/environment');
+}
+
+// VAPID Key (Public Key for Web Push)
+// Get this from: Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
+var VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
+
+/**
+ * Request notification permission and get FCM token
+ * @param {function} callback - Called with the FCM token or error
+ */
+function requestNotificationPermission(callback) {
+  if (!messaging) {
+    console.warn('⚠️ Messaging not available');
+    if (callback) callback(null, 'Messaging not supported');
+    return;
+  }
+
+  Notification.requestPermission()
+    .then(function(permission) {
+      if (permission === 'granted') {
+        console.log('✅ Notification permission granted');
+        return getToken(messaging, { vapidKey: VAPID_KEY });
+      } else {
+        console.log('❌ Notification permission denied');
+        throw new Error('Permission denied');
+      }
+    })
+    .then(function(currentToken) {
+      if (currentToken) {
+        console.log('📨 FCM Token:', currentToken);
+        
+        // Save token to localStorage for later use
+        localStorage.setItem('okmart_fcm_token', currentToken);
+        
+        // You can also save this token to Firestore for the user
+        // saveTokenToFirestore(currentToken);
+        
+        if (callback) callback(currentToken, null);
+      } else {
+        console.warn('⚠️ No FCM token available');
+        if (callback) callback(null, 'No token available');
+      }
+    })
+    .catch(function(err) {
+      console.error('❌ FCM Error:', err);
+      if (callback) callback(null, err.message);
+    });
+}
+
+/**
+ * Get stored FCM token
+ * @returns {string|null} - The stored FCM token
+ */
+function getStoredFCMToken() {
+  return localStorage.getItem('okmart_fcm_token') || null;
+}
+
+/**
+ * Save FCM token to Firestore (optional)
+ * @param {string} token - The FCM token
+ */
+function saveTokenToFirestore(token) {
+  var userId = localStorage.getItem('okmart_user_phone') || 'guest';
+  
+  db.collection('fcm_tokens').doc(userId).set({
+    token: token,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    userAgent: navigator.userAgent,
+    platform: navigator.platform
+  }, { merge: true })
+  .then(function() {
+    console.log('✅ Token saved to Firestore');
+  })
+  .catch(function(err) {
+    console.error('❌ Error saving token:', err);
+  });
+}
+
+/**
+ * Delete FCM token (on logout)
+ */
+function deleteFCMToken() {
+  var token = getStoredFCMToken();
+  if (token && messaging) {
+    deleteToken(messaging, token)
+      .then(function() {
+        console.log('✅ Token deleted');
+        localStorage.removeItem('okmart_fcm_token');
+      })
+      .catch(function(err) {
+        console.error('❌ Error deleting token:', err);
+      });
+  }
+}
+
+// ============================================
+// FOREGROUND MESSAGE HANDLER
+// ============================================
+
+if (messaging) {
+  // Handle messages when app is in foreground
+  messaging.onMessage(function(payload) {
+    console.log('📨 Foreground message received:', payload);
+    
+    // Show custom notification
+    showInAppNotification(payload);
+  });
+}
+
+/**
+ * Show in-app notification (when website is open)
+ * @param {Object} payload - The message payload
+ */
+function showInAppNotification(payload) {
+  var notification = payload.notification || {};
+  var data = payload.data || {};
+  
+  // Create notification element
+  var notifEl = document.createElement('div');
+  notifEl.className = 'in-app-notification';
+  notifEl.style.cssText = 
+    'position: fixed; top: 20px; right: 20px; background: white; ' +
+    'border-radius: 16px; padding: 16px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.15); ' +
+    'z-index: 9999; max-width: 350px; animation: slideInRight .3s ease; ' +
+    'display: flex; align-items: center; gap: 12px; cursor: pointer;';
+  
+  notifEl.innerHTML = 
+    '<div style="font-size:2rem;">🔔</div>' +
+    '<div>' +
+      '<div style="font-weight:700;">' + (notification.title || 'New Notification') + '</div>' +
+      '<div style="font-size:.85rem;color:#6b7280;">' + (notification.body || '') + '</div>' +
+    '</div>' +
+    '<button style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#6b7280;">✕</button>';
+  
+  document.body.appendChild(notifEl);
+  
+  // Add close button functionality
+  notifEl.querySelector('button').addEventListener('click', function(e) {
+    e.stopPropagation();
+    notifEl.remove();
+  });
+  
+  // Click notification to navigate
+  notifEl.addEventListener('click', function() {
+    if (data.url) {
+      window.location.href = data.url;
+    }
+    notifEl.remove();
+  });
+  
+  // Auto-remove after 5 seconds
+  setTimeout(function() {
+    if (notifEl.parentNode) {
+      notifEl.remove();
+    }
+  }, 5000);
+}
+
+// Add animation style for notifications
+(function() {
+  var style = document.createElement('style');
+  style.textContent = 
+    '@keyframes slideInRight { ' +
+      'from { transform: translateX(100%); opacity: 0; } ' +
+      'to { transform: translateX(0); opacity: 1; } ' +
+    '}';
+  document.head.appendChild(style);
+})();
+
+// ============================================
+// SERVICE WORKER REGISTRATION FOR FCM
+// ============================================
+
+/**
+ * Register service worker for background notifications
+ * Call this function after page load
+ */
+function registerFCMServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then(function(registration) {
+        console.log('✅ Service Worker registered for FCM');
+        
+        // Pass service worker to messaging
+        if (messaging) {
+          messaging.useServiceWorker(registration);
+        }
+      })
+      .catch(function(err) {
+        console.error('❌ Service Worker registration failed:', err);
+      });
+  }
+}
+
+// Auto-register service worker on load
+if (document.readyState === 'complete') {
+  registerFCMServiceWorker();
+} else {
+  window.addEventListener('load', registerFCMServiceWorker);
+}
+
+// ============================================
 // FIREBASE COLLECTIONS REFERENCE
 // ============================================
 
-// Collection references for easy access
 var collections = {
   products: db.collection('products'),
   orders: db.collection('orders'),
@@ -49,7 +260,8 @@ var collections = {
   banners: db.collection('banners'),
   admins: db.collection('admins'),
   settings: db.collection('settings'),
-  blockedUsers: db.collection('blockedUsers')
+  blockedUsers: db.collection('blockedUsers'),
+  fcmTokens: db.collection('fcm_tokens')
 };
 
 // ============================================
@@ -58,18 +270,13 @@ var collections = {
 
 /**
  * Get all documents from a collection
- * @param {string} collectionName - Name of the collection
- * @returns {Promise<Array>} - Array of documents with id and data
  */
 function getAllDocuments(collectionName) {
   return db.collection(collectionName).get()
     .then(function(snapshot) {
       var docs = [];
       snapshot.forEach(function(doc) {
-        docs.push({
-          id: doc.id,
-          data: doc.data()
-        });
+        docs.push({ id: doc.id, data: doc.data() });
       });
       return docs;
     });
@@ -77,28 +284,19 @@ function getAllDocuments(collectionName) {
 
 /**
  * Get a single document by ID
- * @param {string} collectionName - Name of the collection
- * @param {string} docId - Document ID
- * @returns {Promise<Object>} - Document data with id
  */
 function getDocumentById(collectionName, docId) {
   return db.collection(collectionName).doc(docId).get()
     .then(function(doc) {
       if (doc.exists) {
-        return {
-          id: doc.id,
-          data: doc.data()
-        };
+        return { id: doc.id, data: doc.data() };
       }
       return null;
     });
 }
 
 /**
- * Add a new document to a collection
- * @param {string} collectionName - Name of the collection
- * @param {Object} data - Document data
- * @returns {Promise<Object>} - Reference to the new document
+ * Add a new document
  */
 function addDocument(collectionName, data) {
   data.createdAt = data.createdAt || firebase.firestore.FieldValue.serverTimestamp();
@@ -107,10 +305,6 @@ function addDocument(collectionName, data) {
 
 /**
  * Update an existing document
- * @param {string} collectionName - Name of the collection
- * @param {string} docId - Document ID
- * @param {Object} data - Data to update
- * @returns {Promise<void>}
  */
 function updateDocument(collectionName, docId, data) {
   data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
@@ -119,9 +313,6 @@ function updateDocument(collectionName, docId, data) {
 
 /**
  * Delete a document
- * @param {string} collectionName - Name of the collection
- * @param {string} docId - Document ID
- * @returns {Promise<void>}
  */
 function deleteDocument(collectionName, docId) {
   return db.collection(collectionName).doc(docId).delete();
@@ -129,11 +320,6 @@ function deleteDocument(collectionName, docId) {
 
 /**
  * Query documents with filters
- * @param {string} collectionName - Name of the collection
- * @param {string} field - Field to filter on
- * @param {string} operator - Comparison operator (==, !=, <, >, <=, >=)
- * @param {*} value - Value to compare
- * @returns {Promise<Array>} - Array of matching documents
  */
 function queryDocuments(collectionName, field, operator, value) {
   return db.collection(collectionName)
@@ -142,30 +328,18 @@ function queryDocuments(collectionName, field, operator, value) {
     .then(function(snapshot) {
       var docs = [];
       snapshot.forEach(function(doc) {
-        docs.push({
-          id: doc.id,
-          data: doc.data()
-        });
+        docs.push({ id: doc.id, data: doc.data() });
       });
       return docs;
     });
 }
 
-// ============================================
-// REAL-TIME LISTENER HELPERS
-// ============================================
-
 /**
- * Listen to real-time updates on a collection
- * @param {string} collectionName - Name of the collection
- * @param {function} callback - Callback function receiving the updated array
- * @param {Array} filters - Optional array of filter objects [{field, operator, value}]
- * @returns {function} - Unsubscribe function
+ * Real-time collection listener
  */
 function listenToCollection(collectionName, callback, filters) {
   var query = db.collection(collectionName);
   
-  // Apply filters if provided
   if (filters && Array.isArray(filters)) {
     filters.forEach(function(filter) {
       query = query.where(filter.field, filter.operator, filter.value);
@@ -175,51 +349,31 @@ function listenToCollection(collectionName, callback, filters) {
   return query.onSnapshot(function(snapshot) {
     var docs = [];
     snapshot.forEach(function(doc) {
-      docs.push({
-        id: doc.id,
-        data: doc.data()
-      });
+      docs.push({ id: doc.id, data: doc.data() });
     });
     callback(docs);
   }, function(error) {
-    console.error('Listener error for', collectionName, ':', error);
+    console.error('Listener error:', error);
     callback([]);
   });
 }
 
 /**
- * Listen to a single document in real-time
- * @param {string} collectionName - Name of the collection
- * @param {string} docId - Document ID
- * @param {function} callback - Callback function receiving the document data
- * @returns {function} - Unsubscribe function
+ * Real-time single document listener
  */
 function listenToDocument(collectionName, docId, callback) {
   return db.collection(collectionName).doc(docId)
     .onSnapshot(function(doc) {
       if (doc.exists) {
-        callback({
-          id: doc.id,
-          data: doc.data()
-        });
+        callback({ id: doc.id, data: doc.data() });
       } else {
         callback(null);
       }
-    }, function(error) {
-      console.error('Listener error for', collectionName, docId, ':', error);
-      callback(null);
     });
 }
 
-// ============================================
-// BATCH OPERATIONS
-// ============================================
-
 /**
- * Add multiple documents in a batch
- * @param {string} collectionName - Name of the collection
- * @param {Array} documents - Array of data objects
- * @returns {Promise<void>}
+ * Batch add documents
  */
 function batchAddDocuments(collectionName, documents) {
   var batch = db.batch();
@@ -235,33 +389,29 @@ function batchAddDocuments(collectionName, documents) {
 }
 
 /**
- * Delete multiple documents in a batch
- * @param {string} collectionName - Name of the collection
- * @param {Array} docIds - Array of document IDs to delete
- * @returns {Promise<void>}
+ * Batch delete documents
  */
 function batchDeleteDocuments(collectionName, docIds) {
   var batch = db.batch();
   var collectionRef = db.collection(collectionName);
   
   docIds.forEach(function(docId) {
-    var docRef = collectionRef.doc(docId);
-    batch.delete(docRef);
+    batch.delete(collectionRef.doc(docId));
   });
   
   return batch.commit();
 }
 
 // ============================================
-// EXPIRE FIREBASE REFERENCES GLOBALLY
+// EXPORT TO GLOBAL SCOPE
 // ============================================
 
-// Make collections available globally
 window.db = db;
 window.firestoreCollections = collections;
+window.messaging = messaging;
 
-// Make helper functions available globally
 window.FirebaseHelper = {
+  // Firestore
   getAllDocuments: getAllDocuments,
   getDocumentById: getDocumentById,
   addDocument: addDocument,
@@ -272,67 +422,24 @@ window.FirebaseHelper = {
   listenToDocument: listenToDocument,
   batchAddDocuments: batchAddDocuments,
   batchDeleteDocuments: batchDeleteDocuments,
-  collections: collections
+  collections: collections,
+  
+  // Messaging
+  requestNotificationPermission: requestNotificationPermission,
+  getStoredFCMToken: getStoredFCMToken,
+  saveTokenToFirestore: saveTokenToFirestore,
+  deleteFCMToken: deleteFCMToken,
+  showInAppNotification: showInAppNotification,
+  
+  // Config
+  VAPID_KEY: VAPID_KEY
 };
 
 // ============================================
-// CONNECTION STATUS LOGGING
+// INIT LOG
 // ============================================
 
-// Log when Firebase connects
-console.log('🔥 Firebase initialized successfully');
-console.log('📦 Available collections:', Object.keys(collections).join(', '));
-console.log('💾 Offline persistence:', 'enabled');
-
-// ============================================
-// FIREBASE RULES REFERENCE (for console only)
-// ============================================
-
-/*
-Basic Firestore Security Rules for OK Mart:
-
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // Allow public read for products
-    match /products/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Allow public read for banners
-    match /banners/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Allow public read for offers
-    match /offers/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Orders - authenticated users can create, admins can update
-    match /orders/{document=**} {
-      allow read: if true;
-      allow create: if true;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
-    }
-    
-    // Admins collection - restricted
-    match /admins/{document=**} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Settings - restricted
-    match /settings/{document=**} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-  }
-}
-*/
-
+console.log('🔥 Firebase initialized');
+console.log('📦 Collections:', Object.keys(collections).join(', '));
+console.log('📨 Messaging:', messaging ? 'Available' : 'Not Available');
 console.log('✅ Firebase module loaded');
