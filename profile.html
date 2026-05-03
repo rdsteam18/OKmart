@@ -2,199 +2,243 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   
   <title>My Profile | OK Mart</title>
-  <meta name="description" content="Manage your OK Mart profile, orders, wishlist, and get support.">
+  <meta name="description" content="Manage your profile, addresses, orders, and preferences">
   <meta name="theme-color" content="#2ecc71">
   
-  <link rel="manifest" href="/manifest.json">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/profile.css">
   
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="app-container">
+  <div class="profile-page">
     
     <!-- ========== HEADER ========== -->
     <header class="profile-header">
-      <div class="header-inner">
-        <a href="/index.html" class="back-btn">←</a>
-        <h1 class="header-title">My Profile</h1>
-        <span></span>
-      </div>
+      <button class="back-btn" onclick="history.back()">←</button>
+      <h1 class="profile-title">My Profile</h1>
+      <div></div>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="profile-main">
       
-      <!-- Profile Card -->
-      <div class="profile-card">
-        <div class="profile-avatar" id="profileAvatar">👤</div>
-        <div class="profile-info">
-          <h2 class="profile-name" id="profileName">Guest User</h2>
-          <span class="profile-phone" id="profilePhone">Add your details</span>
-        </div>
-        <button class="edit-profile-btn" id="editProfileBtn">✏️ Edit</button>
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading your profile...</p>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="stats-row">
-        <div class="stat-card" onclick="scrollToSection('orders')">
-          <span class="stat-value" id="statOrders">0</span>
-          <span class="stat-label">Orders</span>
-        </div>
-        <div class="stat-card" onclick="location.href='/wishlist.html'">
-          <span class="stat-value" id="statWishlist">0</span>
-          <span class="stat-label">Wishlist</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value" id="statSaved">₹0</span>
-          <span class="stat-label">Saved</span>
-        </div>
-      </div>
-
-      <!-- Menu Sections -->
-      <div class="menu-sections">
+      <!-- Profile Content -->
+      <div class="profile-content" id="profileContent" style="display: none;">
         
-        <!-- Your Orders -->
-        <div class="menu-section" id="ordersSection">
-          <div class="menu-header" onclick="toggleSection('orders')">
-            <div class="menu-left">
-              <span class="menu-icon">📦</span>
-              <span class="menu-label">Your Orders</span>
-            </div>
-            <span class="menu-arrow" id="ordersArrow">›</span>
+        <!-- ========== 1. USER INFO CARD ========== -->
+        <div class="profile-card user-info-card">
+          <div class="card-header">
+            <h2 class="card-title">👤 Personal Information</h2>
+            <button class="edit-btn" id="editUserInfoBtn">Edit</button>
           </div>
-          <div class="menu-content" id="ordersContent" style="display: none;">
-            <div class="orders-loading" id="ordersLoading">Loading orders...</div>
-            <div class="orders-list" id="ordersList"></div>
-            <div class="no-orders" id="noOrders" style="display: none;">
-              <p>No orders found</p>
-              <a href="/index.html" class="shop-link">Start Shopping →</a>
+          
+          <div class="user-info-display" id="userInfoDisplay">
+            <div class="info-row">
+              <span class="info-label">Name</span>
+              <span class="info-value" id="displayName">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone</span>
+              <span class="info-value" id="displayPhone">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email</span>
+              <span class="info-value" id="displayEmail">-</span>
             </div>
           </div>
-        </div>
-
-        <!-- Wishlist -->
-        <div class="menu-section">
-          <a href="/wishlist.html" class="menu-header-link">
-            <div class="menu-left">
-              <span class="menu-icon">❤️</span>
-              <span class="menu-label">Wishlist</span>
+          
+          <div class="user-info-edit" id="userInfoEdit" style="display: none;">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="editName" class="form-input" placeholder="Enter your name">
             </div>
-            <div class="menu-right">
-              <span class="menu-badge" id="wishlistBadge">0</span>
-              <span class="menu-arrow">›</span>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="editPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
             </div>
-          </a>
-        </div>
-
-        <!-- Offers -->
-        <div class="menu-section" id="offersSection">
-          <div class="menu-header" onclick="toggleSection('offers')">
-            <div class="menu-left">
-              <span class="menu-icon">🎁</span>
-              <span class="menu-label">Active Offers</span>
+            <div class="form-group">
+              <label>Email (Optional)</label>
+              <input type="email" id="editEmail" class="form-input" placeholder="your@email.com">
             </div>
-            <span class="menu-arrow" id="offersArrow">›</span>
-          </div>
-          <div class="menu-content" id="offersContent" style="display: none;">
-            <div class="offers-loading" id="offersLoading">Loading offers...</div>
-            <div class="offers-list" id="offersList"></div>
+            <div class="edit-actions">
+              <button class="cancel-edit-btn" id="cancelEditBtn">Cancel</button>
+              <button class="save-edit-btn" id="saveUserInfoBtn">Save Changes</button>
+            </div>
           </div>
         </div>
 
-        <!-- Track Order -->
-        <div class="menu-section">
-          <a href="/tracking.html" class="menu-header-link">
-            <div class="menu-left">
-              <span class="menu-icon">🔍</span>
-              <span class="menu-label">Track Order</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </a>
+        <!-- ========== 2. ADDRESS MANAGEMENT ========== -->
+        <div class="profile-card address-card">
+          <div class="card-header">
+            <h2 class="card-title">📍 Delivery Address</h2>
+            <button class="add-btn" id="addAddressBtn">+ Add</button>
+          </div>
+          
+          <div id="addressList" class="address-list">
+            <!-- Addresses will be loaded here -->
+          </div>
         </div>
 
-        <!-- Help & Support -->
-        <div class="menu-section">
-          <a href="#" class="menu-header-link" onclick="openSupport(); return false;">
-            <div class="menu-left">
-              <span class="menu-icon">💬</span>
-              <span class="menu-label">Help & Support</span>
+        <!-- Add/Edit Address Modal (Hidden by default) -->
+        <div class="address-modal" id="addressModal">
+          <div class="address-modal-content">
+            <div class="modal-header">
+              <h3 id="modalTitle">Add New Address</h3>
+              <button class="close-modal" id="closeModalBtn">✕</button>
             </div>
-            <span class="menu-arrow">›</span>
-          </a>
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="addressName" class="form-input" placeholder="Recipient name">
+              </div>
+              <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="addressPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
+              </div>
+              <div class="form-group">
+                <label>Address Line *</label>
+                <textarea id="addressLine" class="form-input" rows="2" placeholder="House/Flat number, Street, Area"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>City</label>
+                  <input type="text" id="addressCity" class="form-input" placeholder="City">
+                </div>
+                <div class="form-group">
+                  <label>Pincode</label>
+                  <input type="text" id="addressPincode" class="form-input" placeholder="6-digit pincode" maxlength="6">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Landmark (Optional)</label>
+                <input type="text" id="addressLandmark" class="form-input" placeholder="Nearby landmark">
+              </div>
+              <div class="form-check">
+                <input type="checkbox" id="setAsDefault"> 
+                <label for="setAsDefault">Set as default address</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="cancel-modal-btn" id="cancelModalBtn">Cancel</button>
+              <button class="save-modal-btn" id="saveAddressBtn">Save Address</button>
+            </div>
+          </div>
         </div>
 
-        <!-- Refund / Complaint -->
-        <div class="menu-section">
-          <a href="#" class="menu-header-link" onclick="openRefund(); return false;">
-            <div class="menu-left">
-              <span class="menu-icon">💰</span>
-              <span class="menu-label">Refund / Complaint</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </a>
+        <!-- ========== 3. ORDER HISTORY ========== -->
+        <div class="profile-card orders-card">
+          <div class="card-header">
+            <h2 class="card-title">📦 Order History</h2>
+            <span class="orders-count" id="ordersCount">0 orders</span>
+          </div>
+          <div id="ordersList" class="orders-list">
+            <!-- Orders will be loaded here -->
+          </div>
         </div>
 
-        <!-- Terms & Conditions -->
-        <div class="menu-section">
-          <a href="/terms.html" class="menu-header-link">
-            <div class="menu-left">
-              <span class="menu-icon">📄</span>
-              <span class="menu-label">Terms & Conditions</span>
-            </div>
-            <span class="menu-arrow">›</span>
-          </a>
+        <!-- ========== 4. SAVED ITEMS (Save for Later) ========== -->
+        <div class="profile-card saved-items-card">
+          <div class="card-header">
+            <h2 class="card-title">📦 Saved Items</h2>
+            <button class="clear-saved-btn" id="clearSavedBtn">Clear All</button>
+          </div>
+          <div id="savedItemsList" class="saved-items-list">
+            <!-- Saved items will be loaded here -->
+          </div>
         </div>
+
+        <!-- ========== 5. SETTINGS / PREFERENCES ========== -->
+        <div class="profile-card settings-card">
+          <h2 class="card-title">⚙️ Preferences</h2>
+          
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-icon">🌙</span>
+              <div>
+                <strong>Dark Mode</strong>
+                <small>Switch between light and dark theme</small>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-row">
+            <div class="setting-info">
+              <span class="setting-icon">🔔</span>
+              <div>
+                <strong>Notifications</strong>
+                <small>Receive order updates and offers</small>
+              </div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="notificationToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ========== 6. LOGOUT BUTTON ========== -->
+        <button class="logout-btn" id="logoutBtn">
+          🚪 Logout
+        </button>
+
+        <p class="version-text">OK Mart App v2.0.0</p>
+
       </div>
-
-      <!-- Logout -->
-      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
-      
-      <p class="app-version">OK Mart v2.0 · Firebase Powered</p>
 
     </main>
 
-    <!-- ========== EDIT PROFILE MODAL ========== -->
-    <div class="modal-overlay" id="editModal">
-      <div class="modal-card">
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
+      <a href="/profile" class="nav-item active">👤<span>Profile</span></a>
+    </nav>
+
+    <!-- Order Detail Modal -->
+    <div class="order-modal" id="orderModal">
+      <div class="order-modal-content">
         <div class="modal-header">
-          <h3>Edit Profile</h3>
-          <button class="modal-close" id="closeModal">✕</button>
+          <h3>Order Details</h3>
+          <button class="close-modal" id="closeOrderModalBtn">✕</button>
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="editName" placeholder="Your name">
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" id="editPhone" placeholder="10-digit number" maxlength="10">
-          </div>
-          <div class="form-group">
-            <label>Address</label>
-            <textarea id="editAddress" placeholder="Your address" rows="2"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Pincode</label>
-            <input type="text" id="editPincode" placeholder="6-digit pincode" maxlength="6">
-          </div>
-          <button class="save-btn" id="saveProfileBtn">Save Changes</button>
+        <div class="modal-body" id="orderModalBody">
+          <!-- Order details will be loaded here -->
         </div>
       </div>
     </div>
 
-    <!-- Toast -->
+    <!-- Toast Message -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/profile.js"></script>
