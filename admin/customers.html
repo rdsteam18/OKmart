@@ -2,139 +2,690 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Customer Management | OK Mart Admin</title>
-  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     :root {
-      --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #e8f8ef;
-      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
-      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 16px; --transition: all .2s ease;
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      --whatsapp: #25D366;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 20px;
+      --transition: all .2s ease;
     }
     
     body {
-      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
-      line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
     }
-    
-    .admin-layout { display: flex; min-height: 100vh; }
     
     /* Sidebar */
-    .sidebar {
-      width: 260px; background: #1a1e2b; color: white; position: fixed;
-      top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column;
-      transition: transform .3s;
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
     }
-    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
-    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
-    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; text-transform: uppercase; }
-    .sidebar-nav { flex: 1; padding: 20px 0; }
-    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
-    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
-    .sidebar-nav a.active { background: rgba(46,204,113,.1); color: var(--primary); border-left: 3px solid var(--primary); }
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
-    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
     
-    .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
-    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+    
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sidebar-logo-img {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+    }
+    
+    .sidebar-logo-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .sidebar-badge {
+      background: var(--primary);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .6rem;
+      font-weight: 600;
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+    }
+    
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .sidebar-nav a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: rgba(46,204,113,.1);
+      transition: width .3s;
+    }
+    
+    .sidebar-nav a:hover::before {
+      width: 100%;
+    }
+    
+    .sidebar-nav a:hover {
+      color: white;
+      padding-left: 28px;
+    }
+    
+    .sidebar-nav a.active {
+      background: rgba(46,204,113,.15);
+      color: var(--primary);
+      border-left: 3px solid var(--primary);
+    }
+    
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    
+    .sidebar-footer button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,.08);
+      border: none;
+      color: rgba(255,255,255,.7);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .sidebar-footer button:hover {
+      background: rgba(239,68,68,.2);
+      color: var(--danger);
+    }
+    
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      padding: 12px 16px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .menu-toggle {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
     
     /* Main Content */
-    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1200px; }
-    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-    h1 { font-size: 1.8rem; font-weight: 800; }
-    .customer-count { color: var(--muted); font-size: .9rem; }
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 24px;
+      max-width: 1400px;
+    }
     
-    /* Stats */
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
-    .stat-mini { background: var(--card); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-    .stat-mini .value { font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); display: block; }
-    .stat-mini .label { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
     
-    /* Search */
-    .controls-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .search-input { flex: 1; min-width: 200px; padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
-    .search-input:focus { outline: none; border-color: var(--primary); }
-    .filter-select { padding: 12px 16px; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     
-    /* Customers Grid */
-    .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+    /* Bulk Message Button */
+    .bulk-msg-btn {
+      background: linear-gradient(135deg, var(--whatsapp), #128C7E);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(37,211,102,.3);
+    }
     
+    .bulk-msg-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37,211,102,.4);
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    
+    .stat-card .stat-label {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    
+    /* Control Bar */
+    .control-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      background: var(--card);
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    
+    .search-input {
+      flex: 2;
+      min-width: 200px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: .9rem;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .filter-select {
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    /* Bulk Actions Bar */
+    .bulk-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: var(--primary-light);
+      border-radius: var(--radius);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .bulk-actions span {
+      font-weight: 600;
+      font-size: .85rem;
+    }
+    
+    .bulk-whatsapp-btn {
+      background: var(--whatsapp);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Customer Grid */
+    .customer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+    
+    /* Customer Card */
     .customer-card {
-      background: var(--card); border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-      cursor: pointer; transition: var(--transition); position: relative;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: var(--transition);
+      position: relative;
     }
-    .customer-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .customer-rank {
-      position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
-      border-radius: 50%; background: var(--primary-light); color: var(--primary-dark);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: .85rem;
+    
+    .customer-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
     }
-    .customer-rank.top { background: #fef3c7; color: #92400e; }
     
-    .customer-phone { font-family: monospace; font-size: .95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
-    .customer-name { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
-    .customer-meta { display: flex; gap: 20px; font-size: .85rem; margin-bottom: 12px; }
-    .customer-meta span { color: var(--muted); }
-    .customer-meta strong { color: var(--text); }
-    
-    .customer-actions { display: flex; gap: 8px; }
-    .btn-sm {
-      padding: 8px 14px; border-radius: 20px; font-size: .75rem; font-weight: 600;
-      cursor: pointer; border: none; transition: var(--transition); display: flex; align-items: center; gap: 4px;
+    .customer-card.selected {
+      border: 2px solid var(--primary);
+      background: var(--primary-light);
     }
-    .btn-offer { background: var(--primary-light); color: var(--primary-dark); border: 1.5px solid var(--primary); }
-    .btn-offer:hover { background: var(--primary); color: white; }
-    .btn-remind { background: #fef3c7; color: #92400e; border: 1.5px solid var(--warning); }
-    .btn-remind:hover { background: var(--warning); color: white; }
-    .btn-thanks { background: #dbeafe; color: #1e40af; border: 1.5px solid var(--info); }
-    .btn-thanks:hover { background: var(--info); color: white; }
-    .btn-orders { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
-    .btn-orders:hover { background: var(--border); }
     
-    /* Order History Modal */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,.5); z-index: 200;
-      display: none; align-items: center; justify-content: center;
+    .customer-header {
+      background: linear-gradient(135deg, #f8fafc, var(--card));
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
-    .modal-overlay.active { display: flex; animation: fadeIn .2s ease; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
-    .modal-card {
-      background: var(--card); border-radius: 24px; width: 95%; max-width: 550px;
-      max-height: 80vh; overflow-y: auto; padding: 24px;
-      animation: slideUp .3s ease;
+    .customer-avatar {
+      width: 55px;
+      height: 55px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
     }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-header h2 { font-size: 1.2rem; font-weight: 700; }
-    .modal-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); border: none; font-size: 1.2rem; cursor: pointer; }
+    .customer-info h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
     
-    .order-mini { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .order-mini:last-child { border-bottom: none; }
-    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; }
-    .status-received { background: #f3f4f6; color: #374151; }
-    .status-preparing { background: #fef3c7; color: #92400e; }
-    .status-outfordelivery { background: #dbeafe; color: #1e40af; }
-    .status-delivered { background: #d1fae5; color: #065f46; }
-    .status-cancelled { background: #fee2e2; color: #991b1b; }
+    .customer-info p {
+      font-size: .75rem;
+      color: var(--muted);
+    }
     
-    .bulk-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .customer-body {
+      padding: 16px 20px;
+    }
+    
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: .85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-icon {
+      width: 28px;
+      color: var(--muted);
+    }
+    
+    .detail-label {
+      color: var(--muted);
+      width: 70px;
+    }
+    
+    .detail-value {
+      font-weight: 500;
+      flex: 1;
+    }
+    
+    .customer-footer {
+      padding: 12px 20px;
+      background: var(--bg);
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .whatsapp-btn {
+      flex: 1;
+      background: var(--whatsapp);
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: .8rem;
+    }
+    
+    .view-orders-btn {
+      flex: 1;
+      background: var(--info);
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: .8rem;
+    }
+    
+    /* Select Checkbox */
+    .customer-select {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: var(--card);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: .9rem;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .template-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .template-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: .7rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .template-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    
+    .send-whatsapp-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--whatsapp);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    
+    /* Customer Orders Modal */
+    .orders-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .order-item-card {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .order-item-card:hover {
+      background: var(--primary-light);
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .order-id {
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--primary-dark);
+    }
+    
+    .order-status {
+      font-size: .7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    
+    .order-total {
+      font-weight: 700;
+    }
     
     /* Toast */
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
-    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: #10b981; }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all .3s;
+    }
     
-    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } .stats-row { grid-template-columns: 1fr 1fr; } .customers-grid { grid-template-columns: 1fr; } }
+    .toast.show {
+      opacity: 1;
+      bottom: 50px;
+    }
+    
+    .toast.success {
+      background: var(--success);
+    }
+    
+    .toast.error {
+      background: var(--danger);
+    }
+    
+    .no-data {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: 16px;
+      }
+      
+      .mobile-header {
+        display: flex;
+      }
+      
+      .control-bar {
+        flex-direction: column;
+      }
+      
+      .search-input, .filter-select {
+        width: 100%;
+      }
+      
+      .customer-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -144,312 +695,496 @@
 <body>
   <div class="admin-layout">
     
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+      <div class="sidebar-brand">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
+        <span class="sidebar-logo-text">OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
       <nav class="sidebar-nav">
         <a href="index.html">📊 Dashboard</a>
         <a href="orders.html">📋 Orders</a>
         <a href="products.html">📦 Products</a>
         <a href="offers.html">🏷️ Offers</a>
+        <a href="delivery.html">🚚 Delivery</a>
         <a href="customers.html" class="active">👥 Customers</a>
         <a href="settings.html">⚙️ Settings</a>
       </nav>
-      <div class="sidebar-footer"><button onclick="adminLogout()">🚪 Logout</button></div>
+      <div class="sidebar-footer">
+        <button onclick="logout()">🚪 Logout</button>
+        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
+      </div>
     </aside>
 
+    <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Customer Management</span><span></span>
+      <span style="font-weight:700;">Customer Management</span>
+      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
 
+    <!-- Main Content -->
     <main class="main-content">
+      
+      <!-- Page Header -->
       <div class="page-header">
         <h1>👥 Customer Management</h1>
-        <span class="customer-count" id="totalCustomers">0 customers</span>
+        <button class="bulk-msg-btn" id="bulkMessageBtn">📱 Send Bulk WhatsApp</button>
       </div>
-      
+
       <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-mini"><span class="value" id="statTotal">0</span><span class="label">Total Customers</span></div>
-        <div class="stat-mini"><span class="value" id="statActive">0</span><span class="label">Active (30 days)</span></div>
-        <div class="stat-mini"><span class="value" id="statRevenue">₹0</span><span class="label">Total Revenue</span></div>
-        <div class="stat-mini"><span class="value" id="statAvg">₹0</span><span class="label">Avg per Customer</span></div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalCustomers">0</div>
+          <div class="stat-label">Total Customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="activeCustomers">0</div>
+          <div class="stat-label">Active Customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalOrders">0</div>
+          <div class="stat-label">Total Orders</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalSpent">₹0</div>
+          <div class="stat-label">Total Spent</div>
+        </div>
       </div>
-      
-      <!-- Controls -->
-      <div class="controls-bar">
-        <input type="text" class="search-input" id="customerSearch" placeholder="🔍 Search by phone or name..." oninput="renderCustomers()">
-        <select class="filter-select" id="sortFilter" onchange="renderCustomers()">
-          <option value="spent-high">Highest Spending</option>
-          <option value="spent-low">Lowest Spending</option>
-          <option value="orders-high">Most Orders</option>
-          <option value="recent">Recently Active</option>
+
+      <!-- Control Bar -->
+      <div class="control-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name, phone, email...">
+        <select id="orderCountFilter" class="filter-select">
+          <option value="all">All Customers</option>
+          <option value="returning">Returning (2+ orders)</option>
+          <option value="one-time">One-time (1 order)</option>
+          <option value="inactive">Inactive (no orders)</option>
         </select>
       </div>
-      
-      <!-- Bulk Actions -->
-      <div class="bulk-actions" style="margin-bottom:16px;">
-        <button class="btn-sm btn-offer" onclick="broadcastOffer()">📢 Broadcast Offer</button>
-        <button class="btn-sm btn-remind" onclick="broadcastReminder()">🔔 Send Reminder</button>
+
+      <!-- Bulk Actions Bar (shown when customers selected) -->
+      <div class="bulk-actions" id="bulkActions" style="display: none;">
+        <span id="selectedCount">0 customers selected</span>
+        <button class="bulk-whatsapp-btn" id="bulkWhatsappSelected">📱 Send WhatsApp to Selected</button>
+        <button class="bulk-whatsapp-btn" onclick="clearSelection()" style="background:var(--danger);">Clear Selection</button>
       </div>
-      
+
       <!-- Customers Grid -->
-      <div class="customers-grid" id="customersGrid"><p style="color:var(--muted);">Loading customers...</p></div>
+      <div class="customer-grid" id="customersGrid">
+        <div class="no-data">Loading customers...</div>
+      </div>
+
     </main>
   </div>
 
-  <!-- Order History Modal -->
-  <div class="modal-overlay" id="historyModal">
-    <div class="modal-card">
+  <!-- WhatsApp Message Modal -->
+  <div class="modal" id="whatsappModal">
+    <div class="modal-content">
       <div class="modal-header">
-        <h2>📋 Order History</h2>
-        <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+        <h3 id="whatsappModalTitle">Send WhatsApp Message</h3>
+        <button class="modal-close" onclick="closeWhatsappModal()">✕</button>
       </div>
-      <div style="margin-bottom:14px;"><strong id="historyCustomerInfo"></strong></div>
-      <div id="historyOrdersList"></div>
-      <div class="bulk-actions">
-        <button class="btn-sm btn-offer" onclick="messageFromHistory()">💬 Send Offer</button>
-        <button class="btn-sm btn-thanks" onclick="thankFromHistory()">🙏 Thank You</button>
+      <div class="modal-body">
+        <div class="template-buttons">
+          <button class="template-btn" onclick="setTemplate('offer')">🎉 Offer Message</button>
+          <button class="template-btn" onclick="setTemplate('order')">📦 Order Update</button>
+          <button class="template-btn" onclick="setTemplate('thanks')">🙏 Thank You</button>
+          <button class="template-btn" onclick="setTemplate('delivery')">🚚 Delivery Alert</button>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="whatsappMessage" rows="6" placeholder="Type your message here..."></textarea>
+        </div>
+        <p style="font-size: .7rem; color: var(--muted); margin-top: 8px;">
+          💡 Tip: Use {name} to insert customer name automatically
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="action-btn" onclick="closeWhatsappModal()">Cancel</button>
+        <button class="send-whatsapp-btn" id="sendWhatsappBtn">📱 Send Message</button>
       </div>
     </div>
   </div>
 
+  <!-- Customer Orders Modal -->
+  <div class="modal" id="ordersModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="ordersModalTitle">Customer Orders</h3>
+        <button class="modal-close" onclick="closeOrdersModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="orders-list" id="ordersList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script src="/js/firebase.js"></script>
   <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== CUSTOMER MANAGEMENT SYSTEM =====
+    // ===== CUSTOMER MANAGEMENT SYSTEM WITH WHATSAPP =====
     
+    // State
     let allCustomers = [];
     let allOrders = [];
-    let currentHistoryPhone = null;
+    let selectedCustomers = new Set();
+    let currentMessageTarget = null; // 'single' or 'bulk'
+    let currentCustomerPhone = null;
     
-    // Message templates
-    const MESSAGE_TEMPLATES = {
-      offer: (name) => `🔥 *Special Offer for ${name || 'You'}!*\n\nUse code *SAVE20* and get ₹20 OFF on orders above ₹250.\n\n🛒 Shop now: ${window.location.origin}\n\n📞 Contact: +91 99822 39821`,
-      reminder: (name) => `🛒 *Hey ${name || 'there'}!*\n\nYou haven't ordered in a while. Check out fresh deals now!\n\n🍎 Fresh fruits | 🥛 Dairy | 🍿 Snacks\n\n👉 ${window.location.origin}\n\n📞 +91 99822 39821`,
-      thanks: (name) => `🙏 *Thank you ${name || 'for choosing us'}!*\n\nWe hope you enjoyed our service. Your feedback means a lot!\n\n⭐ Rate us on WhatsApp\n📞 +91 99822 39821`
+    // Templates
+    const templates = {
+      offer: `🎉 *Special Offer for {name}!* 🎉\n\nGet 20% OFF on your next order at OK Mart!\n\nUse code: SAVE20\n\nValid for today only!\n\nShop now: https://okmart.netlify.app`,
+      order: `📦 *Order Update* 📦\n\nHi {name}, your order has been confirmed and will be delivered soon.\n\nTrack your order: https://okmart.netlify.app/track-order.html\n\nThank you for shopping with OK Mart! 🙏`,
+      thanks: `🙏 *Thank You!* 🙏\n\nHi {name}, thank you for shopping at OK Mart!\n\nWe hope you enjoyed your experience.\n\nRate us: ⭐⭐⭐⭐⭐\n\nSee you again soon!`,
+      delivery: `🚚 *Delivery Alert* 🚚\n\nHi {name}, your order is out for delivery!\n\nExpected delivery in 10-15 minutes.\n\nTrack live: https://okmart.netlify.app/track-order.html`
     };
     
-    // ========== LOAD DATA ==========
-    function loadData() {
-      // Load from Firebase
-      db.collection('orders').orderBy('orderDate', 'desc').onSnapshot(snapshot => {
-        allOrders = [];
-        snapshot.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
-        
-        // Merge with localStorage orders
-        const localOrders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-        localOrders.forEach(lo => {
-          if (!allOrders.find(o => o.orderId === lo.orderId)) allOrders.push(lo);
-        });
-        
-        buildCustomerList();
-        renderCustomers();
-        updateStats();
-      });
+    // Load Data
+    async function loadData() {
+      await loadOrders();
+      processCustomers();
+      renderCustomers();
+      updateStats();
     }
     
-    function buildCustomerList() {
-      const customerMap = {};
-      const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    // Load Orders
+    async function loadOrders() {
+      try {
+        const snapshot = await db.collection('orders').get();
+        allOrders = [];
+        snapshot.forEach(doc => {
+          allOrders.push({ id: doc.id, ...doc.data() });
+        });
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      }
+    }
+    
+    // Process Customers from Orders
+    function processCustomers() {
+      const customerMap = new Map();
       
       allOrders.forEach(order => {
         const phone = order.customerPhone || order.phone;
         if (!phone) return;
         
-        if (!customerMap[phone]) {
-          customerMap[phone] = {
+        if (!customerMap.has(phone)) {
+          customerMap.set(phone, {
             phone: phone,
             name: order.customerName || order.name || 'Customer',
+            email: order.email || '',
+            address: order.customerAddress || order.address || '',
+            city: order.city || '',
             totalOrders: 0,
             totalSpent: 0,
             lastOrderDate: null,
-            orders: [],
-            active: false
-          };
+            firstOrderDate: null,
+            orders: []
+          });
         }
         
-        const cust = customerMap[phone];
-        cust.totalOrders++;
-        cust.totalSpent += (Number(order.total) || 0);
-        cust.orders.push(order);
+        const customer = customerMap.get(phone);
+        customer.totalOrders++;
+        customer.totalSpent += order.total || 0;
         
-        if (order.customerName || order.name) cust.name = order.customerName || order.name;
-        
-        const orderDate = new Date(order.orderDate || order.date);
-        if (!cust.lastOrderDate || orderDate > new Date(cust.lastOrderDate)) {
-          cust.lastOrderDate = order.orderDate || order.date;
+        const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+        if (!customer.firstOrderDate || orderDate < customer.firstOrderDate) {
+          customer.firstOrderDate = orderDate;
         }
-        if (orderDate.getTime() > thirtyDaysAgo) cust.active = true;
+        if (!customer.lastOrderDate || orderDate > customer.lastOrderDate) {
+          customer.lastOrderDate = orderDate;
+        }
+        
+        customer.orders.push({
+          id: order.id,
+          total: order.total,
+          status: order.status,
+          date: orderDate
+        });
       });
       
-      allCustomers = Object.values(customerMap);
+      // Sort orders by date
+      customerMap.forEach(customer => {
+        customer.orders.sort((a, b) => b.date - a.date);
+      });
+      
+      allCustomers = Array.from(customerMap.values());
     }
     
-    // ========== RENDER CUSTOMERS ==========
+    // Update Stats
+    function updateStats() {
+      const totalCustomers = allCustomers.length;
+      const activeCustomers = allCustomers.filter(c => c.totalOrders >= 2).length;
+      const totalOrders = allOrders.length;
+      const totalSpent = allCustomers.reduce((sum, c) => sum + c.totalSpent, 0);
+      
+      document.getElementById('totalCustomers').textContent = totalCustomers;
+      document.getElementById('activeCustomers').textContent = activeCustomers;
+      document.getElementById('totalOrders').textContent = totalOrders;
+      document.getElementById('totalSpent').textContent = `₹${totalSpent.toLocaleString('en-IN')}`;
+    }
+    
+    // Filter Customers
+    function getFilteredCustomers() {
+      const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+      const filter = document.getElementById('orderCountFilter')?.value || 'all';
+      
+      return allCustomers.filter(c => {
+        if (search && !c.name.toLowerCase().includes(search) && !c.phone.includes(search)) {
+          return false;
+        }
+        if (filter === 'returning' && c.totalOrders < 2) return false;
+        if (filter === 'one-time' && c.totalOrders !== 1) return false;
+        if (filter === 'inactive' && c.totalOrders > 0) return false;
+        return true;
+      });
+    }
+    
+    // Render Customers
     function renderCustomers() {
-      const search = (document.getElementById('customerSearch')?.value || '').toLowerCase().trim();
-      const sort = document.getElementById('sortFilter')?.value || 'spent-high';
-      
-      let filtered = [...allCustomers];
-      
-      // Search
-      if (search) {
-        filtered = filtered.filter(c => 
-          c.phone.includes(search) || 
-          c.name.toLowerCase().includes(search)
-        );
-      }
-      
-      // Sort
-      switch(sort) {
-        case 'spent-high': filtered.sort((a, b) => b.totalSpent - a.totalSpent); break;
-        case 'spent-low': filtered.sort((a, b) => a.totalSpent - b.totalSpent); break;
-        case 'orders-high': filtered.sort((a, b) => b.totalOrders - a.totalOrders); break;
-        case 'recent': filtered.sort((a, b) => new Date(b.lastOrderDate) - new Date(a.lastOrderDate)); break;
-      }
-      
-      document.getElementById('totalCustomers').textContent = `${filtered.length} customer${filtered.length !== 1 ? 's' : ''}`;
-      
+      const filtered = getFilteredCustomers();
       const grid = document.getElementById('customersGrid');
       
       if (filtered.length === 0) {
-        grid.innerHTML = '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px;">No customers found</p>';
+        grid.innerHTML = '<div class="no-data">👥 No customers found</div>';
         return;
       }
       
-      grid.innerHTML = filtered.map((c, i) => {
-        const rank = (sort === 'spent-high' || sort === 'orders-high') ? i + 1 : null;
-        const rankClass = i < 3 ? 'top' : '';
+      grid.innerHTML = filtered.map(c => {
+        const isSelected = selectedCustomers.has(c.phone);
+        const lastOrderDate = c.lastOrderDate ? c.lastOrderDate.toLocaleDateString('en-IN') : 'N/A';
         
         return `
-          <div class="customer-card">
-            ${rank ? `<div class="customer-rank ${rankClass}">${rank}</div>` : ''}
-            <div class="customer-phone">📱 ${c.phone}</div>
-            <div class="customer-name">${c.name}</div>
-            <div class="customer-meta">
-              <span>📦 <strong>${c.totalOrders}</strong> orders</span>
-              <span>💰 <strong>₹${c.totalSpent.toLocaleString('en-IN')}</strong></span>
-              <span>📅 Last: <strong>${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : 'N/A'}</strong></span>
-              ${c.active ? '<span style="color:#10b981;">● Active</span>' : ''}
+          <div class="customer-card ${isSelected ? 'selected' : ''}">
+            <input type="checkbox" class="customer-select" data-phone="${c.phone}" ${isSelected ? 'checked' : ''} onchange="toggleCustomerSelect('${c.phone}', this.checked)">
+            <div class="customer-header">
+              <div class="customer-avatar">${c.name.charAt(0).toUpperCase()}</div>
+              <div class="customer-info">
+                <h3>${escapeHtml(c.name)}</h3>
+                <p>Customer since: ${c.firstOrderDate ? c.firstOrderDate.toLocaleDateString('en-IN') : 'New'}</p>
+              </div>
             </div>
-            <div class="customer-actions">
-              <button class="btn-sm btn-orders" onclick="showOrderHistory('${c.phone}')">📋 History</button>
-              <button class="btn-sm btn-offer" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'offer')">💬 Offer</button>
-              <button class="btn-sm btn-remind" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'reminder')">🔔 Remind</button>
-              <button class="btn-sm btn-thanks" onclick="sendMessage('${c.phone}', '${c.name.replace(/'/g, "\\'")}', 'thanks')">🙏 Thanks</button>
+            <div class="customer-body">
+              <div class="detail-row">
+                <span class="detail-icon">📞</span>
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">${c.phone}</span>
+              </div>
+              ${c.email ? `<div class="detail-row"><span class="detail-icon">✉️</span><span class="detail-label">Email</span><span class="detail-value">${escapeHtml(c.email)}</span></div>` : ''}
+              <div class="detail-row">
+                <span class="detail-icon">📦</span>
+                <span class="detail-label">Orders</span>
+                <span class="detail-value">${c.totalOrders} orders</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-icon">💰</span>
+                <span class="detail-label">Total Spent</span>
+                <span class="detail-value">₹${c.totalSpent.toLocaleString('en-IN')}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-icon">🕐</span>
+                <span class="detail-label">Last Order</span>
+                <span class="detail-value">${lastOrderDate}</span>
+              </div>
+            </div>
+            <div class="customer-footer">
+              <button class="whatsapp-btn" onclick="openSingleWhatsapp('${c.phone}', '${escapeHtml(c.name)}')">
+                📱 WhatsApp
+              </button>
+              <button class="view-orders-btn" onclick="viewCustomerOrders('${c.phone}')">
+                📋 View Orders
+              </button>
             </div>
           </div>
         `;
       }).join('');
-    }
-    
-    function updateStats() {
-      const total = allCustomers.length;
-      const active = allCustomers.filter(c => c.active).length;
-      const revenue = allCustomers.reduce((s, c) => s + c.totalSpent, 0);
-      const avg = total > 0 ? Math.round(revenue / total) : 0;
       
-      document.getElementById('statTotal').textContent = total;
-      document.getElementById('statActive').textContent = active;
-      document.getElementById('statRevenue').textContent = '₹' + revenue.toLocaleString('en-IN');
-      document.getElementById('statAvg').textContent = '₹' + avg.toLocaleString('en-IN');
+      // Update bulk actions visibility
+      const bulkActions = document.getElementById('bulkActions');
+      if (selectedCustomers.size > 0) {
+        bulkActions.style.display = 'flex';
+        document.getElementById('selectedCount').textContent = `${selectedCustomers.size} customer${selectedCustomers.size !== 1 ? 's' : ''} selected`;
+      } else {
+        bulkActions.style.display = 'none';
+      }
     }
     
-    // ========== ORDER HISTORY MODAL ==========
-    window.showOrderHistory = function(phone) {
+    // Toggle Customer Select
+    window.toggleCustomerSelect = function(phone, checked) {
+      if (checked) {
+        selectedCustomers.add(phone);
+      } else {
+        selectedCustomers.delete(phone);
+      }
+      renderCustomers();
+    };
+    
+    function clearSelection() {
+      selectedCustomers.clear();
+      renderCustomers();
+    }
+    
+    // View Customer Orders
+    window.viewCustomerOrders = async function(phone) {
       const customer = allCustomers.find(c => c.phone === phone);
       if (!customer) return;
       
-      currentHistoryPhone = phone;
-      document.getElementById('historyCustomerInfo').textContent = `${customer.name} · 📱 ${phone}`;
+      const ordersList = document.getElementById('ordersList');
+      document.getElementById('ordersModalTitle').textContent = `Orders - ${customer.name}`;
       
-      const ordersList = document.getElementById('historyOrdersList');
-      const orders = customer.orders.sort((a, b) => new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date));
-      
-      ordersList.innerHTML = orders.map(o => `
-        <div class="order-mini">
-          <div>
-            <strong>#${o.orderId || o.id?.slice(-8).toUpperCase()}</strong>
-            <span style="font-size:.8rem;color:var(--muted);margin-left:8px;">${new Date(o.orderDate || o.date).toLocaleDateString('en-IN')}</span>
+      if (customer.orders.length === 0) {
+        ordersList.innerHTML = '<div class="no-data">No orders found</div>';
+      } else {
+        ordersList.innerHTML = customer.orders.map(order => `
+          <div class="order-item-card" onclick="window.location.href='order-detail.html?id=${order.id}'">
+            <div class="order-header">
+              <span class="order-id">#${order.id.slice(0, 8).toUpperCase()}</span>
+              <span class="order-status status-${order.status || 'received'}">${order.status || 'Received'}</span>
+            </div>
+            <div class="order-header">
+              <span>📅 ${order.date.toLocaleDateString('en-IN')}</span>
+              <span class="order-total">₹${order.total || 0}</span>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span style="font-weight:700;">₹${(o.total || 0).toLocaleString('en-IN')}</span>
-            <span class="status-badge status-${o.status || 'received'}">${o.status || 'received'}</span>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
       
-      document.getElementById('historyModal').classList.add('active');
+      document.getElementById('ordersModal').classList.add('active');
     };
     
-    window.closeHistoryModal = function() {
-      document.getElementById('historyModal').classList.remove('active');
-    };
+    // Close Orders Modal
+    function closeOrdersModal() {
+      document.getElementById('ordersModal').classList.remove('active');
+    }
     
-    document.getElementById('historyModal').addEventListener('click', function(e) {
-      if (e.target === this) closeHistoryModal();
+    // WhatsApp Functions
+    function setTemplate(type) {
+      const messageBox = document.getElementById('whatsappMessage');
+      let template = templates[type] || '';
+      
+      // Replace {name} placeholder if single customer selected
+      if (currentCustomerPhone && currentMessageTarget === 'single') {
+        const customer = allCustomers.find(c => c.phone === currentCustomerPhone);
+        if (customer) {
+          template = template.replace(/{name}/g, customer.name);
+        }
+      }
+      
+      messageBox.value = template;
+    }
+    
+    function openSingleWhatsapp(phone, name) {
+      currentCustomerPhone = phone;
+      currentMessageTarget = 'single';
+      document.getElementById('whatsappModalTitle').textContent = `Send WhatsApp to ${name}`;
+      document.getElementById('whatsappMessage').value = templates.offer.replace(/{name}/g, name);
+      document.getElementById('whatsappModal').classList.add('active');
+    }
+    
+    function openBulkWhatsapp() {
+      if (selectedCustomers.size === 0) {
+        showToast('Please select customers first', 'error');
+        return;
+      }
+      currentCustomerPhone = null;
+      currentMessageTarget = 'bulk';
+      document.getElementById('whatsappModalTitle').textContent = `Send Bulk WhatsApp (${selectedCustomers.size} customers)`;
+      document.getElementById('whatsappMessage').value = templates.offer.replace(/{name}/g, 'Customer');
+      document.getElementById('whatsappModal').classList.add('active');
+    }
+    
+    function closeWhatsappModal() {
+      document.getElementById('whatsappModal').classList.remove('active');
+      currentCustomerPhone = null;
+      currentMessageTarget = null;
+    }
+    
+    function sendWhatsappMessage() {
+      let message = document.getElementById('whatsappMessage').value.trim();
+      if (!message) {
+        showToast('Please enter a message', 'error');
+        return;
+      }
+      
+      if (currentMessageTarget === 'single' && currentCustomerPhone) {
+        // Send to single customer
+        const whatsappUrl = `https://wa.me/${currentCustomerPhone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        showToast('Opening WhatsApp...', 'success');
+        closeWhatsappModal();
+      } 
+      else if (currentMessageTarget === 'bulk' && selectedCustomers.size > 0) {
+        // Bulk send - open multiple tabs
+        const phones = Array.from(selectedCustomers);
+        showToast(`Opening WhatsApp for ${phones.length} customers...`, 'success');
+        
+        phones.forEach((phone, index) => {
+          // Replace {name} with customer name
+          const customer = allCustomers.find(c => c.phone === phone);
+          let personalizedMessage = message;
+          if (customer) {
+            personalizedMessage = personalizedMessage.replace(/{name}/g, customer.name);
+          }
+          const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(personalizedMessage)}`;
+          
+          // Open in new window with delay to avoid blocking
+          setTimeout(() => {
+            window.open(whatsappUrl, '_blank');
+          }, index * 500);
+        });
+        
+        closeWhatsappModal();
+      }
+    }
+    
+    // Search and Filter Events
+    document.getElementById('searchInput')?.addEventListener('input', () => renderCustomers());
+    document.getElementById('orderCountFilter')?.addEventListener('change', () => renderCustomers());
+    document.getElementById('bulkMessageBtn')?.addEventListener('click', openBulkWhatsapp);
+    document.getElementById('bulkWhatsappSelected')?.addEventListener('click', openBulkWhatsapp);
+    document.getElementById('sendWhatsappBtn')?.addEventListener('click', sendWhatsappMessage);
+    
+    // Close modals on outside click
+    document.getElementById('whatsappModal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('whatsappModal')) closeWhatsappModal();
+    });
+    document.getElementById('ordersModal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('ordersModal')) closeOrdersModal();
     });
     
-    window.messageFromHistory = function() {
-      if (!currentHistoryPhone) return;
-      const customer = allCustomers.find(c => c.phone === currentHistoryPhone);
-      sendMessage(currentHistoryPhone, customer?.name || 'Customer', 'offer');
-    };
-    
-    window.thankFromHistory = function() {
-      if (!currentHistoryPhone) return;
-      const customer = allCustomers.find(c => c.phone === currentHistoryPhone);
-      sendMessage(currentHistoryPhone, customer?.name || 'Customer', 'thanks');
-    };
-    
-    // ========== SEND MESSAGE ==========
-    window.sendMessage = function(phone, name, type) {
-      const message = MESSAGE_TEMPLATES[type](name);
-      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
-      showToast(`📱 Opening WhatsApp for ${phone}`, 'success');
-    };
-    
-    // ========== BROADCAST (OPENS WHATSAPP ONE BY ONE) ==========
-    window.broadcastOffer = function() {
-      const topCustomers = allCustomers.slice(0, 5);
-      if (topCustomers.length === 0) return showToast('No customers to send', 'error');
-      
-      // Open first customer, rest can be sent manually
-      topCustomers.forEach((c, i) => {
-        setTimeout(() => {
-          sendMessage(c.phone, c.name, 'offer');
-        }, i * 1500);
+    // Helper Functions
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
       });
-      
-      showToast(`📢 Sending to top ${topCustomers.length} customers...`, 'success');
-    };
+    }
     
-    window.broadcastReminder = function() {
-      const inactive = allCustomers.filter(c => !c.active).slice(0, 5);
-      if (inactive.length === 0) return showToast('No inactive customers', 'error');
-      
-      inactive.forEach((c, i) => {
-        setTimeout(() => {
-          sendMessage(c.phone, c.name, 'reminder');
-        }, i * 1500);
-      });
-      
-      showToast(`🔔 Reminding ${inactive.length} inactive customers...`, 'success');
-    };
-    
-    // ========== TOAST ==========
-    function showToast(msg, type = 'info') {
+    function showToast(message, type) {
       const toast = document.getElementById('toast');
-      toast.textContent = msg; toast.className = `toast ${type}`; toast.classList.add('show');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    // Init
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
+    }
+    
+    // Initialize
     loadData();
-    console.log('✅ Customer management ready');
   </script>
 </body>
 </html>
