@@ -1,255 +1,654 @@
-// ===== OK MART - PROFILE.JS =====
-// Complete user profile with orders, wishlist, offers, support
+// ===== OK MART - USER PROFILE PAGE =====
 
 (function() {
   'use strict';
+
+  // ========== DOM Elements ==========
+  const loadingState = document.getElementById('loadingState');
+  const profileContent = document.getElementById('profileContent');
   
-  const USER_KEY = 'okmart_user';
-  const WISHLIST_KEY = 'okmart_wishlist';
-  const CART_KEY = 'okmart_cart';
-  const WHATSAPP_NUMBER = '919982239821';
+  // User Info Elements
+  const displayName = document.getElementById('displayName');
+  const displayPhone = document.getElementById('displayPhone');
+  const displayEmail = document.getElementById('displayEmail');
+  const editUserInfoBtn = document.getElementById('editUserInfoBtn');
+  const userInfoDisplay = document.getElementById('userInfoDisplay');
+  const userInfoEdit = document.getElementById('userInfoEdit');
+  const editName = document.getElementById('editName');
+  const editPhone = document.getElementById('editPhone');
+  const editEmail = document.getElementById('editEmail');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+  const saveUserInfoBtn = document.getElementById('saveUserInfoBtn');
   
-  // ========== STATE ==========
-  let userData = {};
-  let openSection = null;
+  // Address Elements
+  const addressList = document.getElementById('addressList');
+  const addAddressBtn = document.getElementById('addAddressBtn');
+  const addressModal = document.getElementById('addressModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const saveAddressBtn = document.getElementById('saveAddressBtn');
   
-  // ========== DOM ELEMENTS ==========
-  const profileName = document.getElementById('profileName');
-  const profilePhone = document.getElementById('profilePhone');
-  const profileAvatar = document.getElementById('profileAvatar');
-  const statOrders = document.getElementById('statOrders');
-  const statWishlist = document.getElementById('statWishlist');
-  const statSaved = document.getElementById('statSaved');
-  const wishlistBadge = document.getElementById('wishlistBadge');
+  // Address Form Fields
+  const addressName = document.getElementById('addressName');
+  const addressPhone = document.getElementById('addressPhone');
+  const addressLine = document.getElementById('addressLine');
+  const addressCity = document.getElementById('addressCity');
+  const addressPincode = document.getElementById('addressPincode');
+  const addressLandmark = document.getElementById('addressLandmark');
+  const setAsDefault = document.getElementById('setAsDefault');
   
+  // Orders Elements
   const ordersList = document.getElementById('ordersList');
-  const ordersLoading = document.getElementById('ordersLoading');
-  const noOrders = document.getElementById('noOrders');
-  const ordersContent = document.getElementById('ordersContent');
+  const ordersCount = document.getElementById('ordersCount');
+  const orderModal = document.getElementById('orderModal');
+  const orderModalBody = document.getElementById('orderModalBody');
+  const closeOrderModalBtn = document.getElementById('closeOrderModalBtn');
   
-  const offersList = document.getElementById('offersList');
-  const offersLoading = document.getElementById('offersLoading');
-  const offersContent = document.getElementById('offersContent');
+  // Saved Items Elements
+  const savedItemsList = document.getElementById('savedItemsList');
+  const clearSavedBtn = document.getElementById('clearSavedBtn');
   
-  const editModal = document.getElementById('editModal');
-  const toastMessage = document.getElementById('toastMessage');
+  // Settings Elements
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
   
-  // ========== USER DATA ==========
-  function loadUserData() {
-    const stored = localStorage.getItem(USER_KEY);
-    if (stored) {
-      userData = JSON.parse(stored);
-      profileName.textContent = userData.name || 'Guest User';
-      profilePhone.textContent = userData.phone ? '+91 ' + userData.phone : 'Add your details';
-      profileAvatar.textContent = (userData.name || 'G').charAt(0).toUpperCase();
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  
+  // ========== State ==========
+  let userInfo = {
+    name: '',
+    phone: '',
+    email: ''
+  };
+  let addresses = [];
+  let editingAddressId = null;
+  let allOrders = [];
+  let savedItems = [];
+
+  // ========== Load Data ==========
+  async function loadData() {
+    try {
+      loadingState.style.display = 'block';
+      
+      // Load user info from localStorage
+      loadUserInfo();
+      
+      // Load addresses from localStorage
+      loadAddresses();
+      
+      // Load saved items from localStorage
+      loadSavedItems();
+      
+      // Load orders from Firebase
+      await loadOrders();
+      
+      // Load preferences
+      loadPreferences();
+      
+      // Render all sections
+      renderUserInfo();
+      renderAddresses();
+      renderSavedItems();
+      renderOrders();
+      
+      loadingState.style.display = 'none';
+      profileContent.style.display = 'block';
+      
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      loadingState.innerHTML = '<div class="spinner"></div><p>Error loading profile. Please refresh.</p>';
     }
   }
-  
-  function updateStats() {
-    const wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
-    const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-    const saved = orders.reduce((sum, o) => sum + (o.couponDiscount || 0) + ((o.subtotal || 0) - (o.total || 0) + (o.delivery || 0)), 0);
-    
-    statOrders.textContent = orders.length;
-    statWishlist.textContent = wishlist.length;
-    statSaved.textContent = '₹' + Math.abs(Math.round(saved));
-    wishlistBadge.textContent = wishlist.length;
+
+  // ========== User Info Functions ==========
+  function loadUserInfo() {
+    const savedUser = localStorage.getItem('okmart_user_details');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        userInfo.name = user.name || '';
+        userInfo.phone = user.phone || '';
+        userInfo.email = user.email || '';
+      } catch(e) {}
+    }
   }
-  
-  // ========== MODAL ==========
-  document.getElementById('editProfileBtn').addEventListener('click', () => {
-    const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
-    document.getElementById('editName').value = user.name || '';
-    document.getElementById('editPhone').value = user.phone || '';
-    document.getElementById('editAddress').value = user.address || '';
-    document.getElementById('editPincode').value = user.pincode || '';
-    editModal.classList.add('active');
-  });
-  
-  document.getElementById('closeModal').addEventListener('click', () => editModal.classList.remove('active'));
-  editModal.addEventListener('click', (e) => { if (e.target === editModal) editModal.classList.remove('active'); });
-  
-  document.getElementById('saveProfileBtn').addEventListener('click', () => {
-    const data = {
-      name: document.getElementById('editName').value.trim(),
-      phone: document.getElementById('editPhone').value.trim().replace(/\D/g, ''),
-      address: document.getElementById('editAddress').value.trim(),
-      pincode: document.getElementById('editPincode').value.trim()
+
+  function saveUserInfo() {
+    localStorage.setItem('okmart_user_details', JSON.stringify(userInfo));
+    // Also save to localStorage for checkout
+    const addressForCheckout = {
+      name: userInfo.name,
+      phone: userInfo.phone,
+      email: userInfo.email,
+      address: addresses.find(a => a.isDefault)?.address || (addresses[0]?.address || ''),
+      city: addresses.find(a => a.isDefault)?.city || (addresses[0]?.city || ''),
+      pincode: addresses.find(a => a.isDefault)?.pincode || (addresses[0]?.pincode || '')
+    };
+    localStorage.setItem('okmart_user_address', JSON.stringify(addressForCheckout));
+  }
+
+  function renderUserInfo() {
+    displayName.textContent = userInfo.name || 'Not set';
+    displayPhone.textContent = userInfo.phone || 'Not set';
+    displayEmail.textContent = userInfo.email || 'Not set';
+    
+    editName.value = userInfo.name;
+    editPhone.value = userInfo.phone;
+    editEmail.value = userInfo.email;
+  }
+
+  function showEditUserForm() {
+    userInfoDisplay.style.display = 'none';
+    userInfoEdit.style.display = 'block';
+  }
+
+  function hideEditUserForm() {
+    userInfoDisplay.style.display = 'block';
+    userInfoEdit.style.display = 'none';
+  }
+
+  function saveUserChanges() {
+    userInfo.name = editName.value.trim();
+    userInfo.phone = editPhone.value.trim();
+    userInfo.email = editEmail.value.trim();
+    
+    if (!userInfo.name) {
+      showToast('Please enter your name', 'error');
+      return;
+    }
+    
+    if (!userInfo.phone || userInfo.phone.length !== 10) {
+      showToast('Please enter a valid 10-digit phone number', 'error');
+      return;
+    }
+    
+    saveUserInfo();
+    renderUserInfo();
+    hideEditUserForm();
+    showToast('Profile updated!', 'success');
+  }
+
+  // ========== Address Functions ==========
+  function loadAddresses() {
+    const savedAddresses = localStorage.getItem('okmart_user_addresses');
+    if (savedAddresses) {
+      try {
+        addresses = JSON.parse(savedAddresses);
+      } catch(e) { addresses = []; }
+    }
+    
+    // Also check old format
+    const oldAddress = localStorage.getItem('okmart_user_address');
+    if (oldAddress && addresses.length === 0) {
+      try {
+        const addr = JSON.parse(oldAddress);
+        if (addr.name && addr.phone && addr.address) {
+          addresses.push({
+            id: Date.now().toString(),
+            name: addr.name,
+            phone: addr.phone,
+            address: addr.address,
+            city: addr.city || '',
+            pincode: addr.pincode || '',
+            landmark: addr.landmark || '',
+            isDefault: true
+          });
+          saveAddresses();
+        }
+      } catch(e) {}
+    }
+  }
+
+  function saveAddresses() {
+    localStorage.setItem('okmart_user_addresses', JSON.stringify(addresses));
+    
+    // Also save default address for checkout
+    const defaultAddress = addresses.find(a => a.isDefault) || addresses[0];
+    if (defaultAddress) {
+      const addressForCheckout = {
+        name: defaultAddress.name,
+        phone: defaultAddress.phone,
+        address: defaultAddress.address,
+        city: defaultAddress.city,
+        pincode: defaultAddress.pincode,
+        landmark: defaultAddress.landmark
+      };
+      // Merge with user info
+      const userDetails = {
+        name: userInfo.name || defaultAddress.name,
+        phone: userInfo.phone || defaultAddress.phone,
+        email: userInfo.email,
+        ...addressForCheckout
+      };
+      localStorage.setItem('okmart_user_address', JSON.stringify(userDetails));
+    }
+  }
+
+  function renderAddresses() {
+    if (!addressList) return;
+    
+    if (addresses.length === 0) {
+      addressList.innerHTML = '<div class="no-address">📭 No saved addresses. Click + Add to add one.</div>';
+      return;
+    }
+    
+    addressList.innerHTML = addresses.map(addr => `
+      <div class="address-item ${addr.isDefault ? 'default' : ''}">
+        ${addr.isDefault ? '<span class="default-badge">Default</span>' : ''}
+        <div class="address-name">${escapeHtml(addr.name)}</div>
+        <div class="address-phone">📞 ${escapeHtml(addr.phone)}</div>
+        <div class="address-text">📍 ${escapeHtml(addr.address)} ${addr.city ? ', ' + escapeHtml(addr.city) : ''} ${addr.pincode ? '- ' + escapeHtml(addr.pincode) : ''}</div>
+        ${addr.landmark ? `<div class="address-text">🏷️ Landmark: ${escapeHtml(addr.landmark)}</div>` : ''}
+        <div class="address-actions">
+          ${!addr.isDefault ? `<button class="address-action-btn default-btn" onclick="setDefaultAddress('${addr.id}')">Set as Default</button>` : ''}
+          <button class="address-action-btn edit-btn" onclick="editAddress('${addr.id}')">Edit</button>
+          <button class="address-action-btn delete-btn" onclick="deleteAddress('${addr.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openAddAddressModal() {
+    editingAddressId = null;
+    modalTitle.textContent = 'Add New Address';
+    addressName.value = userInfo.name || '';
+    addressPhone.value = userInfo.phone || '';
+    addressLine.value = '';
+    addressCity.value = '';
+    addressPincode.value = '';
+    addressLandmark.value = '';
+    setAsDefault.checked = addresses.length === 0;
+    addressModal.classList.add('active');
+  }
+
+  function editAddress(id) {
+    const address = addresses.find(a => a.id === id);
+    if (!address) return;
+    
+    editingAddressId = id;
+    modalTitle.textContent = 'Edit Address';
+    addressName.value = address.name;
+    addressPhone.value = address.phone;
+    addressLine.value = address.address;
+    addressCity.value = address.city || '';
+    addressPincode.value = address.pincode || '';
+    addressLandmark.value = address.landmark || '';
+    setAsDefault.checked = address.isDefault;
+    addressModal.classList.add('active');
+  }
+
+  function saveAddress() {
+    const name = addressName.value.trim();
+    const phone = addressPhone.value.trim();
+    const addrLine = addressLine.value.trim();
+    const city = addressCity.value.trim();
+    const pincode = addressPincode.value.trim();
+    
+    if (!name) {
+      showToast('Please enter name', 'error');
+      return;
+    }
+    if (!phone || phone.length !== 10) {
+      showToast('Please enter valid 10-digit phone number', 'error');
+      return;
+    }
+    if (!addrLine) {
+      showToast('Please enter address', 'error');
+      return;
+    }
+    
+    const addressData = {
+      id: editingAddressId || Date.now().toString(),
+      name: name,
+      phone: phone,
+      address: addrLine,
+      city: city,
+      pincode: pincode,
+      landmark: addressLandmark.value.trim(),
+      isDefault: setAsDefault.checked
     };
     
-    if (!data.name || !data.phone) {
-      showToast('Name and phone are required', 'error');
-      return;
-    }
-    
-    localStorage.setItem(USER_KEY, JSON.stringify(data));
-    loadUserData();
-    editModal.classList.remove('active');
-    showToast('Profile updated!', 'success');
-  });
-  
-  // ========== SECTION TOGGLE ==========
-  window.toggleSection = function(section) {
-    const content = document.getElementById(section + 'Content');
-    const arrow = document.getElementById(section + 'Arrow');
-    
-    if (content.style.display === 'none' || !content.style.display) {
-      content.style.display = 'block';
-      if (arrow) arrow.classList.add('open');
-      openSection = section;
-      
-      if (section === 'orders' && !ordersList.hasChildNodes()) loadOrders();
-      if (section === 'offers' && !offersList.hasChildNodes()) loadOffers();
+    if (editingAddressId) {
+      // Update existing
+      const index = addresses.findIndex(a => a.id === editingAddressId);
+      if (index !== -1) {
+        addresses[index] = addressData;
+      }
     } else {
-      content.style.display = 'none';
-      if (arrow) arrow.classList.remove('open');
-      openSection = null;
+      // Add new
+      addresses.push(addressData);
     }
-  };
-  
-  window.scrollToSection = function(section) {
-    const el = document.getElementById(section + 'Section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => toggleSection(section), 300);
-    }
-  };
-  
-  // ========== LOAD ORDERS ==========
-  async function loadOrders() {
-    ordersLoading.style.display = 'block';
-    noOrders.style.display = 'none';
     
-    const phone = userData.phone;
-    if (!phone) {
-      ordersLoading.style.display = 'none';
-      ordersList.innerHTML = '';
+    // Handle default address logic
+    if (addressData.isDefault) {
+      addresses.forEach(a => {
+        if (a.id !== addressData.id) a.isDefault = false;
+      });
+    } else if (addresses.filter(a => a.isDefault).length === 0 && addresses.length > 0) {
+      addresses[0].isDefault = true;
+    }
+    
+    saveAddresses();
+    renderAddresses();
+    closeAddressModal();
+    showToast(editingAddressId ? 'Address updated!' : 'Address added!', 'success');
+  }
+
+  function deleteAddress(id) {
+    if (confirm('Are you sure you want to delete this address?')) {
+      addresses = addresses.filter(a => a.id !== id);
+      // If no default address exists, set first as default
+      if (addresses.filter(a => a.isDefault).length === 0 && addresses.length > 0) {
+        addresses[0].isDefault = true;
+      }
+      saveAddresses();
+      renderAddresses();
+      showToast('Address deleted', 'success');
+    }
+  }
+
+  window.setDefaultAddress = function(id) {
+    addresses.forEach(a => {
+      a.isDefault = (a.id === id);
+    });
+    saveAddresses();
+    renderAddresses();
+    showToast('Default address updated', 'success');
+  };
+
+  window.editAddress = editAddress;
+  window.deleteAddress = deleteAddress;
+
+  function closeAddressModal() {
+    addressModal.classList.remove('active');
+    editingAddressId = null;
+  }
+
+  // ========== Orders Functions ==========
+  async function loadOrders() {
+    const phone = userInfo.phone;
+    if (!phone) return;
+    
+    try {
+      const snapshot = await db.collection('orders')
+        .where('phone', '==', phone)
+        .orderBy('orderDate', 'desc')
+        .get();
+      
+      allOrders = [];
+      snapshot.forEach(doc => {
+        allOrders.push({ id: doc.id, ...doc.data() });
+      });
+      
+      if (snapshot.empty) {
+        // Also check customerPhone field
+        const snapshot2 = await db.collection('orders')
+          .where('customerPhone', '==', phone)
+          .orderBy('orderDate', 'desc')
+          .get();
+        snapshot2.forEach(doc => {
+          allOrders.push({ id: doc.id, ...doc.data() });
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      allOrders = [];
+    }
+  }
+
+  function renderOrders() {
+    if (!ordersList) return;
+    
+    const count = allOrders.length;
+    ordersCount.textContent = `${count} order${count !== 1 ? 's' : ''}`;
+    
+    if (count === 0) {
+      ordersList.innerHTML = '<div class="no-orders">📭 No orders yet. Start shopping!</div>';
       return;
     }
     
-    try {
-      // Fetch from Firebase
-      const snap1 = await db.collection('orders').where('customerPhone', '==', phone).get();
-      const allOrders = [];
-      snap1.forEach(doc => allOrders.push({ id: doc.id, ...doc.data() }));
-      
-      // Also check phone field
-      const snap2 = await db.collection('orders').where('phone', '==', phone).get();
-      snap2.forEach(doc => {
-        if (!allOrders.find(o => o.id === doc.id)) allOrders.push({ id: doc.id, ...doc.data() });
-      });
-      
-      // Merge with local orders
-      const localOrders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-      localOrders.forEach(o => {
-        if (!allOrders.find(a => a.orderId === o.orderId)) allOrders.push(o);
-      });
-      
-      allOrders.sort((a, b) => new Date(b.orderDate || b.date) - new Date(a.orderDate || a.date));
-      
-      ordersLoading.style.display = 'none';
-      
-      if (allOrders.length === 0) {
-        noOrders.style.display = 'block';
-        return;
-      }
-      
-      ordersList.innerHTML = allOrders.slice(0, 10).map(order => {
-        const status = order.status || 'received';
-        return `
-          <div class="order-mini-card" onclick="window.location.href='/tracking.html?order=${order.orderId || ''}'">
-            <div class="order-mini-row">
-              <span class="order-mini-id">#${order.orderId || (order.id ? order.id.slice(-8).toUpperCase() : 'N/A')}</span>
-              <span class="order-mini-total">₹${Number(order.total || 0).toLocaleString('en-IN')}</span>
-            </div>
-            <div class="order-mini-row">
-              <span class="order-mini-date">${new Date(order.orderDate || order.date).toLocaleDateString('en-IN')}</span>
-              <span class="status-dot status-${status}">${status}</span>
-            </div>
+    ordersList.innerHTML = allOrders.map(order => {
+      const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+      return `
+        <div class="order-item" onclick="viewOrderDetails('${order.id}')">
+          <div class="order-header">
+            <span class="order-id">#${order.orderId || order.id.slice(0, 8).toUpperCase()}</span>
+            <span class="order-status status-${order.status || 'received'}">${order.status || 'Received'}</span>
           </div>
-        `;
-      }).join('');
-      
-    } catch (err) {
-      ordersLoading.style.display = 'none';
-      ordersList.innerHTML = '<p style="color:var(--muted);">Could not load orders</p>';
-    }
+          <div class="order-details">
+            <span>📅 ${orderDate.toLocaleDateString('en-IN')}</span>
+            <span>💰 ₹${order.total || 0}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
-  
-  // ========== LOAD OFFERS ==========
-  async function loadOffers() {
-    offersLoading.style.display = 'block';
+
+  window.viewOrderDetails = function(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) return;
     
-    try {
-      const snap = await db.collection('offers').where('active', '==', true).get();
-      offersLoading.style.display = 'none';
-      
-      if (snap.empty) {
-        offersList.innerHTML = '<p style="color:var(--muted);">No active offers</p>';
-        return;
-      }
-      
-      offersList.innerHTML = '';
-      snap.forEach(doc => {
-        const o = doc.data();
-        const card = document.createElement('div');
-        card.className = 'offer-mini-card';
-        card.innerHTML = `
-          <div>
-            <div class="offer-code">${o.code}</div>
-            <div class="offer-desc">${o.type === 'flat' ? '₹' + o.discount + ' OFF' : o.discount + '% OFF'} · Min ₹${o.minOrder}</div>
-          </div>
-          <span class="offer-value">${o.type === 'flat' ? '₹' + o.discount : o.discount + '%'}</span>
-        `;
-        offersList.appendChild(card);
-      });
-      
-    } catch (err) {
-      offersLoading.style.display = 'none';
-      offersList.innerHTML = '<p style="color:var(--muted);">Could not load offers</p>';
+    const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+    const itemsHtml = (order.items || []).map(item => `
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e5e7eb;">
+        <span>${escapeHtml(item.name)} × ${item.quantity}</span>
+        <span>₹${item.price * item.quantity}</span>
+      </div>
+    `).join('');
+    
+    orderModalBody.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <strong>Order ID:</strong> #${order.orderId || order.id.slice(0, 8).toUpperCase()}<br>
+        <strong>Date:</strong> ${orderDate.toLocaleString('en-IN')}<br>
+        <strong>Status:</strong> <span class="order-status status-${order.status}">${order.status || 'Received'}</span><br>
+        <strong>Delivery Type:</strong> ${order.deliveryType === 'quick' ? '⚡ Quick' : '📅 Scheduled'}
+      </div>
+      <div style="margin-bottom:16px;">
+        <strong>Delivery Address:</strong><br>
+        ${escapeHtml(order.address || order.customerAddress || 'N/A')}
+      </div>
+      <div style="margin-bottom:16px;">
+        <strong>Items:</strong>
+        ${itemsHtml}
+      </div>
+      <div style="margin-top:16px; padding-top:12px; border-top:1px solid #e5e7eb;">
+        <strong>Total: ₹${order.total || 0}</strong>
+      </div>
+    `;
+    
+    orderModal.classList.add('active');
+  };
+
+  function closeOrderModal() {
+    orderModal.classList.remove('active');
+  }
+
+  // ========== Saved Items Functions ==========
+  function loadSavedItems() {
+    const saved = localStorage.getItem('okmart_saved_for_later');
+    if (saved) {
+      try {
+        savedItems = JSON.parse(saved);
+      } catch(e) { savedItems = []; }
     }
   }
-  
-  // ========== SUPPORT & REFUND ==========
-  window.openSupport = function() {
-    const msg = 'Hello OK Mart,\n\nI need help with my account.\n\nPlease assist me.';
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-  };
-  
-  window.openRefund = function() {
-    const orderId = prompt('Enter your Order ID for complaint:');
-    if (orderId) {
-      const msg = `Hello OK Mart,\n\nI want to file a complaint/refund request.\n\n📋 Order ID: ${orderId}\n\nPlease look into this matter.`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
+  function saveSavedItems() {
+    localStorage.setItem('okmart_saved_for_later', JSON.stringify(savedItems));
+  }
+
+  function renderSavedItems() {
+    if (!savedItemsList) return;
+    
+    if (savedItems.length === 0) {
+      savedItemsList.innerHTML = '<div class="no-saved-items">📭 No saved items. Save items from cart for later!</div>';
+      return;
     }
-  };
-  
-  // ========== LOGOUT ==========
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (confirm('Are you sure you want to clear your profile data?')) {
-      localStorage.removeItem(USER_KEY);
-      location.reload();
+    
+    savedItemsList.innerHTML = savedItems.map(item => `
+      <div class="saved-item">
+        <img src="${item.image}" class="saved-item-image" onerror="this.src='https://via.placeholder.com/55'">
+        <div class="saved-item-details">
+          <div class="saved-item-name">${escapeHtml(item.name)}</div>
+          <div class="saved-item-price">₹${item.price}</div>
+        </div>
+        <div class="saved-item-actions">
+          <button class="move-to-cart-btn" onclick="moveToCart('${item.id}')">Move to Cart</button>
+          <button class="remove-saved-btn" onclick="removeSavedItem('${item.id}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.moveToCart = function(productId) {
+    const item = savedItems.find(i => i.id === productId);
+    if (!item) return;
+    
+    // Get current cart
+    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+    const existing = cart.find(i => i.id === productId);
+    
+    if (existing) {
+      existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
+    } else {
+      cart.push(item);
     }
-  });
-  
-  // ========== TOAST ==========
-  function showToast(msg, type = 'info') {
-    const toast = toastMessage;
-    toast.textContent = msg;
-    toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#1a1e2b';
-    toast.style.color = 'white';
+    
+    localStorage.setItem('okmart_cart', JSON.stringify(cart));
+    
+    // Remove from saved
+    savedItems = savedItems.filter(i => i.id !== productId);
+    saveSavedItems();
+    renderSavedItems();
+    
+    showToast(`${item.name} moved to cart!`, 'success');
+  };
+
+  window.removeSavedItem = function(productId) {
+    savedItems = savedItems.filter(i => i.id !== productId);
+    saveSavedItems();
+    renderSavedItems();
+    showToast('Item removed from saved', 'success');
+  };
+
+  function clearAllSavedItems() {
+    if (confirm('Are you sure you want to clear all saved items?')) {
+      savedItems = [];
+      saveSavedItems();
+      renderSavedItems();
+      showToast('All saved items cleared', 'success');
+    }
+  }
+
+  // ========== Preferences Functions ==========
+  function loadPreferences() {
+    const darkMode = localStorage.getItem('okmart_dark_mode') === 'true';
+    const notifications = localStorage.getItem('okmart_notifications') !== 'false';
+    
+    darkModeToggle.checked = darkMode;
+    notificationToggle.checked = notifications;
+    
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    }
+  }
+
+  function toggleDarkMode() {
+    const isDark = darkModeToggle.checked;
+    localStorage.setItem('okmart_dark_mode', isDark);
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  function toggleNotifications() {
+    const isEnabled = notificationToggle.checked;
+    localStorage.setItem('okmart_notifications', isEnabled);
+    if (isEnabled && Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+    showToast(isEnabled ? 'Notifications enabled' : 'Notifications disabled', 'success');
+  }
+
+  // ========== Logout ==========
+  function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+      // Clear all user data from localStorage
+      localStorage.removeItem('okmart_user_details');
+      localStorage.removeItem('okmart_user_address');
+      localStorage.removeItem('okmart_user_addresses');
+      localStorage.removeItem('okmart_saved_for_later');
+      localStorage.removeItem('okmart_cart');
+      localStorage.removeItem('okmart_wishlist');
+      localStorage.removeItem('okmart_dark_mode');
+      
+      showToast('Logged out successfully!', 'success');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    }
+  }
+
+  // ========== Helper Functions ==========
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function showToast(message, type) {
+    const toast = document.getElementById('toastMessage');
+    if (!toast) return;
+    
+    toast.textContent = message;
+    toast.className = `toast-message ${type}`;
     toast.classList.add('show');
-    clearTimeout(window._t);
-    window._t = setTimeout(() => toast.classList.remove('show'), 2500);
+    setTimeout(() => toast.classList.remove('show'), 3000);
   }
-  
-  // ========== INIT ==========
+
+  // ========== Event Listeners ==========
+  function initEventListeners() {
+    editUserInfoBtn?.addEventListener('click', showEditUserForm);
+    cancelEditBtn?.addEventListener('click', hideEditUserForm);
+    saveUserInfoBtn?.addEventListener('click', saveUserChanges);
+    
+    addAddressBtn?.addEventListener('click', openAddAddressModal);
+    closeModalBtn?.addEventListener('click', closeAddressModal);
+    cancelModalBtn?.addEventListener('click', closeAddressModal);
+    saveAddressBtn?.addEventListener('click', saveAddress);
+    
+    closeOrderModalBtn?.addEventListener('click', closeOrderModal);
+    orderModal?.addEventListener('click', (e) => {
+      if (e.target === orderModal) closeOrderModal();
+    });
+    
+    addressModal?.addEventListener('click', (e) => {
+      if (e.target === addressModal) closeAddressModal();
+    });
+    
+    clearSavedBtn?.addEventListener('click', clearAllSavedItems);
+    
+    darkModeToggle?.addEventListener('change', toggleDarkMode);
+    notificationToggle?.addEventListener('change', toggleNotifications);
+    
+    logoutBtn?.addEventListener('click', logout);
+  }
+
+  // ========== Initialize ==========
   function init() {
-    loadUserData();
-    updateStats();
-    console.log('✅ Profile page ready');
+    initEventListeners();
+    loadData();
+    console.log('✅ Profile page initialized');
   }
   
   init();
-  
 })();
