@@ -150,7 +150,7 @@
     { id: 'vegetables', name: '🥬 Vegetables', emoji: '🥬' },
     { id: 'snacks', name: '🍿 Snacks', emoji: '🍿' },
     { id: 'beverages', name: '🥤 Beverages', emoji: '🥤' },
-    { id: 'icecream', name: 'Icecream', emoji: '🍦' }
+    { id: 'icecream', name: 'Icecream', emoji: '🍦' },
     { id: 'grocery', name: '🛒 Grocery', emoji: '🛒' },
     { id: 'personal', name: '🧴 Personal Care', emoji: '🧴' },
     { id: 'household', name: '🧹 Household', emoji: '🧹' },
