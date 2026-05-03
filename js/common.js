@@ -320,3 +320,130 @@ function updateDeliveryUI() {
 // Call when page loads
 document.addEventListener('DOMContentLoaded', updateDeliveryUI);
 document.addEventListener('locationUpdated', updateDeliveryUI);
+
+
+
+
+// ===== OK MART - COMMON.JS (ADD THESE FUNCTIONS) =====
+
+// Cart Functions
+function getCart() {
+  return JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+}
+
+function saveCart(cart) {
+  localStorage.setItem('okmart_cart', JSON.stringify(cart));
+  updateCartBadge();
+}
+
+function addToCart(product, quantity = 1) {
+  const cart = getCart();
+  const existing = cart.find(item => item.id === product.id);
+  
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      mrp: product.mrp,
+      image: product.image,
+      unit: product.unit,
+      quantity: quantity
+    });
+  }
+  
+  saveCart(cart);
+  showToast(`${product.name} added to cart!`, 'success');
+}
+
+function updateCartBadge() {
+  const cart = getCart();
+  const total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  document.querySelectorAll('.cart-count, .cart-badge').forEach(el => {
+    if (el) el.textContent = total;
+  });
+}
+
+// Wishlist Functions
+function getWishlist() {
+  return JSON.parse(localStorage.getItem('okmart_wishlist') || '[]');
+}
+
+function toggleWishlist(productId) {
+  let wishlist = getWishlist();
+  const index = wishlist.indexOf(productId);
+  
+  if (index > -1) {
+    wishlist.splice(index, 1);
+    showToast('Removed from wishlist', 'info');
+  } else {
+    wishlist.push(productId);
+    showToast('Added to wishlist', 'success');
+  }
+  
+  localStorage.setItem('okmart_wishlist', JSON.stringify(wishlist));
+  updateWishlistUI();
+}
+
+// Toast Function
+function showToast(message, type) {
+  let toast = document.getElementById('toastMessage');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toastMessage';
+    toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:40px;font-weight:500;z-index:9999;opacity:0;transition:0.3s;background:#1a1e2b;color:white;';
+    document.body.appendChild(toast);
+  }
+  
+  toast.textContent = message;
+  toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#1a1e2b';
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 3000);
+}
+
+// Product Card Renderer
+function renderProductCard(product) {
+  const discount = calculateDiscount(product.price, product.mrp);
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.setAttribute('data-product-id', product.id);
+  card.onclick = () => window.location.href = `/product.html?id=${product.id}`;
+  
+  card.innerHTML = `
+    <img src="${product.image}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
+    ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
+    ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
+    <h3 class="product-name">${escapeHtml(product.name)}</h3>
+    <span class="product-unit">${product.unit || ''}</span>
+    <div class="price-row">
+      <span class="current-price">₹${product.price}</span>
+      ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
+    </div>
+    <button class="add-btn" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">ADD</button>
+  `;
+  
+  return card;
+}
+
+// Make functions globally available
+window.getCart = getCart;
+window.saveCart = saveCart;
+window.addToCart = addToCart;
+window.updateCartBadge = updateCartBadge;
+window.getWishlist = getWishlist;
+window.toggleWishlist = toggleWishlist;
+window.showToast = showToast;
+window.renderProductCard = renderProductCard;
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  console.log('✅ Common.js loaded');
+});
