@@ -1,359 +1,486 @@
-// ===== OK Mart - Product Detail Page (Enhanced) =====
+// ===== OK MART - PRODUCT DETAIL PAGE =====
+
 (function() {
   'use strict';
-  
-  var CART_KEY = 'okmart_cart';
-  var WISHLIST_KEY = 'okmart_wishlist';
-  
-  var product = null;
-  var quantity = 1;
-  var allProducts = [];
-  
-  // Get product ID from URL
-  var params = new URLSearchParams(window.location.search);
-  var productId = params.get('id');
-  
-  if (!productId) {
-    showError();
+
+  // ========== DOM Elements ==========
+  const loadingState = document.getElementById('loadingState');
+  const productContent = document.getElementById('productContent');
+  const galleryWrapper = document.getElementById('galleryWrapper');
+  const galleryThumbs = document.getElementById('galleryThumbs');
+  const productName = document.getElementById('productName');
+  const productBrand = document.getElementById('productBrand');
+  const productCategory = document.getElementById('productCategory');
+  const productPrice = document.getElementById('productPrice');
+  const productMrp = document.getElementById('productMrp');
+  const productDiscount = document.getElementById('productDiscount');
+  const productUnit = document.getElementById('productUnit');
+  const productDescription = document.getElementById('productDescription');
+  const productFeatures = document.getElementById('productFeatures');
+  const qtyValue = document.getElementById('qtyValue');
+  const qtyMinus = document.getElementById('qtyMinus');
+  const qtyPlus = document.getElementById('qtyPlus');
+  const addToCartBtn = document.getElementById('addToCartBtn');
+  const buyNowBtn = document.getElementById('buyNowBtn');
+  const wishlistHeaderBtn = document.getElementById('wishlistHeaderBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const stockStatus = document.getElementById('stockStatus');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const relatedProductsGrid = document.getElementById('relatedProductsGrid');
+  const recentlyViewedGrid = document.getElementById('recentlyViewedGrid');
+  const clearRecentBtn = document.getElementById('clearRecentBtn');
+  const priceBadge = document.getElementById('priceBadge');
+
+  // ========== State ==========
+  let currentProduct = null;
+  let allProducts = [];
+  let currentQuantity = 1;
+  let swiperMain = null;
+  let swiperThumbs = null;
+  let recentlyViewed = [];
+
+  // FREE DELIVERY THRESHOLD
+  const FREE_DELIVERY_THRESHOLD = 199;
+
+  // ========== Get Product ID from URL ==========
+  function getProductId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
   }
-  
-  // ========== DOM ELEMENTS ==========
-  var loadingState = document.getElementById('loadingState');
-  var productContent = document.getElementById('productContent');
-  var errorState = document.getElementById('errorState');
-  
-  // ========== LOAD PRODUCT ==========
+
+  // ========== Load Product ==========
   async function loadProduct() {
+    const productId = getProductId();
+    if (!productId) {
+      window.location.href = '/';
+      return;
+    }
+
     try {
-      var doc = await db.collection('products').doc(productId).get();
+      // Load all products first (cached)
+      allProducts = await fetchProducts();
+      currentProduct = allProducts.find(p => p.id === productId);
       
-      if (!doc.exists) {
-        showError();
+      if (!currentProduct) {
+        showToast('Product not found', 'error');
+        setTimeout(() => window.location.href = '/', 2000);
         return;
       }
+
+      // Add to recently viewed
+      addToRecentlyViewed(productId);
       
-      product = doc.data();
-      product.id = doc.id;
-      
+      // Render product
       renderProduct();
-      loadRelatedProducts();
+      renderGallery();
+      renderRelatedProducts();
+      renderRecentlyViewed();
+      updateFreeDeliveryProgress();
+      updateWishlistUI();
+      updateCartBadge();
       
       loadingState.style.display = 'none';
       productContent.style.display = 'block';
-      document.getElementById('stickyBar').style.display = 'flex';
       
-      // Update meta tags
-      updateMetaTags();
-      
-      // Log view
-      addToRecentlyViewed(product.id);
-      
-    } catch (err) {
-      console.error('Error loading product:', err);
-      showError();
+    } catch (error) {
+      console.error('Error loading product:', error);
+      loadingState.innerHTML = '<div class="spinner"></div><p>Error loading product. Please refresh.</p>';
     }
   }
-  
-  // ========== UPDATE META TAGS ==========
-  function updateMetaTags() {
-    document.title = product.name + ' | OK Mart';
-    
-    var shareUrl = window.location.href;
-    document.getElementById('ogUrl').setAttribute('content', shareUrl);
-    document.getElementById('ogTitle').setAttribute('content', product.name);
-    document.getElementById('ogDescription').setAttribute('content', 'Buy ' + product.name + ' at OK Mart. Fast delivery in 12 minutes.');
-    document.getElementById('ogImage').setAttribute('content', product.image);
-  }
-  
-  // ========== RENDER PRODUCT ==========
+
+  // ========== Render Product Details ==========
   function renderProduct() {
-    var discount = product.mrp && product.mrp > product.price 
-      ? Math.round(((product.mrp - product.price) / product.mrp) * 100) 
-      : 0;
-    
-    // Image
-    document.getElementById('productImage').src = product.image;
-    document.getElementById('productImage').alt = product.name;
-    
-    // Stock badge
-    var stockBadge = document.getElementById('stockBadge');
-    if (product.stock !== undefined && product.stock <= 0) {
-      stockBadge.textContent = '📦 Out of Stock';
-      stockBadge.style.background = '#ef4444';
-    }
-    
-    // Name
-    document.getElementById('productName').textContent = product.name;
-    document.getElementById('productUnit').textContent = product.unit || '';
+    // Basic info
+    productName.textContent = currentProduct.name || 'Product Name';
+    productBrand.textContent = currentProduct.brand || 'OK Mart';
+    productCategory.textContent = currentProduct.category || 'Grocery';
+    productUnit.textContent = currentProduct.unit || '1 Unit';
     
     // Price
-    document.getElementById('productPrice').textContent = '₹' + product.price;
+    const price = currentProduct.price || 0;
+    const mrp = currentProduct.mrp || price;
+    const discount = calculateDiscount(price, mrp);
     
-    if (product.mrp && product.mrp > product.price) {
-      document.getElementById('productMrp').textContent = '₹' + product.mrp;
-      document.getElementById('discountBadge').textContent = discount + '% OFF';
-      document.getElementById('discountBadge').style.display = 'inline-block';
-      document.getElementById('savingsText').textContent = '🎉 You save ₹' + (product.mrp - product.price) + ' on this item';
-      document.getElementById('savingsText').style.display = 'block';
+    productPrice.textContent = `₹${price}`;
+    productMrp.textContent = `₹${mrp}`;
+    productDiscount.textContent = `${discount}% OFF`;
+    
+    // Stock status
+    const stock = currentProduct.stock || 0;
+    if (stock <= 0) {
+      stockStatus.innerHTML = '<span class="out-of-stock">❌ Out of Stock</span>';
+      addToCartBtn.disabled = true;
+      buyNowBtn.disabled = true;
+    } else {
+      stockStatus.innerHTML = '<span class="in-stock">✅ In Stock</span>';
+      addToCartBtn.disabled = false;
+      buyNowBtn.disabled = false;
+    }
+    
+    // Price badge for high discount
+    if (discount >= 20) {
+      priceBadge.style.display = 'inline-block';
+      priceBadge.innerHTML = discount >= 40 ? '🔥 Super Deal' : '🔥 Best Deal';
+    } else {
+      priceBadge.style.display = 'none';
     }
     
     // Description
-    document.getElementById('productDescription').textContent = 
-      product.description || 
-      'Fresh and high-quality ' + product.name.toLowerCase() + ' sourced directly from trusted suppliers. Perfect for your daily needs.';
-    
-    // Highlights
-    var highlights = [];
-    if (product.unit) highlights.push(product.unit);
-    if (product.category) highlights.push(product.category);
-    if (product.popular) highlights.push('🔥 Popular');
-    if (product.fresh) highlights.push('🌱 Fresh');
-    if (product.stock && product.stock > 0) highlights.push('📦 In Stock');
-    highlights.push('✓ Quality Assured');
-    
-    var highlightContainer = document.getElementById('descriptionHighlights');
-    highlightContainer.innerHTML = highlights.map(function(h) {
-      return '<span class="highlight-tag">' + h + '</span>';
-    }).join('');
-    
-    // Sticky bar
-    document.getElementById('stickyPrice').textContent = '₹' + product.price;
-    if (product.mrp && product.mrp > product.price) {
-      document.getElementById('stickyMrp').textContent = '₹' + product.mrp;
+    if (currentProduct.description) {
+      productDescription.textContent = currentProduct.description;
+    } else {
+      productDescription.innerHTML = `Fresh ${currentProduct.name} delivered to your doorstep. Premium quality product at best price.`;
     }
     
-    // Wishlist icon
-    updateWishlistIcons();
+    // Features
+    const features = [
+      '✓ 100% Fresh & Quality Guaranteed',
+      '✓ Fast delivery within 10-15 minutes',
+      `✓ ${discount}% savings on MRP`,
+      '✓ Secure payment & Cash on Delivery'
+    ];
     
-    // Update total
-    updateTotal();
+    if (currentProduct.unit) features.unshift(`✓ Unit: ${currentProduct.unit}`);
+    if (currentProduct.brand) features.unshift(`✓ Brand: ${currentProduct.brand}`);
+    
+    productFeatures.innerHTML = features.map(f => `<div class="feature-item">${f}</div>`).join('');
   }
-  
-  // ========== LOAD RELATED PRODUCTS ==========
-  async function loadRelatedProducts() {
-    var slider = document.getElementById('relatedSlider');
+
+  // ========== Render Image Gallery ==========
+  function renderGallery() {
+    const images = currentProduct.images && currentProduct.images.length 
+      ? currentProduct.images 
+      : [currentProduct.image];
     
-    try {
-      // Same category products
-      var snapshot = await db.collection('products')
-        .where('category', '==', product.category || 'dairy')
-        .where('active', '!=', false)
-        .limit(10)
-        .get();
-      
-      slider.innerHTML = '';
-      var count = 0;
-      
-      snapshot.forEach(function(doc) {
-        if (doc.id !== product.id && count < 6) {
-          var p = doc.data();
-          p.id = doc.id;
-          slider.appendChild(createMiniCard(p));
-          count++;
+    // Main gallery
+    galleryWrapper.innerHTML = images.map(img => `
+      <div class="swiper-slide">
+        <img src="${img}" alt="${currentProduct.name}" data-src="${img}" class="gallery-image">
+      </div>
+    `).join('');
+    
+    // Thumbnails
+    galleryThumbs.innerHTML = images.map((img, idx) => `
+      <img src="${img}" class="gallery-thumb ${idx === 0 ? 'active' : ''}" data-index="${idx}">
+    `).join('');
+    
+    // Initialize Swiper
+    if (swiperMain) swiperMain.destroy();
+    if (swiperThumbs) swiperThumbs.destroy();
+    
+    swiperMain = new Swiper('.gallery-main', {
+      loop: true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      on: {
+        slideChange: function() {
+          const activeIndex = this.realIndex;
+          document.querySelectorAll('.gallery-thumb').forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === activeIndex);
+          });
         }
+      }
+    });
+    
+    // Thumbnail click
+    document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const index = parseInt(thumb.dataset.index);
+        swiperMain.slideToLoop(index);
       });
-      
-      // If not enough related, add popular products
-      if (count < 4) {
-        var popularSnap = await db.collection('products')
-          .where('popular', '==', true)
-          .limit(6)
-          .get();
-        
-        popularSnap.forEach(function(doc) {
-          if (doc.id !== product.id && count < 6) {
-            var exists = slider.querySelector('[data-id="' + doc.id + '"]');
-            if (!exists) {
-              var p = doc.data();
-              p.id = doc.id;
-              slider.appendChild(createMiniCard(p));
-              count++;
-            }
-          }
-        });
+    });
+    
+    // Zoom on image click
+    document.querySelectorAll('.gallery-image').forEach(img => {
+      img.addEventListener('click', () => {
+        const zoomModal = document.getElementById('zoomModal');
+        const zoomImage = document.getElementById('zoomImage');
+        zoomImage.src = img.src;
+        zoomModal.classList.add('active');
+      });
+    });
+    
+    // Close zoom modal
+    document.getElementById('zoomClose')?.addEventListener('click', () => {
+      document.getElementById('zoomModal').classList.remove('active');
+    });
+    document.getElementById('zoomModal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('zoomModal')) {
+        document.getElementById('zoomModal').classList.remove('active');
       }
-    } catch (err) {
-      slider.innerHTML = '<p style="color:var(--muted);padding:20px;">No related products</p>';
+    });
+  }
+
+  // ========== Quantity Functions ==========
+  function updateQuantity(delta) {
+    let newQty = currentQuantity + delta;
+    if (newQty < 1) newQty = 1;
+    const stock = currentProduct.stock || 0;
+    if (stock > 0 && newQty > stock) newQty = stock;
+    currentQuantity = newQty;
+    qtyValue.textContent = currentQuantity;
+  }
+
+  // ========== Add to Cart ==========
+  function addToCart() {
+    if (!currentProduct) return;
+    if ((currentProduct.stock || 0) <= 0) {
+      showToast('Product out of stock!', 'error');
+      return;
     }
-  }
-  
-  // ========== CREATE MINI CARD ==========
-  function createMiniCard(p) {
-    var card = document.createElement('div');
-    card.className = 'mini-card';
-    card.setAttribute('data-id', p.id);
-    card.innerHTML = 
-      '<img src="' + p.image + '" alt="' + p.name + '" class="mini-card-image" loading="lazy" onerror="this.src=\'https://placehold.co/150/eee/999?text=🛒\'">' +
-      '<div class="mini-card-name">' + p.name + '</div>' +
-      '<div class="mini-card-price">₹' + p.price + '</div>' +
-      '<button class="mini-add-btn">+ Add</button>';
     
-    card.addEventListener('click', function(e) {
-      if (!e.target.closest('button')) {
-        window.location.href = '/product.html?id=' + p.id;
-      }
-    });
+    const cart = getCart();
+    const existing = cart.find(item => item.id === currentProduct.id);
     
-    card.querySelector('.mini-add-btn').addEventListener('click', function(e) {
-      e.stopPropagation();
-      addToCartDirect(p);
-    });
+    if (existing) {
+      existing.quantity += currentQuantity;
+    } else {
+      cart.push({
+        id: currentProduct.id,
+        name: currentProduct.name,
+        price: currentProduct.price,
+        mrp: currentProduct.mrp,
+        image: currentProduct.image,
+        unit: currentProduct.unit,
+        quantity: currentQuantity
+      });
+    }
     
-    return card;
+    saveCart(cart);
+    updateCartBadge();
+    updateFreeDeliveryProgress();
+    showMiniPopup();
+    showToast(`${currentProduct.name} added to cart!`, 'success');
+    
+    // Animate button
+    addToCartBtn.style.transform = 'scale(0.96)';
+    setTimeout(() => { addToCartBtn.style.transform = ''; }, 200);
   }
-  
-  // ========== UPDATE TOTAL ==========
-  function updateTotal() {
-    if (!product) return;
-    var total = product.price * quantity;
-    document.getElementById('btnTotal').textContent = '₹' + total;
-    document.getElementById('stickyAddBtn').textContent = 'Add to Cart · ₹' + total;
+
+  // ========== Buy Now ==========
+  function buyNow() {
+    addToCart();
+    window.location.href = '/checkout.html';
   }
-  
-  // ========== UPDATE WISHLIST ICONS ==========
-  function updateWishlistIcons() {
-    var isInWishlist = checkWishlist(product.id);
-    document.getElementById('headerWishlistIcon').textContent = isInWishlist ? '❤️' : '🤍';
-    document.getElementById('wishlistIconLarge').textContent = isInWishlist ? '❤️' : '🤍';
-  }
-  
-  // ========== CART SYSTEM ==========
+
+  // ========== Cart Helper Functions ==========
   function getCart() {
-    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch(e) { return []; }
+    return JSON.parse(localStorage.getItem('okmart_cart') || '[]');
   }
   
   function saveCart(cart) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-    updateCartBadge();
-  }
-  
-  function addToCart() {
-    if (!product) return;
-    var cart = getCart();
-    var existing = cart.find(function(i) { return i.id === product.id; });
-    
-    if (existing) {
-      existing.quantity = (existing.quantity || 1) + quantity;
-    } else {
-      cart.push({
-        id: product.id, name: product.name, price: product.price,
-        mrp: product.mrp, image: product.image, unit: product.unit,
-        quantity: quantity
-      });
-    }
-    
-    saveCart(cart);
-    showToast('🛒 ' + product.name + ' added to cart!', 'success');
-    
-    // Reset quantity
-    quantity = 1;
-    document.getElementById('qtyNumber').textContent = '1';
-    updateTotal();
-  }
-  
-  function addToCartDirect(p) {
-    var cart = getCart();
-    var existing = cart.find(function(i) { return i.id === p.id; });
-    if (existing) existing.quantity = (existing.quantity || 1) + 1;
-    else cart.push({ id: p.id, name: p.name, price: p.price, mrp: p.mrp, image: p.image, unit: p.unit, quantity: 1 });
-    saveCart(cart);
-    showToast('🛒 ' + p.name + ' added!', 'success');
+    localStorage.setItem('okmart_cart', JSON.stringify(cart));
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
   }
   
   function updateCartBadge() {
-    var cart = getCart();
-    var total = cart.reduce(function(s, i) { return s + (i.quantity || 1); }, 0);
-    document.getElementById('cartBadge').textContent = total;
+    const cart = getCart();
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-count, .cart-badge').forEach(el => {
+      if (el) el.textContent = total;
+    });
   }
   
-  // ========== WISHLIST ==========
+  function updateFreeDeliveryProgress() {
+    const cart = getCart();
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
+    const percent = Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100);
+    
+    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (progressLabel) {
+      if (remaining <= 0) {
+        progressLabel.innerHTML = '🎉 Free delivery unlocked! Add more items 🎉';
+      } else {
+        progressLabel.innerHTML = `Add ₹${remaining} more for FREE delivery 🎁`;
+      }
+    }
+  }
+
+  // ========== Wishlist Functions ==========
   function getWishlist() {
-    try { return JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]'); } catch(e) { return []; }
+    return JSON.parse(localStorage.getItem('okmart_wishlist') || '[]');
   }
   
-  function checkWishlist(id) {
-    return getWishlist().some(function(i) { return i.id === id; });
+  function saveWishlist(wishlist) {
+    localStorage.setItem('okmart_wishlist', JSON.stringify(wishlist));
+    updateWishlistUI();
   }
   
   function toggleWishlist() {
-    if (!product) return;
-    var wishlist = getWishlist();
-    var index = wishlist.findIndex(function(i) { return i.id === product.id; });
+    if (!currentProduct) return;
+    let wishlist = getWishlist();
+    const index = wishlist.indexOf(currentProduct.id);
     
     if (index > -1) {
       wishlist.splice(index, 1);
-      showToast('Removed from wishlist');
+      showToast('Removed from wishlist', 'info');
     } else {
-      wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.image });
-      showToast('❤️ Added to wishlist!', 'success');
+      wishlist.push(currentProduct.id);
+      showToast('Added to wishlist', 'success');
+      animateWishlist();
     }
     
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
-    updateWishlistIcons();
+    saveWishlist(wishlist);
   }
   
-  // ========== RECENTLY VIEWED ==========
-  function addToRecentlyViewed(id) {
-    try {
-      var recent = JSON.parse(localStorage.getItem('okmart_recent') || '[]');
-      recent = recent.filter(function(i) { return i !== id; });
-      recent.unshift(id);
-      if (recent.length > 20) recent = recent.slice(0, 20);
-      localStorage.setItem('okmart_recent', JSON.stringify(recent));
-    } catch(e) {}
-  }
-  
-  // ========== SHARE ==========
-  function shareProduct() {
-    if (!product) return;
-    var url = window.location.href;
-    if (navigator.share) {
-      navigator.share({ title: product.name, text: 'Check out ' + product.name + ' on OK Mart!', url: url }).catch(function() {});
-    } else {
-      window.open('https://wa.me/?text=' + encodeURIComponent('🛒 ' + product.name + '\n💰 ₹' + product.price + '\n\n' + url), '_blank');
+  function updateWishlistUI() {
+    const wishlist = getWishlist();
+    const isInWishlist = wishlist.includes(currentProduct?.id);
+    if (wishlistHeaderBtn) {
+      wishlistHeaderBtn.textContent = isInWishlist ? '❤️' : '🤍';
     }
   }
   
-  // ========== SHOW ERROR ==========
-  function showError() {
-    loadingState.style.display = 'none';
-    errorState.style.display = 'block';
+  function animateWishlist() {
+    if (wishlistHeaderBtn) {
+      wishlistHeaderBtn.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        if (wishlistHeaderBtn) wishlistHeaderBtn.style.transform = '';
+      }, 200);
+    }
+  }
+
+  // ========== Recently Viewed ==========
+  function loadRecentlyViewed() {
+    try {
+      recentlyViewed = JSON.parse(localStorage.getItem('okmart_recently_viewed') || '[]');
+    } catch(e) { recentlyViewed = []; }
   }
   
-  // ========== TOAST ==========
-  function showToast(msg, type) {
-    var toast = document.getElementById('toastMessage');
+  function addToRecentlyViewed(productId) {
+    loadRecentlyViewed();
+    recentlyViewed = recentlyViewed.filter(id => id !== productId);
+    recentlyViewed.unshift(productId);
+    recentlyViewed = recentlyViewed.slice(0, 10);
+    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed));
+  }
+  
+  function renderRecentlyViewed() {
+    if (!recentlyViewedGrid) return;
+    
+    const recentProducts = recentlyViewed
+      .map(id => allProducts.find(p => p.id === id))
+      .filter(p => p && p.id !== currentProduct?.id && p.active !== false)
+      .slice(0, 10);
+    
+    if (recentProducts.length === 0) {
+      document.getElementById('recentlyViewedSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('recentlyViewedSection').style.display = 'block';
+    recentlyViewedGrid.innerHTML = recentProducts.map(product => `
+      <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/140'">
+        <div class="related-product-name">${product.name}</div>
+        <div class="related-product-price">₹${product.price}</div>
+      </div>
+    `).join('');
+  }
+  
+  function clearRecentlyViewed() {
+    recentlyViewed = [];
+    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed));
+    renderRecentlyViewed();
+    showToast('Recently viewed cleared', 'success');
+  }
+
+  // ========== Related Products ==========
+  function renderRelatedProducts() {
+    if (!relatedProductsGrid) return;
+    
+    const related = allProducts
+      .filter(p => p.category === currentProduct.category && p.id !== currentProduct.id && p.active !== false)
+      .slice(0, 10);
+    
+    if (related.length === 0) {
+      document.getElementById('relatedSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('relatedSection').style.display = 'block';
+    relatedProductsGrid.innerHTML = related.map(product => `
+      <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/140'">
+        <div class="related-product-name">${product.name}</div>
+        <div class="related-product-price">₹${product.price}</div>
+      </div>
+    `).join('');
+  }
+
+  // ========== Share Product ==========
+  function shareProduct() {
+    if (!currentProduct) return;
+    const url = `${window.location.origin}/product.html?id=${currentProduct.id}`;
+    const text = `Check out ${currentProduct.name} on OK Mart for only ₹${currentProduct.price}!`;
+    
+    if (navigator.share) {
+      navigator.share({ title: currentProduct.name, text: text, url: url });
+    } else {
+      navigator.clipboard.writeText(url);
+      showToast('Link copied to clipboard!', 'success');
+    }
+  }
+
+  // ========== Helper Functions ==========
+  function calculateDiscount(price, mrp) {
+    if (!mrp || mrp <= price) return 0;
+    return Math.round(((mrp - price) / mrp) * 100);
+  }
+  
+  function showMiniPopup() {
+    const popup = document.getElementById('miniOrderPopup');
+    if (popup) {
+      popup.classList.add('show');
+      setTimeout(() => popup.classList.remove('show'), 2500);
+    }
+  }
+  
+  function showToast(message, type) {
+    const toast = document.getElementById('toastMessage');
     if (!toast) return;
-    toast.textContent = msg;
-    toast.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
-    toast.style.color = 'white';
+    toast.textContent = message;
+    toast.className = `toast-message ${type}`;
     toast.classList.add('show');
-    clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2500);
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ========== Event Listeners ==========
+  function initEventListeners() {
+    qtyMinus?.addEventListener('click', () => updateQuantity(-1));
+    qtyPlus?.addEventListener('click', () => updateQuantity(1));
+    addToCartBtn?.addEventListener('click', addToCart);
+    buyNowBtn?.addEventListener('click', buyNow);
+    wishlistHeaderBtn?.addEventListener('click', toggleWishlist);
+    shareBtn?.addEventListener('click', shareProduct);
+    clearRecentBtn?.addEventListener('click', clearRecentlyViewed);
+    
+    // Listen for cart updates from other tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'okmart_cart') {
+        updateCartBadge();
+        updateFreeDeliveryProgress();
+      }
+      if (e.key === 'okmart_wishlist') {
+        updateWishlistUI();
+      }
+    });
+  }
+
+  // ========== Initialize ==========
+  async function init() {
+    initEventListeners();
+    await loadProduct();
+    console.log('✅ Product page initialized');
   }
   
-  // ========== EVENT LISTENERS ==========
-  document.getElementById('qtyMinus').addEventListener('click', function() {
-    if (quantity > 1) { quantity--; document.getElementById('qtyNumber').textContent = quantity; updateTotal(); }
-  });
-  
-  document.getElementById('qtyPlus').addEventListener('click', function() {
-    quantity++; document.getElementById('qtyNumber').textContent = quantity; updateTotal();
-  });
-  
-  document.getElementById('addToCartBtn').addEventListener('click', addToCart);
-  document.getElementById('stickyAddBtn').addEventListener('click', addToCart);
-  document.getElementById('buyNowBtn').addEventListener('click', function() {
-    addToCart();
-    setTimeout(function() { window.location.href = '/checkout.html'; }, 500);
-  });
-  
-  document.getElementById('headerWishlistBtn').addEventListener('click', toggleWishlist);
-  document.getElementById('wishlistBtnLarge').addEventListener('click', toggleWishlist);
-  document.getElementById('headerShareBtn').addEventListener('click', shareProduct);
-  
-  // ========== INIT ==========
-  loadProduct();
-  updateCartBadge();
-  console.log('✅ Product page ready');
+  init();
 })();
