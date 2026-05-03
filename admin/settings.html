@@ -2,350 +2,1369 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Settings | OK Mart Admin</title>
-  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     :root {
-      --primary: #2ecc71; --primary-dark: #27ae60; --primary-light: #e8f8ef;
-      --bg: #f8fafc; --card: #ffffff; --text: #1a1e2b; --muted: #6b7280;
-      --border: #e5e7eb; --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04); --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 16px; --transition: all .2s ease;
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 20px;
+      --transition: all .2s ease;
     }
     
     body {
-      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
-      line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
     }
-    
-    .admin-layout { display: flex; min-height: 100vh; }
     
     /* Sidebar */
-    .sidebar {
-      width: 260px; background: #1a1e2b; color: white; position: fixed;
-      top: 0; left: 0; bottom: 0; z-index: 100; display: flex; flex-direction: column;
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
     }
-    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: 10px; }
-    .sidebar-logo { font-size: 1.3rem; font-weight: 700; }
-    .sidebar-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: .65rem; font-weight: 600; text-transform: uppercase; }
-    .sidebar-nav { flex: 1; padding: 20px 0; }
-    .sidebar-nav a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: rgba(255,255,255,.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
-    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
-    .sidebar-nav a.active { background: rgba(46,204,113,.1); color: var(--primary); border-left: 3px solid var(--primary); }
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
-    .sidebar-footer button { width: 100%; padding: 12px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.7); border-radius: 10px; cursor: pointer; }
     
-    .mobile-header { display: none; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; align-items: center; justify-content: space-between; }
-    .menu-toggle { background: var(--bg); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
     
-    /* Main */
-    .main-content { flex: 1; margin-left: 260px; padding: 24px; max-width: 1000px; }
-    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; }
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
     
-    /* Sections */
-    .settings-section { background: var(--card); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-    .settings-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .sidebar-logo-img {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+    }
     
-    /* Form */
-    .form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-    .form-group { flex: 1; min-width: 200px; }
-    .form-group label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 6px; }
-    .form-group input { width: 100%; padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
-    .form-group input:focus { outline: none; border-color: var(--primary); }
-    .save-delivery-btn { padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+    .sidebar-logo-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     
-    /* Toggle Row */
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-info h3 { font-size: 1rem; font-weight: 600; }
-    .toggle-info p { font-size: .8rem; color: var(--muted); margin-top: 2px; }
-    .toggle-switch { width: 52px; height: 28px; background: #d1d5db; border-radius: 14px; position: relative; cursor: pointer; transition: .3s; flex-shrink: 0; }
-    .toggle-switch.active { background: var(--primary); }
-    .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-    .toggle-switch.active::after { left: 26px; }
+    .sidebar-badge {
+      background: var(--primary);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .6rem;
+      font-weight: 600;
+    }
     
-    /* Block User */
-    .block-form { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-    .block-form input { flex: 1; min-width: 200px; padding: 12px 14px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; }
-    .block-form button { padding: 12px 20px; background: var(--danger); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
-    .blocked-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .blocked-tag { display: flex; align-items: center; gap: 6px; background: #fee2e2; border: 1px solid var(--danger); padding: 8px 14px; border-radius: 20px; font-size: .85rem; font-weight: 500; }
-    .blocked-tag button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; }
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+    }
     
-    /* Customer List */
-    .customer-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-    .customer-card:last-child { border-bottom: none; }
-    .customer-info h4 { font-size: .95rem; font-weight: 600; }
-    .customer-info p { font-size: .8rem; color: var(--muted); }
-    .customer-stats { display: flex; gap: 20px; font-size: .85rem; }
-    .customer-stats span { font-weight: 600; }
-    .msg-btn { padding: 8px 16px; background: #25D366; color: white; border: none; border-radius: 20px; font-weight: 600; font-size: .8rem; cursor: pointer; }
-    .msg-btn:hover { background: #128C7E; }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+    }
     
-    /* Search */
-    .search-box { width: 100%; padding: 12px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; font-size: .9rem; margin-bottom: 16px; }
-    .search-box:focus { outline: none; border-color: var(--primary); }
+    .sidebar-nav a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: rgba(46,204,113,.1);
+      transition: width .3s;
+    }
+    
+    .sidebar-nav a:hover::before {
+      width: 100%;
+    }
+    
+    .sidebar-nav a:hover {
+      color: white;
+      padding-left: 28px;
+    }
+    
+    .sidebar-nav a.active {
+      background: rgba(46,204,113,.15);
+      color: var(--primary);
+      border-left: 3px solid var(--primary);
+    }
+    
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    
+    .sidebar-footer button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,.08);
+      border: none;
+      color: rgba(255,255,255,.7);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .sidebar-footer button:hover {
+      background: rgba(239,68,68,.2);
+      color: var(--danger);
+    }
+    
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      padding: 12px 16px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .menu-toggle {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 24px;
+      max-width: 1400px;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--card);
+      padding: 6px;
+      border-radius: 60px;
+      border: 1px solid var(--border);
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--muted);
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Settings Card */
+    .settings-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    
+    .card-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--bg), var(--card));
+    }
+    
+    .card-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-header p {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .setting-row:hover {
+      background: var(--bg);
+    }
+    
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-info {
+      flex: 1;
+    }
+    
+    .setting-info strong {
+      font-size: .9rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .setting-info small {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      width: 52px;
+      height: 28px;
+      background: #cbd5e1;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: .3s;
+      flex-shrink: 0;
+    }
+    
+    .toggle-switch.active {
+      background: var(--primary);
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: .3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    
+    .toggle-switch.active::after {
+      left: 26px;
+    }
+    
+    /* Input Group */
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .input-group input {
+      width: 120px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: .85rem;
+    }
+    
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .save-setting-btn {
+      padding: 6px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: .7rem;
+      cursor: pointer;
+    }
+    
+    /* Color Picker */
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+    }
+    
+    .color-input {
+      width: 80px;
+      padding: 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+    }
+    
+    /* Admin Accounts */
+    .admin-list {
+      padding: 0 20px;
+    }
+    
+    .admin-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .admin-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .admin-email {
+      font-weight: 600;
+      font-size: .85rem;
+    }
+    
+    .admin-role {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+    
+    .delete-admin-btn {
+      background: #fee2e2;
+      color: var(--danger);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: .7rem;
+    }
+    
+    .add-admin-form {
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 16px;
+      margin: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    
+    .add-admin-form input {
+      flex: 1;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+    }
+    
+    /* Backup Section */
+    .backup-actions {
+      display: flex;
+      gap: 12px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .backup-btn {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .backup-btn.danger {
+      background: #fee2e2;
+      color: var(--danger);
+      border-color: var(--danger);
+    }
     
     /* Toast */
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
-    .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: #10b981; } .toast.error { background: var(--danger); }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all .3s;
+    }
     
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } }
+    .toast.show {
+      opacity: 1;
+      bottom: 50px;
+    }
+    
+    .toast.success {
+      background: var(--success);
+    }
+    
+    .toast.error {
+      background: var(--danger);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: 16px;
+      }
+      
+      .mobile-header {
+        display: flex;
+      }
+      
+      .tabs {
+        flex-direction: column;
+        border-radius: 20px;
+      }
+      
+      .tab-btn {
+        border-radius: 30px;
+      }
+      
+      .setting-row {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      
+      .input-group {
+        width: 100%;
+      }
+      
+      .backup-actions {
+        flex-direction: column;
+      }
+    }
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
   <div class="admin-layout">
     
-    <aside class="sidebar">
-      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
+        <span class="sidebar-logo-text">OK Mart</span>
+        <span class="sidebar-badge">Admin</span>
+      </div>
       <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a><a href="orders.html">📋 Orders</a>
-        <a href="products.html">📦 Products</a><a href="offers.html">🏷️ Offers</a>
+        <a href="index.html">📊 Dashboard</a>
+        <a href="orders.html">📋 Orders</a>
+        <a href="products.html">📦 Products</a>
+        <a href="offers.html">🏷️ Offers</a>
+        <a href="delivery.html">🚚 Delivery</a>
+        <a href="customers.html">👥 Customers</a>
         <a href="settings.html" class="active">⚙️ Settings</a>
       </nav>
-      <div class="sidebar-footer"><button onclick="adminLogout()">🚪 Logout</button></div>
+      <div class="sidebar-footer">
+        <button onclick="logout()">🚪 Logout</button>
+        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
+      </div>
     </aside>
 
+    <!-- Mobile Header -->
     <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Settings</span><span></span>
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span style="font-weight:700;">Settings</span>
+      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <h1>⚙️ Admin Control Panel</h1>
       
-      <!-- Delivery Settings -->
-      <div class="settings-section">
-        <h2>🚚 Delivery Control</h2>
-        <div class="form-row">
-          <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="deliveryCharge" value="20" min="0"></div>
-          <div class="form-group"><label>Free Delivery Above (₹)</label><input type="number" id="freeDeliveryAbove" value="199" min="0"></div>
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>⚙️ Settings</h1>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="general">🏠 General</button>
+        <button class="tab-btn" data-tab="appearance">🎨 Appearance</button>
+        <button class="tab-btn" data-tab="admin">👑 Admin Accounts</button>
+        <button class="tab-btn" data-tab="backup">💾 Backup & Reset</button>
+        <button class="tab-btn" data-tab="notifications">🔔 Notifications</button>
+      </div>
+
+      <!-- General Settings Tab -->
+      <div class="tab-content active" id="tab-general">
+        
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🏪 Store Settings</h2>
+            <p>Configure your store basic information</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Name</strong>
+              <small>Name displayed on website</small>
+            </div>
+            <div class="input-group">
+              <input type="text" id="storeName" placeholder="OK Mart">
+              <button class="save-setting-btn" onclick="saveStoreName()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Phone</strong>
+              <small>Contact number for customers</small>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="storePhone" placeholder="+919982239821">
+              <button class="save-setting-btn" onclick="saveStorePhone()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Email</strong>
+              <small>Support email address</small>
+            </div>
+            <div class="input-group">
+              <input type="email" id="storeEmail" placeholder="support@okmart.com">
+              <button class="save-setting-btn" onclick="saveStoreEmail()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Address</strong>
+              <small>Physical store address</small>
+            </div>
+            <div class="input-group">
+              <input type="text" id="storeAddress" placeholder="Store address">
+              <button class="save-setting-btn" onclick="saveStoreAddress()">Save</button>
+            </div>
+          </div>
         </div>
-        <button class="save-delivery-btn" onclick="saveDeliverySettings()">💾 Save Delivery Settings</button>
-      </div>
-      
-      <!-- Feature Toggles -->
-      <div class="settings-section">
-        <h2>🔧 Feature Toggles</h2>
-        <div id="featureToggles"><p style="color:var(--muted);">Loading...</p></div>
-      </div>
-      
-      <!-- Block Users -->
-      <div class="settings-section">
-        <h2>🚫 Block Users</h2>
-        <div class="block-form">
-          <input type="text" id="blockPhone" placeholder="Enter phone number to block" maxlength="10">
-          <button onclick="blockUser()">🔒 Block User</button>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>💰 Tax & Fee Settings</h2>
+            <p>Configure tax rates and additional fees</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>GST Rate (%)</strong>
+              <small>Goods and Services Tax</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="gstRate" step="0.1" placeholder="5">
+              <button class="save-setting-btn" onclick="saveGSTRate()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Service Charge (%)</strong>
+              <small>Additional service fee</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="serviceCharge" step="0.1" placeholder="0">
+              <button class="save-setting-btn" onclick="saveServiceCharge()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Convenience Fee (₹)</strong>
+              <small>Flat convenience fee per order</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="convenienceFee" placeholder="0">
+              <button class="save-setting-btn" onclick="saveConvenienceFee()">Save</button>
+            </div>
+          </div>
         </div>
-        <h3 style="font-size:.9rem;margin-bottom:10px;">Blocked Users List</h3>
-        <div class="blocked-tags" id="blockedList"><p style="color:var(--muted);">No blocked users</p></div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🚚 Delivery Settings</h2>
+            <p>Global delivery configuration</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Default Delivery Charge (₹)</strong>
+              <small>Applied when no pincode specific charge</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="defaultDeliveryCharge" placeholder="39">
+              <button class="save-setting-btn" onclick="saveDefaultDeliveryCharge()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Free Delivery Threshold (₹)</strong>
+              <small>Orders above this get free delivery</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="globalFreeThreshold" placeholder="499">
+              <button class="save-setting-btn" onclick="saveGlobalFreeThreshold()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Max Delivery Distance (km)</strong>
+              <small>Maximum distance for delivery</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="maxDeliveryDistance" placeholder="10">
+              <button class="save-setting-btn" onclick="saveMaxDeliveryDistance()">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🎁 Order Settings</h2>
+            <p>Configure order-related settings</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Minimum Order Amount (₹)</strong>
+              <small>Minimum amount required to place order</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="minOrderAmount" placeholder="99">
+              <button class="save-setting-btn" onclick="saveMinOrderAmount()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Auto Cancel Time (minutes)</strong>
+              <small>Auto cancel unpaid orders after</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="autoCancelTime" placeholder="30">
+              <button class="save-setting-btn" onclick="saveAutoCancelTime()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Allow COD</strong>
+              <small>Enable/disable Cash on Delivery</small>
+            </div>
+            <div class="toggle-switch" id="allowCodToggle" onclick="toggleSetting('allowCod')"></div>
+          </div>
+        </div>
+
       </div>
-      
-      <!-- Customer Management -->
-      <div class="settings-section">
-        <h2>👥 Customer Management</h2>
-        <input type="text" class="search-box" id="customerSearch" placeholder="🔍 Search by phone..." oninput="renderCustomers()">
-        <div id="customerList"><p style="color:var(--muted);">Loading customers...</p></div>
+
+      <!-- Appearance Settings Tab -->
+      <div class="tab-content" id="tab-appearance">
+        
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🎨 Theme Colors</h2>
+            <p>Customize your store's appearance</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Primary Color</strong>
+              <small>Main brand color</small>
+            </div>
+            <div class="input-group">
+              <input type="color" id="primaryColor" value="#2ecc71">
+              <button class="save-setting-btn" onclick="savePrimaryColor()">Apply</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Secondary Color</strong>
+              <small>Accent color</small>
+            </div>
+            <div class="input-group">
+              <input type="color" id="secondaryColor" value="#27ae60">
+              <button class="save-setting-btn" onclick="saveSecondaryColor()">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🖼️ Logo & Favicon</h2>
+            <p>Update your store logos</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Logo URL</strong>
+              <small>Store logo image link</small>
+            </div>
+            <div class="input-group">
+              <input type="url" id="logoUrl" placeholder="https://...">
+              <button class="save-setting-btn" onclick="saveLogoUrl()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Favicon URL</strong>
+              <small>Browser tab icon</small>
+            </div>
+            <div class="input-group">
+              <input type="url" id="faviconUrl" placeholder="https://...">
+              <button class="save-setting-btn" onclick="saveFaviconUrl()">Save</button>
+            </div>
+          </div>
+        </div>
+
       </div>
-      
+
+      <!-- Admin Accounts Tab -->
+      <div class="tab-content" id="tab-admin">
+        
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>👑 Admin Accounts</h2>
+            <p>Manage administrator access</p>
+          </div>
+          <div class="admin-list" id="adminList">
+            <div style="padding:20px;text-align:center;">Loading admins...</div>
+          </div>
+          <div class="add-admin-form">
+            <input type="email" id="newAdminEmail" placeholder="admin@example.com">
+            <input type="password" id="newAdminPassword" placeholder="Password">
+            <button class="save-setting-btn" onclick="addAdmin()">Add Admin</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Backup & Reset Tab -->
+      <div class="tab-content" id="tab-backup">
+        
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>💾 Backup Data</h2>
+            <p>Export your store data</p>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn" onclick="exportOrders()">📋 Export Orders (CSV)</button>
+            <button class="backup-btn" onclick="exportProducts()">📦 Export Products (CSV)</button>
+            <button class="backup-btn" onclick="exportCustomers()">👥 Export Customers (CSV)</button>
+            <button class="backup-btn" onclick="exportAllData()">💾 Export All Data (JSON)</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🔄 Reset Options</h2>
+            <p>⚠️ Warning: These actions cannot be undone</p>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn danger" onclick="resetSettings()">Reset All Settings</button>
+            <button class="backup-btn danger" onclick="clearAllData()">Clear All Data</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Notifications Tab -->
+      <div class="tab-content" id="tab-notifications">
+        
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🔔 Push Notifications</h2>
+            <p>Configure notification settings</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Enable Push Notifications</strong>
+              <small>Send push notifications to customers</small>
+            </div>
+            <div class="toggle-switch" id="pushNotificationsToggle" onclick="toggleSetting('pushNotifications')"></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Order Status Notifications</strong>
+              <small>Notify customers on order status change</small>
+            </div>
+            <div class="toggle-switch" id="orderStatusNotifyToggle" onclick="toggleSetting('orderStatusNotify')"></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Promotional Notifications</strong>
+              <small>Send offers and deals</small>
+            </div>
+            <div class="toggle-switch" id="promoNotifyToggle" onclick="toggleSetting('promoNotify')"></div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>📱 WhatsApp Settings</h2>
+            <p>Configure WhatsApp notification</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Admin WhatsApp Number</strong>
+              <small>Receive order notifications</small>
+            </div>
+            <div class="input-group">
+              <input type="tel" id="adminWhatsapp" placeholder="919982239821">
+              <button class="save-setting-btn" onclick="saveAdminWhatsapp()">Save</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Send Order Confirmation to Customer</strong>
+              <small>Auto WhatsApp on order placement</small>
+            </div>
+            <div class="toggle-switch" id="customerWhatsappToggle" onclick="toggleSetting('customerWhatsapp')"></div>
+          </div>
+        </div>
+
+      </div>
+
     </main>
   </div>
 
+  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script src="/js/firebase.js"></script>
   <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== ADMIN CONTROL SYSTEM =====
+    // ===== ADVANCED SETTINGS SYSTEM =====
     
-    const WHATSAPP_ADMIN = '919982239821';
-    let allCustomers = [];
-    let blockedUsers = [];
+    let appSettings = {};
     
-    // ========== DELIVERY SETTINGS ==========
-    db.collection('settings').doc('delivery').onSnapshot(doc => {
-      if (doc.exists) {
-        const d = doc.data();
-        document.getElementById('deliveryCharge').value = d.charge || 20;
-        document.getElementById('freeDeliveryAbove').value = d.freeThreshold || 199;
+    // Load Settings from Firebase
+    async function loadSettings() {
+      try {
+        const doc = await db.collection('settings').doc('app').get();
+        if (doc.exists) {
+          appSettings = doc.data();
+        } else {
+          // Default settings
+          appSettings = {
+            storeName: 'OK Mart',
+            storePhone: '+919982239821',
+            storeEmail: 'support@okmart.com',
+            storeAddress: '',
+            primaryColor: '#2ecc71',
+            secondaryColor: '#27ae60',
+            logoUrl: '',
+            faviconUrl: '',
+            gstRate: 5,
+            serviceCharge: 0,
+            convenienceFee: 0,
+            defaultDeliveryCharge: 39,
+            globalFreeThreshold: 499,
+            maxDeliveryDistance: 10,
+            minOrderAmount: 99,
+            autoCancelTime: 30,
+            allowCod: true,
+            pushNotifications: true,
+            orderStatusNotify: true,
+            promoNotify: true,
+            adminWhatsapp: '919982239821',
+            customerWhatsapp: true
+          };
+          await db.collection('settings').doc('app').set(appSettings);
+        }
+        applySettingsToUI();
+        applyThemeColors();
+      } catch (error) {
+        console.error('Error loading settings:', error);
       }
-    });
-    
-    window.saveDeliverySettings = async function() {
-      const data = {
-        charge: Number(document.getElementById('deliveryCharge').value) || 20,
-        freeThreshold: Number(document.getElementById('freeDeliveryAbove').value) || 199
-      };
-      await db.collection('settings').doc('delivery').set(data, { merge: true });
-      showToast('✅ Delivery settings saved!', 'success');
-    };
-    
-    // ========== FEATURE TOGGLES ==========
-    db.collection('settings').doc('global').onSnapshot(doc => {
-      const container = document.getElementById('featureToggles');
-      if (!doc.exists) {
-        container.innerHTML = '<p style="color:var(--muted);">No settings found</p>'; return;
-      }
-      const d = doc.data();
-      container.innerHTML = `
-        <div class="toggle-row">
-          <div class="toggle-info"><h3>🌐 Website Active</h3><p>Turn entire website ON/OFF. When OFF, shows maintenance message.</p></div>
-          <div class="toggle-switch ${d.siteActive !== false ? 'active' : ''}" onclick="toggleGlobal('siteActive', ${d.siteActive !== false})"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><h3>🚚 Delivery Enabled</h3><p>Enable or disable delivery service globally.</p></div>
-          <div class="toggle-switch ${d.deliveryEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('deliveryEnabled', ${d.deliveryEnabled !== false})"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><h3>🏷️ Offers Enabled</h3><p>Show/hide coupon codes and offers on the user site.</p></div>
-          <div class="toggle-switch ${d.offersEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('offersEnabled', ${d.offersEnabled !== false})"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info"><h3>🖼️ Banners Enabled</h3><p>Show/hide promotional banners on the website.</p></div>
-          <div class="toggle-switch ${d.bannersEnabled !== false ? 'active' : ''}" onclick="toggleGlobal('bannersEnabled', ${d.bannersEnabled !== false})"></div>
-        </div>
-      `;
-    });
-    
-    window.toggleGlobal = async function(field, currentValue) {
-      await db.collection('settings').doc('global').set({ [field]: !currentValue }, { merge: true });
-      showToast(`${field} ${!currentValue ? 'enabled ✅' : 'disabled ❌'}`, 'success');
-    };
-    
-    // ========== BLOCK USER SYSTEM ==========
-    db.collection('blockedUsers').onSnapshot(snapshot => {
-      blockedUsers = [];
-      snapshot.forEach(doc => blockedUsers.push({ id: doc.id, ...doc.data() }));
-      renderBlockedList();
-    });
-    
-    function renderBlockedList() {
-      const container = document.getElementById('blockedList');
-      if (blockedUsers.length === 0) {
-        container.innerHTML = '<p style="color:var(--muted);">No blocked users</p>'; return;
-      }
-      container.innerHTML = blockedUsers.map(u => `
-        <span class="blocked-tag">
-          📱 ${u.phone} ${u.reason ? '· ' + u.reason : ''}
-          <button onclick="unblockUser('${u.id}')">✕</button>
-        </span>
-      `).join('');
     }
     
-    window.blockUser = async function() {
-      const phone = document.getElementById('blockPhone').value.trim().replace(/\D/g, '');
-      if (!phone || !/^\d{10}$/.test(phone)) return showToast('Enter valid 10-digit phone', 'error');
-      if (blockedUsers.some(u => u.phone === phone)) return showToast('User already blocked', 'error');
+    // Apply settings to UI
+    function applySettingsToUI() {
+      document.getElementById('storeName').value = appSettings.storeName || '';
+      document.getElementById('storePhone').value = appSettings.storePhone || '';
+      document.getElementById('storeEmail').value = appSettings.storeEmail || '';
+      document.getElementById('storeAddress').value = appSettings.storeAddress || '';
+      document.getElementById('gstRate').value = appSettings.gstRate || 5;
+      document.getElementById('serviceCharge').value = appSettings.serviceCharge || 0;
+      document.getElementById('convenienceFee').value = appSettings.convenienceFee || 0;
+      document.getElementById('defaultDeliveryCharge').value = appSettings.defaultDeliveryCharge || 39;
+      document.getElementById('globalFreeThreshold').value = appSettings.globalFreeThreshold || 499;
+      document.getElementById('maxDeliveryDistance').value = appSettings.maxDeliveryDistance || 10;
+      document.getElementById('minOrderAmount').value = appSettings.minOrderAmount || 99;
+      document.getElementById('autoCancelTime').value = appSettings.autoCancelTime || 30;
+      document.getElementById('primaryColor').value = appSettings.primaryColor || '#2ecc71';
+      document.getElementById('secondaryColor').value = appSettings.secondaryColor || '#27ae60';
+      document.getElementById('logoUrl').value = appSettings.logoUrl || '';
+      document.getElementById('faviconUrl').value = appSettings.faviconUrl || '';
+      document.getElementById('adminWhatsapp').value = appSettings.adminWhatsapp || '919982239821';
       
-      const reason = prompt('Reason for blocking (optional):') || '';
-      await db.collection('blockedUsers').add({ phone, reason, blockedAt: new Date().toISOString() });
-      document.getElementById('blockPhone').value = '';
-      showToast(`🔒 ${phone} blocked!`, 'success');
-    };
+      // Toggles
+      updateToggle('allowCodToggle', appSettings.allowCod);
+      updateToggle('pushNotificationsToggle', appSettings.pushNotifications);
+      updateToggle('orderStatusNotifyToggle', appSettings.orderStatusNotify);
+      updateToggle('promoNotifyToggle', appSettings.promoNotify);
+      updateToggle('customerWhatsappToggle', appSettings.customerWhatsapp);
+    }
     
-    window.unblockUser = async function(id) {
-      if (confirm('Unblock this user?')) {
-        await db.collection('blockedUsers').doc(id).delete();
-        showToast('✅ User unblocked', 'success');
+    function updateToggle(elementId, value) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        if (value) el.classList.add('active');
+        else el.classList.remove('active');
       }
+    }
+    
+    function applyThemeColors() {
+      document.documentElement.style.setProperty('--primary', appSettings.primaryColor);
+      document.documentElement.style.setProperty('--primary-dark', appSettings.secondaryColor);
+      document.documentElement.style.setProperty('--primary-light', appSettings.primaryColor + '20');
+    }
+    
+    // Save Functions
+    async function saveStoreName() {
+      const value = document.getElementById('storeName').value;
+      await db.collection('settings').doc('app').update({ storeName: value });
+      appSettings.storeName = value;
+      showToast('Store name updated', 'success');
+    }
+    
+    async function saveStorePhone() {
+      const value = document.getElementById('storePhone').value;
+      await db.collection('settings').doc('app').update({ storePhone: value });
+      appSettings.storePhone = value;
+      showToast('Store phone updated', 'success');
+    }
+    
+    async function saveStoreEmail() {
+      const value = document.getElementById('storeEmail').value;
+      await db.collection('settings').doc('app').update({ storeEmail: value });
+      appSettings.storeEmail = value;
+      showToast('Store email updated', 'success');
+    }
+    
+    async function saveStoreAddress() {
+      const value = document.getElementById('storeAddress').value;
+      await db.collection('settings').doc('app').update({ storeAddress: value });
+      appSettings.storeAddress = value;
+      showToast('Store address updated', 'success');
+    }
+    
+    async function saveGSTRate() {
+      const value = parseFloat(document.getElementById('gstRate').value);
+      await db.collection('settings').doc('app').update({ gstRate: value });
+      appSettings.gstRate = value;
+      showToast('GST rate updated', 'success');
+    }
+    
+    async function saveServiceCharge() {
+      const value = parseFloat(document.getElementById('serviceCharge').value);
+      await db.collection('settings').doc('app').update({ serviceCharge: value });
+      appSettings.serviceCharge = value;
+      showToast('Service charge updated', 'success');
+    }
+    
+    async function saveConvenienceFee() {
+      const value = parseFloat(document.getElementById('convenienceFee').value);
+      await db.collection('settings').doc('app').update({ convenienceFee: value });
+      appSettings.convenienceFee = value;
+      showToast('Convenience fee updated', 'success');
+    }
+    
+    async function saveDefaultDeliveryCharge() {
+      const value = parseFloat(document.getElementById('defaultDeliveryCharge').value);
+      await db.collection('settings').doc('app').update({ defaultDeliveryCharge: value });
+      appSettings.defaultDeliveryCharge = value;
+      showToast('Default delivery charge updated', 'success');
+    }
+    
+    async function saveGlobalFreeThreshold() {
+      const value = parseFloat(document.getElementById('globalFreeThreshold').value);
+      await db.collection('settings').doc('app').update({ globalFreeThreshold: value });
+      appSettings.globalFreeThreshold = value;
+      showToast('Free delivery threshold updated', 'success');
+    }
+    
+    async function saveMaxDeliveryDistance() {
+      const value = parseFloat(document.getElementById('maxDeliveryDistance').value);
+      await db.collection('settings').doc('app').update({ maxDeliveryDistance: value });
+      appSettings.maxDeliveryDistance = value;
+      showToast('Max delivery distance updated', 'success');
+    }
+    
+    async function saveMinOrderAmount() {
+      const value = parseFloat(document.getElementById('minOrderAmount').value);
+      await db.collection('settings').doc('app').update({ minOrderAmount: value });
+      appSettings.minOrderAmount = value;
+      showToast('Minimum order amount updated', 'success');
+    }
+    
+    async function saveAutoCancelTime() {
+      const value = parseFloat(document.getElementById('autoCancelTime').value);
+      await db.collection('settings').doc('app').update({ autoCancelTime: value });
+      appSettings.autoCancelTime = value;
+      showToast('Auto cancel time updated', 'success');
+    }
+    
+    async function savePrimaryColor() {
+      const value = document.getElementById('primaryColor').value;
+      await db.collection('settings').doc('app').update({ primaryColor: value });
+      appSettings.primaryColor = value;
+      applyThemeColors();
+      showToast('Primary color updated', 'success');
+    }
+    
+    async function saveSecondaryColor() {
+      const value = document.getElementById('secondaryColor').value;
+      await db.collection('settings').doc('app').update({ secondaryColor: value });
+      appSettings.secondaryColor = value;
+      applyThemeColors();
+      showToast('Secondary color updated', 'success');
+    }
+    
+    async function saveLogoUrl() {
+      const value = document.getElementById('logoUrl').value;
+      await db.collection('settings').doc('app').update({ logoUrl: value });
+      appSettings.logoUrl = value;
+      showToast('Logo URL updated', 'success');
+    }
+    
+    async function saveFaviconUrl() {
+      const value = document.getElementById('faviconUrl').value;
+      await db.collection('settings').doc('app').update({ faviconUrl: value });
+      appSettings.faviconUrl = value;
+      showToast('Favicon URL updated', 'success');
+    }
+    
+    async function saveAdminWhatsapp() {
+      const value = document.getElementById('adminWhatsapp').value;
+      await db.collection('settings').doc('app').update({ adminWhatsapp: value });
+      appSettings.adminWhatsapp = value;
+      showToast('Admin WhatsApp number updated', 'success');
+    }
+    
+    window.toggleSetting = async function(setting) {
+      const newValue = !appSettings[setting];
+      await db.collection('settings').doc('app').update({ [setting]: newValue });
+      appSettings[setting] = newValue;
+      updateToggle(setting + 'Toggle', newValue);
+      showToast(`${setting} ${newValue ? 'enabled' : 'disabled'}`, 'success');
     };
     
-    // ========== CUSTOMER MANAGEMENT ==========
-    function loadCustomers() {
-      const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-      const customerMap = {};
-      
-      // From localStorage
-      orders.forEach(o => {
-        const phone = o.customerPhone || o.phone;
-        if (!phone) return;
-        if (!customerMap[phone]) customerMap[phone] = { phone, name: o.customerName || o.name, totalOrders: 0, totalSpent: 0 };
-        customerMap[phone].totalOrders++;
-        customerMap[phone].totalSpent += (o.total || 0);
+    // Tab Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
       });
+    });
+    
+    // Export Functions
+    async function exportOrders() {
+      const snapshot = await db.collection('orders').get();
+      const orders = [];
+      snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
       
-      allCustomers = Object.values(customerMap).sort((a, b) => b.totalOrders - a.totalOrders);
-      renderCustomers();
+      const csv = convertToCSV(orders);
+      downloadFile(csv, 'orders_export.csv', 'text/csv');
+      showToast('Orders exported successfully', 'success');
     }
     
-    // Also listen to Firebase for live updates
-    db.collection('orders').onSnapshot(snapshot => {
-      const customerMap = {};
+    async function exportProducts() {
+      const snapshot = await db.collection('products').get();
+      const products = [];
+      snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+      
+      const csv = convertToCSV(products);
+      downloadFile(csv, 'products_export.csv', 'text/csv');
+      showToast('Products exported successfully', 'success');
+    }
+    
+    async function exportCustomers() {
+      const snapshot = await db.collection('orders').get();
+      const customers = new Map();
       snapshot.forEach(doc => {
-        const o = doc.data();
-        const phone = o.customerPhone || o.phone;
-        if (!phone) return;
-        if (!customerMap[phone]) customerMap[phone] = { phone, name: o.customerName || o.name, totalOrders: 0, totalSpent: 0 };
-        customerMap[phone].totalOrders++;
-        customerMap[phone].totalSpent += (o.total || 0);
+        const order = doc.data();
+        const phone = order.customerPhone || order.phone;
+        if (phone && !customers.has(phone)) {
+          customers.set(phone, {
+            name: order.customerName || order.name,
+            phone: phone,
+            email: order.email || '',
+            totalOrders: 1,
+            totalSpent: order.total || 0
+          });
+        } else if (phone) {
+          const c = customers.get(phone);
+          c.totalOrders++;
+          c.totalSpent += order.total || 0;
+        }
       });
-      allCustomers = Object.values(customerMap).sort((a, b) => b.totalOrders - a.totalOrders);
-      renderCustomers();
-    });
-    
-    function renderCustomers() {
-      const search = (document.getElementById('customerSearch')?.value || '').trim();
-      let filtered = [...allCustomers];
-      if (search) filtered = filtered.filter(c => c.phone.includes(search));
       
-      const container = document.getElementById('customerList');
-      if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:var(--muted);padding:20px 0;">No customers found</p>'; return;
-      }
-      
-      container.innerHTML = filtered.map(c => `
-        <div class="customer-card">
-          <div class="customer-info">
-            <h4>${c.name || 'Customer'} · 📱 ${c.phone}</h4>
-            <p>${c.totalOrders} order${c.totalOrders !== 1 ? 's' : ''}</p>
-          </div>
-          <div class="customer-stats">
-            <span>💰 ₹${c.totalSpent.toLocaleString('en-IN')}</span>
-            <span>📦 ${c.totalOrders}</span>
-          </div>
-          <button class="msg-btn" onclick="messageCustomer('${c.phone}')">💬 Message</button>
-        </div>
-      `).join('');
+      const csv = convertToCSV(Array.from(customers.values()));
+      downloadFile(csv, 'customers_export.csv', 'text/csv');
+      showToast('Customers exported successfully', 'success');
     }
     
-    // ========== CUSTOMER MESSAGING ==========
-    window.messageCustomer = function(phone) {
-      const customer = allCustomers.find(c => c.phone === phone);
-      const name = customer?.name || 'Customer';
+    async function exportAllData() {
+      const collections = ['products', 'orders', 'offers', 'banners', 'pincodes'];
+      const allData = {};
       
-      const message = `Hello ${name}! 👋\n\nThank you for being a valued customer of OK Mart! 🛒\n\nWe have a special offer for you. Use code SAVE20 to get ₹20 off on your next order above ₹250.\n\nOrder now: ${window.location.origin}\n\n📞 Contact: +91 99822 39821`;
+      for (const col of collections) {
+        const snapshot = await db.collection(col).get();
+        allData[col] = [];
+        snapshot.forEach(doc => allData[col].push({ id: doc.id, ...doc.data() }));
+      }
       
-      window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(message)}`, '_blank');
-    };
+      const dataStr = JSON.stringify(allData, null, 2);
+      downloadFile(dataStr, `okmart_backup_${new Date().toISOString().slice(0,19)}.json`, 'application/json');
+      showToast('All data exported successfully', 'success');
+    }
     
-    // ========== BROADCAST MESSAGE (TO ALL) ==========
-    window.broadcastMessage = function() {
-      const message = prompt('Enter broadcast message:');
-      if (!message) return;
+    function convertToCSV(data) {
+      if (!data.length) return '';
+      const headers = Object.keys(data[0]);
+      const csvRows = [headers.join(',')];
       
-      const phones = allCustomers.slice(0, 5).map(c => c.phone).join(',');
-      alert(`Broadcast ready! Phones: ${phones}\n\nMessage: ${message}\n\nOpen WhatsApp to send individually.`);
-    };
+      for (const row of data) {
+        const values = headers.map(header => {
+          let val = row[header];
+          if (val === undefined) val = '';
+          if (typeof val === 'object') val = JSON.stringify(val);
+          return `"${String(val).replace(/"/g, '""')}"`;
+        });
+        csvRows.push(values.join(','));
+      }
+      
+      return csvRows.join('\n');
+    }
     
-    // ========== TOAST ==========
-    function showToast(msg, type = 'info') {
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type: type });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+    
+    // Reset Functions
+    async function resetSettings() {
+      if (confirm('⚠️ Are you sure you want to reset all settings to default? This cannot be undone!')) {
+        const defaultSettings = {
+          storeName: 'OK Mart',
+          storePhone: '+919982239821',
+          storeEmail: 'support@okmart.com',
+          storeAddress: '',
+          primaryColor: '#2ecc71',
+          secondaryColor: '#27ae60',
+          gstRate: 5,
+          serviceCharge: 0,
+          convenienceFee: 0,
+          defaultDeliveryCharge: 39,
+          globalFreeThreshold: 499,
+          maxDeliveryDistance: 10,
+          minOrderAmount: 99,
+          autoCancelTime: 30,
+          allowCod: true,
+          pushNotifications: true,
+          orderStatusNotify: true,
+          promoNotify: true,
+          adminWhatsapp: '919982239821',
+          customerWhatsapp: true
+        };
+        await db.collection('settings').doc('app').set(defaultSettings);
+        appSettings = defaultSettings;
+        applySettingsToUI();
+        applyThemeColors();
+        showToast('Settings reset to default', 'success');
+      }
+    }
+    
+    async function clearAllData() {
+      if (confirm('⚠️⚠️⚠️ DANGER: This will delete ALL products, orders, coupons, banners, and pincodes! This cannot be undone! ⚠️⚠️⚠️')) {
+        const collections = ['products', 'orders', 'offers', 'banners', 'pincodes'];
+        for (const col of collections) {
+          const snapshot = await db.collection(col).get();
+          for (const doc of snapshot.docs) {
+            await db.collection(col).doc(doc.id).delete();
+          }
+        }
+        showToast('All data cleared', 'success');
+      }
+    }
+    
+    // Admin Accounts
+    async function loadAdmins() {
+      const snapshot = await db.collection('admins').get();
+      const adminList = document.getElementById('adminList');
+      if (snapshot.empty) {
+        adminList.innerHTML = '<div style="padding:20px;text-align:center;">No admin accounts</div>';
+        return;
+      }
+      
+      let html = '';
+      snapshot.forEach(doc => {
+        const admin = doc.data();
+        html += `
+          <div class="admin-item">
+            <div class="admin-info">
+              <span class="admin-email">${admin.email}</span>
+              <span class="admin-role">${admin.role || 'Admin'}</span>
+            </div>
+            ${admin.email !== localStorage.getItem('adminEmail') ? `<button class="delete-admin-btn" onclick="deleteAdmin('${doc.id}')">Remove</button>` : '<span style="font-size:.7rem;color:var(--muted);">You</span>'}
+          </div>
+        `;
+      });
+      adminList.innerHTML = html;
+    }
+    
+    async function addAdmin() {
+      const email = document.getElementById('newAdminEmail').value;
+      const password = document.getElementById('newAdminPassword').value;
+      
+      if (!email || !password) {
+        showToast('Please enter email and password', 'error');
+        return;
+      }
+      
+      // In production, use Firebase Auth
+      await db.collection('admins').doc().set({
+        email: email,
+        password: btoa(password), // Simple encoding - use proper auth in production
+        role: 'admin',
+        createdAt: new Date().toISOString()
+      });
+      
+      document.getElementById('newAdminEmail').value = '';
+      document.getElementById('newAdminPassword').value = '';
+      loadAdmins();
+      showToast('Admin added successfully', 'success');
+    }
+    
+    async function deleteAdmin(id) {
+      if (confirm('Remove this admin?')) {
+        await db.collection('admins').doc(id).delete();
+        loadAdmins();
+        showToast('Admin removed', 'success');
+      }
+    }
+    
+    function showToast(message, type) {
       const toast = document.getElementById('toast');
-      toast.textContent = msg; toast.className = `toast ${type}`; toast.classList.add('show');
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    // Init
-    loadCustomers();
-    console.log('✅ Admin control panel ready');
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
+    }
+    
+    // Initialize
+    loadSettings();
+    loadAdmins();
   </script>
 </body>
 </html>
