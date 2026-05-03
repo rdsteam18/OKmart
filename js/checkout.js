@@ -24,7 +24,7 @@
   let userAddress = null;
   let currentDeliveryType = 'quick';
   let deliveryCharge = 30;
-  const FREE_DELIVERY_THRESHOLD = 499;
+  const FREE_DELIVERY_THRESHOLD = 199;
 
   // ========== Load Data ==========
   async function loadData() {
