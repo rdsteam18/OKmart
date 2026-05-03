@@ -1,49 +1,32 @@
-// ===== OK MART - ADMIN ROUTE PROTECTION =====
-// Include this on ALL admin pages
+// ===== OK MART - ADMIN AUTHENTICATION =====
 
-(function() {
-  'use strict';
+// Check if admin is logged in
+function checkAdminAuth() {
+  const isLoggedIn = localStorage.getItem('adminLoggedIn');
+  const currentPage = window.location.pathname;
   
-  const ADMIN_LOGIN_PAGE = 'login.html';
-  const SESSION_DURATION = 12 * 60 * 60 * 1000; // 12 hours
-  
-  function checkAuth() {
-    const isAdmin = localStorage.getItem('okmart_isAdmin');
-    const loginTime = parseInt(localStorage.getItem('okmart_admin_loginTime') || '0');
-    const expired = (Date.now() - loginTime) > SESSION_DURATION;
-    
-    if (isAdmin !== 'true' || expired) {
-      if (expired) {
-        localStorage.removeItem('okmart_isAdmin');
-        localStorage.removeItem('okmart_admin_username');
-        localStorage.removeItem('okmart_admin_loginTime');
-      }
-      
-      const currentPage = window.location.pathname.split('/').pop();
-      if (currentPage !== ADMIN_LOGIN_PAGE) {
-        window.location.href = ADMIN_LOGIN_PAGE;
-      }
-      return false;
+  // Skip login page
+  if (currentPage.includes('login.html')) {
+    if (isLoggedIn === 'true') {
+      window.location.href = 'index.html';
     }
-    
-    // Refresh login timestamp
-    localStorage.setItem('okmart_admin_loginTime', Date.now().toString());
-    return true;
+    return;
   }
   
-  checkAuth();
-  
-  // Logout function
-  window.adminLogout = function() {
-    localStorage.removeItem('okmart_isAdmin');
-    localStorage.removeItem('okmart_admin_username');
-    localStorage.removeItem('okmart_admin_loginTime');
-    localStorage.removeItem('okmart_admin_role');
-    window.location.href = ADMIN_LOGIN_PAGE;
-  };
-  
-  window.isAdminLoggedIn = function() {
-    return localStorage.getItem('okmart_isAdmin') === 'true';
-  };
-  
-})();
+  // Check for all admin pages
+  if (isLoggedIn !== 'true') {
+    window.location.href = 'login.html';
+  }
+}
+
+// Admin logout
+function adminLogout() {
+  if (confirm('Are you sure you want to logout?')) {
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('adminEmail');
+    window.location.href = 'login.html';
+  }
+}
+
+// Run auth check on page load
+checkAdminAuth();
