@@ -234,3 +234,89 @@ window.shareContent = async function(title, text, url) {
     return false;
   }
 };
+
+
+
+// ===== OK MART - DELIVERY SYSTEM INTEGRATION =====
+
+// Add these functions to your existing common.js
+
+// ========== DELIVERY CHECK ==========
+window.DeliverySystem = {
+  // Check if pincode is serviceable
+  checkServiceability: async function(pincode) {
+    try {
+      const doc = await db.collection('pincodes').doc(pincode).get();
+      if (doc.exists && doc.data().active !== false) {
+        return {
+          serviceable: true,
+          deliveryType: doc.data().deliveryType || 'quick',
+          deliveryCharge: doc.data().deliveryCharge || 39,
+          freeAbove: doc.data().freeAbove || 499,
+          estimatedTime: doc.data().deliveryType === 'quick' ? '10-15 mins' : '2-4 hours'
+        };
+      }
+      return { serviceable: false };
+    } catch (error) {
+      console.error('Error checking pincode:', error);
+      return { serviceable: false };
+    }
+  },
+  
+  // Calculate delivery charge based on cart total and pincode
+  calculateDeliveryCharge: async function(pincode, cartTotal) {
+    const result = await this.checkServiceability(pincode);
+    if (!result.serviceable) return null;
+    
+    const { deliveryCharge, freeAbove } = result;
+    if (cartTotal >= freeAbove) return 0;
+    return deliveryCharge;
+  },
+  
+  // Get estimated delivery time
+  getEstimatedTime: function(deliveryType) {
+    if (deliveryType === 'quick') {
+      const now = new Date();
+      const eta = new Date(now.getTime() + 15 * 60000);
+      return eta.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    return 'Today, 6-8 PM';
+  },
+  
+  // Save user location
+  saveUserLocation: function(location) {
+    localStorage.setItem('okmart_user_location', JSON.stringify(location));
+    document.dispatchEvent(new CustomEvent('locationUpdated', { detail: location }));
+  },
+  
+  // Get saved location
+  getUserLocation: function() {
+    const saved = localStorage.getItem('okmart_user_location');
+    return saved ? JSON.parse(saved) : null;
+  }
+};
+
+// ========== UPDATE DELIVERY UI ==========
+function updateDeliveryUI() {
+  const savedPincode = localStorage.getItem('okmart_pincode');
+  const deliveryBanner = document.getElementById('deliveryInfoBanner');
+  
+  if (savedPincode && deliveryBanner) {
+    DeliverySystem.checkServiceability(savedPincode).then(result => {
+      if (result.serviceable) {
+        deliveryBanner.innerHTML = `
+          <div class="delivery-info-content">
+            <span class="delivery-icon">🚚</span>
+            <span class="delivery-text">Delivery to ${savedPincode}</span>
+            <span class="delivery-separator">|</span>
+            <span class="delivery-time">⚡ ${result.estimatedTime}</span>
+          </div>
+        `;
+      }
+    });
+  }
+}
+
+// Call when page loads
+document.addEventListener('DOMContentLoaded', updateDeliveryUI);
+document.addEventListener('locationUpdated', updateDeliveryUI);
