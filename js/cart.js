@@ -1,272 +1,567 @@
-// ===== OK MART - CART.JS =====
-// Full cart system with coupon, free item, recommended products
+// ===== OK MART - ADVANCED CART PAGE =====
 
 (function() {
   'use strict';
-  
-  const CART_KEY = 'okmart_cart';
-  const WISHLIST_KEY = 'okmart_wishlist';
-  const FREE_THRESHOLD = 199;
-  const DELIVERY_FEE = 20;
-  const FREE_ONION = {
-    id: 'free_onion',
-    name: 'Onion (FREE)',
-    price: 0, mrp: 30,
-    image: 'https://www.jiomart.com/images/product/original/590011678/onion-1-kg-pack-product-images-o590011678-p611163418-0-202503161707.jpg?im=Resize=(420,420)',
-    unit: '1 kg', quantity: 1, isFree: true
-  };
-  
-  let cart = [];
-  let couponDiscount = 0;
-  let appliedCouponCode = null;
-  
-  // ========== DOM ELEMENTS ==========
-  const cartItemsList = document.getElementById('cartItemsList');
+
+  // ========== DOM Elements ==========
+  const loadingState = document.getElementById('loadingState');
+  const cartContent = document.getElementById('cartContent');
   const emptyCart = document.getElementById('emptyCart');
-  const couponSection = document.getElementById('couponSection');
-  const priceSummary = document.getElementById('priceSummary');
-  const stickyCheckoutBar = document.getElementById('stickyCheckoutBar');
-  const headerCartCount = document.getElementById('headerCartCount');
-  const recommendedSlider = document.getElementById('recommendedSlider');
-  const popularGrid = document.getElementById('popularGrid');
-  const toastMessage = document.getElementById('toastMessage');
-  
-  // ========== CART FUNCTIONS ==========
-  function getCart() { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
-  function saveCart(c) { localStorage.setItem(CART_KEY, JSON.stringify(c)); }
-  
-  function loadCart() { cart = getCart(); manageFreeOnion(); return cart; }
-  
-  function updateQuantity(productId, change) {
-    const item = cart.find(i => i.id === productId);
-    if (!item || item.isFree) return;
-    const newQty = item.quantity + change;
-    if (newQty <= 0) removeItem(productId);
-    else { item.quantity = newQty; saveCart(cart); manageFreeOnion(); renderCart(); }
+  const cartItemsList = document.getElementById('cartItemsList');
+  const cartItemCount = document.getElementById('cartItemCount');
+  const savedItemsList = document.getElementById('savedItemsList');
+  const savedSection = document.getElementById('savedSection');
+  const savedCount = document.getElementById('savedCount');
+  const subtotalEl = document.getElementById('subtotal');
+  const discountAmountEl = document.getElementById('discountAmount');
+  const discountRow = document.getElementById('discountRow');
+  const deliveryChargeEl = document.getElementById('deliveryCharge');
+  const totalAmountEl = document.getElementById('totalAmount');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const couponInput = document.getElementById('couponCode');
+  const applyCouponBtn = document.getElementById('applyCouponBtn');
+  const couponMessage = document.getElementById('couponMessage');
+  const couponChips = document.getElementById('couponChips');
+  const availableCoupons = document.getElementById('availableCoupons');
+  const clearCartBtn = document.getElementById('clearCartBtn');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const viewSavedBtn = document.getElementById('viewSavedBtn');
+  const relatedProductsGrid = document.getElementById('relatedProductsGrid');
+  const trendingGridEmpty = document.getElementById('trendingGridEmpty');
+
+  // ========== State ==========
+  let cart = [];
+  let savedItems = [];
+  let allProducts = [];
+  let coupons = [];
+  let appliedCoupon = null;
+  let deliveryCharge = 0;
+  let pincode = null;
+  const FREE_DELIVERY_THRESHOLD = 199;
+  const BASE_DELIVERY_CHARGE = 39;
+
+  // ========== Load Data ==========
+  async function loadData() {
+    try {
+      loadingState.style.display = 'block';
+      
+      // Load products
+      allProducts = await fetchProducts();
+      
+      // Load coupons from Firebase
+      await loadCoupons();
+      
+      // Load cart from localStorage
+      loadCart();
+      
+      // Load saved items
+      loadSavedItems();
+      
+      // Load pincode
+      loadPincode();
+      
+      loadingState.style.display = 'none';
+      
+      if (cart.length === 0) {
+        showEmptyCart();
+      } else {
+        cartContent.style.display = 'block';
+        renderCart();
+        renderRelatedProducts();
+        updateOrderSummary();
+      }
+      
+      // Load trending for empty cart
+      if (trendingGridEmpty) {
+        renderTrendingProducts();
+      }
+      
+    } catch (error) {
+      console.error('Error loading data:', error);
+      loadingState.innerHTML = '<div class="spinner"></div><p>Error loading cart. Please refresh.</p>';
+    }
   }
-  
-  function removeItem(productId) {
-    if (cart.find(i => i.id === productId)?.isFree) return;
-    cart = cart.filter(i => i.id !== productId);
-    saveCart(cart); manageFreeOnion(); renderCart(); showToast('Item removed');
+
+  // ========== Load Coupons from Firebase ==========
+  async function loadCoupons() {
+    try {
+      const snapshot = await db.collection('offers')
+        .where('active', '==', true)
+        .get();
+      
+      coupons = [];
+      snapshot.forEach(doc => {
+        coupons.push({ id: doc.id, ...doc.data() });
+      });
+      
+      // Show available coupons
+      if (coupons.length > 0) {
+        availableCoupons.style.display = 'block';
+        couponChips.innerHTML = coupons.slice(0, 3).map(c => `
+          <div class="coupon-chip" onclick="applyCouponCode('${c.code}')">
+            🏷️ ${c.code} ${c.type === 'flat' ? `₹${c.discount} OFF` : `${c.discount}% OFF`}
+          </div>
+        `).join('');
+      }
+    } catch (error) {
+      console.error('Error loading coupons:', error);
+    }
   }
-  
-  // ========== FREE ONION LOGIC ==========
-  function manageFreeOnion() {
-    const paidTotal = cart.filter(i => !i.isFree).reduce((s, i) => s + (i.price * i.quantity), 0);
-    const hasOnion = cart.some(i => i.id === 'free_onion');
-    if (paidTotal >= FREE_THRESHOLD && !hasOnion) { cart.push({ ...FREE_ONION }); saveCart(cart); }
-    else if (paidTotal < FREE_THRESHOLD && hasOnion) { cart = cart.filter(i => i.id !== 'free_onion'); saveCart(cart); }
+
+  // ========== Load Cart from localStorage ==========
+  function loadCart() {
+    const savedCart = localStorage.getItem('okmart_cart');
+    if (savedCart) {
+      cart = JSON.parse(savedCart);
+    } else {
+      cart = [];
+    }
   }
-  
-  // ========== CALCULATE TOTALS ==========
-  function calculateTotals() {
-    const mrpTotal = cart.filter(i => !i.isFree).reduce((s, i) => s + ((i.mrp || i.price) * i.quantity), 0);
-    const subtotal = cart.filter(i => !i.isFree).reduce((s, i) => s + (i.price * i.quantity), 0);
-    const itemDiscount = mrpTotal - subtotal;
-    const hasOnion = cart.some(i => i.id === 'free_onion');
-    const delivery = subtotal >= FREE_THRESHOLD ? 0 : DELIVERY_FEE;
-    const total = Math.max(0, subtotal - couponDiscount + delivery);
-    return { mrpTotal, subtotal, itemDiscount, couponDiscount, hasOnion, delivery, total };
+
+  // ========== Save Cart to localStorage ==========
+  function saveCart() {
+    localStorage.setItem('okmart_cart', JSON.stringify(cart));
+    updateCartBadge();
   }
-  
-  // ========== RENDER CART ==========
+
+  // ========== Load Saved Items ==========
+  function loadSavedItems() {
+    const saved = localStorage.getItem('okmart_saved_for_later');
+    if (saved) {
+      savedItems = JSON.parse(saved);
+    } else {
+      savedItems = [];
+    }
+  }
+
+  // ========== Save Saved Items ==========
+  function saveSavedItems() {
+    localStorage.setItem('okmart_saved_for_later', JSON.stringify(savedItems));
+  }
+
+  // ========== Load Pincode ==========
+  function loadPincode() {
+    pincode = localStorage.getItem('okmart_pincode');
+    if (!pincode) {
+      // Default delivery charge
+      deliveryCharge = BASE_DELIVERY_CHARGE;
+    }
+  }
+
+  // ========== Update Cart Badge ==========
+  function updateCartBadge() {
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll('.cart-count, .cart-badge').forEach(el => {
+      if (el) el.textContent = total;
+    });
+  }
+
+  // ========== Render Cart Items ==========
   function renderCart() {
-    const totals = calculateTotals();
-    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
-    headerCartCount.textContent = totalItems;
+    if (!cartItemsList) return;
     
     if (cart.length === 0) {
-      cartItemsList.innerHTML = '';
-      emptyCart.style.display = 'block';
-      couponSection.style.display = 'none';
-      priceSummary.style.display = 'none';
-      stickyCheckoutBar.style.display = 'none';
+      showEmptyCart();
       return;
     }
     
+    cartContent.style.display = 'block';
     emptyCart.style.display = 'none';
-    couponSection.style.display = 'block';
-    priceSummary.style.display = 'block';
-    stickyCheckoutBar.style.display = 'block';
     
-    // Render items
-    cartItemsList.innerHTML = cart.map(item => {
-      const itemTotal = item.price * item.quantity;
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartItemCount.textContent = totalItems;
+    
+    cartItemsList.innerHTML = cart.map((item, index) => {
+      const product = allProducts.find(p => p.id === item.id) || item;
+      const itemTotal = product.price * item.quantity;
+      
       return `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/70'">
-          <div class="cart-item-info">
-            <div class="cart-item-name">
-              ${item.name}
-              ${item.isFree ? '<span class="free-badge">🎁 FREE</span>' : ''}
-            </div>
-            <span class="cart-item-unit">${item.unit || ''}</span>
-            <div class="cart-item-price">${item.isFree ? 'FREE' : '₹' + item.price}</div>
-            ${!item.isFree ? `
-              <div class="cart-item-actions">
-                <div class="qty-control">
-                  <button class="qty-btn" onclick="window.cartQty('${item.id}', -1)">−</button>
-                  <span class="qty-num">${item.quantity}</span>
-                  <button class="qty-btn" onclick="window.cartQty('${item.id}', 1)">+</button>
-                </div>
-                <button class="remove-btn" onclick="window.cartRemove('${item.id}')">🗑️</button>
-              </div>
-            ` : '<div class="free-item-note">Added automatically on ₹199+</div>'}
+        <div class="cart-item" data-index="${index}">
+          <img src="${product.image}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/80'">
+          <div class="cart-item-details">
+            <div class="cart-item-name">${escapeHtml(product.name)}</div>
+            <div class="cart-item-unit">${product.unit || ''}</div>
+            <div class="cart-item-price">₹${product.price}</div>
           </div>
-          <div class="item-total-price">${item.isFree ? 'FREE' : '₹' + itemTotal}</div>
+          <div class="cart-item-actions">
+            <div class="quantity-control">
+              <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">−</button>
+              <span class="qty-value">${item.quantity}</span>
+              <button class="qty-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
+            </div>
+            <button class="save-for-later-btn" onclick="saveForLater('${item.id}')">📦 Save for Later</button>
+            <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">🗑️ Remove</button>
+          </div>
         </div>
       `;
     }).join('');
     
-    // Update summary
-    document.getElementById('mrpTotal').textContent = '₹' + totals.mrpTotal;
-    document.getElementById('itemDiscount').textContent = '-₹' + totals.itemDiscount;
-    
-    if (totals.couponDiscount > 0) {
-      document.getElementById('couponDiscountRow').style.display = 'flex';
-      document.getElementById('couponDiscount').textContent = '-₹' + totals.couponDiscount;
-    } else {
-      document.getElementById('couponDiscountRow').style.display = 'none';
-    }
-    
-    document.getElementById('freeOnionRow').style.display = totals.hasOnion ? 'flex' : 'none';
-    document.getElementById('deliveryCharge').textContent = totals.delivery === 0 ? 'FREE' : '₹' + totals.delivery;
-    document.getElementById('totalAmount').textContent = '₹' + totals.total;
-    
-    document.getElementById('barTotal').textContent = '₹' + totals.total;
-    document.getElementById('barItems').textContent = totalItems + ' item' + (totalItems !== 1 ? 's' : '');
-    
-    const msgEl = document.getElementById('deliveryMessage');
-    if (totals.delivery === 0) {
-      msgEl.textContent = '🎉 Free delivery applied!';
-      msgEl.style.color = '#10b981';
-    } else {
-      msgEl.textContent = `🚚 Add ₹${FREE_THRESHOLD - totals.subtotal} more for FREE delivery`;
-      msgEl.style.color = '#f59e0b';
-    }
+    // Render saved items
+    renderSavedItems();
   }
-  
-  // ========== COUPON SYSTEM ==========
-  async function applyCoupon() {
-    const code = document.getElementById('couponInput').value.trim().toUpperCase();
-    const msgEl = document.getElementById('couponMessage');
+
+  // ========== Render Saved Items ==========
+  function renderSavedItems() {
+    if (!savedItemsList) return;
     
-    if (!code) { msgEl.textContent = 'Enter a coupon code'; msgEl.className = 'coupon-message error'; return; }
+    if (savedItems.length === 0) {
+      savedSection.style.display = 'none';
+      return;
+    }
     
-    try {
-      const snap = await db.collection('offers').where('code', '==', code).where('active', '==', true).get();
-      if (snap.empty) { msgEl.textContent = '❌ Invalid or expired coupon'; msgEl.className = 'coupon-message error'; return; }
+    savedSection.style.display = 'block';
+    savedCount.textContent = savedItems.length;
+    
+    savedItemsList.innerHTML = savedItems.map(item => {
+      const product = allProducts.find(p => p.id === item.id) || item;
+      return `
+        <div class="saved-item">
+          <img src="${product.image}" class="saved-item-image" onerror="this.src='https://via.placeholder.com/60'">
+          <div class="saved-item-details">
+            <div class="saved-item-name">${escapeHtml(product.name)}</div>
+            <div class="saved-item-price">₹${product.price}</div>
+          </div>
+          <button class="move-to-cart-btn" onclick="moveToCart('${item.id}')">Move to Cart</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ========== Update Quantity ==========
+  window.updateQuantity = function(productId, delta) {
+    const itemIndex = cart.findIndex(item => item.id === productId);
+    if (itemIndex === -1) return;
+    
+    const newQuantity = cart[itemIndex].quantity + delta;
+    
+    if (newQuantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    
+    cart[itemIndex].quantity = newQuantity;
+    saveCart();
+    renderCart();
+    updateOrderSummary();
+    showMiniPopup('Cart updated!');
+  };
+
+  // ========== Remove from Cart ==========
+  window.removeFromCart = function(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    renderCart();
+    updateOrderSummary();
+    showMiniPopup('Item removed');
+    
+    if (cart.length === 0) {
+      showEmptyCart();
+    }
+  };
+
+  // ========== Save for Later ==========
+  window.saveForLater = function(productId) {
+    const item = cart.find(i => i.id === productId);
+    if (item) {
+      // Remove from cart
+      cart = cart.filter(i => i.id !== productId);
+      saveCart();
       
-      const offer = snap.docs[0].data();
-      const { subtotal } = calculateTotals();
-      if (subtotal < offer.minOrder) { msgEl.textContent = `❌ Min order ₹${offer.minOrder} required`; msgEl.className = 'coupon-message error'; return; }
+      // Add to saved
+      if (!savedItems.find(i => i.id === productId)) {
+        savedItems.push(item);
+        saveSavedItems();
+      }
       
-      if (offer.type === 'flat') couponDiscount = offer.discount;
-      else if (offer.type === 'percent') { const d = Math.round((subtotal * offer.discount) / 100); couponDiscount = offer.maxDiscount ? Math.min(d, offer.maxDiscount) : d; }
-      appliedCouponCode = code;
-      
-      document.getElementById('appliedCouponDisplay').style.display = 'flex';
-      document.getElementById('appliedCode').textContent = code;
-      document.getElementById('appliedDiscount').textContent = '-₹' + couponDiscount;
-      document.getElementById('couponInput').value = '';
-      msgEl.textContent = '✅ Coupon applied!';
-      msgEl.className = 'coupon-message success';
-      
-      // Save to session for checkout
-      sessionStorage.setItem('checkout_coupon', JSON.stringify({ code, discount: couponDiscount }));
       renderCart();
-      showToast(`Coupon ${code} applied! -₹${couponDiscount}`, 'success');
-    } catch (err) { msgEl.textContent = 'Error applying coupon'; msgEl.className = 'coupon-message error'; }
+      renderSavedItems();
+      updateOrderSummary();
+      showMiniPopup('Saved for later');
+      
+      if (cart.length === 0) {
+        showEmptyCart();
+      }
+    }
+  };
+
+  // ========== Move to Cart ==========
+  window.moveToCart = function(productId) {
+    const item = savedItems.find(i => i.id === productId);
+    if (item) {
+      // Remove from saved
+      savedItems = savedItems.filter(i => i.id !== productId);
+      saveSavedItems();
+      
+      // Add to cart
+      const existing = cart.find(i => i.id === productId);
+      if (existing) {
+        existing.quantity += item.quantity;
+      } else {
+        cart.push(item);
+      }
+      saveCart();
+      
+      renderCart();
+      renderSavedItems();
+      updateOrderSummary();
+      showMiniPopup('Moved to cart');
+    }
+  };
+
+  // ========== Apply Coupon ==========
+  window.applyCouponCode = function(code) {
+    couponInput.value = code;
+    applyCoupon();
+  };
+
+  function applyCoupon() {
+    const code = couponInput.value.trim().toUpperCase();
+    
+    if (!code) {
+      showCouponMessage('Please enter a coupon code', 'error');
+      return;
+    }
+    
+    const coupon = coupons.find(c => c.code === code);
+    
+    if (!coupon) {
+      showCouponMessage('Invalid coupon code', 'error');
+      return;
+    }
+    
+    if (coupon.active === false) {
+      showCouponMessage('This coupon is no longer active', 'error');
+      return;
+    }
+    
+    // Check expiry
+    if (coupon.validTo && new Date(coupon.validTo) < new Date()) {
+      showCouponMessage('This coupon has expired', 'error');
+      return;
+    }
+    
+    // Check min order
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (subtotal < (coupon.minOrder || 0)) {
+      showCouponMessage(`Minimum order of ₹${coupon.minOrder} required`, 'error');
+      return;
+    }
+    
+    appliedCoupon = coupon;
+    showCouponMessage(`Coupon applied! ${coupon.type === 'flat' ? `₹${coupon.discount} OFF` : `${coupon.discount}% OFF`}`, 'success');
+    updateOrderSummary();
   }
-  
+
   function removeCoupon() {
-    couponDiscount = 0; appliedCouponCode = null;
-    document.getElementById('appliedCouponDisplay').style.display = 'none';
-    document.getElementById('couponInput').value = '';
-    document.getElementById('couponMessage').textContent = '';
-    document.getElementById('couponMessage').className = 'coupon-message';
-    sessionStorage.removeItem('checkout_coupon');
-    renderCart(); showToast('Coupon removed');
+    appliedCoupon = null;
+    couponInput.value = '';
+    showCouponMessage('Coupon removed', 'success');
+    updateOrderSummary();
+  }
+
+  function showCouponMessage(message, type) {
+    couponMessage.textContent = message;
+    couponMessage.className = `coupon-message ${type}`;
+    setTimeout(() => {
+      couponMessage.textContent = '';
+      couponMessage.className = 'coupon-message';
+    }, 3000);
+  }
+
+  // ========== Calculate Discount ==========
+  function calculateDiscount(subtotal) {
+    if (!appliedCoupon) return 0;
+    
+    let discount = 0;
+    if (appliedCoupon.type === 'flat') {
+      discount = appliedCoupon.discount;
+    } else {
+      discount = (subtotal * appliedCoupon.discount) / 100;
+      if (appliedCoupon.maxDiscount) {
+        discount = Math.min(discount, appliedCoupon.maxDiscount);
+      }
+    }
+    
+    return Math.min(discount, subtotal);
+  }
+
+  // ========== Update Order Summary ==========
+  function updateOrderSummary() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const discount = calculateDiscount(subtotal);
+    const finalSubtotal = subtotal - discount;
+    
+    // Delivery charge logic
+    let delivery = BASE_DELIVERY_CHARGE;
+    if (finalSubtotal >= FREE_DELIVERY_THRESHOLD) {
+      delivery = 0;
+    }
+    deliveryCharge = delivery;
+    
+    const total = finalSubtotal + deliveryCharge;
+    
+    // Update UI
+    subtotalEl.textContent = `₹${subtotal}`;
+    
+    if (discount > 0) {
+      discountRow.style.display = 'flex';
+      discountAmountEl.textContent = `-₹${discount}`;
+    } else {
+      discountRow.style.display = 'none';
+    }
+    
+    deliveryChargeEl.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
+    totalAmountEl.textContent = `₹${total}`;
+    
+    // Update free delivery progress
+    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - finalSubtotal);
+    const percent = Math.min(100, (finalSubtotal / FREE_DELIVERY_THRESHOLD) * 100);
+    
+    progressFill.style.width = `${percent}%`;
+    if (remaining <= 0) {
+      progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
+    } else {
+      progressLabel.innerHTML = `Add ₹${remaining} more to get FREE delivery 🎁`;
+    }
+  }
+
+  // ========== Clear Cart ==========
+  function clearCart() {
+    if (confirm('Are you sure you want to clear your entire cart?')) {
+      cart = [];
+      saveCart();
+      renderCart();
+      updateOrderSummary();
+      showMiniPopup('Cart cleared');
+      showEmptyCart();
+    }
+  }
+
+  // ========== Proceed to Checkout ==========
+  function proceedToCheckout() {
+    if (cart.length === 0) {
+      showToast('Your cart is empty', 'error');
+      return;
+    }
+    
+    // Save applied coupon to localStorage for checkout
+    if (appliedCoupon) {
+      localStorage.setItem('okmart_applied_coupon', JSON.stringify(appliedCoupon));
+    }
+    
+    window.location.href = '/checkout.html';
+  }
+
+  // ========== Show Empty Cart ==========
+  function showEmptyCart() {
+    cartContent.style.display = 'none';
+    emptyCart.style.display = 'block';
+  }
+
+  // ========== Render Related Products ==========
+  async function renderRelatedProducts() {
+    if (!relatedProductsGrid) return;
+    
+    // Get product IDs from cart
+    const cartProductIds = cart.map(item => item.id);
+    
+    // Get trending products not in cart
+    const trending = allProducts
+      .filter(p => p.active !== false && !cartProductIds.includes(p.id))
+      .slice(0, 6);
+    
+    if (trending.length === 0) {
+      document.getElementById('relatedSection').style.display = 'none';
+      return;
+    }
+    
+    document.getElementById('relatedSection').style.display = 'block';
+    relatedProductsGrid.innerHTML = trending.map(product => `
+      <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/120'">
+        <div class="related-product-name">${product.name}</div>
+        <div class="related-product-price">₹${product.price}</div>
+      </div>
+    `).join('');
+  }
+
+  // ========== Render Trending Products (Empty Cart) ==========
+  async function renderTrendingProducts() {
+    if (!trendingGridEmpty) return;
+    
+    const trending = allProducts
+      .filter(p => p.active !== false && (p.popular === true || (p.salesCount || 0) > 5))
+      .slice(0, 6);
+    
+    trendingGridEmpty.innerHTML = trending.map(product => `
+      <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/120'">
+        <div class="related-product-name">${product.name}</div>
+        <div class="related-product-price">₹${product.price}</div>
+      </div>
+    `).join('');
+  }
+
+  // ========== Helper Functions ==========
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function showMiniPopup(message) {
+    const popup = document.getElementById('miniOrderPopup');
+    if (!popup) return;
+    
+    const textEl = popup.querySelector('.popup-text');
+    if (textEl) textEl.textContent = message;
+    
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 2000);
+  }
+
+  function showToast(message, type) {
+    const toast = document.getElementById('toastMessage');
+    if (!toast) return;
+    
+    toast.textContent = message;
+    toast.className = `toast-message ${type}`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ========== Event Listeners ==========
+  function initEventListeners() {
+    applyCouponBtn?.addEventListener('click', applyCoupon);
+    clearCartBtn?.addEventListener('click', clearCart);
+    checkoutBtn?.addEventListener('click', proceedToCheckout);
+    viewSavedBtn?.addEventListener('click', () => {
+      window.location.href = '/saved-items.html';
+    });
+    
+    couponInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') applyCoupon();
+    });
+  }
+
+  // ========== Expose Global Functions ==========
+  window.updateQuantity = updateQuantity;
+  window.removeFromCart = removeFromCart;
+  window.saveForLater = saveForLater;
+  window.moveToCart = moveToCart;
+  window.applyCouponCode = applyCouponCode;
+
+  // ========== Initialize ==========
+  function init() {
+    initEventListeners();
+    loadData();
+    console.log('✅ Cart page initialized');
   }
   
-  // ========== RECOMMENDED PRODUCTS ==========
-  async function loadRecommended() {
-    try {
-      const snap = await db.collection('products').where('popular', '==', true).limit(8).get();
-      recommendedSlider.innerHTML = '';
-      snap.forEach(doc => {
-        const p = { id: doc.id, ...doc.data() };
-        if (cart.some(i => i.id === p.id)) return;
-        const card = document.createElement('div');
-        card.className = 'mini-product-card';
-        card.innerHTML = `
-          <img src="${p.image}" class="mini-product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140'">
-          <div class="mini-product-name">${p.name}</div>
-          <div class="mini-product-price">₹${p.price}</div>
-          <button class="mini-add-btn">+ Add</button>
-        `;
-        card.querySelector('.mini-add-btn').addEventListener('click', e => { e.stopPropagation(); addRecommended(p); });
-        recommendedSlider.appendChild(card);
-      });
-    } catch (err) {}
-  }
-  
-  async function loadPopularForEmpty() {
-    try {
-      const snap = await db.collection('products').where('popular', '==', true).limit(4).get();
-      popularGrid.innerHTML = '';
-      snap.forEach(doc => {
-        const p = { id: doc.id, ...doc.data() };
-        const card = document.createElement('div');
-        card.className = 'mini-product-card';
-        card.style.flex = 'unset';
-        card.innerHTML = `
-          <img src="${p.image}" class="mini-product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140'">
-          <div class="mini-product-name">${p.name}</div>
-          <div class="mini-product-price">₹${p.price}</div>
-          <button class="mini-add-btn">+ Add</button>
-        `;
-        card.querySelector('.mini-add-btn').addEventListener('click', e => { e.stopPropagation(); addRecommended(p); });
-        popularGrid.appendChild(card);
-      });
-    } catch (err) {}
-  }
-  
-  function addRecommended(product) {
-    const existing = cart.find(i => i.id === product.id);
-    if (existing) existing.quantity++;
-    else cart.push({ id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.image, unit: product.unit, quantity: 1 });
-    saveCart(cart); manageFreeOnion(); renderCart();
-    showToast(`${product.name} added!`, 'success');
-  }
-  
-  // ========== TOAST ==========
-  function showToast(msg, type) {
-    const t = toastMessage;
-    t.textContent = msg;
-    t.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
-    t.style.color = 'white'; t.classList.add('show');
-    clearTimeout(window._t); window._t = setTimeout(() => t.classList.remove('show'), 2500);
-  }
-  
-  // ========== GLOBAL FUNCTIONS ==========
-  window.cartQty = (id, d) => updateQuantity(id, d);
-  window.cartRemove = (id) => removeItem(id);
-  
-  // ========== EVENT LISTENERS ==========
-  document.getElementById('applyCouponBtn').addEventListener('click', applyCoupon);
-  document.getElementById('removeCouponBtn').addEventListener('click', removeCoupon);
-  document.getElementById('couponInput').addEventListener('keypress', e => { if (e.key === 'Enter') applyCoupon(); });
-  
-  // ========== INIT ==========
-  async function init() {
-    loadCart(); renderCart();
-    await Promise.all([loadRecommended(), loadPopularForEmpty()]);
-    // Check for saved coupon from checkout session
-    const saved = sessionStorage.getItem('checkout_coupon');
-    if (saved) { const d = JSON.parse(saved); couponDiscount = d.discount; appliedCouponCode = d.code; document.getElementById('appliedCouponDisplay').style.display = 'flex'; document.getElementById('appliedCode').textContent = d.code; document.getElementById('appliedDiscount').textContent = '-₹' + d.discount; renderCart(); }
-    console.log('✅ Cart ready');
-  }
   init();
 })();
