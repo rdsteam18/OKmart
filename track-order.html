@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  
+  <title>Track Your Order | OK Mart</title>
+  <meta name="description" content="Track your OK Mart order in real-time - live status, delivery partner location, and estimated delivery time">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/tracking.css">
+  
+  <!-- Leaflet for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="tracking-page">
+    
+    <!-- ========== HEADER ========== -->
+    <header class="tracking-header">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <h1 class="tracking-title">Track Order</h1>
+      <button class="refresh-btn" id="refreshBtn">🔄</button>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="tracking-main">
+      
+      <!-- Search Section -->
+      <div class="search-section" id="searchSection">
+        <div class="search-icon-large">📦</div>
+        <h2>Track Your Order</h2>
+        <p>Enter your phone number or order ID to get real-time updates</p>
+        
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            id="trackInput" 
+            class="track-input" 
+            placeholder="📱 Phone number or 🔢 Order ID"
+            autocomplete="off"
+          >
+          <button class="track-btn" id="trackBtn">
+            <span id="trackBtnText">🔍 Track Order</span>
+            <span class="btn-spinner" id="trackSpinner" style="display: none;"></span>
+          </button>
+        </div>
+        
+        <div class="search-tips">
+          <span class="tip">💡 Try: 9876543210</span>
+          <span class="tip">💡 Try: order ID from email</span>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState" style="display: none;">
+        <div class="spinner"></div>
+        <p>Fetching your order details...</p>
+      </div>
+
+      <!-- Order Tracking Container -->
+      <div id="orderTrackingContainer" style="display: none;"></div>
+
+      <!-- Multiple Orders Container -->
+      <div class="multiple-orders" id="multipleOrders" style="display: none;">
+        <h3>📋 Your Orders</h3>
+        <div class="order-list" id="orderList"></div>
+      </div>
+
+      <!-- No Results -->
+      <div class="no-result" id="noResult" style="display: none;">
+        <span class="no-result-icon">🔍</span>
+        <h3>No order found</h3>
+        <p>We couldn't find any order with this information</p>
+        <button class="retry-btn" onclick="resetAndTryAgain()">Try Again</button>
+      </div>
+
+      <!-- Recent Orders Section -->
+      <div class="recent-orders-section" id="recentOrdersSection">
+        <h3>📋 Your Recent Orders</h3>
+        <div class="recent-orders-list" id="recentOrdersList">
+          <p class="no-orders-text" id="noRecentOrders">No recent orders on this device</p>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/track-order" class="nav-item active">📦<span>Track</span></a>
+      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
+      <a href="/profile" class="nav-item">👤<span>Profile</span></a>
+    </nav>
+
+    <!-- Toast Message -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/tracking.js"></script>
+</body>
+</html>
