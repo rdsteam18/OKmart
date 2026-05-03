@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   
   <title>Checkout | OK Mart</title>
-  <meta name="description" content="Complete your order with delivery address, payment, and order summary">
+  <meta name="description" content="Complete your order">
   <meta name="theme-color" content="#2ecc71">
   
   <!-- Favicon -->
@@ -15,18 +15,12 @@
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/checkout.css">
   
-  <!-- Leaflet for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <div class="checkout-page">
@@ -53,100 +47,18 @@
         <!-- Left Column -->
         <div class="checkout-left-column">
           
-          <!-- User Details Section -->
+          <!-- Delivery Details Section -->
+          <div class="form-section" id="deliveryDetailsSection">
+            <h2 class="section-title">📍 Delivery Details</h2>
+            
+            <div id="addressDisplay" class="address-display">
+              <!-- Address will be shown here or "Add Address" button -->
+            </div>
+          </div>
+
+          <!-- Delivery Options Section -->
           <div class="form-section">
-            <h2 class="section-title">📋 Delivery Details</h2>
-            
-            <div class="form-group">
-              <label>Full Name *</label>
-              <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" autocomplete="name">
-            </div>
-            
-            <div class="form-group">
-              <label>Phone Number *</label>
-              <input type="tel" id="phoneNumber" class="form-input" placeholder="10-digit mobile number" autocomplete="tel" maxlength="10">
-            </div>
-            
-            <div class="form-group">
-              <label>Email (Optional)</label>
-              <input type="email" id="email" class="form-input" placeholder="your@email.com" autocomplete="email">
-            </div>
-          </div>
-
-          <!-- Address & Location Section -->
-          <div class="form-section">
-            <h2 class="section-title">📍 Delivery Address</h2>
-            
-            <!-- Address Type Selector -->
-            <div class="address-type-selector">
-              <button class="address-type-btn active" data-type="home">🏠 Home</button>
-              <button class="address-type-btn" data-type="work">💼 Work</button>
-              <button class="address-type-btn" data-type="other">📍 Other</button>
-            </div>
-            
-            <!-- Saved Addresses -->
-            <div class="saved-addresses" id="savedAddresses" style="display: none;">
-              <label>Saved Addresses</label>
-              <select id="savedAddressSelect" class="form-input">
-                <option value="">Select saved address</option>
-              </select>
-            </div>
-            
-            <!-- Address Fields -->
-            <div class="form-group">
-              <label>Address Line *</label>
-              <textarea id="addressLine" class="form-input" rows="2" placeholder="House/Flat number, Street, Area"></textarea>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label>City *</label>
-                <input type="text" id="city" class="form-input" placeholder="City">
-              </div>
-              <div class="form-group">
-                <label>Pincode *</label>
-                <input type="text" id="pincode" class="form-input" placeholder="6-digit pincode" maxlength="6">
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label>Landmark (Optional)</label>
-              <input type="text" id="landmark" class="form-input" placeholder="Nearby landmark">
-            </div>
-            
-            <!-- Location Actions -->
-            <div class="location-actions">
-              <button class="location-action-btn" id="useCurrentLocationBtn">
-                <span>📍</span> Use My Current Location
-              </button>
-              <button class="location-action-btn" id="selectOnMapBtn">
-                <span>🗺️</span> Select on Map
-              </button>
-            </div>
-            
-            <!-- Pincode Status Message -->
-            <div class="pincode-status" id="pincodeStatus"></div>
-          </div>
-
-          <!-- Map Section -->
-          <div class="map-section" id="mapSection" style="display: none;">
-            <div class="map-header">
-              <h3>🗺️ Select Delivery Location</h3>
-              <button class="close-map-btn" id="closeMapBtn">✕</button>
-            </div>
-            <div id="checkoutMap" class="checkout-map"></div>
-            <p class="map-hint">Click on map to select your delivery location</p>
-            <button class="confirm-location-btn" id="confirmLocationBtn">Confirm Location</button>
-          </div>
-
-        </div>
-
-        <!-- Right Column - Order Summary -->
-        <div class="checkout-right-column">
-          
-          <!-- Delivery Options -->
-          <div class="summary-card">
-            <h3 class="card-title">🚚 Delivery Options</h3>
+            <h2 class="section-title">🚚 Delivery Options</h2>
             
             <div class="delivery-options">
               <label class="delivery-option">
@@ -157,7 +69,7 @@
                     <strong>Quick Delivery</strong>
                     <small>10-15 minutes</small>
                   </div>
-                  <span class="option-price" id="quickPrice">₹39</span>
+                  <span class="option-price">₹30</span>
                 </div>
               </label>
               
@@ -169,13 +81,13 @@
                     <strong>Scheduled Delivery</strong>
                     <small>Choose time slot</small>
                   </div>
-                  <span class="option-price" id="scheduledPrice">₹29</span>
+                  <span class="option-price">₹20</span>
                 </div>
               </label>
             </div>
             
             <div class="delivery-slot-container" id="deliverySlotContainer" style="display: none;">
-              <label>Select Delivery Slot</label>
+              <label class="slot-label">Select Delivery Slot</label>
               <select id="deliverySlot" class="form-input">
                 <option value="Today, 10 AM - 12 PM">Today, 10 AM - 12 PM</option>
                 <option value="Today, 2 PM - 4 PM">Today, 2 PM - 4 PM</option>
@@ -186,31 +98,14 @@
             </div>
           </div>
 
-          <!-- Free Delivery Progress -->
-          <div class="free-delivery-progress" id="freeDeliveryProgress">
-            <div class="progress-label" id="progressLabel">Add ₹199 more for FREE delivery</div>
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
-            </div>
-          </div>
+        </div>
 
-          <!-- Coupon Section -->
-          <div class="summary-card">
-            <h3 class="card-title">🎟️ Apply Coupon</h3>
-            <div class="coupon-input-group">
-              <input type="text" id="couponCode" class="form-input" placeholder="Enter coupon code">
-              <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
-            </div>
-            <div class="coupon-message" id="couponMessage"></div>
-            <div class="applied-coupon" id="appliedCouponBadge" style="display: none;">
-              <span>🏷️ <span id="appliedCouponCode"></span></span>
-              <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
-            </div>
-          </div>
-
+        <!-- Right Column - Order Summary -->
+        <div class="checkout-right-column">
+          
           <!-- Order Summary -->
           <div class="summary-card order-summary-card">
-            <h3 class="card-title">💰 Order Summary</h3>
+            <h2 class="card-title">💰 Order Summary</h2>
             
             <div class="order-items-list" id="orderItemsList"></div>
             
@@ -220,13 +115,9 @@
               <span>Subtotal</span>
               <span id="summarySubtotal">₹0</span>
             </div>
-            <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
-              <span>Coupon Discount</span>
-              <span id="summaryDiscount">-₹0</span>
-            </div>
             <div class="summary-row">
               <span>Delivery Charge</span>
-              <span id="summaryDelivery">₹0</span>
+              <span id="summaryDelivery">₹30</span>
             </div>
             <div class="summary-row total-row">
               <span>Total Amount</span>
