@@ -1,9 +1,9 @@
-// ===== OK MART - HOME PAGE LOGIC =====
+// ===== OK MART - HOME PAGE WITH LOCATION & PRODUCT NAVIGATION =====
 
 (function() {
   'use strict';
 
-  // ========== DOM ELEMENTS ==========
+  // ========== DOM Elements ==========
   const searchInput = document.getElementById('searchInput');
   const clearSearchBtn = document.getElementById('clearSearchBtn');
   const locationBtn = document.getElementById('locationBtn');
@@ -20,61 +20,54 @@
   const progressFill = document.getElementById('progressFill');
   const progressLabel = document.getElementById('progressLabel');
   
-  // ========== STATE ==========
+  // ========== State ==========
   let allProducts = [];
   let banners = [];
   let currentLocation = null;
   let recentlyViewed = [];
+  let isLocationServiceable = true;
   const FREE_DELIVERY_THRESHOLD = 199;
   
-  // ========== INITIALIZATION ==========
-  async function init() {
-    showSkeletons();
-    
-    await Promise.all([
-      loadProducts(),
-      loadBanners(),
-      loadRecentlyViewed(),
-      updateCartUI(),
-      updateWishlistUI(),
-      loadSavedLocation()
-    ]);
-    
-    initCarousel();
-    initBackToTop();
-    initSearch();
-    initLocationModal();
-    initNearbyLocations();
-    setupCartListener();
-    
-    hideSkeletons();
-  }
-  
-  // ========== LOAD PRODUCTS ==========
+  // ========== LOAD PRODUCTS FROM FIREBASE ==========
   async function loadProducts() {
     try {
-      allProducts = await fetchProducts();
-      renderFlashSale();
-      renderNewArrivals();
-      renderTrending();
-      renderCategorySections();
-      renderRecentlyViewed();
+      const snapshot = await db.collection('products')
+        .where('active', '==', true)
+        .get();
+      
+      allProducts = [];
+      snapshot.forEach(doc => {
+        allProducts.push({ id: doc.id, ...doc.data() });
+      });
+      
+      console.log(`✅ Loaded ${allProducts.length} products from Firebase`);
+      return allProducts;
     } catch (error) {
       console.error('Error loading products:', error);
+      return [];
     }
   }
   
-  // ========== LOAD BANNERS ==========
+  // ========== LOAD BANNERS FROM FIREBASE ==========
   async function loadBanners() {
     try {
-      banners = await fetchBanners();
+      const snapshot = await db.collection('banners')
+        .where('active', '==', true)
+        .get();
+      
+      banners = [];
+      snapshot.forEach(doc => {
+        banners.push({ id: doc.id, ...doc.data() });
+      });
+      
+      console.log(`✅ Loaded ${banners.length} banners from Firebase`);
       renderBanners();
     } catch (error) {
       console.error('Error loading banners:', error);
     }
   }
   
-  // ========== RENDER BANNERS CAROUSEL ==========
+  // ========== RENDER BANNERS ==========
   function renderBanners() {
     const track = document.getElementById('carouselTrack');
     const dotsContainer = document.getElementById('carouselDots');
@@ -85,7 +78,7 @@
     }
     
     track.innerHTML = banners.map(banner => `
-      <div class="carousel-slide">
+      <div class="carousel-slide" onclick="window.location.href='${banner.link || '#'}'">
         <img src="${banner.image}" alt="${banner.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x160?text=OK+Mart'">
       </div>
     `).join('');
@@ -93,6 +86,8 @@
     dotsContainer.innerHTML = banners.map((_, i) => `
       <div class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>
     `).join('');
+    
+    initCarousel();
   }
   
   // ========== CAROUSEL ==========
@@ -104,12 +99,13 @@
     const prevBtn = document.getElementById('carouselPrev');
     const nextBtn = document.getElementById('carouselNext');
     const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
     
     if (!slides.length) return;
     
     function updateCarousel() {
       track.style.transform = `translateX(-${currentSlide * 100}%)`;
-      document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+      dots.forEach((dot, i) => {
         dot.classList.toggle('active', i === currentSlide);
       });
     }
@@ -124,22 +120,15 @@
       updateCarousel();
     }
     
-    prevBtn?.addEventListener('click', () => {
-      prevSlide();
-      resetAutoSlide();
-    });
+    if (prevBtn) prevBtn.onclick = () => { prevSlide(); resetAutoSlide(); };
+    if (nextBtn) nextBtn.onclick = () => { nextSlide(); resetAutoSlide(); };
     
-    nextBtn?.addEventListener('click', () => {
-      nextSlide();
-      resetAutoSlide();
-    });
-    
-    document.querySelectorAll('.carousel-dot').forEach(dot => {
-      dot.addEventListener('click', (e) => {
-        currentSlide = parseInt(e.target.dataset.index);
+    dots.forEach((dot, i) => {
+      dot.onclick = () => {
+        currentSlide = i;
         updateCarousel();
         resetAutoSlide();
-      });
+      };
     });
     
     startAutoSlide();
@@ -154,49 +143,31 @@
     }
   }
   
-  // ========== RENDER FLASH SALE ==========
-  function renderFlashSale() {
-    const flashSaleProducts = allProducts.filter(p => p.flashSale === true && p.active !== false);
-    const section = document.getElementById('flashSaleSection');
-    const grid = document.getElementById('flashSaleGrid');
-    
-    if (!flashSaleProducts.length) {
-      section.style.display = 'none';
-      return;
-    }
-    
-    section.style.display = 'block';
-    grid.innerHTML = flashSaleProducts.slice(0, 4).map(product => createProductCard(product)).join('');
-    
-    // Start countdown timer
-    startFlashSaleCountdown();
-  }
+  // ========== RENDER CATEGORY GRID ==========
+  const categories = [
+    { id: 'dairy', name: '🥛 Dairy', emoji: '🥛' },
+    { id: 'fruits', name: '🍎 Fruits', emoji: '🍎' },
+    { id: 'vegetables', name: '🥬 Vegetables', emoji: '🥬' },
+    { id: 'snacks', name: '🍿 Snacks', emoji: '🍿' },
+    { id: 'beverages', name: '🥤 Beverages', emoji: '🥤' },
+    { id: 'icecream', name: 'Icecream', emoji: '🍦' }
+    { id: 'grocery', name: '🛒 Grocery', emoji: '🛒' },
+    { id: 'personal', name: '🧴 Personal Care', emoji: '🧴' },
+    { id: 'household', name: '🧹 Household', emoji: '🧹' },
+    { id: 'bakery', name: '🥖 Bakery', emoji: '🥖' },
+    { id: 'electronics', name: '📱 Electronics', emoji: '📱' }
+  ];
   
-  function startFlashSaleCountdown() {
-    // Set end time to end of day
-    const endTime = new Date();
-    endTime.setHours(23, 59, 59, 999);
+  function renderCategoryGrid() {
+    const grid = document.getElementById('categoryGrid');
+    if (!grid) return;
     
-    function updateTimer() {
-      const now = new Date();
-      const diff = endTime - now;
-      
-      if (diff <= 0) {
-        document.getElementById('flashSaleSection').style.display = 'none';
-        return;
-      }
-      
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-    }
-    
-    updateTimer();
-    setInterval(updateTimer, 1000);
+    grid.innerHTML = categories.map(cat => `
+      <a href="/categories/${cat.id}.html" class="category-item">
+        <span class="category-icon">${cat.emoji}</span>
+        <span class="category-name">${cat.name}</span>
+      </a>
+    `).join('');
   }
   
   // ========== RENDER NEW ARRIVALS ==========
@@ -213,16 +184,13 @@
     const section = document.getElementById('newArrivalsSection');
     const grid = document.getElementById('newArrivalsGrid');
     
-    if (!newProducts.length) {
-      section.style.display = 'none';
-      return;
-    }
+    if (!newProducts.length || !section) return;
     
     section.style.display = 'block';
     grid.innerHTML = newProducts.map(product => createProductCard(product)).join('');
   }
   
-  // ========== RENDER TRENDING / HOT TODAY ==========
+  // ========== RENDER TRENDING ==========
   function renderTrending() {
     const trendingProducts = [...allProducts]
       .filter(p => p.active !== false && (p.popular === true || (p.salesCount || 0) > 10))
@@ -232,40 +200,28 @@
     const section = document.getElementById('trendingSection');
     const grid = document.getElementById('trendingGrid');
     
-    if (!trendingProducts.length) {
-      section.style.display = 'none';
-      return;
-    }
+    if (!trendingProducts.length || !section) return;
     
     section.style.display = 'block';
     grid.innerHTML = trendingProducts.map(product => createProductCard(product)).join('');
   }
   
   // ========== RENDER CATEGORY SECTIONS ==========
-  const categories = [
-    { id: 'dairy', name: '🥛 Dairy', emoji: '🥛' },
-    { id: 'fruits', name: '🍎 Fruits', emoji: '🍎' },
-    { id: 'vegetables', name: '🥬 Vegetables', emoji: '🥬' },
-    { id: 'snacks', name: '🍿 Snacks', emoji: '🍿' },
-    { id: 'beverages', name: '🥤 Beverages', emoji: '🥤' },
-    { id: 'icecream', name: 'Icecream', emoji: '🍦' },
-    { id: 'grocery', name: '🛒 Grocery', emoji: '🛒' },
-    { id: 'personal', name: '🧴 Personal Care', emoji: '🧴' },
-    { id: 'household', name: '🧹 Household', emoji: '🧹' },
-    { id: 'bakery', name: '🥖 Bakery', emoji: '🥖' },
-    { id: 'electronics', name: '📱 Electronics', emoji: '📱' }
-  ];
-  
   function renderCategorySections() {
     const container = document.getElementById('categorySectionsContainer');
+    if (!container) return;
+    
     container.innerHTML = '';
     
-    // Render category grid first
-    renderCategoryGrid();
+    // Show top 6 categories with products
+    const categoriesWithProducts = categories.filter(cat => {
+      return allProducts.some(p => p.category === cat.id && p.active !== false);
+    }).slice(0, 6);
     
-    // Render product sections for each category
-    for (const category of categories) {
-      const categoryProducts = allProducts.filter(p => p.category === category.id && p.active !== false).slice(0, 8);
+    for (const category of categoriesWithProducts) {
+      const categoryProducts = allProducts
+        .filter(p => p.category === category.id && p.active !== false)
+        .slice(0, 8);
       
       if (categoryProducts.length === 0) continue;
       
@@ -285,34 +241,24 @@
     }
   }
   
-  function renderCategoryGrid() {
-    const grid = document.getElementById('categoryGrid');
-    grid.innerHTML = categories.map(cat => `
-      <a href="/categories/${cat.id}.html" class="category-item">
-        <span class="category-icon">${cat.emoji}</span>
-        <span class="category-name">${cat.name}</span>
-      </a>
-    `).join('');
-  }
-  
   // ========== CREATE PRODUCT CARD ==========
   function createProductCard(product) {
     const discount = calculateDiscount(product.price, product.mrp);
     const isOutOfStock = (product.stock || 0) === 0;
     
     return `
-      <div class="product-card" data-product-id="${product.id}">
+      <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
         <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
         ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
         ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">❤️</button>
-        <h3 class="product-name">${product.name}</h3>
+        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)">🤍</button>
+        <h3 class="product-name">${escapeHtml(product.name)}</h3>
         <span class="product-unit">${product.unit || ''}</span>
         <div class="price-row">
           <span class="current-price">₹${product.price}</span>
           ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
         </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCartHandler('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
           ${isOutOfStock ? 'Out of Stock' : 'ADD'}
         </button>
       </div>
@@ -324,52 +270,52 @@
     const isOutOfStock = (product.stock || 0) === 0;
     
     return `
-      <div class="product-card scroll-product-card" data-product-id="${product.id}">
+      <div class="product-card scroll-product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
         <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140?text=OK'">
         ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <h3 class="product-name">${product.name}</h3>
+        <h3 class="product-name">${escapeHtml(product.name)}</h3>
         <span class="product-unit">${product.unit || ''}</span>
         <div class="price-row">
           <span class="current-price">₹${product.price}</span>
           ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
         </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCartHandler('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
           ${isOutOfStock ? 'Out of Stock' : 'ADD'}
         </button>
       </div>
     `;
   }
   
+  // ========== PRODUCT VIEW FUNCTION (FIXED) ==========
+  window.viewProduct = function(productId) {
+    if (!productId) return;
+    addToRecentlyViewed(productId);
+    window.location.href = `/product.html?id=${productId}`;
+  };
+  
   // ========== RECENTLY VIEWED ==========
   function loadRecentlyViewed() {
     try {
       recentlyViewed = JSON.parse(localStorage.getItem('okmart_recently_viewed') || '[]');
     } catch(e) { recentlyViewed = []; }
-  }
-  
-  function saveRecentlyViewed() {
-    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed.slice(0, 10)));
+    renderRecentlyViewed();
   }
   
   function addToRecentlyViewed(productId) {
     recentlyViewed = recentlyViewed.filter(id => id !== productId);
     recentlyViewed.unshift(productId);
-    saveRecentlyViewed();
+    recentlyViewed = recentlyViewed.slice(0, 10);
+    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed));
     renderRecentlyViewed();
-  }
-  
-  function clearRecentlyViewed() {
-    recentlyViewed = [];
-    saveRecentlyViewed();
-    renderRecentlyViewed();
-    showToast('Recently viewed cleared', 'success');
   }
   
   function renderRecentlyViewed() {
     const section = document.getElementById('recentlyViewedSection');
     const grid = document.getElementById('recentlyViewedGrid');
     
-    if (!recentlyViewed.length) {
+    if (!section || !grid) return;
+    
+    if (recentlyViewed.length === 0) {
       section.style.display = 'none';
       return;
     }
@@ -379,13 +325,20 @@
       .filter(p => p && p.active !== false)
       .slice(0, 4);
     
-    if (!recentProducts.length) {
+    if (recentProducts.length === 0) {
       section.style.display = 'none';
       return;
     }
     
     section.style.display = 'block';
     grid.innerHTML = recentProducts.map(product => createProductCard(product)).join('');
+  }
+  
+  function clearRecentlyViewed() {
+    recentlyViewed = [];
+    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed));
+    renderRecentlyViewed();
+    showToast('Recently viewed cleared', 'success');
   }
   
   // ========== CART FUNCTIONS ==========
@@ -397,10 +350,9 @@
     localStorage.setItem('okmart_cart', JSON.stringify(cart));
     updateCartUI();
     updateFreeDeliveryProgress();
-    showMiniPopup();
   }
   
-  function addToCartHandler(productId) {
+  window.addToCart = function(productId) {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
     
@@ -422,9 +374,15 @@
     }
     
     saveCart(cart);
-    animateAddToCart();
     showToast(`${product.name} added to cart!`, 'success');
-  }
+    
+    // Animate button
+    const btn = document.querySelector(`.product-card[data-product-id="${productId}"] .add-btn`);
+    if (btn) {
+      btn.style.transform = 'scale(0.95)';
+      setTimeout(() => { btn.style.transform = ''; }, 200);
+    }
+  };
   
   function updateCartUI() {
     const cart = getCart();
@@ -466,21 +424,6 @@
     }
   }
   
-  function animateAddToCart() {
-    const popup = document.getElementById('miniOrderPopup');
-    if (popup) {
-      popup.classList.add('show');
-      setTimeout(() => popup.classList.remove('show'), 2000);
-    }
-  }
-  
-  function setupCartListener() {
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'okmart_cart') updateCartUI();
-    });
-    updateCartUI();
-  }
-  
   // ========== WISHLIST FUNCTIONS ==========
   function getWishlist() {
     return JSON.parse(localStorage.getItem('okmart_wishlist') || '[]');
@@ -491,90 +434,82 @@
     updateWishlistUI();
   }
   
-  function toggleWishlist(productId) {
+  window.toggleWishlist = function(productId, btnElement) {
     let wishlist = getWishlist();
     const index = wishlist.indexOf(productId);
     
     if (index > -1) {
       wishlist.splice(index, 1);
       showToast('Removed from wishlist', 'info');
+      if (btnElement) btnElement.textContent = '🤍';
     } else {
       wishlist.push(productId);
       showToast('Added to wishlist', 'success');
+      if (btnElement) btnElement.textContent = '❤️';
     }
     
     saveWishlist(wishlist);
-    renderWishlistButtons();
-  }
+  };
   
   function updateWishlistUI() {
     const wishlist = getWishlist();
     if (wishlistCountSpan) wishlistCountSpan.textContent = wishlist.length;
-    renderWishlistButtons();
-  }
-  
-  function renderWishlistButtons() {
-    const wishlist = getWishlist();
+    
     document.querySelectorAll('.wishlist-btn').forEach(btn => {
-      const productId = btn.closest('.product-card')?.dataset.productId;
-      if (productId) {
-        btn.textContent = wishlist.includes(productId) ? '❤️' : '🤍';
+      const productCard = btn.closest('.product-card');
+      if (productCard) {
+        const productId = productCard.dataset.productId;
+        if (productId && wishlist.includes(productId)) {
+          btn.textContent = '❤️';
+        } else {
+          btn.textContent = '🤍';
+        }
       }
     });
   }
   
-  // ========== SEARCH FUNCTIONALITY ==========
-  function initSearch() {
-    if (!searchInput) return;
+  // ========== LOCATION SYSTEM ==========
+  function initLocationModal() {
+    const locationBtn = document.getElementById('locationBtn');
+    const locationModal = document.getElementById('locationModal');
+    const closeModal = document.getElementById('closeLocationModal');
+    const useCurrentLocationBtn = document.getElementById('useCurrentLocationBtn');
+    const checkPincodeBtn = document.getElementById('checkPincodeBtn');
+    const pincodeInput = document.getElementById('pincodeInput');
     
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value.trim();
-      if (clearSearchBtn) {
-        clearSearchBtn.classList.toggle('visible', query.length > 0);
-      }
-      
-      if (query.length > 1) {
-        // Redirect to search page or show suggestions
-        window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
-      }
+    if (!locationBtn) return;
+    
+    locationBtn.addEventListener('click', () => {
+      if (locationModal) locationModal.classList.add('active');
     });
     
-    if (clearSearchBtn) {
-      clearSearchBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearSearchBtn.classList.remove('visible');
-        searchInput.focus();
+    if (closeModal) {
+      closeModal.addEventListener('click', () => {
+        locationModal.classList.remove('active');
       });
     }
-  }
-  
-  // ========== LOCATION MODAL ==========
-  function initLocationModal() {
-    locationBtn?.addEventListener('click', () => {
-      locationModal.classList.add('active');
-    });
     
-    document.getElementById('closeLocationModal')?.addEventListener('click', () => {
-      locationModal.classList.remove('active');
-    });
+    if (useCurrentLocationBtn) {
+      useCurrentLocationBtn.addEventListener('click', detectLocation);
+    }
     
-    document.getElementById('useCurrentLocationBtn')?.addEventListener('click', detectLocation);
-    document.getElementById('checkPincodeBtn')?.addEventListener('click', checkPincode);
-    
-    locationModal?.addEventListener('click', (e) => {
-      if (e.target === locationModal) locationModal.classList.remove('active');
-    });
-  }
-  
-  function initNearbyLocations() {
-    document.querySelectorAll('.nearby-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const area = item.dataset.area;
-        const city = item.dataset.city;
-        const pincode = item.dataset.pincode;
-        setLocation(area, city, pincode);
+    if (checkPincodeBtn && pincodeInput) {
+      checkPincodeBtn.addEventListener('click', () => {
+        checkPincode(pincodeInput.value.trim());
       });
-    });
+    }
+    
+    // Close on outside click
+    if (locationModal) {
+      locationModal.addEventListener('click', (e) => {
+        if (e.target === locationModal) {
+          locationModal.classList.remove('active');
+        }
+      });
+    }
+    
+    // Load saved location
+    loadSavedLocation();
   }
   
   function detectLocation() {
@@ -604,27 +539,42 @@
     );
   }
   
-  async function checkPincode() {
-    const pincode = document.getElementById('pincodeInput').value.trim();
+  async function checkPincode(pincode) {
     const messageDiv = document.getElementById('pincodeMessage');
     
     if (!pincode || pincode.length !== 6) {
-      messageDiv.innerHTML = 'Please enter a valid 6-digit pincode';
-      messageDiv.className = 'pincode-message error';
+      if (messageDiv) {
+        messageDiv.innerHTML = 'Please enter a valid 6-digit pincode';
+        messageDiv.className = 'pincode-message error';
+      }
       return;
     }
     
     showToast('Checking pincode...', 'info');
     
-    const result = await checkPincodeServiceability(pincode);
-    
-    if (result.serviceable) {
-      messageDiv.innerHTML = `✅ Delivery available! ${result.deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'} available. Delivery charge: ₹${result.deliveryCharge || 39}`;
-      messageDiv.className = 'pincode-message success';
-      setLocationByPincode(pincode);
-    } else {
-      messageDiv.innerHTML = '❌ Delivery not available in this pincode yet. We are expanding soon!';
-      messageDiv.className = 'pincode-message error';
+    try {
+      const doc = await db.collection('pincodes').doc(pincode).get();
+      
+      if (doc.exists && doc.data().active !== false) {
+        isLocationServiceable = true;
+        if (messageDiv) {
+          messageDiv.innerHTML = `✅ Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
+          messageDiv.className = 'pincode-message success';
+        }
+        setLocationByPincode(pincode);
+      } else {
+        isLocationServiceable = false;
+        if (messageDiv) {
+          messageDiv.innerHTML = '❌ Delivery not available in this pincode yet. We are expanding soon!';
+          messageDiv.className = 'pincode-message error';
+        }
+      }
+    } catch (error) {
+      console.error('Error checking pincode:', error);
+      if (messageDiv) {
+        messageDiv.innerHTML = 'Error checking pincode. Please try again.';
+        messageDiv.className = 'pincode-message error';
+      }
     }
   }
   
@@ -632,30 +582,82 @@
     const locationString = `${area}, ${city}`;
     localStorage.setItem('okmart_location', locationString);
     if (pincode) localStorage.setItem('okmart_pincode', pincode);
-    locationText.textContent = locationString.substring(0, 20);
-    locationModal.classList.remove('active');
+    
+    const locationText = document.getElementById('locationText');
+    if (locationText) locationText.textContent = locationString.substring(0, 20);
+    
+    const locationModal = document.getElementById('locationModal');
+    if (locationModal) locationModal.classList.remove('active');
+    
     showToast(`📍 Location set to ${locationString}`, 'success');
+    
+    // Check delivery availability
+    if (pincode) checkPincode(pincode);
   }
   
   function setLocationByPincode(pincode) {
     localStorage.setItem('okmart_pincode', pincode);
-    locationText.textContent = `📍 Pincode: ${pincode}`;
-    locationModal.classList.remove('active');
+    const locationText = document.getElementById('locationText');
+    if (locationText) locationText.textContent = `📍 Pincode: ${pincode}`;
+    
+    const locationModal = document.getElementById('locationModal');
+    if (locationModal) locationModal.classList.remove('active');
+    
     showToast(`📍 Pincode set to ${pincode}`, 'success');
   }
   
   function loadSavedLocation() {
     const savedLocation = localStorage.getItem('okmart_location');
     const savedPincode = localStorage.getItem('okmart_pincode');
-    if (savedLocation) {
+    const locationText = document.getElementById('locationText');
+    
+    if (savedLocation && locationText) {
       locationText.textContent = savedLocation.substring(0, 20);
-    } else if (savedPincode) {
+    } else if (savedPincode && locationText) {
       locationText.textContent = `📍 Pincode: ${savedPincode}`;
+      checkPincode(savedPincode);
+    }
+  }
+  
+  function initNearbyLocations() {
+    document.querySelectorAll('.nearby-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const area = item.dataset.area;
+        const city = item.dataset.city;
+        const pincode = item.dataset.pincode;
+        setLocation(area, city, pincode);
+      });
+    });
+  }
+  
+  // ========== SEARCH FUNCTIONALITY ==========
+  function initSearch() {
+    if (!searchInput) return;
+    
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      if (clearSearchBtn) {
+        clearSearchBtn.classList.toggle('visible', query.length > 0);
+      }
+      
+      if (query.length > 1) {
+        window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
+      }
+    });
+    
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.classList.remove('visible');
+        searchInput.focus();
+      });
     }
   }
   
   // ========== BACK TO TOP ==========
   function initBackToTop() {
+    if (!backToTopBtn) return;
+    
     window.addEventListener('scroll', () => {
       if (window.scrollY > 300) {
         backToTopBtn.classList.add('show');
@@ -669,29 +671,22 @@
     });
   }
   
-  // ========== SKELETON LOADING ==========
-  function showSkeletons() {
-    const container = document.getElementById('categorySectionsContainer');
-    if (container) {
-      container.innerHTML = `
-        <div class="section-skeleton">
-          <div class="skeleton-header"></div>
-          <div class="skeleton-scroll">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      `;
-    }
+  // ========== HELPER FUNCTIONS ==========
+  function calculateDiscount(price, mrp) {
+    if (!mrp || mrp <= price) return 0;
+    return Math.round(((mrp - price) / mrp) * 100);
   }
   
-  function hideSkeletons() {
-    // Skeletons will be replaced by actual content
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
   }
   
-  // ========== SHOW TOAST ==========
   function showToast(message, type) {
     const toast = document.getElementById('toastMessage');
     if (!toast) return;
@@ -699,37 +694,60 @@
     toast.textContent = message;
     toast.className = `toast-message ${type}`;
     toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+  
+  // ========== SHOW SKELETON ==========
+  function showSkeleton() {
+    const container = document.getElementById('categorySectionsContainer');
+    if (!container) return;
     
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 3000);
-  }
-  
-  function showMiniPopup() {
-    const popup = document.getElementById('miniOrderPopup');
-    if (popup) {
-      popup.classList.add('show');
-      setTimeout(() => popup.classList.remove('show'), 2000);
-    }
-  }
-  
-  function animateAddToCart() {
-    // Visual feedback
-    const btn = document.querySelector('.add-btn:active');
-    if (btn) {
-      btn.style.transform = 'scale(0.95)';
-      setTimeout(() => { btn.style.transform = ''; }, 200);
-    }
+    container.innerHTML = `
+      <div class="section-skeleton">
+        <div class="skeleton-header"></div>
+        <div class="skeleton-scroll">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+    `;
   }
   
   // ========== EXPOSE GLOBALLY ==========
-  window.addToCartHandler = addToCartHandler;
+  window.viewProduct = viewProduct;
+  window.addToCart = addToCart;
   window.toggleWishlist = toggleWishlist;
   window.clearRecentlyViewed = clearRecentlyViewed;
-  window.showToast = showToast;
   
-  // Start the app
+  // ========== INITIALIZE ==========
+  async function init() {
+    showSkeleton();
+    initBackToTop();
+    initSearch();
+    initLocationModal();
+    initNearbyLocations();
+    
+    // Load data from Firebase
+    await loadProducts();
+    await loadBanners();
+    
+    renderCategoryGrid();
+    renderNewArrivals();
+    renderTrending();
+    renderCategorySections();
+    loadRecentlyViewed();
+    updateCartUI();
+    updateWishlistUI();
+    
+    // Cart event listener
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'okmart_cart') updateCartUI();
+    });
+    
+    console.log('✅ Home page fully loaded with Firebase and Location System');
+  }
+  
   init();
-  
-  console.log('✅ Home page fully loaded');
 })();
