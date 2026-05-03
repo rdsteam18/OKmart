@@ -152,7 +152,7 @@
     { id: 'beverages', name: '🥤 Beverages', emoji: '🥤' },
     { id: 'icecream', name: 'Icecream', emoji: '🍦' },
     { id: 'grocery', name: '🛒 Grocery', emoji: '🛒' },
-    { id: 'personal', name: '🧴 Personal Care', emoji: '🧴' },
+    { id: 'personal-care', name: '🧴 Personal Care', emoji: '🧴' },
     { id: 'household', name: '🧹 Household', emoji: '🧹' },
     { id: 'bakery', name: '🥖 Bakery', emoji: '🥖' },
     { id: 'electronics', name: '📱 Electronics', emoji: '📱' }
