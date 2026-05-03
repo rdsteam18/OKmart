@@ -2,150 +2,278 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   
   <title>Checkout | OK Mart</title>
-  <meta name="description" content="Complete your order at OK Mart. Fast grocery delivery.">
+  <meta name="description" content="Complete your order with delivery address, payment, and order summary">
   <meta name="theme-color" content="#2ecc71">
   
-  <link rel="manifest" href="/manifest.json">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/checkout.css">
   
+  <!-- Leaflet for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
-  <div class="app-container">
+  <div class="checkout-page">
     
     <!-- ========== HEADER ========== -->
     <header class="checkout-header">
-      <div class="header-inner">
-        <a href="/cart.html" class="back-btn">←</a>
-        <h1 class="header-title">Checkout</h1>
-        <span class="step-indicator">1/2</span>
-      </div>
+      <button class="back-btn" onclick="history.back()">←</button>
+      <h1 class="checkout-title">Checkout</h1>
+      <div></div>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="checkout-main">
       
-      <!-- User Details Section -->
-      <div class="section-card" id="userDetailsSection">
-        <div class="section-header">
-          <h2>👤 Delivery Details</h2>
-          <button class="edit-toggle-btn" id="editDetailsToggle">
-            <span id="editToggleText">Edit</span>
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading checkout...</p>
+      </div>
+
+      <!-- Checkout Content -->
+      <div class="checkout-content" id="checkoutContent" style="display: none;">
+        
+        <!-- Left Column -->
+        <div class="checkout-left-column">
+          
+          <!-- User Details Section -->
+          <div class="form-section">
+            <h2 class="section-title">📋 Delivery Details</h2>
+            
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" autocomplete="name">
+            </div>
+            
+            <div class="form-group">
+              <label>Phone Number *</label>
+              <input type="tel" id="phoneNumber" class="form-input" placeholder="10-digit mobile number" autocomplete="tel" maxlength="10">
+            </div>
+            
+            <div class="form-group">
+              <label>Email (Optional)</label>
+              <input type="email" id="email" class="form-input" placeholder="your@email.com" autocomplete="email">
+            </div>
+          </div>
+
+          <!-- Address & Location Section -->
+          <div class="form-section">
+            <h2 class="section-title">📍 Delivery Address</h2>
+            
+            <!-- Address Type Selector -->
+            <div class="address-type-selector">
+              <button class="address-type-btn active" data-type="home">🏠 Home</button>
+              <button class="address-type-btn" data-type="work">💼 Work</button>
+              <button class="address-type-btn" data-type="other">📍 Other</button>
+            </div>
+            
+            <!-- Saved Addresses -->
+            <div class="saved-addresses" id="savedAddresses" style="display: none;">
+              <label>Saved Addresses</label>
+              <select id="savedAddressSelect" class="form-input">
+                <option value="">Select saved address</option>
+              </select>
+            </div>
+            
+            <!-- Address Fields -->
+            <div class="form-group">
+              <label>Address Line *</label>
+              <textarea id="addressLine" class="form-input" rows="2" placeholder="House/Flat number, Street, Area"></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>City *</label>
+                <input type="text" id="city" class="form-input" placeholder="City">
+              </div>
+              <div class="form-group">
+                <label>Pincode *</label>
+                <input type="text" id="pincode" class="form-input" placeholder="6-digit pincode" maxlength="6">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Landmark (Optional)</label>
+              <input type="text" id="landmark" class="form-input" placeholder="Nearby landmark">
+            </div>
+            
+            <!-- Location Actions -->
+            <div class="location-actions">
+              <button class="location-action-btn" id="useCurrentLocationBtn">
+                <span>📍</span> Use My Current Location
+              </button>
+              <button class="location-action-btn" id="selectOnMapBtn">
+                <span>🗺️</span> Select on Map
+              </button>
+            </div>
+            
+            <!-- Pincode Status Message -->
+            <div class="pincode-status" id="pincodeStatus"></div>
+          </div>
+
+          <!-- Map Section -->
+          <div class="map-section" id="mapSection" style="display: none;">
+            <div class="map-header">
+              <h3>🗺️ Select Delivery Location</h3>
+              <button class="close-map-btn" id="closeMapBtn">✕</button>
+            </div>
+            <div id="checkoutMap" class="checkout-map"></div>
+            <p class="map-hint">Click on map to select your delivery location</p>
+            <button class="confirm-location-btn" id="confirmLocationBtn">Confirm Location</button>
+          </div>
+
+        </div>
+
+        <!-- Right Column - Order Summary -->
+        <div class="checkout-right-column">
+          
+          <!-- Delivery Options -->
+          <div class="summary-card">
+            <h3 class="card-title">🚚 Delivery Options</h3>
+            
+            <div class="delivery-options">
+              <label class="delivery-option">
+                <input type="radio" name="deliveryType" value="quick" checked>
+                <div class="delivery-option-content">
+                  <span class="option-icon">⚡</span>
+                  <div class="option-details">
+                    <strong>Quick Delivery</strong>
+                    <small>10-15 minutes</small>
+                  </div>
+                  <span class="option-price" id="quickPrice">₹39</span>
+                </div>
+              </label>
+              
+              <label class="delivery-option">
+                <input type="radio" name="deliveryType" value="scheduled">
+                <div class="delivery-option-content">
+                  <span class="option-icon">📅</span>
+                  <div class="option-details">
+                    <strong>Scheduled Delivery</strong>
+                    <small>Choose time slot</small>
+                  </div>
+                  <span class="option-price" id="scheduledPrice">₹29</span>
+                </div>
+              </label>
+            </div>
+            
+            <div class="delivery-slot-container" id="deliverySlotContainer" style="display: none;">
+              <label>Select Delivery Slot</label>
+              <select id="deliverySlot" class="form-input">
+                <option value="Today, 10 AM - 12 PM">Today, 10 AM - 12 PM</option>
+                <option value="Today, 2 PM - 4 PM">Today, 2 PM - 4 PM</option>
+                <option value="Today, 5 PM - 7 PM">Today, 5 PM - 7 PM</option>
+                <option value="Tomorrow, 9 AM - 11 AM">Tomorrow, 9 AM - 11 AM</option>
+                <option value="Tomorrow, 4 PM - 6 PM">Tomorrow, 4 PM - 6 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Free Delivery Progress -->
+          <div class="free-delivery-progress" id="freeDeliveryProgress">
+            <div class="progress-label" id="progressLabel">Add ₹199 more for FREE delivery</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Coupon Section -->
+          <div class="summary-card">
+            <h3 class="card-title">🎟️ Apply Coupon</h3>
+            <div class="coupon-input-group">
+              <input type="text" id="couponCode" class="form-input" placeholder="Enter coupon code">
+              <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
+            </div>
+            <div class="coupon-message" id="couponMessage"></div>
+            <div class="applied-coupon" id="appliedCouponBadge" style="display: none;">
+              <span>🏷️ <span id="appliedCouponCode"></span></span>
+              <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="summary-card order-summary-card">
+            <h3 class="card-title">💰 Order Summary</h3>
+            
+            <div class="order-items-list" id="orderItemsList"></div>
+            
+            <div class="summary-divider"></div>
+            
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summarySubtotal">₹0</span>
+            </div>
+            <div class="summary-row discount-row" id="summaryDiscountRow" style="display: none;">
+              <span>Coupon Discount</span>
+              <span id="summaryDiscount">-₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Charge</span>
+              <span id="summaryDelivery">₹0</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Amount</span>
+              <span id="summaryTotal">₹0</span>
+            </div>
+          </div>
+
+          <!-- Place Order Button -->
+          <button class="place-order-btn" id="placeOrderBtn">
+            Place Order →
           </button>
-        </div>
-        
-        <!-- Display Mode -->
-        <div class="details-display" id="detailsDisplay">
-          <div class="detail-row"><span class="detail-icon">👤</span><span class="detail-value" id="displayName">-</span></div>
-          <div class="detail-row"><span class="detail-icon">📱</span><span class="detail-value" id="displayPhone">-</span></div>
-          <div class="detail-row"><span class="detail-icon">🏠</span><span class="detail-value" id="displayAddress">-</span></div>
-          <div class="detail-row"><span class="detail-icon">📮</span><span class="detail-value" id="displayPincode">-</span></div>
-        </div>
-        
-        <!-- Edit Mode (hidden by default) -->
-        <div class="details-edit" id="detailsEdit" style="display: none;">
-          <div class="form-group">
-            <label>Full Name *</label>
-            <input type="text" id="editName" placeholder="Your full name" required>
-          </div>
-          <div class="form-group">
-            <label>Phone Number *</label>
-            <input type="tel" id="editPhone" placeholder="10-digit number" maxlength="10" required>
-          </div>
-          <div class="form-group">
-            <label>Delivery Address *</label>
-            <textarea id="editAddress" placeholder="House/Flat No., Street, Area, City" rows="2" required></textarea>
-          </div>
-          <div class="form-group">
-            <label>Pincode *</label>
-            <input type="text" id="editPincode" placeholder="6-digit pincode" maxlength="6" required>
-          </div>
-          <button class="save-details-btn" id="saveDetailsBtn">Save Details</button>
-        </div>
-      </div>
 
-      <!-- Order Summary -->
-      <div class="section-card">
-        <h2>🛒 Order Summary</h2>
-        <div class="order-items-list" id="orderItemsList"></div>
-        
-        <div class="price-breakdown">
-          <div class="price-row">
-            <span>Subtotal</span>
-            <span id="summarySubtotal">₹0</span>
-          </div>
-          <div class="price-row" id="couponRow" style="display: none;">
-            <span style="color:#10b981;">Coupon Discount</span>
-            <span style="color:#10b981;" id="summaryCouponDiscount">-₹0</span>
-          </div>
-          <div class="price-row" id="freeOnionRow" style="display: none;">
-            <span>🧅 Free Onion (1kg)</span>
-            <span style="color:#10b981;">FREE</span>
-          </div>
-          <div class="price-row">
-            <span>Delivery</span>
-            <span id="summaryDelivery">₹20</span>
-          </div>
-          <div class="price-row total-row">
-            <span>Total</span>
-            <span id="summaryTotal">₹0</span>
-          </div>
+          <p class="secure-text">🔒 Secure payment • Cash on delivery available</p>
+
         </div>
 
-        <div class="delivery-estimate">
-          <span>🚚</span> Estimated delivery: <strong>10-15 mins</strong>
-        </div>
-      </div>
-
-      <!-- Applied Coupon -->
-      <div class="section-card" id="appliedCouponCard" style="display: none;">
-        <div class="coupon-info">
-          <span>🏷️ Coupon Applied:</span>
-          <span class="coupon-code-label" id="checkoutCouponCode"></span>
-          <span class="coupon-savings" id="checkoutCouponSavings"></span>
-        </div>
-      </div>
-
-      <!-- Add More Items (Upsell) -->
-      <div class="section-card">
-        <h2>➕ Add More Items</h2>
-        <div class="upsell-slider" id="upsellSlider">
-          <div class="loading-skeleton">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
       </div>
 
     </main>
 
-    <!-- ========== STICKY PLACE ORDER BAR ========== -->
-    <div class="sticky-order-bar">
-      <div class="order-bar-inner">
-        <div class="order-total-info">
-          <span class="total-label">Total</span>
-          <span class="total-value" id="barTotal">₹0</span>
-        </div>
-        <button class="place-order-btn" id="placeOrderBtn">
-          <span id="placeOrderText">Place Order →</span>
-          <span class="loading-spinner" id="orderSpinner" style="display: none;"></span>
-        </button>
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
+      <a href="/profile" class="nav-item">👤<span>Profile</span></a>
+    </nav>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+      <div class="success-modal-content">
+        <div class="success-icon">✅</div>
+        <h3>Order Placed Successfully!</h3>
+        <p>Your order has been confirmed and will be delivered soon.</p>
+        <button class="track-order-btn" id="trackOrderBtn">Track Order →</button>
+        <button class="continue-shopping-btn" id="continueShoppingBtn">Continue Shopping</button>
       </div>
     </div>
 
-    <!-- Toast -->
+    <!-- Toast Message -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/checkout.js"></script>
