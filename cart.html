@@ -28,7 +28,7 @@
     <!-- ========== HEADER ========== -->
     <header class="cart-header">
       <button class="back-btn" onclick="history.back()">←</button>
-      <h1 class="cart-title">My Cart</h1>
+      <h1 class="cart-title">🛒 My Cart</h1>
       <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
     </header>
 
@@ -44,76 +44,88 @@
       <!-- Cart Content -->
       <div class="cart-content" id="cartContent" style="display: none;">
         
-        <!-- Cart Items Section -->
-        <div class="cart-items-section">
-          <h2 class="section-title">🛍️ Cart Items (<span id="cartItemCount">0</span>)</h2>
-          <div class="cart-items-list" id="cartItemsList"></div>
-        </div>
+        <!-- Left Column -->
+        <div class="cart-left-column">
+          
+          <!-- Cart Items Section -->
+          <div class="cart-items-section">
+            <div class="section-header">
+              <h2 class="section-title">Cart Items</h2>
+              <span class="item-count" id="cartItemCount">0 items</span>
+            </div>
+            <div class="cart-items-list" id="cartItemsList"></div>
+          </div>
 
-        <!-- Coupon Section -->
-        <div class="coupon-section">
-          <div class="coupon-header">
-            <span>🎟️ Apply Coupon</span>
+          <!-- Coupon Section -->
+          <div class="coupon-section">
+            <div class="coupon-header">
+              <span>🎟️ Apply Coupon</span>
+            </div>
+            <div class="coupon-input-group">
+              <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
+              <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
+            </div>
+            <div class="coupon-message" id="couponMessage"></div>
           </div>
-          <div class="coupon-input-group">
-            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
-            <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
+
+          <!-- Saved for Later Section -->
+          <div class="saved-section" id="savedSection" style="display: none;">
+            <div class="section-header">
+              <h2 class="section-title">📦 Saved for Later</h2>
+              <button class="view-saved-btn" id="viewSavedBtn">View All →</button>
+            </div>
+            <div class="saved-items-list" id="savedItemsList"></div>
           </div>
-          <div class="coupon-message" id="couponMessage"></div>
+
+          <!-- Available Coupons -->
           <div class="available-coupons" id="availableCoupons" style="display: none;">
-            <div class="available-title">Available Coupons:</div>
+            <div class="available-title">🔥 Available Coupons:</div>
             <div class="coupon-chips" id="couponChips"></div>
           </div>
+
         </div>
 
-        <!-- Saved for Later Section -->
-        <div class="saved-section" id="savedSection" style="display: none;">
-          <div class="section-header">
-            <h2 class="section-title">📦 Saved for Later (<span id="savedCount">0</span>)</h2>
-            <button class="view-saved-btn" id="viewSavedBtn">View All →</button>
+        <!-- Right Column - Order Summary -->
+        <div class="cart-right-column">
+          
+          <!-- Free Delivery Progress Bar -->
+          <div class="free-delivery-progress" id="freeDeliveryProgress">
+            <div class="progress-label" id="progressLabel">Add ₹199 more for FREE delivery</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+            </div>
           </div>
-          <div class="saved-items-list" id="savedItemsList"></div>
-        </div>
 
-        <!-- Free Delivery Progress Bar -->
-        <div class="free-delivery-progress" id="freeDeliveryProgress">
-          <div class="progress-label" id="progressLabel">Add ₹199 more to get FREE delivery 🎁</div>
-          <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <!-- Order Summary -->
-        <div class="order-summary-section">
-          <h2 class="section-title">💰 Order Summary</h2>
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="subtotal">₹0</span>
-          </div>
-          <div class="summary-row discount-row" id="discountRow" style="display: none;">
-            <span>Coupon Discount</span>
-            <span id="discountAmount">-₹0</span>
-          </div>
-          <div class="summary-row">
-            <span>Delivery Charge</span>
-            <span id="deliveryCharge">₹0</span>
-          </div>
-          <div class="summary-row total-row">
-            <span>Total</span>
-            <span id="totalAmount">₹0</span>
-          </div>
-          <div class="checkout-btn-container">
+          <!-- Order Summary -->
+          <div class="order-summary-section">
+            <h2 class="section-title">💰 Order Summary</h2>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="subtotal">₹0</span>
+            </div>
+            <div class="summary-row discount-row" id="discountRow" style="display: none;">
+              <span>Coupon Discount</span>
+              <span id="discountAmount" class="discount-value">-₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Charge</span>
+              <span id="deliveryCharge">₹39</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Amount</span>
+              <span id="totalAmount" class="total-value">₹0</span>
+            </div>
             <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout →</button>
           </div>
-        </div>
 
-        <!-- Related Products -->
-        <div class="related-section" id="relatedSection" style="display: none;">
-          <div class="section-header">
-            <h2 class="section-title">✨ You May Also Like</h2>
-            <a href="/" class="view-all-link">View All →</a>
+          <!-- Related Products -->
+          <div class="related-section" id="relatedSection" style="display: none;">
+            <div class="section-header">
+              <h2 class="section-title">✨ You May Also Like</h2>
+            </div>
+            <div class="related-products-scroll" id="relatedProductsGrid"></div>
           </div>
-          <div class="related-products-scroll" id="relatedProductsGrid"></div>
+
         </div>
 
       </div>
@@ -124,7 +136,7 @@
         <h3>Your cart is empty</h3>
         <p>Looks like you haven't added any items yet</p>
         <button class="start-shopping-btn" onclick="window.location.href='/'">Start Shopping →</button>
-        <div class="trending-products" id="trendingProductsEmpty">
+        <div class="trending-products">
           <h4>🔥 Trending Products</h4>
           <div class="trending-grid" id="trendingGridEmpty"></div>
         </div>
@@ -144,8 +156,8 @@
 
     <!-- Mini Order Popup -->
     <div class="mini-order-popup" id="miniOrderPopup">
-      <div class="popup-icon">✅</div>
-      <div class="popup-text">Cart updated!</div>
+      <span class="popup-icon">✅</span>
+      <span class="popup-text">Cart updated!</span>
     </div>
 
     <!-- Toast Message -->
