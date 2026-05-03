@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Admin Dashboard | OK Mart</title>
-  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#2ecc71">
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     
     :root {
       --primary: #2ecc71;
@@ -21,12 +27,12 @@
       --border: #e5e7eb;
       --danger: #ef4444;
       --warning: #f59e0b;
+      --success: #10b981;
       --info: #3b82f6;
-      --purple: #8b5cf6;
       --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
       --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 16px;
-      --transition: all .2s;
+      --radius: 20px;
+      --transition: all .2s ease;
     }
     
     body {
@@ -35,22 +41,25 @@
       color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
     }
     
-    .admin-layout { display: flex; min-height: 100vh; }
+    /* Sidebar */
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
     
-    /* ===== SIDEBAR ===== */
     .sidebar {
-      width: 260px;
-      background: #1a1e2b;
+      width: 280px;
+      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
       color: white;
       position: fixed;
-      top: 0; left: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      bottom: 0;
       z-index: 100;
-      display: flex;
-      flex-direction: column;
-      transition: transform .3s;
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
     }
     
     .sidebar-brand {
@@ -58,21 +67,35 @@
       border-bottom: 1px solid rgba(255,255,255,.1);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
     
-    .sidebar-logo { font-size: 1.4rem; font-weight: 700; }
+    .sidebar-logo-img {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+    }
+    
+    .sidebar-logo-text {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
     
     .sidebar-badge {
       background: var(--primary);
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 20px;
-      font-size: .65rem;
+      font-size: .6rem;
       font-weight: 600;
-      text-transform: uppercase;
     }
     
-    .sidebar-nav { flex: 1; padding: 20px 0; }
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+    }
     
     .sidebar-nav a {
       display: flex;
@@ -86,25 +109,36 @@
       position: relative;
     }
     
-    .sidebar-nav a:hover { background: rgba(255,255,255,.06); color: white; }
+    .sidebar-nav a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background: rgba(46,204,113,.1);
+      transition: width .3s;
+    }
+    
+    .sidebar-nav a:hover::before {
+      width: 100%;
+    }
+    
+    .sidebar-nav a:hover {
+      color: white;
+      padding-left: 28px;
+    }
     
     .sidebar-nav a.active {
-      background: rgba(46,204,113,.1);
+      background: rgba(46,204,113,.15);
       color: var(--primary);
       border-left: 3px solid var(--primary);
     }
     
-    .sidebar-nav a .nav-badge {
-      margin-left: auto;
-      background: var(--primary);
-      color: white;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: .65rem;
-      font-weight: 600;
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
     }
-    
-    .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,.1); }
     
     .sidebar-footer button {
       width: 100%;
@@ -114,14 +148,15 @@
       color: rgba(255,255,255,.7);
       border-radius: 10px;
       cursor: pointer;
-      font-weight: 500;
       transition: var(--transition);
-      font-size: .9rem;
     }
     
-    .sidebar-footer button:hover { background: rgba(239,68,68,.2); color: var(--danger); }
+    .sidebar-footer button:hover {
+      background: rgba(239,68,68,.2);
+      color: var(--danger);
+    }
     
-    /* ===== MOBILE HEADER ===== */
+    /* Mobile Header */
     .mobile-header {
       display: none;
       padding: 12px 16px;
@@ -143,249 +178,203 @@
       font-size: 1.2rem;
     }
     
-    /* ===== MAIN CONTENT ===== */
+    /* Main Content */
     .main-content {
       flex: 1;
-      margin-left: 260px;
-      padding: 24px 28px;
+      margin-left: 280px;
+      padding: 24px;
       max-width: 1400px;
     }
     
-    /* ===== PAGE HEADER ===== */
     .page-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 28px;
+      align-items: center;
+      margin-bottom: 24px;
       flex-wrap: wrap;
       gap: 12px;
     }
     
-    .page-header h1 { font-size: 1.8rem; font-weight: 800; }
-    
-    .header-info {
-      display: flex;
-      align-items: center;
-      gap: 16px;
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     
-    .date-display {
-      color: var(--muted);
-      font-size: .9rem;
-      font-weight: 500;
+    .date-time {
       background: var(--card);
       padding: 8px 16px;
       border-radius: 30px;
+      font-size: 0.8rem;
+      color: var(--muted);
       border: 1px solid var(--border);
     }
     
-    .refresh-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: .8rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .refresh-btn:active { transform: scale(.95); }
-    
-    /* ===== STATS GRID ===== */
+    /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      animation: fadeInUp .4s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .stat-card {
       background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border);
       transition: var(--transition);
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
     }
     
-    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      opacity: .1;
-    }
-    
-    .stat-card.orders::before { background: var(--info); }
-    .stat-card.today::before { background: var(--primary); }
-    .stat-card.revenue::before { background: var(--purple); }
-    .stat-card.pending::before { background: var(--warning); }
-    
-    .stat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
     }
     
     .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
+      width: 55px;
+      height: 55px;
+      background: var(--primary-light);
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
     
-    .stat-icon.orders-icon { background: #dbeafe; }
-    .stat-icon.today-icon { background: #d1fae5; }
-    .stat-icon.revenue-icon { background: #ede9fe; }
-    .stat-icon.pending-icon { background: #fef3c7; }
-    
-    .stat-change {
-      font-size: .75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
+    .stat-info {
+      flex: 1;
     }
-    
-    .stat-change.up { background: #d1fae5; color: #065f46; }
-    .stat-change.neutral { background: #f3f4f6; color: #4b5563; }
     
     .stat-value {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 800;
-      color: var(--text);
-      line-height: 1.1;
-      display: block;
-      transition: var(--transition);
+      color: var(--primary-dark);
     }
-    
-    .stat-value.counting { color: var(--primary); }
     
     .stat-label {
-      font-size: .85rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      font-weight: 500;
-      margin-top: 6px;
     }
     
-    /* ===== EXTRA STATS ROW ===== */
-    .extra-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-    
-    .extra-stat-card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border);
-      text-align: center;
-    }
-    
-    .extra-stat-value {
-      font-size: 1.6rem;
-      font-weight: 700;
-      display: block;
-      color: var(--text);
-    }
-    
-    .extra-stat-icon {
-      font-size: 1.3rem;
-      margin-bottom: 6px;
-      display: block;
-    }
-    
-    .extra-stat-label {
-      font-size: .75rem;
-      color: var(--muted);
+    .stat-change {
+      font-size: 0.7rem;
       margin-top: 4px;
     }
     
-    /* ===== DUAL COLUMN LAYOUT ===== */
-    .dual-column {
+    .stat-change.up {
+      color: var(--success);
+    }
+    
+    .stat-change.down {
+      color: var(--danger);
+    }
+    
+    /* Charts Row */
+    .charts-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 20px;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
     
-    .section-card {
+    .chart-card {
       background: var(--card);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius);
+      padding: 20px;
       border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
     }
     
-    .section-card h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .chart-card h3 {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      font-weight: 600;
     }
     
-    /* ===== CHART AREA ===== */
-    .chart-container {
-      width: 100%;
+    .sales-chart {
       height: 250px;
+      position: relative;
       display: flex;
       align-items: flex-end;
-      gap: 6px;
-      padding-top: 20px;
+      gap: 12px;
+      padding: 10px 0;
     }
     
     .chart-bar {
       flex: 1;
-      background: linear-gradient(to top, var(--primary), var(--primary-dark));
-      border-radius: 6px 6px 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+      border-radius: 8px;
+      transition: height 0.5s ease;
       min-height: 4px;
-      transition: height .5s ease;
-      position: relative;
-      cursor: pointer;
     }
     
-    .chart-bar:hover { opacity: .8; }
-    
-    .chart-label {
-      position: absolute;
-      bottom: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: .6rem;
+    .bar-label {
+      font-size: 0.7rem;
       color: var(--muted);
-      white-space: nowrap;
     }
     
-    .chart-value {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: .65rem;
+    /* Recent Orders */
+    .recent-orders-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .card-header h3 {
+      font-size: 1rem;
       font-weight: 600;
-      color: var(--text);
     }
     
-    /* ===== TABLE ===== */
-    .table-wrapper { overflow-x: auto; }
+    .view-all-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+    
+    .orders-table {
+      width: 100%;
+      overflow-x: auto;
+    }
     
     table {
       width: 100%;
@@ -394,38 +383,154 @@
     
     th {
       text-align: left;
-      padding: 14px 16px;
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--muted);
-      border-bottom: 2px solid var(--border);
-      background: var(--bg);
+      padding: 12px 8px;
+      font-size: 0.75rem;
       font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
     }
     
     td {
-      padding: 14px 16px;
+      padding: 12px 8px;
+      font-size: 0.85rem;
       border-bottom: 1px solid var(--border);
-      font-size: .9rem;
     }
     
     .status-badge {
-      padding: 5px 12px;
+      display: inline-flex;
+      padding: 4px 10px;
       border-radius: 20px;
-      font-size: .7rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      text-transform: capitalize;
     }
     
-    .status-received { background: #fef3c7; color: #92400e; }
-    .status-preparing { background: #dbeafe; color: #1e40af; }
-    .status-outfordelivery { background: #d1fae5; color: #065f46; }
-    .status-delivered { background: #e0e7ff; color: #3730a3; }
+    .status-received { background: #fef3c7; color: #d97706; }
+    .status-processing { background: #dbeafe; color: #2563eb; }
+    .status-delivered { background: #d1fae5; color: #065f46; }
+    .status-cancelled { background: #fee2e2; color: #dc2626; }
     
-    .no-data { text-align: center; color: var(--muted); padding: 20px; font-size: .9rem; }
+    .action-btn {
+      background: var(--primary-light);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: var(--primary-dark);
+    }
     
-    /* ===== TOAST ===== */
+    /* Top Products */
+    .top-products-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .top-product-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: var(--bg);
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+    
+    .top-product-item:hover {
+      transform: translateX(4px);
+      background: var(--primary-light);
+    }
+    
+    .top-product-img {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    
+    .top-product-info {
+      flex: 1;
+    }
+    
+    .top-product-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    
+    .top-product-sales {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    
+    .top-product-price {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .quick-action-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 16px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .quick-action-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    
+    .quick-action-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    
+    .quick-action-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -435,346 +540,449 @@
       color: white;
       padding: 12px 24px;
       border-radius: 40px;
-      font-weight: 500;
-      z-index: 300;
+      z-index: 1000;
       opacity: 0;
-      transition: .3s;
+      transition: all 0.3s;
+      pointer-events: none;
     }
     
-    .toast.show { opacity: 1; bottom: 50px; }
-    .toast.success { background: #10b981; }
-    
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 1200px) {
-      .dual-column { grid-template-columns: 1fr; }
+    .toast.show {
+      opacity: 1;
+      bottom: 50px;
     }
     
-    @media (max-width: 1024px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .extra-stats { grid-template-columns: repeat(2, 1fr); }
+    .toast.success {
+      background: var(--success);
     }
     
+    .toast.error {
+      background: var(--danger);
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .main-content { margin-left: 0; padding: 16px; }
-      .mobile-header { display: flex; }
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .extra-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .stat-card { padding: 16px; }
-      .stat-value { font-size: 1.6rem; }
-      .page-header h1 { font-size: 1.4rem; }
-      .section-card { padding: 16px; }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+        padding: 16px;
+      }
+      
+      .mobile-header {
+        display: flex;
+      }
+      
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .orders-table {
+        overflow-x: auto;
+      }
     }
     
     @media (max-width: 480px) {
-      .stats-grid { grid-template-columns: 1fr; }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stat-card {
+        padding: 16px;
+      }
+      
+      .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+      }
+      
+      .stat-value {
+        font-size: 1.3rem;
+      }
     }
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="admin-layout">
     
-    <!-- ========== SIDEBAR ========== -->
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-        <span class="sidebar-logo">🛒 OK Mart</span>
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
+        <span class="sidebar-logo-text">OK Mart</span>
         <span class="sidebar-badge">Admin</span>
       </div>
       <nav class="sidebar-nav">
-        <a href="index.html" class="active">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders <span class="nav-badge" id="sidebarPending">0</span></a>
-        <a href="products.html">📦 Products</a>
-        <a href="offers.html">🏷️ Offers</a>
-        <a href="settings.html">⚙️ Settings</a>
-        <a href="manual-order.html">✍️ Manual Order</a>
+        <a href="index.html" class="active">
+          <span>📊</span> Dashboard
+        </a>
+        <a href="orders.html">
+          <span>📋</span> Orders
+        </a>
+        <a href="products.html">
+          <span>📦</span> Products
+        </a>
+        <a href="offers.html">
+          <span>🏷️</span> Offers
+        </a>
+        <a href="delivery.html">
+          <span>🚚</span> Delivery
+        </a>
+        <a href="customers.html">
+          <span>👥</span> Customers
+        </a>
+        <a href="settings.html">
+          <span>⚙️</span> Settings
+        </a>
       </nav>
       <div class="sidebar-footer">
-        <button onclick="adminLogout()">🚪 Logout</button>
-        <button onclick="location.href='/'" style="margin-top:8px;">🏠 View Store</button>
+        <button onclick="logout()">🚪 Logout</button>
+        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
       </div>
     </aside>
 
-    <!-- ========== MOBILE HEADER ========== -->
+    <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">OK Mart Admin</span>
-      <button class="refresh-btn" onclick="location.reload()">🔄</button>
+      <span style="font-weight:700;">Admin Dashboard</span>
+      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
 
-    <!-- ========== MAIN CONTENT ========== -->
+    <!-- Main Content -->
     <main class="main-content">
       
       <!-- Page Header -->
       <div class="page-header">
         <h1>📊 Dashboard</h1>
-        <div class="header-info">
-          <span class="date-display" id="currentDate"></span>
-          <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh</button>
+        <div class="date-time" id="currentDateTime"></div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value" id="totalRevenue">₹0</div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-change up" id="revenueChange">↑ 0% from last month</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <div class="stat-value" id="totalOrders">0</div>
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-change up" id="ordersChange">↑ 0% from last month</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <div class="stat-value" id="totalCustomers">0</div>
+            <div class="stat-label">Total Customers</div>
+            <div class="stat-change up" id="customersChange">↑ 0% from last month</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <div class="stat-value" id="avgOrderValue">₹0</div>
+            <div class="stat-label">Avg. Order Value</div>
+            <div class="stat-change" id="avgChange">↑ 0% from last month</div>
+          </div>
         </div>
       </div>
 
-      <!-- Main Stats -->
-      <div class="stats-grid">
-        <div class="stat-card orders" onclick="location.href='orders.html'">
-          <div class="stat-header">
-            <div class="stat-icon orders-icon">📋</div>
-            <span class="stat-change up">All Time</span>
-          </div>
-          <span class="stat-value" id="totalOrders">0</span>
-          <span class="stat-label">Total Orders</span>
-        </div>
-        
-        <div class="stat-card today" onclick="location.href='orders.html'">
-          <div class="stat-header">
-            <div class="stat-icon today-icon">📅</div>
-            <span class="stat-change up">Today</span>
-          </div>
-          <span class="stat-value" id="todayOrders">0</span>
-          <span class="stat-label">Today's Orders</span>
-        </div>
-        
-        <div class="stat-card revenue">
-          <div class="stat-header">
-            <div class="stat-icon revenue-icon">💰</div>
-            <span class="stat-change up">Gross</span>
-          </div>
-          <span class="stat-value" id="totalRevenue">₹0</span>
-          <span class="stat-label">Total Revenue</span>
-        </div>
-        
-        <div class="stat-card pending">
-          <div class="stat-header">
-            <div class="stat-icon pending-icon">⏳</div>
-            <span class="stat-change neutral">Active</span>
-          </div>
-          <span class="stat-value" id="pendingOrders">0</span>
-          <span class="stat-label">Pending Orders</span>
-        </div>
-      </div>
-
-      <!-- Extra Stats -->
-      <div class="extra-stats">
-        <div class="extra-stat-card">
-          <span class="extra-stat-icon">👥</span>
-          <span class="extra-stat-value" id="totalCustomers">0</span>
-          <span class="extra-stat-label">Total Customers</span>
-        </div>
-        <div class="extra-stat-card">
-          <span class="extra-stat-icon">✅</span>
-          <span class="extra-stat-value" id="deliveredOrders">0</span>
-          <span class="extra-stat-label">Delivered</span>
-        </div>
-        <div class="extra-stat-card">
-          <span class="extra-stat-icon">📊</span>
-          <span class="extra-stat-value" id="avgOrderValue">₹0</span>
-          <span class="extra-stat-label">Avg Order Value</span>
-        </div>
-      </div>
-
-      <!-- Dual Column: Chart + Top Products -->
-      <div class="dual-column">
-        
-        <!-- Revenue Chart -->
-        <div class="section-card">
-          <h2>📈 Revenue (Last 7 Days)</h2>
-          <div class="chart-container" id="revenueChart">
-            <p class="no-data">Loading chart...</p>
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <!-- Sales Chart -->
+        <div class="chart-card">
+          <h3>📈 Weekly Sales</h3>
+          <div class="sales-chart" id="salesChart">
+            <!-- Chart bars will be added dynamically -->
           </div>
         </div>
         
-        <!-- Top Selling Products -->
-        <div class="section-card">
-          <h2>🔥 Top Selling Products</h2>
-          <div class="table-wrapper">
-            <table>
-              <thead><tr><th>#</th><th>Product</th><th>Units Sold</th></tr></thead>
-              <tbody id="topProducts"><tr><td colspan="3" class="no-data">Loading...</td></tr></tbody>
-            </table>
+        <!-- Top Products -->
+        <div class="chart-card">
+          <h3>🔥 Top Selling Products</h3>
+          <div class="top-products-grid" id="topProducts">
+            <div style="text-align:center;padding:20px;">Loading...</div>
           </div>
         </div>
       </div>
 
       <!-- Recent Orders -->
-      <div class="section-card">
-        <h2>📋 Recent Orders</h2>
-        <div class="table-wrapper">
+      <div class="recent-orders-card">
+        <div class="card-header">
+          <h3>🕐 Recent Orders</h3>
+          <a href="orders.html" class="view-all-link">View All →</a>
+        </div>
+        <div class="orders-table">
           <table>
             <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Phone</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
+              <tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr>
             </thead>
-            <tbody id="recentOrders"><tr><td colspan="6" class="no-data">Loading orders...</td></tr></tbody>
+            <tbody id="recentOrdersTable">
+              <tr><td colspan="6" style="text-align:center;padding:40px;">Loading orders...</td></tr>
+            </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="quick-action-btn" onclick="window.location.href='orders.html'">
+          <div class="quick-action-icon">📋</div>
+          <div class="quick-action-label">Manage Orders</div>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='products.html'">
+          <div class="quick-action-icon">📦</div>
+          <div class="quick-action-label">Manage Products</div>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='offers.html'">
+          <div class="quick-action-icon">🏷️</div>
+          <div class="quick-action-label">Manage Offers</div>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='delivery.html'">
+          <div class="quick-action-icon">🚚</div>
+          <div class="quick-action-label">Delivery Areas</div>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='/track-order.html'">
+          <div class="quick-action-icon">📍</div>
+          <div class="quick-action-label">Track Orders</div>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='/profile.html'">
+          <div class="quick-action-icon">👤</div>
+          <div class="quick-action-label">My Profile</div>
         </div>
       </div>
 
     </main>
   </div>
 
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== OK MART - ADMIN DASHBOARD =====
-    (function() {
+    // ===== ADMIN DASHBOARD - COMPLETE FUNCTIONALITY =====
+    
+    // DOM Elements
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const toast = document.getElementById('toast');
+    
+    // State
+    let allOrders = [];
+    let allProducts = [];
+    let allCustomers = new Set();
+    
+    // Initialize
+    async function init() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
       
-      // Set date
+      await loadData();
+      renderStats();
+      renderSalesChart();
+      renderTopProducts();
+      renderRecentOrders();
+    }
+    
+    // Update Date & Time
+    function updateDateTime() {
       const now = new Date();
-      document.getElementById('currentDate').textContent = now.toLocaleDateString('en-IN', {
-        weekday: 'long', day: 'numeric', month: 'short', year: 'numeric'
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-IN', options);
+    }
+    
+    // Load Data from Firebase
+    async function loadData() {
+      showLoading(true);
+      
+      try {
+        // Load Orders
+        const ordersSnapshot = await db.collection('orders').orderBy('orderDate', 'desc').get();
+        allOrders = [];
+        ordersSnapshot.forEach(doc => {
+          const order = { id: doc.id, ...doc.data() };
+          allOrders.push(order);
+          if (order.phone) allCustomers.add(order.phone);
+        });
+        
+        // Load Products
+        const productsSnapshot = await db.collection('products').get();
+        allProducts = [];
+        productsSnapshot.forEach(doc => {
+          allProducts.push({ id: doc.id, ...doc.data() });
+        });
+        
+      } catch (error) {
+        console.error('Error loading data:', error);
+        showToast('Error loading dashboard data', 'error');
+      }
+      
+      showLoading(false);
+    }
+    
+    // Render Stats
+    function renderStats() {
+      const totalRevenue = allOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+      const totalOrders = allOrders.length;
+      const totalCustomers = allCustomers.size;
+      const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+      
+      // Calculate last month stats for comparison
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      
+      const lastMonthOrders = allOrders.filter(order => {
+        const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+        return orderDate >= lastMonth;
       });
       
-      // Format currency
-      const formatINR = (amount) => '₹' + Math.round(amount).toLocaleString('en-IN');
+      const lastMonthRevenue = lastMonthOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+      const revenuePercent = lastMonthRevenue > 0 ? ((totalRevenue - lastMonthRevenue) / lastMonthRevenue * 100).toFixed(1) : 0;
       
-      // Real-time orders listener
-      db.collection('orders').orderBy('orderDate', 'desc').onSnapshot((snapshot) => {
-        const orders = [];
-        const today = now.toISOString().split('T')[0];
-        
-        snapshot.forEach(doc => {
-          orders.push({ id: doc.id, ...doc.data() });
+      document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+      document.getElementById('totalOrders').textContent = totalOrders;
+      document.getElementById('totalCustomers').textContent = totalCustomers;
+      document.getElementById('avgOrderValue').textContent = `₹${Math.round(avgOrderValue).toLocaleString('en-IN')}`;
+      
+      document.getElementById('revenueChange').innerHTML = `${revenuePercent >= 0 ? '↑' : '↓'} ${Math.abs(revenuePercent)}% from last month`;
+      document.getElementById('revenueChange').className = `stat-change ${revenuePercent >= 0 ? 'up' : 'down'}`;
+    }
+    
+    // Render Sales Chart
+    function renderSalesChart() {
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const dailySales = [0, 0, 0, 0, 0, 0, 0];
+      
+      allOrders.forEach(order => {
+        const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+        const dayIndex = orderDate.getDay();
+        const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
+        dailySales[adjustedIndex] += order.total || 0;
+      });
+      
+      const maxSale = Math.max(...dailySales, 1);
+      const chartContainer = document.getElementById('salesChart');
+      
+      chartContainer.innerHTML = days.map((day, i) => `
+        <div class="chart-bar">
+          <div class="bar" style="height: ${(dailySales[i] / maxSale) * 180}px"></div>
+          <div class="bar-label">${day}</div>
+          <div class="bar-label" style="font-size:0.6rem;">₹${dailySales[i].toLocaleString('en-IN')}</div>
+        </div>
+      `).join('');
+    }
+    
+    // Render Top Products
+    function renderTopProducts() {
+      const productSales = new Map();
+      
+      allOrders.forEach(order => {
+        (order.items || []).forEach(item => {
+          const current = productSales.get(item.id) || 0;
+          productSales.set(item.id, current + (item.quantity || 1));
         });
-        
-        // ===== CALCULATE STATS =====
-        const totalOrders = orders.length;
-        const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-        const todayOrders = orders.filter(o => (o.orderDate || o.date || '').startsWith(today));
-        const pendingOrders = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
-        const deliveredOrders = orders.filter(o => o.status === 'delivered');
-        
-        // Unique customers (by phone)
-        const phones = new Set(orders.map(o => o.customerPhone || o.phone).filter(Boolean));
-        const totalCustomers = phones.size;
-        
-        // Average order value
-        const avgOrder = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
-        
-        // ===== UPDATE MAIN STATS =====
-        document.getElementById('totalOrders').textContent = totalOrders;
-        document.getElementById('todayOrders').textContent = todayOrders.length;
-        document.getElementById('totalRevenue').textContent = formatINR(totalRevenue);
-        document.getElementById('pendingOrders').textContent = pendingOrders.length;
-        
-        // ===== UPDATE EXTRA STATS =====
-        document.getElementById('totalCustomers').textContent = totalCustomers;
-        document.getElementById('deliveredOrders').textContent = deliveredOrders.length;
-        document.getElementById('avgOrderValue').textContent = formatINR(avgOrder);
-        
-        // ===== UPDATE SIDEBAR BADGE =====
-        const badge = document.getElementById('sidebarPending');
-        if (badge) badge.textContent = pendingOrders.length;
-        
-        // ===== REVENUE CHART (LAST 7 DAYS) =====
-        const last7Days = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(now);
-          d.setDate(d.getDate() - i);
-          last7Days.push(d.toISOString().split('T')[0]);
-        }
-        
-        const dailyRevenue = {};
-        last7Days.forEach(day => { dailyRevenue[day] = 0; });
-        
-        orders.forEach(o => {
-          const orderDay = (o.orderDate || o.date || '').substring(0, 10);
-          if (dailyRevenue.hasOwnProperty(orderDay)) {
-            dailyRevenue[orderDay] += (Number(o.total) || 0);
-          }
-        });
-        
-        const values = Object.values(dailyRevenue);
-        const maxValue = Math.max(...values, 1);
-        
-        const chartContainer = document.getElementById('revenueChart');
-        chartContainer.innerHTML = last7Days.map((day, i) => {
-          const height = Math.max((values[i] / maxValue) * 180, 4);
-          const shortDay = new Date(day).toLocaleDateString('en-IN', { weekday: 'short' });
-          return `
-            <div class="chart-bar" style="height:${height}px;" title="${shortDay}: ${formatINR(values[i])}">
-              <span class="chart-value">${values[i] > 0 ? formatINR(values[i]) : ''}</span>
-              <span class="chart-label">${shortDay}</span>
+      });
+      
+      const sortedProducts = Array.from(productSales.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      const topProductsHtml = sortedProducts.map(([productId, sales]) => {
+        const product = allProducts.find(p => p.id === productId);
+        if (!product) return '';
+        return `
+          <div class="top-product-item">
+            <img src="${product.image}" class="top-product-img" onerror="this.src='https://via.placeholder.com/45'">
+            <div class="top-product-info">
+              <div class="top-product-name">${product.name}</div>
+              <div class="top-product-sales">Sold: ${sales} units</div>
             </div>
-          `;
-        }).join('');
-        
-        // ===== TOP SELLING PRODUCTS =====
-        const productSales = {};
-        orders.forEach(o => {
-          (o.items || []).forEach(item => {
-            const name = item.name || 'Unknown';
-            productSales[name] = (productSales[name] || 0) + (item.quantity || 1);
-          });
-        });
-        
-        const topProducts = Object.entries(productSales)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 5);
-        
-        const topProductsTable = document.getElementById('topProducts');
-        if (topProducts.length === 0) {
-          topProductsTable.innerHTML = '<tr><td colspan="3" class="no-data">No sales data</td></tr>';
-        } else {
-          topProductsTable.innerHTML = topProducts.map(([name, qty], idx) => `
-            <tr>
-              <td style="font-weight:700;color:var(--primary-dark);">#${idx + 1}</td>
-              <td>${name}</td>
-              <td style="font-weight:700;">${qty}</td>
-            </tr>
-          `).join('');
-        }
-        
-        // ===== RECENT ORDERS =====
-        const recentOrders = orders.slice(0, 10);
-        const recentTable = document.getElementById('recentOrders');
-        
-        if (recentOrders.length === 0) {
-          recentTable.innerHTML = '<tr><td colspan="6" class="no-data">No orders yet</td></tr>';
-        } else {
-          recentTable.innerHTML = recentOrders.map(o => `
-            <tr style="cursor:pointer;" onclick="location.href='orders.html'">
-              <td style="font-family:monospace;font-weight:600;color:var(--primary-dark);">#${o.orderId || o.id.slice(-8).toUpperCase()}</td>
-              <td>${o.customerName || o.name || '-'}</td>
-              <td style="color:var(--muted);">${o.customerPhone || o.phone || '-'}</td>
-              <td style="font-weight:700;">${formatINR(o.total || 0)}</td>
-              <td><span class="status-badge status-${o.status || 'received'}">${o.status || 'received'}</span></td>
-              <td style="color:var(--muted);font-size:.85rem;">${new Date(o.orderDate || o.date).toLocaleDateString('en-IN')}</td>
-            </tr>
-          `).join('');
-        }
-        
-        console.log(`📊 Dashboard updated: ${totalOrders} orders, ${formatINR(totalRevenue)}`);
-      });
+            <div class="top-product-price">₹${product.price}</div>
+          </div>
+        `;
+      }).join('');
       
-      // Refresh function
-      window.refreshDashboard = () => location.reload();
+      document.getElementById('topProducts').innerHTML = topProductsHtml || '<div style="text-align:center;padding:20px;">No sales yet</div>';
+    }
+    
+    // Render Recent Orders
+    function renderRecentOrders() {
+      const recentOrders = allOrders.slice(0, 5);
       
-      // Toast helper
-      window.showToast = (msg, type = 'info') => {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast ${type}`;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-      };
+      if (recentOrders.length === 0) {
+        document.getElementById('recentOrdersTable').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">No orders yet</td></tr>';
+        return;
+      }
       
-    })();
+      document.getElementById('recentOrdersTable').innerHTML = recentOrders.map(order => `
+        <tr>
+          <td>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</td>
+          <td>${order.customerName || order.name || 'N/A'}</td>
+          <td>₹${order.total || 0}</td>
+          <td><span class="status-badge status-${order.status || 'received'}">${order.status || 'Received'}</span></td>
+          <td>${formatDate(order.orderDate)}</td>
+          <td><button class="action-btn" onclick="viewOrder('${order.id}')">View</button></td>
+        </tr>
+      `).join('');
+    }
+    
+    // View Order
+    window.viewOrder = function(orderId) {
+      window.location.href = `order-detail.html?id=${orderId}`;
+    };
+    
+    // Logout
+    window.logout = function() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      }
+    };
+    
+    // Helper Functions
+    function formatDate(timestamp) {
+      if (!timestamp) return 'N/A';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    
+    function showLoading(show) {
+      loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+    
+    function showToast(message, type) {
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // Start
+    init();
   </script>
 </body>
 </html>
