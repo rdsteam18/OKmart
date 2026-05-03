@@ -1,4 +1,4 @@
-// ===== OK MART - ADVANCED CART PAGE =====
+// ===== OK MART - ADVANCED CART PAGE (FIXED) =====
 
 (function() {
   'use strict';
@@ -11,7 +11,6 @@
   const cartItemCount = document.getElementById('cartItemCount');
   const savedItemsList = document.getElementById('savedItemsList');
   const savedSection = document.getElementById('savedSection');
-  const savedCount = document.getElementById('savedCount');
   const subtotalEl = document.getElementById('subtotal');
   const discountAmountEl = document.getElementById('discountAmount');
   const discountRow = document.getElementById('discountRow');
@@ -36,8 +35,6 @@
   let allProducts = [];
   let coupons = [];
   let appliedCoupon = null;
-  let deliveryCharge = 0;
-  let pincode = null;
   const FREE_DELIVERY_THRESHOLD = 199;
   const BASE_DELIVERY_CHARGE = 39;
 
@@ -58,12 +55,9 @@
       // Load saved items
       loadSavedItems();
       
-      // Load pincode
-      loadPincode();
-      
       loadingState.style.display = 'none';
       
-      if (cart.length === 0) {
+      if (cart.length === 0 && savedItems.length === 0) {
         showEmptyCart();
       } else {
         cartContent.style.display = 'block';
@@ -96,9 +90,9 @@
       });
       
       // Show available coupons
-      if (coupons.length > 0) {
+      if (coupons.length > 0 && availableCoupons) {
         availableCoupons.style.display = 'block';
-        couponChips.innerHTML = coupons.slice(0, 3).map(c => `
+        couponChips.innerHTML = coupons.slice(0, 4).map(c => `
           <div class="coupon-chip" onclick="applyCouponCode('${c.code}')">
             🏷️ ${c.code} ${c.type === 'flat' ? `₹${c.discount} OFF` : `${c.discount}% OFF`}
           </div>
@@ -113,7 +107,9 @@
   function loadCart() {
     const savedCart = localStorage.getItem('okmart_cart');
     if (savedCart) {
-      cart = JSON.parse(savedCart);
+      try {
+        cart = JSON.parse(savedCart);
+      } catch(e) { cart = []; }
     } else {
       cart = [];
     }
@@ -129,7 +125,9 @@
   function loadSavedItems() {
     const saved = localStorage.getItem('okmart_saved_for_later');
     if (saved) {
-      savedItems = JSON.parse(saved);
+      try {
+        savedItems = JSON.parse(saved);
+      } catch(e) { savedItems = []; }
     } else {
       savedItems = [];
     }
@@ -140,62 +138,51 @@
     localStorage.setItem('okmart_saved_for_later', JSON.stringify(savedItems));
   }
 
-  // ========== Load Pincode ==========
-  function loadPincode() {
-    pincode = localStorage.getItem('okmart_pincode');
-    if (!pincode) {
-      // Default delivery charge
-      deliveryCharge = BASE_DELIVERY_CHARGE;
-    }
-  }
-
   // ========== Update Cart Badge ==========
   function updateCartBadge() {
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.querySelectorAll('.cart-count, .cart-badge').forEach(el => {
-      if (el) el.textContent = total;
-    });
+    const total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    localStorage.setItem('okmart_cart_count', total);
+    const event = new CustomEvent('cartUpdated');
+    window.dispatchEvent(event);
   }
 
   // ========== Render Cart Items ==========
   function renderCart() {
     if (!cartItemsList) return;
     
+    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    cartItemCount.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+    
     if (cart.length === 0) {
-      showEmptyCart();
-      return;
-    }
-    
-    cartContent.style.display = 'block';
-    emptyCart.style.display = 'none';
-    
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartItemCount.textContent = totalItems;
-    
-    cartItemsList.innerHTML = cart.map((item, index) => {
-      const product = allProducts.find(p => p.id === item.id) || item;
-      const itemTotal = product.price * item.quantity;
-      
-      return `
-        <div class="cart-item" data-index="${index}">
-          <img src="${product.image}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/80'">
-          <div class="cart-item-details">
-            <div class="cart-item-name">${escapeHtml(product.name)}</div>
-            <div class="cart-item-unit">${product.unit || ''}</div>
-            <div class="cart-item-price">₹${product.price}</div>
-          </div>
-          <div class="cart-item-actions">
-            <div class="quantity-control">
-              <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">−</button>
-              <span class="qty-value">${item.quantity}</span>
-              <button class="qty-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
+      cartItemsList.innerHTML = '<div style="text-align:center;padding:40px;color:#6b7280;">No items in cart</div>';
+      document.querySelector('.cart-items-section').style.display = 'none';
+    } else {
+      document.querySelector('.cart-items-section').style.display = 'block';
+      cartItemsList.innerHTML = cart.map((item, index) => {
+        const product = allProducts.find(p => p.id === item.id) || item;
+        const quantity = item.quantity || 1;
+        
+        return `
+          <div class="cart-item" data-id="${item.id}">
+            <img src="${product.image}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/80'">
+            <div class="cart-item-details">
+              <div class="cart-item-name">${escapeHtml(product.name)}</div>
+              <div class="cart-item-unit">${product.unit || ''}</div>
+              <div class="cart-item-price">₹${product.price}</div>
             </div>
-            <button class="save-for-later-btn" onclick="saveForLater('${item.id}')">📦 Save for Later</button>
-            <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">🗑️ Remove</button>
+            <div class="cart-item-actions">
+              <div class="quantity-control">
+                <button class="qty-btn" onclick="updateQuantity('${item.id}', -1)">−</button>
+                <span class="qty-value">${quantity}</span>
+                <button class="qty-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
+              </div>
+              <button class="save-for-later-btn" onclick="saveForLater('${item.id}')">📦 Save for Later</button>
+              <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">🗑️ Remove</button>
+            </div>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+      }).join('');
+    }
     
     // Render saved items
     renderSavedItems();
@@ -211,18 +198,17 @@
     }
     
     savedSection.style.display = 'block';
-    savedCount.textContent = savedItems.length;
     
-    savedItemsList.innerHTML = savedItems.map(item => {
+    savedItemsList.innerHTML = savedItems.slice(0, 3).map(item => {
       const product = allProducts.find(p => p.id === item.id) || item;
       return `
         <div class="saved-item">
-          <img src="${product.image}" class="saved-item-image" onerror="this.src='https://via.placeholder.com/60'">
+          <img src="${product.image}" class="saved-item-image" onerror="this.src='https://via.placeholder.com/55'">
           <div class="saved-item-details">
             <div class="saved-item-name">${escapeHtml(product.name)}</div>
             <div class="saved-item-price">₹${product.price}</div>
           </div>
-          <button class="move-to-cart-btn" onclick="moveToCart('${item.id}')">Move to Cart</button>
+          <button class="move-to-cart-btn" onclick="moveToCart('${item.id}')">Move to Cart →</button>
         </div>
       `;
     }).join('');
@@ -233,7 +219,7 @@
     const itemIndex = cart.findIndex(item => item.id === productId);
     if (itemIndex === -1) return;
     
-    const newQuantity = cart[itemIndex].quantity + delta;
+    const newQuantity = (cart[itemIndex].quantity || 1) + delta;
     
     if (newQuantity <= 0) {
       removeFromCart(productId);
@@ -244,7 +230,7 @@
     saveCart();
     renderCart();
     updateOrderSummary();
-    showMiniPopup('Cart updated!');
+    showMiniPopup();
   };
 
   // ========== Remove from Cart ==========
@@ -253,60 +239,64 @@
     saveCart();
     renderCart();
     updateOrderSummary();
-    showMiniPopup('Item removed');
+    showMiniPopup();
     
-    if (cart.length === 0) {
+    if (cart.length === 0 && savedItems.length === 0) {
       showEmptyCart();
     }
   };
 
   // ========== Save for Later ==========
   window.saveForLater = function(productId) {
-    const item = cart.find(i => i.id === productId);
-    if (item) {
-      // Remove from cart
-      cart = cart.filter(i => i.id !== productId);
-      saveCart();
-      
-      // Add to saved
-      if (!savedItems.find(i => i.id === productId)) {
-        savedItems.push(item);
-        saveSavedItems();
-      }
-      
-      renderCart();
-      renderSavedItems();
-      updateOrderSummary();
-      showMiniPopup('Saved for later');
-      
-      if (cart.length === 0) {
-        showEmptyCart();
-      }
+    const itemIndex = cart.findIndex(i => i.id === productId);
+    if (itemIndex === -1) return;
+    
+    const item = cart[itemIndex];
+    
+    // Remove from cart
+    cart.splice(itemIndex, 1);
+    saveCart();
+    
+    // Add to saved items (avoid duplicates)
+    if (!savedItems.find(i => i.id === productId)) {
+      savedItems.push(item);
+      saveSavedItems();
+    }
+    
+    renderCart();
+    renderSavedItems();
+    updateOrderSummary();
+    showMiniPopup();
+    
+    if (cart.length === 0 && savedItems.length === 0) {
+      showEmptyCart();
     }
   };
 
   // ========== Move to Cart ==========
   window.moveToCart = function(productId) {
-    const item = savedItems.find(i => i.id === productId);
-    if (item) {
-      // Remove from saved
-      savedItems = savedItems.filter(i => i.id !== productId);
-      saveSavedItems();
-      
-      // Add to cart
-      const existing = cart.find(i => i.id === productId);
-      if (existing) {
-        existing.quantity += item.quantity;
-      } else {
-        cart.push(item);
-      }
-      saveCart();
-      
-      renderCart();
-      renderSavedItems();
-      updateOrderSummary();
-      showMiniPopup('Moved to cart');
+    const itemIndex = savedItems.findIndex(i => i.id === productId);
+    if (itemIndex === -1) return;
+    
+    const item = savedItems[itemIndex];
+    
+    // Remove from saved
+    savedItems.splice(itemIndex, 1);
+    saveSavedItems();
+    
+    // Add to cart
+    const existingIndex = cart.findIndex(i => i.id === productId);
+    if (existingIndex !== -1) {
+      cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + (item.quantity || 1);
+    } else {
+      cart.push(item);
     }
+    saveCart();
+    
+    renderCart();
+    renderSavedItems();
+    updateOrderSummary();
+    showMiniPopup();
   };
 
   // ========== Apply Coupon ==========
@@ -342,21 +332,15 @@
     }
     
     // Check min order
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
     if (subtotal < (coupon.minOrder || 0)) {
       showCouponMessage(`Minimum order of ₹${coupon.minOrder} required`, 'error');
       return;
     }
     
     appliedCoupon = coupon;
+    localStorage.setItem('okmart_applied_coupon', JSON.stringify(appliedCoupon));
     showCouponMessage(`Coupon applied! ${coupon.type === 'flat' ? `₹${coupon.discount} OFF` : `${coupon.discount}% OFF`}`, 'success');
-    updateOrderSummary();
-  }
-
-  function removeCoupon() {
-    appliedCoupon = null;
-    couponInput.value = '';
-    showCouponMessage('Coupon removed', 'success');
     updateOrderSummary();
   }
 
@@ -388,18 +372,17 @@
 
   // ========== Update Order Summary ==========
   function updateOrderSummary() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
     const discount = calculateDiscount(subtotal);
-    const finalSubtotal = subtotal - discount;
+    const afterDiscount = subtotal - discount;
     
     // Delivery charge logic
     let delivery = BASE_DELIVERY_CHARGE;
-    if (finalSubtotal >= FREE_DELIVERY_THRESHOLD) {
+    if (afterDiscount >= FREE_DELIVERY_THRESHOLD) {
       delivery = 0;
     }
-    deliveryCharge = delivery;
     
-    const total = finalSubtotal + deliveryCharge;
+    const total = afterDiscount + delivery;
     
     // Update UI
     subtotalEl.textContent = `₹${subtotal}`;
@@ -411,18 +394,18 @@
       discountRow.style.display = 'none';
     }
     
-    deliveryChargeEl.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
+    deliveryChargeEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
     totalAmountEl.textContent = `₹${total}`;
     
     // Update free delivery progress
-    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - finalSubtotal);
-    const percent = Math.min(100, (finalSubtotal / FREE_DELIVERY_THRESHOLD) * 100);
+    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - afterDiscount);
+    const percent = Math.min(100, (afterDiscount / FREE_DELIVERY_THRESHOLD) * 100);
     
     progressFill.style.width = `${percent}%`;
     if (remaining <= 0) {
       progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
     } else {
-      progressLabel.innerHTML = `Add ₹${remaining} more to get FREE delivery 🎁`;
+      progressLabel.innerHTML = `Add ₹${remaining} more for FREE delivery 🎁`;
     }
   }
 
@@ -431,10 +414,15 @@
     if (confirm('Are you sure you want to clear your entire cart?')) {
       cart = [];
       saveCart();
+      appliedCoupon = null;
+      localStorage.removeItem('okmart_applied_coupon');
       renderCart();
       updateOrderSummary();
-      showMiniPopup('Cart cleared');
-      showEmptyCart();
+      showMiniPopup();
+      
+      if (cart.length === 0 && savedItems.length === 0) {
+        showEmptyCart();
+      }
     }
   }
 
@@ -445,7 +433,7 @@
       return;
     }
     
-    // Save applied coupon to localStorage for checkout
+    // Save applied coupon for checkout
     if (appliedCoupon) {
       localStorage.setItem('okmart_applied_coupon', JSON.stringify(appliedCoupon));
     }
@@ -468,7 +456,7 @@
     
     // Get trending products not in cart
     const trending = allProducts
-      .filter(p => p.active !== false && !cartProductIds.includes(p.id))
+      .filter(p => p.active !== false && !cartProductIds.includes(p.id) && (p.popular === true || (p.salesCount || 0) > 5))
       .slice(0, 6);
     
     if (trending.length === 0) {
@@ -479,8 +467,8 @@
     document.getElementById('relatedSection').style.display = 'block';
     relatedProductsGrid.innerHTML = trending.map(product => `
       <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
-        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/120'">
-        <div class="related-product-name">${product.name}</div>
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/110'">
+        <div class="related-product-name">${escapeHtml(product.name)}</div>
         <div class="related-product-price">₹${product.price}</div>
       </div>
     `).join('');
@@ -494,10 +482,15 @@
       .filter(p => p.active !== false && (p.popular === true || (p.salesCount || 0) > 5))
       .slice(0, 6);
     
+    if (trending.length === 0) {
+      trendingGridEmpty.innerHTML = '<div style="text-align:center;color:#6b7280;">No products available</div>';
+      return;
+    }
+    
     trendingGridEmpty.innerHTML = trending.map(product => `
       <div class="related-product-card" onclick="window.location.href='/product.html?id=${product.id}'">
-        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/120'">
-        <div class="related-product-name">${product.name}</div>
+        <img src="${product.image}" class="related-product-image" onerror="this.src='https://via.placeholder.com/110'">
+        <div class="related-product-name">${escapeHtml(product.name)}</div>
         <div class="related-product-price">₹${product.price}</div>
       </div>
     `).join('');
@@ -514,12 +507,9 @@
     });
   }
 
-  function showMiniPopup(message) {
+  function showMiniPopup() {
     const popup = document.getElementById('miniOrderPopup');
     if (!popup) return;
-    
-    const textEl = popup.querySelector('.popup-text');
-    if (textEl) textEl.textContent = message;
     
     popup.classList.add('show');
     setTimeout(() => popup.classList.remove('show'), 2000);
@@ -537,15 +527,30 @@
 
   // ========== Event Listeners ==========
   function initEventListeners() {
-    applyCouponBtn?.addEventListener('click', applyCoupon);
-    clearCartBtn?.addEventListener('click', clearCart);
-    checkoutBtn?.addEventListener('click', proceedToCheckout);
-    viewSavedBtn?.addEventListener('click', () => {
+    if (applyCouponBtn) applyCouponBtn.addEventListener('click', applyCoupon);
+    if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
+    if (checkoutBtn) checkoutBtn.addEventListener('click', proceedToCheckout);
+    if (viewSavedBtn) viewSavedBtn.addEventListener('click', () => {
       window.location.href = '/saved-items.html';
     });
     
-    couponInput?.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') applyCoupon();
+    if (couponInput) {
+      couponInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') applyCoupon();
+      });
+    }
+    
+    // Listen for cart updates from other tabs/pages
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'okmart_cart') {
+        loadCart();
+        renderCart();
+        updateOrderSummary();
+      }
+      if (e.key === 'okmart_saved_for_later') {
+        loadSavedItems();
+        renderSavedItems();
+      }
     });
   }
 
