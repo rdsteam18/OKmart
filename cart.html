@@ -2,170 +2,158 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   
   <title>My Cart | OK Mart</title>
-  <meta name="description" content="Review your cart and checkout at OK Mart. Fresh groceries delivered fast.">
+  <meta name="description" content="Review your cart items, apply coupons, and proceed to checkout">
   <meta name="theme-color" content="#2ecc71">
   
-  <link rel="manifest" href="/manifest.json">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/cart.css">
   
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="app-container">
+  <div class="cart-page">
     
     <!-- ========== HEADER ========== -->
-    <header class="cart-page-header">
-      <div class="header-inner">
-        <a href="/index.html" class="back-btn">←</a>
-        <h1 class="header-title">My Cart</h1>
-        <span class="cart-count-badge" id="headerCartCount">0</span>
-      </div>
+    <header class="cart-header">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <h1 class="cart-title">My Cart</h1>
+      <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="cart-main">
       
-      <!-- Cart Items Section -->
-      <div class="cart-items-section" id="cartItemsSection">
-        <div class="cart-items-list" id="cartItemsList"></div>
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading your cart...</p>
+      </div>
+
+      <!-- Cart Content -->
+      <div class="cart-content" id="cartContent" style="display: none;">
+        
+        <!-- Cart Items Section -->
+        <div class="cart-items-section">
+          <h2 class="section-title">🛍️ Cart Items (<span id="cartItemCount">0</span>)</h2>
+          <div class="cart-items-list" id="cartItemsList"></div>
+        </div>
+
+        <!-- Coupon Section -->
+        <div class="coupon-section">
+          <div class="coupon-header">
+            <span>🎟️ Apply Coupon</span>
+          </div>
+          <div class="coupon-input-group">
+            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
+            <button class="apply-coupon-btn" id="applyCouponBtn">Apply</button>
+          </div>
+          <div class="coupon-message" id="couponMessage"></div>
+          <div class="available-coupons" id="availableCoupons" style="display: none;">
+            <div class="available-title">Available Coupons:</div>
+            <div class="coupon-chips" id="couponChips"></div>
+          </div>
+        </div>
+
+        <!-- Saved for Later Section -->
+        <div class="saved-section" id="savedSection" style="display: none;">
+          <div class="section-header">
+            <h2 class="section-title">📦 Saved for Later (<span id="savedCount">0</span>)</h2>
+            <button class="view-saved-btn" id="viewSavedBtn">View All →</button>
+          </div>
+          <div class="saved-items-list" id="savedItemsList"></div>
+        </div>
+
+        <!-- Free Delivery Progress Bar -->
+        <div class="free-delivery-progress" id="freeDeliveryProgress">
+          <div class="progress-label" id="progressLabel">Add ₹199 more to get FREE delivery 🎁</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary-section">
+          <h2 class="section-title">💰 Order Summary</h2>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotal">₹0</span>
+          </div>
+          <div class="summary-row discount-row" id="discountRow" style="display: none;">
+            <span>Coupon Discount</span>
+            <span id="discountAmount">-₹0</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span id="deliveryCharge">₹0</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>Total</span>
+            <span id="totalAmount">₹0</span>
+          </div>
+          <div class="checkout-btn-container">
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout →</button>
+          </div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related-section" id="relatedSection" style="display: none;">
+          <div class="section-header">
+            <h2 class="section-title">✨ You May Also Like</h2>
+            <a href="/" class="view-all-link">View All →</a>
+          </div>
+          <div class="related-products-scroll" id="relatedProductsGrid"></div>
+        </div>
+
       </div>
 
       <!-- Empty Cart State -->
       <div class="empty-cart" id="emptyCart" style="display: none;">
         <div class="empty-cart-icon">🛒</div>
-        <h2>Your cart is empty</h2>
-        <p>Looks like you haven't added anything yet</p>
-        <a href="/index.html" class="shop-now-btn">Start Shopping →</a>
-        
-        <!-- Popular Products -->
-        <div class="popular-suggestions">
-          <h3>🔥 Popular Products</h3>
-          <div class="popular-grid" id="popularGrid">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Coupon Section -->
-      <div class="coupon-section" id="couponSection" style="display: none;">
-        <div class="coupon-header">
-          <span>🏷️ Apply Coupon</span>
-        </div>
-        <div class="coupon-input-row">
-          <input type="text" id="couponInput" placeholder="Enter coupon code (e.g., SAVE20)" autocomplete="off">
-          <button id="applyCouponBtn">Apply</button>
-        </div>
-        <div class="coupon-message" id="couponMessage"></div>
-        
-        <!-- Applied Coupon Display -->
-        <div class="applied-coupon" id="appliedCouponDisplay" style="display: none;">
-          <div class="applied-coupon-info">
-            <span class="applied-code" id="appliedCode"></span>
-            <span class="applied-discount" id="appliedDiscount"></span>
-          </div>
-          <button class="remove-coupon-btn" id="removeCouponBtn">✕</button>
-        </div>
-      </div>
-
-      <!-- Price Summary -->
-      <div class="price-summary" id="priceSummary" style="display: none;">
-        <h3>Bill Details</h3>
-        
-        <div class="summary-row">
-          <span>MRP Total</span>
-          <span id="mrpTotal">₹0</span>
-        </div>
-        
-        <div class="summary-row">
-          <span>Discount</span>
-          <span class="discount-value" id="itemDiscount">-₹0</span>
-        </div>
-        
-        <div class="summary-row" id="couponDiscountRow" style="display: none;">
-          <span>Coupon Discount</span>
-          <span class="discount-value" id="couponDiscount">-₹0</span>
-        </div>
-        
-        <div class="summary-row" id="freeOnionRow" style="display: none;">
-          <span>🧅 Free Onion (1kg)</span>
-          <span class="free-tag">FREE</span>
-        </div>
-        
-        <div class="summary-row">
-          <span>Delivery Charge</span>
-          <span id="deliveryCharge">₹20</span>
-        </div>
-        
-        <div class="summary-row total-row">
-          <span>Total Amount</span>
-          <span id="totalAmount">₹0</span>
-        </div>
-        
-        <div class="delivery-message" id="deliveryMessage"></div>
-        
-        <!-- Coupon Hint -->
-        <div class="coupon-hint" id="couponHint">
-          💡 Use code <strong>SAVE20</strong> for ₹20 off on ₹250+
-        </div>
-      </div>
-
-      <!-- Recommended Products (Upsell) -->
-      <div class="recommended-section" id="recommendedSection">
-        <div class="section-header">
-          <h3>❤️ You may also like</h3>
-        </div>
-        <div class="recommended-slider" id="recommendedSlider">
-          <div class="skeleton-scroll">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
+        <h3>Your cart is empty</h3>
+        <p>Looks like you haven't added any items yet</p>
+        <button class="start-shopping-btn" onclick="window.location.href='/'">Start Shopping →</button>
+        <div class="trending-products" id="trendingProductsEmpty">
+          <h4>🔥 Trending Products</h4>
+          <div class="trending-grid" id="trendingGridEmpty"></div>
         </div>
       </div>
 
     </main>
 
-    <!-- ========== STICKY CHECKOUT BAR ========== -->
-    <div class="sticky-checkout-bar" id="stickyCheckoutBar" style="display: none;">
-      <div class="checkout-bar-inner">
-        <div class="checkout-total-info">
-          <span class="total-label">Total</span>
-          <span class="total-value" id="barTotal">₹0</span>
-          <span class="total-items" id="barItems">0 items</span>
-        </div>
-        <div class="checkout-actions">
-          <button class="add-more-btn" onclick="location.href='/index.html'">+ Add More</button>
-          <a href="/checkout.html" class="checkout-btn" id="checkoutBtn">
-            Place Order →
-          </a>
-        </div>
-      </div>
-    </div>
-
     <!-- ========== BOTTOM NAVIGATION ========== -->
     <nav class="bottom-nav">
-      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
-      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
-      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
-      <a href="/cart.html" class="nav-item active">🛒<span>Cart</span></a>
+      <a href="/" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart" class="nav-item active">🛒<span>Cart</span></a>
+      <a href="/profile" class="nav-item">👤<span>Profile</span></a>
     </nav>
 
-    <!-- Toast Notification -->
+    <!-- Mini Order Popup -->
+    <div class="mini-order-popup" id="miniOrderPopup">
+      <div class="popup-icon">✅</div>
+      <div class="popup-text">Cart updated!</div>
+    </div>
+
+    <!-- Toast Message -->
     <div class="toast-message" id="toastMessage"></div>
     
   </div>
 
+  <!-- Scripts -->
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/cart.js"></script>
