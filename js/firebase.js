@@ -1,10 +1,6 @@
-// ===== OK MART - COMPLETE FIREBASE CONFIGURATION =====
-// Includes: Firestore, Authentication, Storage, Messaging, FCM Tokens
+// ===== OK MART - COMPLETE WORKING FIREBASE CONFIGURATION =====
 
-// ============================================
-// FIREBASE CONFIGURATION
-// ============================================
-
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDHvki4jXafwzLAXJSrLQt4QodiNi5JXCw",
   authDomain: "okmart-e6219.firebaseapp.com",
@@ -19,31 +15,36 @@ const firebaseConfig = {
 // INITIALIZE FIREBASE
 // ============================================
 
-// Initialize Firebase if not already initialized
-if (!firebase.apps || !firebase.apps.length) {
+// Initialize Firebase only once
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
-  console.log('✅ Firebase initialized');
+  console.log('✅ Firebase initialized successfully');
 }
 
-// Initialize services
+// Get Firestore instance
 const db = firebase.firestore();
-const auth = firebase.auth();
-
-// ============================================
-// FIRESTORE PERSISTENCE
-// ============================================
 
 // Enable offline persistence
-try {
-  db.enablePersistence({ synchronizeTabs: true })
-    .then(() => console.log('✅ Firestore persistence enabled'))
-    .catch((err) => {
-      if (err.code === 'failed-precondition') {
-        console.warn('⚠️ Multiple tabs open, persistence enabled in first tab only');
-      }
-    });
-} catch (e) {
-  console.warn('⚠️ Persistence not supported');
+db.enablePersistence({ synchronizeTabs: true })
+  .then(() => console.log('✅ Firestore persistence enabled'))
+  .catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.warn('⚠️ Multiple tabs open, persistence enabled in first tab only');
+    } else if (err.code === 'unimplemented') {
+      console.warn('⚠️ Browser doesn\'t support persistence');
+    }
+  });
+
+// ============================================
+// FIREBASE MESSAGING (FCM) SETUP 🔥
+// ============================================
+
+const VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
+
+let messaging = null;
+if (firebase.messaging && firebase.messaging.isSupported && firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+  console.log('✅ Firebase Messaging initialized');
 }
 
 // ============================================
@@ -66,7 +67,6 @@ const collections = {
 // PRODUCT FUNCTIONS
 // ============================================
 
-// Fetch all products
 async function fetchProducts() {
   try {
     const snapshot = await collections.products.get();
@@ -74,7 +74,7 @@ async function fetchProducts() {
     snapshot.forEach(doc => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Loaded ${products.length} products from Firebase`);
+    console.log(`✅ Loaded ${products.length} products`);
     return products;
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -82,7 +82,6 @@ async function fetchProducts() {
   }
 }
 
-// Get product by ID
 async function getProductById(productId) {
   try {
     const doc = await collections.products.doc(productId).get();
@@ -93,47 +92,6 @@ async function getProductById(productId) {
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
-  }
-}
-
-// Add new product
-async function addProduct(productData) {
-  try {
-    const docRef = await collections.products.add({
-      ...productData,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      salesCount: 0
-    });
-    return { success: true, id: docRef.id };
-  } catch (error) {
-    console.error('Error adding product:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Update product
-async function updateProduct(productId, productData) {
-  try {
-    await collections.products.doc(productId).update({
-      ...productData,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating product:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Delete product
-async function deleteProduct(productId) {
-  try {
-    await collections.products.doc(productId).delete();
-    return { success: true };
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    return { success: false, error: error.message };
   }
 }
 
@@ -152,47 +110,11 @@ async function fetchBanners() {
     snapshot.forEach(doc => {
       banners.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Loaded ${banners.length} banners from Firebase`);
+    console.log(`✅ Loaded ${banners.length} banners`);
     return banners;
   } catch (error) {
     console.error('Error fetching banners:', error);
     return [];
-  }
-}
-
-// Add banner
-async function addBanner(bannerData) {
-  try {
-    const docRef = await collections.banners.add({
-      ...bannerData,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    return { success: true, id: docRef.id };
-  } catch (error) {
-    console.error('Error adding banner:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Update banner
-async function updateBanner(bannerId, bannerData) {
-  try {
-    await collections.banners.doc(bannerId).update(bannerData);
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating banner:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Delete banner
-async function deleteBanner(bannerId) {
-  try {
-    await collections.banners.doc(bannerId).delete();
-    return { success: true };
-  } catch (error) {
-    console.error('Error deleting banner:', error);
-    return { success: false, error: error.message };
   }
 }
 
@@ -260,7 +182,6 @@ async function updateOrderStatus(orderId, status) {
   }
 }
 
-// Listen to order in real-time
 function listenToOrder(orderId, callback) {
   return collections.orders.doc(orderId).onSnapshot((doc) => {
     if (doc.exists) {
@@ -350,8 +271,7 @@ async function checkPincodeServiceability(pincode) {
         serviceable: true,
         deliveryType: doc.data().deliveryType || 'quick',
         deliveryCharge: doc.data().deliveryCharge || 39,
-        freeAbove: doc.data().freeAbove || 499,
-        estimatedTime: doc.data().deliveryType === 'quick' ? '10-15 mins' : '2-4 hours'
+        freeAbove: doc.data().freeAbove || 499
       };
     }
     return { serviceable: false };
@@ -365,20 +285,10 @@ async function checkPincodeServiceability(pincode) {
 // FCM TOKEN FUNCTIONS 🔥🔥🔥
 // ============================================
 
-// VAPID Key
-const VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
-
-// Initialize messaging
-let messaging = null;
-if (firebase.messaging && firebase.messaging.isSupported && firebase.messaging.isSupported()) {
-  messaging = firebase.messaging();
-  console.log('✅ Firebase Messaging initialized');
-}
-
-// Get and store FCM Token 🔥
+// Get and store FCM Token
 async function getAndStoreFCMToken() {
   if (!messaging) {
-    console.log('⚠️ Firebase Messaging not supported in this browser');
+    console.log('⚠️ Firebase Messaging not supported');
     return null;
   }
   
@@ -402,50 +312,43 @@ async function getAndStoreFCMToken() {
         await saveTokenToFirestore(token);
         
         return token;
-      } else {
-        console.log('⚠️ No registration token available');
-        return null;
       }
     } else {
       console.log('❌ Notification permission denied');
-      return null;
     }
   } catch (error) {
     console.error('Error getting FCM token:', error);
-    return null;
   }
+  return null;
 }
 
-// Save token to Firestore 🔥
+// Save token to Firestore
 async function saveTokenToFirestore(token) {
   try {
-    // Get user identifier (phone from localStorage or generate guest ID)
     let userId = localStorage.getItem('user_phone');
     if (!userId) {
       userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
       localStorage.setItem('user_phone', userId);
     }
     
-    // Save to fcmTokens collection
     await collections.fcmTokens.doc(userId).set({
       token: token,
       userId: userId,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       userAgent: navigator.userAgent,
-      platform: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-      browser: navigator.userAgent.split(' ').pop()
+      platform: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
     }, { merge: true });
     
-    console.log('✅ FCM Token saved to Firestore for user:', userId);
+    console.log('✅ FCM Token saved to Firestore');
     return true;
   } catch (error) {
-    console.error('Error saving FCM token to Firestore:', error);
+    console.error('Error saving FCM token:', error);
     return false;
   }
 }
 
-// Get all FCM tokens (for admin to send notifications)
+// Get all FCM tokens (for admin)
 async function getAllFCMTokens() {
   try {
     const snapshot = await collections.fcmTokens.get();
@@ -456,8 +359,7 @@ async function getAllFCMTokens() {
         tokens.push({
           token: data.token,
           userId: data.userId,
-          platform: data.platform,
-          lastUpdated: data.updatedAt
+          platform: data.platform
         });
       }
     });
@@ -469,7 +371,7 @@ async function getAllFCMTokens() {
   }
 }
 
-// Remove token (when user logs out or disables notifications)
+// Remove FCM token
 async function removeFCMToken() {
   try {
     const userId = localStorage.getItem('user_phone');
@@ -516,9 +418,7 @@ async function sendWhatsAppNotification(orderData, orderId) {
     `🔗 *View Order:* ${window.location.origin}/admin/orders.html`;
   
   const whatsappUrl = `https://wa.me/${adminWhatsapp}?text=${message}`;
-  
-  // Open in new tab (will be blocked by popup blocker if not user-triggered)
-  console.log('WhatsApp URL:', whatsappUrl);
+  console.log('📱 WhatsApp notification URL generated');
   return whatsappUrl;
 }
 
@@ -536,8 +436,6 @@ async function getSettings() {
       storeName: 'OK Mart',
       storePhone: '+919982239821',
       storeEmail: 'support@okmart.com',
-      primaryColor: '#2ecc71',
-      secondaryColor: '#27ae60',
       deliveryEnabled: true,
       freeDeliveryThreshold: 499,
       minOrderAmount: 99,
@@ -546,16 +444,6 @@ async function getSettings() {
   } catch (error) {
     console.error('Error fetching settings:', error);
     return {};
-  }
-}
-
-async function updateSettings(settingsData) {
-  try {
-    await collections.settings.doc('app').update(settingsData);
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating settings:', error);
-    return { success: false };
   }
 }
 
@@ -583,12 +471,10 @@ function escapeHtml(str) {
 }
 
 // ============================================
-// AUTO-INITIALIZE ON PAGE LOAD
+// AUTO-INITIALIZE FCM ON PAGE LOAD
 // ============================================
 
-// Auto fetch FCM token when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  // Small delay to ensure everything is loaded
   setTimeout(() => {
     getAndStoreFCMToken();
   }, 2000);
@@ -598,30 +484,22 @@ document.addEventListener('DOMContentLoaded', () => {
 // EXPORTS (GLOBAL WINDOW OBJECT)
 // ============================================
 
-// Database
 window.db = db;
-window.auth = auth;
 window.collections = collections;
 window.messaging = messaging;
 
 // Product functions
 window.fetchProducts = fetchProducts;
 window.getProductById = getProductById;
-window.addProduct = addProduct;
-window.updateProduct = updateProduct;
-window.deleteProduct = deleteProduct;
-
-// Banner functions
-window.fetchBanners = fetchBanners;
-window.addBanner = addBanner;
-window.updateBanner = updateBanner;
-window.deleteBanner = deleteBanner;
 
 // Order functions
 window.placeOrder = placeOrder;
 window.getOrdersByPhone = getOrdersByPhone;
 window.updateOrderStatus = updateOrderStatus;
 window.listenToOrder = listenToOrder;
+
+// Banner functions
+window.fetchBanners = fetchBanners;
 
 // Coupon functions
 window.fetchCoupons = fetchCoupons;
@@ -638,12 +516,11 @@ window.removeFCMToken = removeFCMToken;
 
 // Settings functions
 window.getSettings = getSettings;
-window.updateSettings = updateSettings;
 
 // WhatsApp function
 window.sendWhatsAppNotification = sendWhatsAppNotification;
 
-// Helpers
+// Helper functions
 window.calculateDiscount = calculateDiscount;
 window.formatCurrency = formatCurrency;
 window.escapeHtml = escapeHtml;
@@ -651,4 +528,4 @@ window.escapeHtml = escapeHtml;
 console.log('✅ Firebase fully loaded!');
 console.log('📦 Firestore:', db ? 'Available' : 'Not available');
 console.log('📨 Messaging:', messaging ? 'Available' : 'Not available');
-console.log('🗂️ Collections:', Object.keys(collections));
+console.log('🔥 FCM Tokens collection:', collections.fcmTokens ? 'Ready' : 'Not ready');
