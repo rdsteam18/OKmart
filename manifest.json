@@ -1,20 +1,95 @@
 {
-  "name": "OK Mart",
+  "name": "OK Mart - Grocery Delivery",
   "short_name": "OK Mart",
-  "start_url": "/index.html",
+  "description": "Fast grocery delivery in 10-15 minutes",
+  "start_url": "/",
   "display": "standalone",
+  "theme_color": "#2ecc71",
   "background_color": "#ffffff",
-  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/assets/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/home.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Track Order",
+      "short_name": "Track",
+      "description": "Track your current order",
+      "url": "/track-order.html",
+      "icons": [{ "src": "/assets/icons/track-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Cart",
+      "short_name": "Cart",
+      "description": "View your cart",
+      "url": "/cart.html",
+      "icons": [{ "src": "/assets/icons/cart-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Profile",
+      "short_name": "Profile",
+      "description": "View your profile",
+      "url": "/profile.html",
+      "icons": [{ "src": "/assets/icons/profile-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Offers",
+      "short_name": "Offers",
+      "description": "View latest offers",
+      "url": "/offers.html",
+      "icons": [{ "src": "/assets/icons/offers-icon.png", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["shopping", "food", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false
 }
