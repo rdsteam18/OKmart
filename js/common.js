@@ -625,3 +625,54 @@ window.renderProductCard = window.OKMart.renderProductCard;
 window.escapeHtml = window.OKMart.escapeHtml;
 window.calculateDiscount = window.OKMart.calculateDiscount;
 window.formatCurrency = window.OKMart.formatCurrency;
+
+
+
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('✅ Service Worker registered:', registration.scope);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('🔄 New Service Worker installing...');
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('📱 Update available! Refresh to install.');
+              showToast('New version available! Refresh to update.', 'info');
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('❌ Service Worker registration failed:', error);
+      });
+  });
+}
+
+// Check for app install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button
+  const installBtn = document.getElementById('installAppBtn');
+  if (installBtn) {
+    installBtn.style.display = 'flex';
+    installBtn.addEventListener('click', () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+      });
+    });
+  }
+});
