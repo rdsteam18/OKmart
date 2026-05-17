@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  
+  <title>Checkout | OK Mart</title>
+  <meta name="description" content="Complete your order">
+  <meta name="theme-color" content="#2ecc71">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="checkout-page">
+    
+    <!-- ========== HEADER ========== -->
+    <header class="checkout-header">
+      <button class="back-btn" onclick="history.back()">←</button>
+      <h1 class="checkout-title">Checkout</h1>
+      <div></div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="checkout-main">
+      
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading checkout...</p>
+      </div>
+
+      <!-- Checkout Content -->
+      <div class="checkout-content" id="checkoutContent" style="display: none;">
+        
+        <!-- Left Column -->
+        <div class="checkout-left-column">
+          
+          <!-- Delivery Details Section -->
+          <div class="form-section" id="deliveryDetailsSection">
+            <h2 class="section-title">📍 Delivery Details</h2>
+            
+            <div id="addressDisplay" class="address-display">
+              <!-- Address will be shown here or "Add Address" button -->
+            </div>
+          </div>
+
+          <!-- Delivery Options Section -->
+          <div class="form-section">
+            <h2 class="section-title">🚚 Delivery Options</h2>
+            
+            <div class="delivery-options">
+              <label class="delivery-option">
+                <input type="radio" name="deliveryType" value="quick" checked>
+                <div class="delivery-option-content">
+                  <span class="option-icon">⚡</span>
+                  <div class="option-details">
+                    <strong>Quick Delivery</strong>
+                    <small>10-15 minutes</small>
+                  </div>
+                  <span class="option-price">₹30</span>
+                </div>
+              </label>
+              
+              <label class="delivery-option">
+                <input type="radio" name="deliveryType" value="scheduled">
+                <div class="delivery-option-content">
+                  <span class="option-icon">📅</span>
+                  <div class="option-details">
+                    <strong>Scheduled Delivery</strong>
+                    <small>Choose time slot</small>
+                  </div>
+                  <span class="option-price">₹20</span>
+                </div>
+              </label>
+            </div>
+            
+            <div class="delivery-slot-container" id="deliverySlotContainer" style="display: none;">
+              <label class="slot-label">Select Delivery Slot</label>
+              <select id="deliverySlot" class="form-input">
+                <option value="🌅 Morning (9 AM - 12 PM)">🌅 Morning (9 AM - 12 PM)</option>
+                <option value="☀️ Afternoon (12 PM - 4 PM)">☀️ Afternoon (12 PM - 4 PM)</option>
+                <option value="🌆 Evening (4 PM - 8 PM)" selected>🌆 Evening (4 PM - 8 PM)</option>
+                <option value="🌙 Night (8 PM - 10 PM)">🌙 Night (8 PM - 10 PM)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Payment Method Section -->
+          <div class="form-section">
+            <h2 class="section-title">💳 Payment Method</h2>
+            <div class="delivery-options">
+              <label class="delivery-option">
+                <input type="radio" name="paymentMethod" value="cod" checked>
+                <div class="delivery-option-content">
+                  <span class="option-icon">💰</span>
+                  <div class="option-details">
+                    <strong>Cash on Delivery</strong>
+                    <small>Pay when delivered</small>
+                  </div>
+                </div>
+              </label>
+              <label class="delivery-option">
+                <input type="radio" name="paymentMethod" value="online">
+                <div class="delivery-option-content">
+                  <span class="option-icon">📱</span>
+                  <div class="option-details">
+                    <strong>Online Payment</strong>
+                    <small>UPI, Card, NetBanking</small>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column - Order Summary -->
+        <div class="checkout-right-column">
+          
+          <!-- Free Delivery Progress -->
+          <div class="free-delivery-progress" id="freeDeliveryProgress">
+            <div class="progress-label" id="progressLabel">Add ₹199 more for FREE delivery</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="summary-card order-summary-card">
+            <h2 class="card-title">💰 Order Summary</h2>
+            
+            <div class="order-items-list" id="orderItemsList"></div>
+            
+            <div class="summary-divider"></div>
+            
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summarySubtotal">₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Charge</span>
+              <span id="summaryDelivery">₹30</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Amount</span>
+              <span id="summaryTotal">₹0</span>
+            </div>
+          </div>
+
+          <!-- Place Order Button -->
+          <button class="place-order-btn" id="placeOrderBtn">
+            Place Order →
+          </button>
+
+          <p class="secure-text">🔒 Secure payment • Cash on delivery available</p>
+
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search" class="nav-item">🔍<span>Search</span></a>
+      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
+      <a href="/profile" class="nav-item">👤<span>Profile</span></a>
+    </nav>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+      <div class="success-modal-content">
+        <div class="success-icon">✅</div>
+        <h3>Order Placed Successfully!</h3>
+        <p>Your order has been confirmed and will be delivered soon.</p>
+        <button class="track-order-btn" id="trackOrderBtn">Track Order →</button>
+        <button class="continue-shopping-btn" id="continueShoppingBtn">Continue Shopping</button>
+      </div>
+    </div>
+
+    <!-- Toast Message -->
+    <div class="toast-message" id="toastMessage"></div>
+    
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>
