@@ -4,1315 +4,294 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Offers & Coupons | OK Mart Admin</title>
-  <meta name="theme-color" content="#2ecc71">
+  <meta name="theme-color" content="#006d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --primary-light: #e8f8ef;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #10b981;
-      --info: #3b82f6;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
-      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 20px;
-      --transition: all .2s ease;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    
-    /* Sidebar */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-    
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
-      color: white;
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 100;
-      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-    
-    .sidebar-brand {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .sidebar-logo-img {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    
-    .sidebar-logo-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #fff, var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: .6rem;
-      font-weight: 600;
-    }
-    
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 0;
-    }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,.7);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-      position: relative;
-    }
-    
-    .sidebar-nav a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(46,204,113,.1);
-      transition: width .3s;
-    }
-    
-    .sidebar-nav a:hover::before {
-      width: 100%;
-    }
-    
-    .sidebar-nav a:hover {
-      color: white;
-      padding-left: 28px;
-    }
-    
-    .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
-    
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid rgba(255,255,255,.1);
-    }
-    
-    .sidebar-footer button {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255,255,255,.08);
-      border: none;
-      color: rgba(255,255,255,.7);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .sidebar-footer button:hover {
-      background: rgba(239,68,68,.2);
-      color: var(--danger);
-    }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 12px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 280px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .add-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 12px rgba(46,204,113,.3);
-    }
-    
-    .add-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(46,204,113,.4);
-    }
-    
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-      background: var(--card);
-      padding: 6px;
-      border-radius: 60px;
-      border: 1px solid var(--border);
-    }
-    
-    .tab-btn {
-      flex: 1;
-      padding: 12px 20px;
-      border: none;
-      background: none;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: .9rem;
-      cursor: pointer;
-      transition: var(--transition);
-      color: var(--muted);
-    }
-    
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .stat-card .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .stat-card .stat-label {
-      font-size: .8rem;
-      color: var(--muted);
-    }
-    
-    /* Control Bar */
-    .control-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      background: var(--card);
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    
-    .search-input {
-      flex: 2;
-      min-width: 200px;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .filter-select {
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-    }
-    
-    /* Coupon Grid */
-    .coupon-grid, .banner-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px;
-    }
-    
-    /* Coupon Card */
-    .coupon-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    
-    .coupon-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .coupon-header {
-      background: linear-gradient(135deg, var(--primary-light), var(--card));
-      padding: 20px;
-      position: relative;
-      border-bottom: 2px dashed var(--border);
-    }
-    
-    .coupon-code {
-      font-size: 1.4rem;
-      font-weight: 800;
-      font-family: monospace;
-      letter-spacing: 2px;
-      color: var(--primary-dark);
-    }
-    
-    .coupon-badge {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-    }
-    
-    .badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: .7rem;
-      font-weight: 600;
-    }
-    
-    .badge-active { background: #d1fae5; color: #065f46; }
-    .badge-inactive { background: #fee2e2; color: #991b1b; }
-    .badge-flat { background: #dbeafe; color: #1e40af; }
-    .badge-percent { background: #ede9fe; color: #5b21b6; }
-    
-    .coupon-body {
-      padding: 20px;
-    }
-    
-    .coupon-discount {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .coupon-desc {
-      color: var(--muted);
-      margin: 8px 0;
-    }
-    
-    .coupon-info {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0;
-      font-size: .75rem;
-    }
-    
-    .info-tag {
-      background: var(--bg);
-      padding: 4px 10px;
-      border-radius: 20px;
-      color: var(--muted);
-    }
-    
-    .coupon-footer {
-      padding: 16px 20px;
-      background: var(--bg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border);
-    }
-    
-    .action-btns {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .action-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: .75rem;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--card);
-      transition: var(--transition);
-    }
-    
-    .action-btn:hover {
-      transform: translateY(-2px);
-    }
-    
-    .edit-btn:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-    }
-    
-    .delete-btn:hover {
-      background: #fee2e2;
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-    
-    /* Banner Card */
-    .banner-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    
-    .banner-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .banner-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
-    
-    .banner-info {
-      padding: 16px;
-    }
-    
-    .banner-title {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-    
-    .banner-link {
-      font-size: .7rem;
-      color: var(--muted);
-      word-break: break-all;
-    }
-    
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-    }
-    
-    .modal.active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: var(--card);
-      border-radius: 24px;
-      width: 90%;
-      max-width: 550px;
-      max-height: 85vh;
-      overflow-y: auto;
-      animation: slideUp 0.3s ease;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-    
-    .form-group {
-      margin-bottom: 16px;
-    }
-    
-    .form-group label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .form-row {
-      display: flex;
-      gap: 12px;
-    }
-    
-    .form-row .form-group {
-      flex: 1;
-    }
-    
-    .form-check {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 16px 0;
-    }
-    
-    .save-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      z-index: 1000;
-      opacity: 0;
-      transition: all .3s;
-    }
-    
-    .toast.show {
-      opacity: 1;
-      bottom: 50px;
-    }
-    
-    .toast.success {
-      background: var(--success);
-    }
-    
-    .toast.error {
-      background: var(--danger);
-    }
-    
-    .no-data {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-        padding: 16px;
-      }
-      
-      .mobile-header {
-        display: flex;
-      }
-      
-      .tabs {
-        flex-direction: column;
-        border-radius: 20px;
-      }
-      
-      .tab-btn {
-        border-radius: 30px;
-      }
-      
-      .control-bar {
-        flex-direction: column;
-      }
-      
-      .search-input, .filter-select {
-        width: 100%;
-      }
-      
-      .coupon-grid, .banner-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .form-row {
-        flex-direction: column;
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#006d37',
+            'primary-container': '#2ecc71',
+            'on-primary': '#ffffff',
+            'surface': '#faf8ff',
+            'surface-container-lowest': '#ffffff',
+            'surface-container': '#eaedff',
+            'on-surface': '#171b28',
+            'on-surface-variant': '#3d4a3e',
+            'outline': '#6c7b6d',
+            'outline-variant': '#bbcbbb',
+            'error': '#ba1a1a',
+            'error-container': '#ffdad6',
+            'flat-coupon': '#3c55bf',
+            'percent-coupon': '#754aa1',
+            'status-active': '#065f46',
+            'status-active-bg': '#d1fae5',
+            'status-expired': '#dc2626',
+            'status-expired-bg': '#fee2e2',
+            'status-inactive': '#64748b',
+            'status-inactive-bg': '#f1f5f9'
+          },
+          fontFamily: {
+            'page-title': ['Inter', 'sans-serif'],
+            'stat-number': ['Inter', 'sans-serif'],
+            'table-header': ['Inter', 'sans-serif'],
+            'table-cell': ['Inter', 'sans-serif'],
+            'button': ['Inter', 'sans-serif'],
+            'body-sm': ['Inter', 'sans-serif']
+          },
+          fontSize: {
+            'page-title': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'stat-number': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '800' }],
+            'table-header': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+            'table-cell': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'button': ['13px', { lineHeight: '16px', fontWeight: '500' }],
+            'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }]
+          },
+          borderRadius: {
+            'DEFAULT': '0.25rem',
+            'lg': '0.5rem',
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            '3xl': '1.5rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'sidebar-width': '260px',
+            'gutter': '1.5rem'
+          }
+        }
       }
     }
-  </style>
+  </script>
   
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .animate-page-entry { animation: fadeInSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .bento-card { background: #ffffff; border-radius: 1rem; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .bento-card:hover { transform: translateY(-2px); box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.08); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #e5e7fa; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #006d37; border-radius: 10px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border-radius: 24px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; animation: fadeInSlideUp 0.3s ease; }
+    .toast { position: fixed; bottom: 30px; right: 30px; background: #171b28; color: white; padding: 12px 24px; border-radius: 40px; font-size: 13px; z-index: 1000; opacity: 0; transform: translateX(100px); transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateX(0); }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+    .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .loading-spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #006d37; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .mobile-sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: #f2f3ff; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; overflow-y: auto; }
+    .mobile-sidebar.open { transform: translateX(0); }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 199; display: none; }
+    .tab-btn { transition: all 0.2s; }
+    .tab-btn.active { background: #006d37; color: white; box-shadow: 0 4px 12px rgba(0,109,55,0.2); }
+    .coupon-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .coupon-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+    .copy-btn:active { transform: scale(0.95); }
+    @media (max-width: 768px) { .table-wrapper { overflow-x: auto; } table { min-width: 700px; } }
+  </style>
 </head>
-<body>
-  <div class="admin-layout">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
-        <a href="products.html">📦 Products</a>
-        <a href="offers.html" class="active">🏷️ Offers</a>
-        <a href="delivery.html">🚚 Delivery</a>
-        <a href="customers.html">👥 Customers</a>
-        <a href="settings.html">⚙️ Settings</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
-      </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Offers Management</span>
-      <button class="menu-toggle" onclick="location.reload()">🔄</button>
+<body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined text-2xl">storefront</span></div>
+      <div><h1 class="text-lg font-extrabold text-primary">OK Mart</h1><p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p></div>
     </div>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="dashboard.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">dashboard</span><span>Dashboard</span></a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">shopping_cart</span><span>Orders</span></a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">inventory_2</span><span>Products</span></a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">group</span><span>Customers</span></a>
+      <a href="offers.html" class="bg-primary/5 border-l-4 border-primary text-primary font-bold flex items-center px-4 py-3 gap-3"><span class="material-symbols-outlined text-xl">local_offer</span><span>Offers</span></a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_shipping</span><span>Delivery</span></a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">settings</span><span>Settings</span></a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant"><a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()"><span class="material-symbols-outlined text-xl text-error">logout</span><span>Logout</span></a></div>
+  </div>
+  
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex flex-col h-screen fixed left-0 top-0 w-[260px] bg-surface-container-lowest border-r border-outline-variant z-50">
+    <div class="p-6 flex items-center gap-3"><div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined text-2xl">storefront</span></div><div><h1 class="text-lg font-extrabold text-primary">OK Mart</h1><p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p></div></div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="dashboard.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">dashboard</span><span>Dashboard</span></a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">shopping_cart</span><span>Orders</span></a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">inventory_2</span><span>Products</span></a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">group</span><span>Customers</span></a>
+      <a href="offers.html" class="bg-primary/5 border-l-4 border-primary text-primary font-bold flex items-center px-4 py-3 gap-3"><span class="material-symbols-outlined text-xl">local_offer</span><span>Offers</span></a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_shipping</span><span>Delivery</span></a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">settings</span><span>Settings</span></a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant"><a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()"><span class="material-symbols-outlined text-xl text-error">logout</span><span>Logout</span></a></div>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="lg:ml-[260px] flex flex-col min-h-screen">
+    <header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 h-16 bg-white border-b border-outline-variant shadow-sm">
+      <div class="flex items-center gap-4 flex-1"><button class="lg:hidden text-on-surface" id="mobileMenuBtn"><span class="material-symbols-outlined">menu</span></button><div class="relative w-full max-w-md hidden md:block"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span><input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm" placeholder="Search offers..."></div></div>
+      <div class="flex items-center gap-4"><div class="flex items-center gap-3"><div class="text-right hidden sm:block"><p class="text-[13px] font-bold text-on-surface">Admin User</p><p class="text-[11px] text-on-surface-variant">Store Manager</p></div><div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div></div></div>
+    </header>
+    
+    <section class="p-6 space-y-6 animate-page-entry">
       <!-- Page Header -->
-      <div class="page-header">
-        <h1>🏷️ Offers & Coupons</h1>
-        <button class="add-btn" id="addBtn">➕ Add New</button>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div><h2 class="text-page-title text-on-surface">Offers & Coupons</h2><p class="text-on-surface-variant text-body-sm">Manage promotional offers, coupons and banners for your store.</p></div>
+        <button id="addBtn" class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-button text-button flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"><span class="material-symbols-outlined">add</span>Add Coupon</button>
       </div>
-
+      
       <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="coupons">🎟️ Coupons</button>
-        <button class="tab-btn" data-tab="banners">🖼️ Banners</button>
-      </div>
-
-      <!-- Coupons Tab -->
-      <div class="tab-content active" id="tab-coupons">
-        
+      <div class="flex gap-2 bg-white p-1 rounded-xl border border-outline-variant w-fit"><button id="tabCoupons" class="tab-btn active px-6 py-2 rounded-lg font-semibold transition-all">🎟️ Coupons</button><button id="tabBanners" class="tab-btn px-6 py-2 rounded-lg font-semibold transition-all">🖼️ Banners</button></div>
+      
+      <!-- ==================== COUPONS TAB ==================== -->
+      <div id="couponsTab">
         <!-- Stats -->
-        <div class="stats-grid" id="couponStats">
-          <div class="stat-card">
-            <div class="stat-value" id="totalCoupons">0</div>
-            <div class="stat-label">Total Coupons</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="activeCoupons">0</div>
-            <div class="stat-label">Active</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="totalUses">0</div>
-            <div class="stat-label">Total Uses</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="expiredCoupons">0</div>
-            <div class="stat-label">Expired</div>
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Coupons</p><h3 class="text-stat-number text-on-surface" id="totalCoupons">0</h3></div><div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary"><span class="material-symbols-outlined text-2xl">local_offer</span></div></div>
+          <div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Active Coupons</p><h3 class="text-stat-number text-status-active" id="activeCoupons">0</h3></div><div class="w-12 h-12 bg-status-active-bg rounded-2xl flex items-center justify-center text-status-active"><span class="material-symbols-outlined text-2xl">check_circle</span></div></div>
+          <div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Uses</p><h3 class="text-stat-number text-on-surface" id="totalUses">0</h3></div><div class="w-12 h-12 bg-surface-container rounded-2xl flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-2xl">trending_up</span></div></div>
+          <div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Expired Coupons</p><h3 class="text-stat-number text-error" id="expiredCoupons">0</h3></div><div class="w-12 h-12 bg-error-container rounded-2xl flex items-center justify-center text-error"><span class="material-symbols-outlined text-2xl">schedule</span></div></div>
         </div>
-
-        <!-- Control Bar -->
-        <div class="control-bar">
-          <input type="text" id="couponSearch" class="search-input" placeholder="🔍 Search coupon code...">
-          <select id="couponTypeFilter" class="filter-select">
-            <option value="all">All Types</option>
-            <option value="flat">Flat (₹)</option>
-            <option value="percent">Percent (%)</option>
-          </select>
-          <select id="couponStatusFilter" class="filter-select">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="expired">Expired</option>
-          </select>
-        </div>
-
-        <!-- Coupons Grid -->
-        <div class="coupon-grid" id="couponsGrid">
-          <div class="no-data">Loading coupons...</div>
-        </div>
-      </div>
-
-      <!-- Banners Tab -->
-      <div class="tab-content" id="tab-banners">
         
-        <!-- Stats -->
-        <div class="stats-grid" id="bannerStats">
-          <div class="stat-card">
-            <div class="stat-value" id="totalBanners">0</div>
-            <div class="stat-label">Total Banners</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="activeBanners">0</div>
-            <div class="stat-label">Active</div>
-          </div>
+        <!-- Filter Bar -->
+        <div class="bento-card p-4 flex flex-wrap items-center gap-4">
+          <div class="relative flex-1 min-w-[200px]"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span><input type="text" id="couponSearch" class="w-full pl-10 pr-4 py-2 bg-surface-background border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Search by code..."></div>
+          <select id="typeFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm"><option value="all">All Types</option><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select>
+          <select id="couponStatusFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm"><option value="all">All Status</option><option value="active">Active</option><option value="expired">Expired</option><option value="inactive">Inactive</option></select>
+          <button id="exportCouponsBtn" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 border border-outline-variant"><span class="material-symbols-outlined text-sm">download</span>Export CSV</button>
         </div>
-
-        <!-- Control Bar -->
-        <div class="control-bar">
-          <input type="text" id="bannerSearch" class="search-input" placeholder="🔍 Search banners...">
-          <select id="bannerStatusFilter" class="filter-select">
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-
-        <!-- Banners Grid -->
-        <div class="banner-grid" id="bannersGrid">
-          <div class="no-data">Loading banners...</div>
-        </div>
+        
+        <!-- Coupons Grid (Card View for Mobile, Table for Desktop) -->
+        <div class="hidden lg:block bento-card overflow-hidden"><div class="table-wrapper overflow-x-auto"><table class="w-full text-left border-collapse"><thead class="bg-surface-background border-b border-outline-variant"><tr><th class="p-4 w-10"><input type="checkbox" id="selectAllCoupons" class="w-4 h-4 rounded"></th><th class="p-4 font-table-header uppercase">Code</th><th class="p-4 font-table-header uppercase">Type</th><th class="p-4 font-table-header uppercase">Discount</th><th class="p-4 font-table-header uppercase">Min Order</th><th class="p-4 font-table-header uppercase">Uses</th><th class="p-4 font-table-header uppercase">Expiry</th><th class="p-4 font-table-header uppercase">Status</th><th class="p-4 font-table-header uppercase text-right">Actions</th></tr></thead><tbody id="couponsTableBody"><tr><td colspan="9" class="text-center py-10">Loading coupons...</td></tr></tbody></table></div></div>
+        <div class="lg:hidden grid grid-cols-1 gap-4" id="couponsGrid"></div>
+        
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-4"><span class="text-sm text-gray-500" id="couponPaginationInfo"></span><div class="flex gap-2" id="couponPagination"></div></div>
       </div>
-
-    </main>
-  </div>
-
+      
+      <!-- ==================== BANNERS TAB ==================== -->
+      <div id="bannersTab" style="display:none;">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 mb-6"><div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Banners</p><h3 class="text-stat-number text-on-surface" id="totalBanners">0</h3></div><div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary"><span class="material-symbols-outlined text-2xl">image</span></div></div><div class="bento-card p-6"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Active Banners</p><h3 class="text-stat-number text-status-active" id="activeBanners">0</h3></div><div class="w-12 h-12 bg-status-active-bg rounded-2xl flex items-center justify-center text-status-active"><span class="material-symbols-outlined text-2xl">visibility</span></div></div></div>
+        
+        <div class="bento-card p-4 flex flex-wrap items-center justify-between gap-4"><div class="relative flex-1 min-w-[200px]"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span><input type="text" id="bannerSearch" class="w-full pl-10 pr-4 py-2 bg-surface-background border border-outline-variant rounded-xl" placeholder="Search banners..."></div><button id="addBannerBtn" class="bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2"><span class="material-symbols-outlined text-sm">add</span>Add Banner</button></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="bannersGrid"><div class="text-center py-10 col-span-full">Loading banners...</div></div>
+      </div>
+    </section>
+  </main>
+  
   <!-- Coupon Modal -->
-  <div class="modal" id="couponModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="couponModalTitle">Add Coupon</h3>
-        <button class="modal-close" onclick="closeCouponModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="couponForm">
-          <input type="hidden" id="couponId">
-          <div class="form-group">
-            <label>Coupon Code *</label>
-            <input type="text" id="cCode" required placeholder="e.g., SAVE20" style="text-transform:uppercase;">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Type *</label>
-              <select id="cType">
-                <option value="flat">Flat Discount (₹)</option>
-                <option value="percent">Percentage (%)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Discount Value *</label>
-              <input type="number" id="cDiscount" required placeholder="20">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Min Order (₹)</label>
-              <input type="number" id="cMinOrder" placeholder="250" value="0">
-            </div>
-            <div class="form-group">
-              <label>Max Discount (₹)</label>
-              <input type="number" id="cMaxDiscount" placeholder="Optional">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <input type="text" id="cDesc" placeholder="Save ₹20 on orders above ₹250">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Valid From</label>
-              <input type="datetime-local" id="cValidFrom">
-            </div>
-            <div class="form-group">
-              <label>Valid To</label>
-              <input type="datetime-local" id="cValidTo">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Usage Limit (Total)</label>
-            <input type="number" id="cUsageLimit" placeholder="Unlimited">
-          </div>
-          <div class="form-check">
-            <input type="checkbox" id="cActive" checked>
-            <label>✅ Active</label>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="action-btn" onclick="closeCouponModal()">Cancel</button>
-        <button class="save-btn" onclick="saveCoupon()">Save Coupon</button>
-      </div>
-    </div>
-  </div>
-
+  <div class="modal-overlay" id="couponModal"><div class="modal-content"><div class="sticky top-0 bg-white border-b p-5 flex justify-between items-center"><h3 class="text-lg font-bold" id="couponModalTitle">Add Coupon</h3><button class="close-modal-btn w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">✕</button></div><div class="p-5 space-y-4"><input type="hidden" id="couponId"><div><label class="block text-sm font-semibold mb-1">Coupon Code *</label><input type="text" id="couponCode" class="w-full px-4 py-2 border rounded-xl uppercase" placeholder="SAVE20"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-semibold mb-1">Type *</label><select id="couponType" class="w-full px-4 py-2 border rounded-xl"><option value="flat">Flat (₹)</option><option value="percent">Percent (%)</option></select></div><div><label class="block text-sm font-semibold mb-1">Discount Value *</label><input type="number" id="couponDiscount" class="w-full px-4 py-2 border rounded-xl"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-semibold mb-1">Min Order (₹)</label><input type="number" id="couponMinOrder" class="w-full px-4 py-2 border rounded-xl" value="0"></div><div><label class="block text-sm font-semibold mb-1">Max Discount (₹)</label><input type="number" id="couponMaxDiscount" class="w-full px-4 py-2 border rounded-xl"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-semibold mb-1">Valid From</label><input type="datetime-local" id="couponValidFrom" class="w-full px-4 py-2 border rounded-xl"></div><div><label class="block text-sm font-semibold mb-1">Valid To</label><input type="datetime-local" id="couponValidTo" class="w-full px-4 py-2 border rounded-xl"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-semibold mb-1">Usage Limit</label><input type="number" id="couponUsageLimit" class="w-full px-4 py-2 border rounded-xl"></div><div><label class="block text-sm font-semibold mb-1">Per User Limit</label><input type="number" id="couponPerUserLimit" class="w-full px-4 py-2 border rounded-xl" value="1"></div></div><div><label class="block text-sm font-semibold mb-1">Description</label><input type="text" id="couponDesc" class="w-full px-4 py-2 border rounded-xl" placeholder="Save ₹20 on orders above ₹199"></div><div class="flex items-center gap-2"><input type="checkbox" id="couponActive" checked> <label>Active</label></div><div class="flex gap-3 pt-4"><button id="saveCouponBtn" class="flex-1 bg-primary text-white py-3 rounded-xl font-semibold">Save Coupon</button><button class="close-modal-btn flex-1 bg-gray-100 py-3 rounded-xl font-semibold">Cancel</button></div></div></div></div>
+  
   <!-- Banner Modal -->
-  <div class="modal" id="bannerModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="bannerModalTitle">Add Banner</h3>
-        <button class="modal-close" onclick="closeBannerModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="bannerForm">
-          <input type="hidden" id="bannerId">
-          <div class="form-group">
-            <label>Title *</label>
-            <input type="text" id="bTitle" required placeholder="Big Sale">
-          </div>
-          <div class="form-group">
-            <label>Image URL *</label>
-            <input type="url" id="bImage" required placeholder="https://...">
-          </div>
-          <div class="form-group">
-            <label>Link URL</label>
-            <input type="text" id="bLink" placeholder="/offers.html">
-          </div>
-          <div class="form-group">
-            <label>Display Order</label>
-            <input type="number" id="bOrder" placeholder="0">
-          </div>
-          <div class="form-check">
-            <input type="checkbox" id="bActive" checked>
-            <label>✅ Active</label>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="action-btn" onclick="closeBannerModal()">Cancel</button>
-        <button class="save-btn" onclick="saveBanner()">Save Banner</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
-    <div class="modal-content" style="max-width:400px;">
-      <div class="modal-header">
-        <h3>Delete Item</h3>
-        <button class="modal-close" onclick="closeDeleteModal()">✕</button>
-      </div>
-      <div class="modal-body" style="text-align:center;">
-        <div style="font-size:3rem;margin-bottom:12px;">⚠️</div>
-        <p>Are you sure you want to delete this item?</p>
-        <p style="color: var(--danger); font-size: 0.8rem;">This action cannot be undone!</p>
-      </div>
-      <div class="modal-footer">
-        <button class="action-btn" onclick="closeDeleteModal()">Cancel</button>
-        <button class="save-btn" style="background:var(--danger);" onclick="confirmDelete()">Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
+  <div class="modal-overlay" id="bannerModal"><div class="modal-content"><div class="sticky top-0 bg-white border-b p-5 flex justify-between items-center"><h3 class="text-lg font-bold" id="bannerModalTitle">Add Banner</h3><button class="close-modal-btn w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">✕</button></div><div class="p-5 space-y-4"><input type="hidden" id="bannerId"><div><label class="block text-sm font-semibold mb-1">Title *</label><input type="text" id="bannerTitle" class="w-full px-4 py-2 border rounded-xl" placeholder="Summer Sale"></div><div><label class="block text-sm font-semibold mb-1">Image URL *</label><input type="url" id="bannerImage" class="w-full px-4 py-2 border rounded-xl" placeholder="https://..."></div><div id="bannerPreview" class="hidden"><img id="bannerPreviewImg" class="w-full h-32 object-cover rounded-lg border"></div><div><label class="block text-sm font-semibold mb-1">Link URL</label><input type="url" id="bannerLink" class="w-full px-4 py-2 border rounded-xl" placeholder="/offers"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-semibold mb-1">Display Order</label><input type="number" id="bannerOrder" class="w-full px-4 py-2 border rounded-xl" value="0"></div><div><label class="block text-sm font-semibold mb-1">Page</label><select id="bannerPage" class="w-full px-4 py-2 border rounded-xl"><option value="home">Home Page</option><option value="category">Category Pages</option><option value="product">Product Page</option><option value="offers">Offers Page</option></select></div></div><div class="flex items-center gap-2"><input type="checkbox" id="bannerActive" checked> <label>Active</label></div><div class="flex gap-3 pt-4"><button id="saveBannerBtn" class="flex-1 bg-primary text-white py-3 rounded-xl font-semibold">Save Banner</button><button class="close-modal-btn flex-1 bg-gray-100 py-3 rounded-xl font-semibold">Cancel</button></div></div></div></div>
+  
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="deleteModal"><div class="modal-content max-w-sm"><div class="p-6 text-center"><div class="text-5xl mb-4">⚠️</div><h3 class="text-lg font-bold mb-2">Delete Item?</h3><p class="text-gray-500 text-sm mb-4">Are you sure you want to delete this item? This action cannot be undone.</p><div class="flex gap-3"><button id="cancelDeleteBtn" class="flex-1 px-4 py-2 border rounded-lg">Cancel</button><button id="confirmDeleteBtn" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg">Delete</button></div></div></div></div>
+  
   <div class="toast" id="toast"></div>
-
+  
   <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== OFFERS & COUPONS MANAGEMENT =====
+    // ===== OFFERS & COUPONS MANAGEMENT - FULLY WORKING =====
     
-    // State
-    let allCoupons = [];
-    let allBanners = [];
-    let currentDeleteType = null;
-    let currentDeleteId = null;
-    let editingCouponId = null;
-    let editingBannerId = null;
+    let allCoupons = [], allBanners = [], filteredCoupons = [], selectedCoupons = new Set();
+    let currentPage = 1, rowsPerPage = 10, deleteType = null, deleteId = null, editCouponId = null, editBannerId = null;
     
-    // Tab Switching
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      
-      const addBtn = document.getElementById('addBtn');
-      if (tabId === 'coupons') {
-        addBtn.onclick = () => openCouponModal();
-        addBtn.textContent = '➕ Add Coupon';
-      } else {
-        addBtn.onclick = () => openBannerModal();
-        addBtn.textContent = '➕ Add Banner';
+    function showLoading(show){ document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
+    function showToast(msg,type){ const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type}`; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+    
+    // Mobile Sidebar
+    document.getElementById('mobileMenuBtn')?.addEventListener('click',()=>{ document.getElementById('mobileSidebar').classList.add('open'); document.getElementById('sidebarOverlay').style.display='block'; });
+    document.getElementById('sidebarOverlay')?.addEventListener('click',()=>{ document.getElementById('mobileSidebar').classList.remove('open'); document.getElementById('sidebarOverlay').style.display='none'; });
+    
+    // Tabs
+    document.getElementById('tabCoupons')?.addEventListener('click',()=>{ document.getElementById('tabCoupons').classList.add('active'); document.getElementById('tabBanners').classList.remove('active'); document.getElementById('couponsTab').style.display='block'; document.getElementById('bannersTab').style.display='none'; document.getElementById('addBtn').style.display='flex'; document.getElementById('addBtn').onclick=openCouponModal; });
+    document.getElementById('tabBanners')?.addEventListener('click',()=>{ document.getElementById('tabBanners').classList.add('active'); document.getElementById('tabCoupons').classList.remove('active'); document.getElementById('bannersTab').style.display='block'; document.getElementById('couponsTab').style.display='none'; document.getElementById('addBtn').style.display='none'; loadBanners(); });
+    document.getElementById('addBtn').onclick = openCouponModal;
+    
+    function isExpired(coupon){ return coupon.validTo && new Date(coupon.validTo) < new Date(); }
+    
+    async function loadCoupons(){ showLoading(true); try{ const snap=await db.collection('offers').get(); allCoupons=[]; snap.forEach(d=>allCoupons.push({id:d.id,...d.data()})); updateCouponStats(); filterCoupons(); }catch(e){ showToast('Error loading coupons','error'); } showLoading(false); }
+    function updateCouponStats(){ document.getElementById('totalCoupons').textContent=allCoupons.length; document.getElementById('activeCoupons').textContent=allCoupons.filter(c=>c.active===true&&!isExpired(c)).length; document.getElementById('totalUses').textContent=allCoupons.reduce((s,c)=>s+(c.usageCount||0),0); document.getElementById('expiredCoupons').textContent=allCoupons.filter(c=>isExpired(c)).length; }
+    function filterCoupons(){ const search=document.getElementById('couponSearch')?.value.toLowerCase()||''; const type=document.getElementById('typeFilter')?.value||''; const status=document.getElementById('couponStatusFilter')?.value||''; filteredCoupons=allCoupons.filter(c=>{ if(search&&!c.code?.toLowerCase().includes(search)) return false; if(type!=='all'&&c.type!==type) return false; if(status==='active'&&(c.active!==true||isExpired(c))) return false; if(status==='expired'&&!isExpired(c)) return false; if(status==='inactive'&&c.active!==false) return false; return true; }); currentPage=1; renderCoupons(); updateCouponPagination(); }
+    function renderCoupons(){ const start=(currentPage-1)*rowsPerPage, end=start+rowsPerPage, pageCoupons=filteredCoupons.slice(start,end); const tbody=document.getElementById('couponsTableBody'); const grid=document.getElementById('couponsGrid'); if(pageCoupons.length===0){ if(tbody)tbody.innerHTML='<tr><td colspan="9" class="text-center py-10">No coupons found</td></tr>'; if(grid)grid.innerHTML='<div class="text-center py-10 col-span-full">No coupons found</div>'; return; }
+      if(tbody){ tbody.innerHTML=pageCoupons.map(c=>{ const expired=isExpired(c); const isActive=c.active===true&&!expired; const typeClass=c.type==='flat'?'text-flat-coupon':'text-percent-coupon'; return `<tr><td class="p-4"><input type="checkbox" class="coupon-select" data-id="${c.id}"></td><td class="p-4 font-mono font-bold text-primary">${c.code}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-xs ${typeClass} bg-${c.type==='flat'?'blue':'purple'}-50">${c.type==='flat'?'Flat ₹':'Percent %'}</span></td><td class="p-4 font-bold">${c.type==='flat'?'₹'+c.discount:c.discount+'%'}</td><td class="p-4">₹${c.minOrder||0}</td><td class="p-4">${c.usageCount||0}${c.usageLimit?`/${c.usageLimit}`:''}</td><td class="p-4">${c.validTo?new Date(c.validTo).toLocaleDateString():'Never'}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-xs ${isActive?'bg-status-active-bg text-status-active':expired?'bg-status-expired-bg text-status-expired':'bg-status-inactive-bg text-status-inactive'}">${isActive?'Active':expired?'Expired':'Inactive'}</span></td><td class="p-4 text-right"><div class="flex justify-end gap-2"><button class="copy-code-btn p-1.5 hover:bg-gray-100 rounded" data-code="${c.code}"><span class="material-symbols-outlined text-sm">content_copy</span></button><button class="edit-coupon-btn p-1.5 hover:bg-gray-100 rounded" data-id="${c.id}"><span class="material-symbols-outlined text-sm">edit</span></button><button class="delete-coupon-btn p-1.5 hover:bg-red-100 rounded text-red-500" data-id="${c.id}"><span class="material-symbols-outlined text-sm">delete</span></button></div></td></tr>`; }).join('');
+        document.querySelectorAll('.coupon-select').forEach(cb=>cb.addEventListener('change',()=>{if(cb.checked)selectedCoupons.add(cb.dataset.id);else selectedCoupons.delete(cb.dataset.id);}));
+        document.querySelectorAll('.copy-code-btn').forEach(btn=>btn.addEventListener('click',()=>{ navigator.clipboard.writeText(btn.dataset.code); showToast('Copied!','success'); }));
+        document.querySelectorAll('.edit-coupon-btn').forEach(btn=>btn.addEventListener('click',()=>editCoupon(btn.dataset.id)));
+        document.querySelectorAll('.delete-coupon-btn').forEach(btn=>btn.addEventListener('click',()=>openDeleteModal('coupon',btn.dataset.id)));
+      }
+      if(grid){ grid.innerHTML=pageCoupons.map(c=>{ const expired=isExpired(c); const isActive=c.active===true&&!expired; return `<div class="bento-card p-4"><div class="flex justify-between items-start mb-3"><div><span class="font-mono font-bold text-lg text-primary">${c.code}</span><span class="ml-2 px-2 py-0.5 rounded-full text-xs ${c.type==='flat'?'bg-blue-100 text-blue-600':'bg-purple-100 text-purple-600'}">${c.type==='flat'?'Flat ₹':'Percent %'}</span></div><span class="px-2 py-1 rounded-full text-xs ${isActive?'bg-status-active-bg text-status-active':expired?'bg-status-expired-bg text-status-expired':'bg-status-inactive-bg text-status-inactive'}">${isActive?'Active':expired?'Expired':'Inactive'}</span></div><div class="text-2xl font-bold text-primary mb-2">${c.type==='flat'?'₹'+c.discount:c.discount+'%'} OFF</div><div class="text-sm text-gray-500 mb-1">Min order: ₹${c.minOrder||0}</div><div class="text-sm text-gray-500 mb-2">Uses: ${c.usageCount||0}${c.usageLimit?`/${c.usageLimit}`:''}</div><div class="flex justify-end gap-2 pt-2 border-t"><button class="copy-code-btn px-3 py-1 text-sm bg-gray-100 rounded" data-code="${c.code}">Copy</button><button class="edit-coupon-btn px-3 py-1 text-sm bg-gray-100 rounded" data-id="${c.id}">Edit</button><button class="delete-coupon-btn px-3 py-1 text-sm bg-red-100 text-red-500 rounded" data-id="${c.id}">Delete</button></div></div>`; }).join('');
+        document.querySelectorAll('.copy-code-btn').forEach(btn=>btn.addEventListener('click',()=>{ navigator.clipboard.writeText(btn.dataset.code); showToast('Copied!','success'); }));
+        document.querySelectorAll('.edit-coupon-btn').forEach(btn=>btn.addEventListener('click',()=>editCoupon(btn.dataset.id)));
+        document.querySelectorAll('.delete-coupon-btn').forEach(btn=>btn.addEventListener('click',()=>openDeleteModal('coupon',btn.dataset.id)));
       }
     }
+    function updateCouponPagination(){ const total=Math.ceil(filteredCoupons.length/rowsPerPage); const start=(currentPage-1)*rowsPerPage+1; const end=Math.min(currentPage*rowsPerPage,filteredCoupons.length); document.getElementById('couponPaginationInfo').textContent=`Showing ${start} to ${end} of ${filteredCoupons.length} coupons`; let btns=''; for(let i=1;i<=Math.min(total,5);i++)btns+=`<button class="page-btn w-8 h-8 rounded border ${i===currentPage?'bg-primary text-white':'hover:bg-gray-100'}" data-page="${i}">${i}</button>`; document.getElementById('couponPagination').innerHTML=btns; document.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{ currentPage=parseInt(btn.dataset.page); renderCoupons(); updateCouponPagination(); })); }
+    function openCouponModal(coupon=null){ editCouponId=coupon?.id||null; document.getElementById('couponModalTitle').innerText=coupon?'Edit Coupon':'Add Coupon'; document.getElementById('couponId').value=coupon?.id||''; document.getElementById('couponCode').value=coupon?.code||''; document.getElementById('couponType').value=coupon?.type||'flat'; document.getElementById('couponDiscount').value=coupon?.discount||''; document.getElementById('couponMinOrder').value=coupon?.minOrder||0; document.getElementById('couponMaxDiscount').value=coupon?.maxDiscount||''; document.getElementById('couponValidFrom').value=coupon?.validFrom?.slice(0,16)||''; document.getElementById('couponValidTo').value=coupon?.validTo?.slice(0,16)||''; document.getElementById('couponUsageLimit').value=coupon?.usageLimit||''; document.getElementById('couponPerUserLimit').value=coupon?.perUserLimit||1; document.getElementById('couponDesc').value=coupon?.description||''; document.getElementById('couponActive').checked=coupon?.active!==false; document.getElementById('couponModal').classList.add('active'); }
+    function editCoupon(id){ const c=allCoupons.find(c=>c.id===id); if(c)openCouponModal(c); }
+    async function saveCoupon(){ const data={ code:document.getElementById('couponCode').value.toUpperCase().trim(), type:document.getElementById('couponType').value, discount:Number(document.getElementById('couponDiscount').value), minOrder:Number(document.getElementById('couponMinOrder').value)||0, maxDiscount:Number(document.getElementById('couponMaxDiscount').value)||null, description:document.getElementById('couponDesc').value.trim(), validFrom:document.getElementById('couponValidFrom').value||null, validTo:document.getElementById('couponValidTo').value||null, usageLimit:Number(document.getElementById('couponUsageLimit').value)||null, perUserLimit:Number(document.getElementById('couponPerUserLimit').value)||1, active:document.getElementById('couponActive').checked, updatedAt:new Date().toISOString() }; if(!data.code||!data.discount){ showToast('Please fill required fields','error'); return; } showLoading(true); try{ if(editCouponId)await db.collection('offers').doc(editCouponId).update(data); else{ data.createdAt=new Date().toISOString(); data.usageCount=0; await db.collection('offers').add(data); } showToast(editCouponId?'Coupon updated':'Coupon created','success'); document.getElementById('couponModal').classList.remove('active'); await loadCoupons(); }catch(e){ showToast('Error saving coupon','error'); } showLoading(false); }
     
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-    
-    // Load Coupons
-    async function loadCoupons() {
-      try {
-        const snapshot = await db.collection('offers').get();
-        allCoupons = [];
-        snapshot.forEach(doc => {
-          allCoupons.push({ id: doc.id, ...doc.data() });
-        });
-        updateCouponStats();
-        renderCoupons();
-      } catch (error) {
-        console.error('Error loading coupons:', error);
-      }
+    async function loadBanners(){ showLoading(true); try{ const snap=await db.collection('banners').get(); allBanners=[]; snap.forEach(d=>allBanners.push({id:d.id,...d.data()})); document.getElementById('totalBanners').textContent=allBanners.length; document.getElementById('activeBanners').textContent=allBanners.filter(b=>b.active!==false).length; renderBanners(); }catch(e){ showToast('Error loading banners','error'); } showLoading(false); }
+    function renderBanners(){ const search=document.getElementById('bannerSearch')?.value.toLowerCase()||''; const filtered=allBanners.filter(b=>!search||b.title?.toLowerCase().includes(search)); const grid=document.getElementById('bannersGrid'); if(filtered.length===0){ grid.innerHTML='<div class="text-center py-10 col-span-full">No banners found</div>'; return; } grid.innerHTML=filtered.map(b=>`<div class="bento-card overflow-hidden"><img src="${b.image}" class="w-full h-40 object-cover" onerror="this.src='https://via.placeholder.com/400x160'"><div class="p-4"><div class="font-bold">${escapeHtml(b.title)}</div><div class="text-xs text-gray-500 mt-1">🔗 ${b.link||'No link'} | 📄 ${b.page||'home'}</div><div class="flex justify-between items-center mt-3"><span class="px-2 py-1 rounded-full text-xs ${b.active!==false?'bg-status-active-bg text-status-active':'bg-status-inactive-bg text-status-inactive'}">${b.active!==false?'Active':'Inactive'}</span><div class="flex gap-2"><button class="edit-banner-btn p-1.5 hover:bg-gray-100 rounded" data-id="${b.id}"><span class="material-symbols-outlined text-sm">edit</span></button><button class="delete-banner-btn p-1.5 hover:bg-red-100 rounded text-red-500" data-id="${b.id}"><span class="material-symbols-outlined text-sm">delete</span></button></div></div></div></div>`).join('');
+      document.querySelectorAll('.edit-banner-btn').forEach(btn=>btn.addEventListener('click',()=>editBanner(btn.dataset.id)));
+      document.querySelectorAll('.delete-banner-btn').forEach(btn=>btn.addEventListener('click',()=>openDeleteModal('banner',btn.dataset.id)));
     }
+    function openBannerModal(banner=null){ editBannerId=banner?.id||null; document.getElementById('bannerModalTitle').innerText=banner?'Edit Banner':'Add Banner'; document.getElementById('bannerId').value=banner?.id||''; document.getElementById('bannerTitle').value=banner?.title||''; document.getElementById('bannerImage').value=banner?.image||''; document.getElementById('bannerLink').value=banner?.link||''; document.getElementById('bannerOrder').value=banner?.order||0; document.getElementById('bannerPage').value=banner?.page||'home'; document.getElementById('bannerActive').checked=banner?.active!==false; if(banner?.image)document.getElementById('bannerPreview').classList.remove('hidden'); document.getElementById('bannerModal').classList.add('active'); }
+    function editBanner(id){ const b=allBanners.find(b=>b.id===id); if(b)openBannerModal(b); }
+    async function saveBanner(){ const data={ title:document.getElementById('bannerTitle').value.trim(), image:document.getElementById('bannerImage').value.trim(), link:document.getElementById('bannerLink').value.trim(), order:Number(document.getElementById('bannerOrder').value)||0, page:document.getElementById('bannerPage').value, active:document.getElementById('bannerActive').checked, updatedAt:new Date().toISOString() }; if(!data.title||!data.image){ showToast('Please fill required fields','error'); return; } showLoading(true); try{ if(editBannerId)await db.collection('banners').doc(editBannerId).update(data); else{ data.createdAt=new Date().toISOString(); await db.collection('banners').add(data); } showToast(editBannerId?'Banner updated':'Banner created','success'); document.getElementById('bannerModal').classList.remove('active'); await loadBanners(); }catch(e){ showToast('Error saving banner','error'); } showLoading(false); }
+    document.getElementById('bannerImage')?.addEventListener('input',e=>{ const url=e.target.value; if(url){ document.getElementById('bannerPreviewImg').src=url; document.getElementById('bannerPreview').classList.remove('hidden'); } });
     
-    // Update Coupon Stats
-    function updateCouponStats() {
-      const total = allCoupons.length;
-      const active = allCoupons.filter(c => c.active === true && !isExpired(c)).length;
-      const totalUses = allCoupons.reduce((sum, c) => sum + (c.usageCount || 0), 0);
-      const expired = allCoupons.filter(c => isExpired(c)).length;
-      
-      document.getElementById('totalCoupons').textContent = total;
-      document.getElementById('activeCoupons').textContent = active;
-      document.getElementById('totalUses').textContent = totalUses;
-      document.getElementById('expiredCoupons').textContent = expired;
-    }
+    function openDeleteModal(type,id){ deleteType=type; deleteId=id; document.getElementById('deleteModal').classList.add('active'); }
+    async function confirmDelete(){ if(!deleteId)return; showLoading(true); try{ if(deleteType==='coupon')await db.collection('offers').doc(deleteId).delete(); else if(deleteType==='banner')await db.collection('banners').doc(deleteId).delete(); showToast('Deleted successfully','success'); document.getElementById('deleteModal').classList.remove('active'); if(deleteType==='coupon')await loadCoupons(); else await loadBanners(); }catch(e){ showToast('Error deleting','error'); } showLoading(false); }
     
-    function isExpired(coupon) {
-      if (coupon.validTo) {
-        return new Date(coupon.validTo) < new Date();
-      }
-      return false;
-    }
+    document.getElementById('saveCouponBtn')?.addEventListener('click',saveCoupon);
+    document.getElementById('saveBannerBtn')?.addEventListener('click',saveBanner);
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click',confirmDelete);
+    document.getElementById('cancelDeleteBtn')?.addEventListener('click',()=>document.getElementById('deleteModal').classList.remove('active'));
+    document.querySelectorAll('.close-modal-btn').forEach(btn=>btn.addEventListener('click',()=>{ document.getElementById('couponModal')?.classList.remove('active'); document.getElementById('bannerModal')?.classList.remove('active'); document.getElementById('deleteModal')?.classList.remove('active'); }));
+    document.getElementById('addBannerBtn')?.addEventListener('click',()=>openBannerModal());
+    document.getElementById('couponSearch')?.addEventListener('input',filterCoupons);
+    document.getElementById('typeFilter')?.addEventListener('change',filterCoupons);
+    document.getElementById('couponStatusFilter')?.addEventListener('change',filterCoupons);
+    document.getElementById('bannerSearch')?.addEventListener('input',()=>renderBanners());
+    document.getElementById('exportCouponsBtn')?.addEventListener('click',()=>{ const headers=['Code','Type','Discount','Min Order','Max Discount','Usage Limit','Used','Valid From','Valid To','Status']; const rows=allCoupons.map(c=>[c.code,c.type,c.discount,c.minOrder||0,c.maxDiscount||'',c.usageLimit||'',c.usageCount||0,c.validFrom||'',c.validTo||'',c.active?'Active':'Inactive']); const csv=[headers,...rows].map(r=>r.join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`coupons_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(url); showToast('Exported successfully','success'); });
     
-    // Render Coupons
-    function renderCoupons() {
-      const search = document.getElementById('couponSearch')?.value.toLowerCase() || '';
-      const type = document.getElementById('couponTypeFilter')?.value || '';
-      const status = document.getElementById('couponStatusFilter')?.value || '';
-      
-      let filtered = allCoupons.filter(c => {
-        if (search && !c.code?.toLowerCase().includes(search)) return false;
-        if (type !== 'all' && c.type !== type) return false;
-        if (status === 'active' && (c.active !== true || isExpired(c))) return false;
-        if (status === 'inactive' && c.active === true && !isExpired(c)) return false;
-        if (status === 'expired' && !isExpired(c)) return false;
-        return true;
-      });
-      
-      const grid = document.getElementById('couponsGrid');
-      
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="no-data">🏷️ No coupons found. Click "Add Coupon" to create one.</div>';
-        return;
-      }
-      
-      grid.innerHTML = filtered.map(c => {
-        const expired = isExpired(c);
-        const isActive = c.active === true && !expired;
-        const discountDisplay = c.type === 'flat' ? `₹${c.discount} OFF` : `${c.discount}% OFF`;
-        
-        return `
-          <div class="coupon-card">
-            <div class="coupon-header">
-              <div class="coupon-code">${c.code}</div>
-              <div class="coupon-badge">
-                <span class="badge ${isActive ? 'badge-active' : (expired ? 'badge-inactive' : 'badge-inactive')}">
-                  ${isActive ? 'Active' : (expired ? 'Expired' : 'Inactive')}
-                </span>
-              </div>
-            </div>
-            <div class="coupon-body">
-              <div class="coupon-discount">${discountDisplay}</div>
-              <div class="coupon-desc">${c.description || (c.type === 'flat' ? `Get ₹${c.discount} off` : `Get ${c.discount}% off`)}</div>
-              <div class="coupon-info">
-                <span class="info-tag">🛒 Min: ₹${c.minOrder || 0}</span>
-                <span class="info-tag ${c.type === 'flat' ? 'badge-flat' : 'badge-percent'}">${c.type === 'flat' ? '💰 Flat' : '📊 Percent'}</span>
-              </div>
-              ${c.validTo ? `<div class="info-tag">📅 Valid till: ${new Date(c.validTo).toLocaleDateString()}</div>` : ''}
-              <div class="info-tag">🎯 Used: ${c.usageCount || 0} times</div>
-            </div>
-            <div class="coupon-footer">
-              <div class="action-btns">
-                <button class="action-btn edit-btn" onclick="editCoupon('${c.id}')">✏️ Edit</button>
-                <button class="action-btn delete-btn" onclick="openDeleteModal('coupon', '${c.id}')">🗑️ Delete</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+    function logout(){ if(confirm('Logout?')){ localStorage.clear(); window.location.href='login.html'; } }
     
-    // Open Coupon Modal
-    function openCouponModal(coupon = null) {
-      editingCouponId = coupon?.id || null;
-      document.getElementById('couponModalTitle').textContent = coupon ? 'Edit Coupon' : 'Add Coupon';
-      document.getElementById('couponId').value = coupon?.id || '';
-      document.getElementById('cCode').value = coupon?.code || '';
-      document.getElementById('cType').value = coupon?.type || 'flat';
-      document.getElementById('cDiscount').value = coupon?.discount || '';
-      document.getElementById('cMinOrder').value = coupon?.minOrder || 0;
-      document.getElementById('cMaxDiscount').value = coupon?.maxDiscount || '';
-      document.getElementById('cDesc').value = coupon?.description || '';
-      document.getElementById('cValidFrom').value = coupon?.validFrom?.slice(0, 16) || '';
-      document.getElementById('cValidTo').value = coupon?.validTo?.slice(0, 16) || '';
-      document.getElementById('cUsageLimit').value = coupon?.usageLimit || '';
-      document.getElementById('cActive').checked = coupon?.active !== false;
-      document.getElementById('couponModal').classList.add('active');
-    }
-    
-    function editCoupon(id) {
-      const coupon = allCoupons.find(c => c.id === id);
-      if (coupon) openCouponModal(coupon);
-    }
-    
-    function closeCouponModal() {
-      document.getElementById('couponModal').classList.remove('active');
-    }
-    
-    // Save Coupon
-    async function saveCoupon() {
-      const data = {
-        code: document.getElementById('cCode').value.toUpperCase().trim(),
-        type: document.getElementById('cType').value,
-        discount: Number(document.getElementById('cDiscount').value),
-        minOrder: Number(document.getElementById('cMinOrder').value) || 0,
-        maxDiscount: Number(document.getElementById('cMaxDiscount').value) || null,
-        description: document.getElementById('cDesc').value.trim(),
-        validFrom: document.getElementById('cValidFrom').value || null,
-        validTo: document.getElementById('cValidTo').value || null,
-        usageLimit: Number(document.getElementById('cUsageLimit').value) || null,
-        active: document.getElementById('cActive').checked,
-        updatedAt: new Date().toISOString()
-      };
-      
-      if (!data.code || !data.discount) {
-        showToast('Please fill all required fields', 'error');
-        return;
-      }
-      
-      try {
-        if (editingCouponId) {
-          await db.collection('offers').doc(editingCouponId).update(data);
-          showToast('Coupon updated!', 'success');
-        } else {
-          data.createdAt = new Date().toISOString();
-          data.usageCount = 0;
-          await db.collection('offers').add(data);
-          showToast('Coupon created!', 'success');
-        }
-        closeCouponModal();
-        await loadCoupons();
-      } catch (error) {
-        showToast('Error saving coupon', 'error');
-      }
-    }
-    
-    // Load Banners
-    async function loadBanners() {
-      try {
-        const snapshot = await db.collection('banners').get();
-        allBanners = [];
-        snapshot.forEach(doc => {
-          allBanners.push({ id: doc.id, ...doc.data() });
-        });
-        updateBannerStats();
-        renderBanners();
-      } catch (error) {
-        console.error('Error loading banners:', error);
-      }
-    }
-    
-    function updateBannerStats() {
-      const total = allBanners.length;
-      const active = allBanners.filter(b => b.active !== false).length;
-      
-      document.getElementById('totalBanners').textContent = total;
-      document.getElementById('activeBanners').textContent = active;
-    }
-    
-    function renderBanners() {
-      const search = document.getElementById('bannerSearch')?.value.toLowerCase() || '';
-      const status = document.getElementById('bannerStatusFilter')?.value || '';
-      
-      let filtered = allBanners.filter(b => {
-        if (search && !b.title?.toLowerCase().includes(search)) return false;
-        if (status === 'active' && b.active !== true) return false;
-        if (status === 'inactive' && b.active !== false) return false;
-        return true;
-      });
-      
-      const grid = document.getElementById('bannersGrid');
-      
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="no-data">🖼️ No banners found. Click "Add Banner" to create one.</div>';
-        return;
-      }
-      
-      grid.innerHTML = filtered.map(b => `
-        <div class="banner-card">
-          <img src="${b.image}" onerror="this.src='https://via.placeholder.com/400x160?text=OK+Mart'">
-          <div class="banner-info">
-            <div class="banner-title">${b.title}</div>
-            <div class="banner-link">🔗 ${b.link || 'No link'}</div>
-            <div class="coupon-info" style="margin-top:8px;">
-              <span class="info-tag">📋 Order: ${b.order || 0}</span>
-              <span class="badge ${b.active !== false ? 'badge-active' : 'badge-inactive'}">${b.active !== false ? 'Active' : 'Inactive'}</span>
-            </div>
-          </div>
-          <div class="coupon-footer">
-            <div class="action-btns">
-              <button class="action-btn edit-btn" onclick="editBanner('${b.id}')">✏️ Edit</button>
-              <button class="action-btn delete-btn" onclick="openDeleteModal('banner', '${b.id}')">🗑️ Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-    
-    function openBannerModal(banner = null) {
-      editingBannerId = banner?.id || null;
-      document.getElementById('bannerModalTitle').textContent = banner ? 'Edit Banner' : 'Add Banner';
-      document.getElementById('bannerId').value = banner?.id || '';
-      document.getElementById('bTitle').value = banner?.title || '';
-      document.getElementById('bImage').value = banner?.image || '';
-      document.getElementById('bLink').value = banner?.link || '';
-      document.getElementById('bOrder').value = banner?.order || 0;
-      document.getElementById('bActive').checked = banner?.active !== false;
-      document.getElementById('bannerModal').classList.add('active');
-    }
-    
-    function editBanner(id) {
-      const banner = allBanners.find(b => b.id === id);
-      if (banner) openBannerModal(banner);
-    }
-    
-    function closeBannerModal() {
-      document.getElementById('bannerModal').classList.remove('active');
-    }
-    
-    async function saveBanner() {
-      const data = {
-        title: document.getElementById('bTitle').value.trim(),
-        image: document.getElementById('bImage').value.trim(),
-        link: document.getElementById('bLink').value.trim(),
-        order: Number(document.getElementById('bOrder').value) || 0,
-        active: document.getElementById('bActive').checked,
-        updatedAt: new Date().toISOString()
-      };
-      
-      if (!data.title || !data.image) {
-        showToast('Please fill all required fields', 'error');
-        return;
-      }
-      
-      try {
-        if (editingBannerId) {
-          await db.collection('banners').doc(editingBannerId).update(data);
-          showToast('Banner updated!', 'success');
-        } else {
-          data.createdAt = new Date().toISOString();
-          await db.collection('banners').add(data);
-          showToast('Banner created!', 'success');
-        }
-        closeBannerModal();
-        await loadBanners();
-      } catch (error) {
-        showToast('Error saving banner', 'error');
-      }
-    }
-    
-    // Delete Functions
-    function openDeleteModal(type, id) {
-      currentDeleteType = type;
-      currentDeleteId = id;
-      document.getElementById('deleteModal').classList.add('active');
-    }
-    
-    function closeDeleteModal() {
-      document.getElementById('deleteModal').classList.remove('active');
-      currentDeleteType = null;
-      currentDeleteId = null;
-    }
-    
-    async function confirmDelete() {
-      if (!currentDeleteId) return;
-      
-      try {
-        if (currentDeleteType === 'coupon') {
-          await db.collection('offers').doc(currentDeleteId).delete();
-          showToast('Coupon deleted', 'success');
-          await loadCoupons();
-        } else if (currentDeleteType === 'banner') {
-          await db.collection('banners').doc(currentDeleteId).delete();
-          showToast('Banner deleted', 'success');
-          await loadBanners();
-        }
-      } catch (error) {
-        showToast('Error deleting', 'error');
-      }
-      
-      closeDeleteModal();
-    }
-    
-    // Search and Filter Events
-    document.getElementById('couponSearch')?.addEventListener('input', renderCoupons);
-    document.getElementById('couponTypeFilter')?.addEventListener('change', renderCoupons);
-    document.getElementById('couponStatusFilter')?.addEventListener('change', renderCoupons);
-    document.getElementById('bannerSearch')?.addEventListener('input', renderBanners);
-    document.getElementById('bannerStatusFilter')?.addEventListener('change', renderBanners);
-    
-    // Show Toast
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-      }
-    }
-    
-    // Initialize
-    async function init() {
-      await loadCoupons();
-      await loadBanners();
-      switchTab('coupons');
-    }
-    
-    init();
+    loadCoupons();
   </script>
 </body>
 </html>
