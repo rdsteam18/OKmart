@@ -4,378 +4,198 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Order Management | OK Mart Admin</title>
-  <meta name="theme-color" content="#2ecc71">
+  <meta name="theme-color" content="#006d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
+  <!-- Tailwind CSS + Custom Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#006d37',
+            'primary-container': '#2ecc71',
+            'on-primary': '#ffffff',
+            'surface': '#faf8ff',
+            'surface-dim': '#d6d9eb',
+            'surface-bright': '#faf8ff',
+            'surface-container': '#eaedff',
+            'surface-container-low': '#f2f3ff',
+            'surface-container-high': '#e5e7fa',
+            'surface-container-highest': '#dfe2f4',
+            'surface-container-lowest': '#ffffff',
+            'on-surface': '#171b28',
+            'on-surface-variant': '#3d4a3e',
+            'outline': '#6c7b6d',
+            'outline-variant': '#bbcbbb',
+            'inverse-surface': '#2c303e',
+            'inverse-on-surface': '#eef0ff',
+            'inverse-primary': '#4ae183',
+            'status-pending-bg': '#fef3c7',
+            'status-pending-text': '#d97706',
+            'status-confirmed-bg': '#dbeafe',
+            'status-confirmed-text': '#2563eb',
+            'status-preparing-bg': '#fef3c7',
+            'status-preparing-text': '#d97706',
+            'status-delivery-bg': '#e0e7ff',
+            'status-delivery-text': '#4338ca',
+            'status-delivered-bg': '#d1fae5',
+            'status-delivered-text': '#065f46',
+            'status-cancelled-bg': '#fee2e2',
+            'status-cancelled-text': '#dc2626',
+            'error': '#ba1a1a',
+            'error-container': '#ffdad6'
+          },
+          fontFamily: {
+            'page-title': ['Inter', 'sans-serif'],
+            'stat-number': ['Inter', 'sans-serif'],
+            'table-header': ['Inter', 'sans-serif'],
+            'table-cell': ['Inter', 'sans-serif'],
+            'body-sm': ['Inter', 'sans-serif']
+          },
+          fontSize: {
+            'page-title': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'stat-number': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '800' }],
+            'table-header': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+            'table-cell': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'button': ['13px', { lineHeight: '16px', fontWeight: '500' }],
+            'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }]
+          },
+          borderRadius: {
+            'DEFAULT': '0.25rem',
+            'lg': '0.5rem',
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'sidebar-width': '260px',
+            'gutter': '1.5rem',
+            'stack-sm': '0.5rem',
+            'stack-md': '1rem',
+            'stack-lg': '1.5rem'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* Custom Animations */
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --primary-light: #e8f8ef;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #10b981;
-      --info: #3b82f6;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
-      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 20px;
-      --transition: all .2s ease;
+    @keyframes pulse-soft {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.02); opacity: 0.9; }
     }
     
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
     
-    /* Sidebar */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
     
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
-      color: white;
+    .animate-page-entry {
+      animation: fadeInSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    
+    .status-badge-pulse {
+      animation: pulse-soft 2s infinite;
+    }
+    
+    .table-row-hover {
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .table-row-hover:hover {
+      transform: scale(1.01);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background-color: #f0fff4 !important;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #e5e7fa;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #006d37;
+      border-radius: 10px;
+    }
+    
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, #e5e7fa 25%, #dfe2f4 50%, #e5e7fa 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    
+    /* Modal Animation */
+    .modal-enter {
+      animation: fadeInSlideUp 0.3s ease;
+    }
+    
+    /* Toast */
+    .toast {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 100;
-      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-    
-    .sidebar-brand {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .sidebar-logo-img {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    
-    .sidebar-logo-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #fff, var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: .6rem;
-      font-weight: 600;
-    }
-    
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 0;
-    }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,.7);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-      position: relative;
-    }
-    
-    .sidebar-nav a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(46,204,113,.1);
-      transition: width .3s;
-    }
-    
-    .sidebar-nav a:hover::before {
-      width: 100%;
-    }
-    
-    .sidebar-nav a:hover {
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #171b28;
       color: white;
-      padding-left: 28px;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 13px;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
     }
     
-    .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
     
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid rgba(255,255,255,.1);
+    .toast.success {
+      background: #10b981;
     }
     
-    .sidebar-footer button {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255,255,255,.08);
-      border: none;
-      color: rgba(255,255,255,.7);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: var(--transition);
+    .toast.error {
+      background: #ef4444;
     }
     
-    .sidebar-footer button:hover {
-      background: rgba(239,68,68,.2);
-      color: var(--danger);
-    }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 12px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 280px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    /* Stats Row */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .stat-card .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .stat-card .stat-label {
-      font-size: .8rem;
-      color: var(--muted);
-    }
-    
-    /* Filter Bar */
-    .filter-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      background: var(--card);
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    
-    .search-input {
-      flex: 2;
-      min-width: 200px;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .filter-select {
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-    }
-    
-    .date-input {
-      padding: 11px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-    }
-    
-    .btn-reset {
-      padding: 12px 20px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    
-    /* Orders Container */
-    .orders-container {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    
-    .orders-table {
-      width: 100%;
-      overflow-x: auto;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    th {
-      text-align: left;
-      padding: 14px 16px;
-      font-size: .75rem;
-      font-weight: 600;
-      color: var(--muted);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-    
-    td {
-      padding: 14px 16px;
-      font-size: .85rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    
-    tr:hover {
-      background: var(--bg);
-    }
-    
-    /* Status Badge */
-    .status-badge {
-      display: inline-flex;
-      padding: 5px 12px;
-      border-radius: 30px;
-      font-size: .7rem;
-      font-weight: 600;
-    }
-    
-    .status-received { background: #fef3c7; color: #d97706; }
-    .status-confirmed { background: #dbeafe; color: #2563eb; }
-    .status-preparing { background: #fef3c7; color: #d97706; }
-    .status-out_for_delivery { background: #e0e7ff; color: #4338ca; }
-    .status-delivered { background: #d1fae5; color: #065f46; }
-    .status-cancelled { background: #fee2e2; color: #dc2626; }
-    
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .action-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: .75rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition);
-    }
-    
-    .view-btn {
-      background: var(--info);
-      color: white;
-    }
-    
-    .edit-btn {
-      background: var(--warning);
-      color: white;
-    }
-    
-    .delete-btn {
-      background: var(--danger);
-      color: white;
-    }
-    
-    .action-btn:hover {
-      transform: translateY(-2px);
-    }
-    
-    /* Modal */
-    .modal {
+    /* Loading Overlay */
+    .loading-overlay {
       position: fixed;
       top: 0;
       left: 0;
@@ -389,297 +209,372 @@
       backdrop-filter: blur(4px);
     }
     
-    .modal.active {
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #006d37;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Mobile Sidebar */
+    .mobile-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: #f2f3ff;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 200;
+      overflow-y: auto;
+    }
+    
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+      display: none;
+    }
+    
+    /* Status Badge Styles */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Order Detail Modal */
+    .order-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .order-modal.active {
       display: flex;
     }
     
-    .modal-content {
-      background: var(--card);
+    .order-modal-content {
+      background: white;
       border-radius: 24px;
       width: 90%;
-      max-width: 500px;
-      max-height: 80vh;
+      max-width: 600px;
+      max-height: 85vh;
       overflow-y: auto;
-      animation: slideUp 0.3s ease;
+      animation: fadeInSlideUp 0.3s ease;
     }
     
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-    
-    .status-select {
-      width: 100%;
-      padding: 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      z-index: 1000;
-      opacity: 0;
-      transition: all .3s;
-    }
-    
-    .toast.show {
-      opacity: 1;
-      bottom: 50px;
-    }
-    
-    .toast.success {
-      background: var(--success);
-    }
-    
-    .toast.error {
-      background: var(--danger);
-    }
-    
-    .no-data {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-    }
-    
-    /* Responsive */
+    /* Responsive Table */
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-        padding: 16px;
-      }
-      
-      .mobile-header {
-        display: flex;
-      }
-      
-      .filter-bar {
-        flex-direction: column;
-      }
-      
-      .search-input, .filter-select, .date-input, .btn-reset {
-        width: 100%;
-      }
-      
-      .stats-row {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .action-buttons {
-        flex-direction: column;
-      }
-      
-      .orders-table {
+      .orders-table-wrapper {
         overflow-x: auto;
+      }
+      table {
+        min-width: 700px;
       }
     }
   </style>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <div class="admin-layout">
+<body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Mobile Sidebar -->
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="p-6 flex flex-col gap-1">
+      <span class="text-[24px] font-extrabold tracking-tight text-[#006d37]">OK Mart Admin</span>
+      <span class="text-[#3d4a3e] opacity-70 text-xs">Management Portal</span>
+    </div>
+    <nav class="mt-4 flex flex-col px-2 gap-1">
+      <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-medium">Dashboard</span>
+      </a>
+      <a href="orders.html" class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#006d37] bg-[#2ecc71]/10 text-[#006d37] font-bold rounded-r-lg">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="font-bold">Orders</span>
+      </a>
+      <a href="products.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span class="font-medium">Products</span>
+      </a>
+      <a href="customers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">group</span>
+        <span class="font-medium">Customers</span>
+      </a>
+      <a href="offers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">local_offer</span>
+        <span class="font-medium">Offers</span>
+      </a>
+      <a href="delivery.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">local_shipping</span>
+        <span class="font-medium">Delivery</span>
+      </a>
+      <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-medium">Settings</span>
+      </a>
+    </nav>
+    <div class="mt-auto p-4 border-t border-[#bbcbbb]">
+      <div class="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-full bg-[#2ecc71] flex items-center justify-center text-white font-bold text-lg">A</div>
+        <div class="flex flex-col">
+          <span class="text-sm font-bold">Admin User</span>
+          <span class="text-xs text-[#3d4a3e]">Store Manager</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Desktop Sidebar -->
+  <aside class="fixed left-0 top-0 h-full w-[260px] hidden lg:flex flex-col bg-[#f2f3ff] shadow-sm border-r border-[#bbcbbb] z-50">
+    <div class="p-6 flex flex-col gap-1">
+      <span class="text-[24px] font-extrabold tracking-tight text-[#006d37]">OK Mart Admin</span>
+      <span class="text-[#3d4a3e] opacity-70 text-xs">Management Portal</span>
+    </div>
+    <nav class="mt-4 flex flex-col px-2 gap-1">
+      <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-medium">Dashboard</span>
+      </a>
+      <a href="orders.html" class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#006d37] bg-[#2ecc71]/10 text-[#006d37] font-bold rounded-r-lg">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="font-bold">Orders</span>
+      </a>
+      <a href="products.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span class="font-medium">Products</span>
+      </a>
+      <a href="customers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">group</span>
+        <span class="font-medium">Customers</span>
+      </a>
+      <a href="offers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">local_offer</span>
+        <span class="font-medium">Offers</span>
+      </a>
+      <a href="delivery.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">local_shipping</span>
+        <span class="font-medium">Delivery</span>
+      </a>
+      <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-medium">Settings</span>
+      </a>
+    </nav>
+    <div class="mt-auto p-4 border-t border-[#bbcbbb]">
+      <div class="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm">
+        <div class="w-10 h-10 rounded-full bg-[#2ecc71] flex items-center justify-center text-white font-bold text-lg">A</div>
+        <div class="flex flex-col">
+          <span class="text-sm font-bold">Admin User</span>
+          <span class="text-xs text-[#3d4a3e]">Store Manager</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  
+  <!-- Top Header -->
+  <header class="flex justify-between items-center h-16 px-6 sticky top-0 z-40 lg:ml-[260px] bg-white shadow-sm">
+    <div class="flex items-center gap-4">
+      <button class="lg:hidden text-[#171b28]" id="mobileMenuBtn">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div class="hidden md:flex gap-6 items-center">
+        <span class="text-[#3d4a3e] text-sm">Admin / <span class="text-[#006d37] font-semibold">Orders</span></span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="p-2 text-[#3d4a3e] hover:bg-[#e5e7fa] rounded-full active:scale-95 transition-transform">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <div class="w-8 h-8 rounded-lg bg-[#006d37] text-white flex items-center justify-center font-black text-sm">OK</div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="lg:ml-[260px] p-6 min-h-[calc(100vh-64px)] animate-page-entry">
     
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <h1 class="text-page-title text-[#171b28] flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#006d37]" style="font-size: 32px;">receipt_long</span>
+        Order Management
+      </h1>
+      <div class="flex gap-3">
+        <button class="px-4 py-2 bg-[#006d37] text-white text-button rounded-lg shadow-lg shadow-[#006d37]/20 flex items-center gap-2 hover:opacity-90 transition-opacity" id="refreshBtn">
+          <span class="material-symbols-outlined text-sm">refresh</span>
+          Refresh
+        </button>
+        <button class="px-4 py-2 bg-[#006d37] text-white text-button rounded-lg shadow-lg shadow-[#006d37]/20 flex items-center gap-2 hover:opacity-90 transition-opacity" id="exportBtn">
+          <span class="material-symbols-outlined text-sm">download</span>
+          Export CSV
+        </button>
       </div>
-      <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html" class="active">📋 Orders</a>
-        <a href="products.html">📦 Products</a>
-        <a href="offers.html">🏷️ Offers</a>
-        <a href="delivery.html">🚚 Delivery</a>
-        <a href="customers.html">👥 Customers</a>
-        <a href="settings.html">⚙️ Settings</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
-      </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Order Management</span>
-      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
-
-    <!-- Main Content -->
-    <main class="main-content">
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-2xl shadow-md border border-[#bbcbbb]/30 hover:-translate-y-1 transition-transform">
+        <span class="text-[#3d4a3e] text-xs font-semibold tracking-wider uppercase">Total Orders</span>
+        <div class="flex items-end justify-between mt-2">
+          <span class="text-stat-number text-[#171b28]" id="totalOrders">0</span>
+          <span class="text-[#006d37] text-xs font-bold bg-[#2ecc71]/10 px-2 py-1 rounded" id="totalOrdersChange">+0%</span>
+        </div>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-md border border-[#bbcbbb]/30 hover:-translate-y-1 transition-transform">
+        <span class="text-[#3d4a3e] text-xs font-semibold tracking-wider uppercase">Pending Orders</span>
+        <div class="flex items-end justify-between mt-2">
+          <span class="text-stat-number text-[#171b28]" id="pendingOrders">0</span>
+          <span class="text-[#d97706] text-xs font-bold bg-[#fef3c7] px-2 py-1 rounded">Action Required</span>
+        </div>
+      </div>
+      <div class="bg-white p-5 rounded-2xl shadow-md border border-[#bbcbbb]/30 hover:-translate-y-1 transition-transform">
+        <span class="text-[#3d4a3e] text-xs font-semibold tracking-wider uppercase">Delivered Orders</span>
+        <div class="flex items-end justify-between mt-2">
+          <span class="text-stat-number text-[#171b28]" id="deliveredOrders">0</span>
+          <span class="text-[#065f46] text-xs font-bold bg-[#d1fae5] px-2 py-1 rounded">Completed</span>
+        </div>
+      </div>
+      <div class="bg-[#006d37] text-white p-5 rounded-2xl shadow-lg hover:-translate-y-1 transition-transform">
+        <span class="text-white/80 text-xs font-semibold tracking-wider uppercase">Today's Revenue</span>
+        <div class="flex items-end justify-between mt-2">
+          <span class="text-stat-number" id="todayRevenue">₹0</span>
+          <span class="material-symbols-outlined">trending_up</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Search & Filters -->
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-[#bbcbbb]/30 mb-6 flex flex-wrap items-center gap-4">
+      <div class="flex-1 min-w-[200px] relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#3d4a3e]">search</span>
+        <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2 bg-[#f8fafc] rounded-xl border-none focus:ring-2 focus:ring-[#006d37]/50 text-sm transition-all" placeholder="Search by Order ID, Name or Phone...">
+      </div>
+      <select id="statusFilter" class="bg-[#f8fafc] border border-[#bbcbbb] rounded-lg text-sm px-3 py-2 focus:ring-[#006d37] focus:border-[#006d37] outline-none">
+        <option value="all">All Statuses</option>
+        <option value="received">Received</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="preparing">Preparing</option>
+        <option value="out_for_delivery">Out for Delivery</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <input type="date" id="dateFilter" class="bg-[#f8fafc] border border-[#bbcbbb] rounded-lg text-sm px-3 py-2 focus:ring-[#006d37] focus:border-[#006d37] outline-none">
+      <button id="resetFiltersBtn" class="px-4 py-2 border border-[#bbcbbb] rounded-lg hover:bg-[#e5e7fa] transition-colors">
+        <span class="material-symbols-outlined text-sm">refresh</span>
+      </button>
+    </div>
+    
+    <!-- Orders Table -->
+    <div class="bg-white rounded-2xl shadow-md border border-[#bbcbbb]/30 overflow-hidden">
+      <div class="p-5 border-b border-[#bbcbbb]/30 flex justify-between items-center flex-wrap gap-3">
+        <h3 class="text-table-header flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#006d37] text-sm">list_alt</span>
+          RECENT ORDERS
+        </h3>
+        <div class="flex gap-2">
+          <span class="text-xs text-[#3d4a3e]" id="ordersCount">Showing 0 orders</span>
+        </div>
+      </div>
       
-      <!-- Page Header -->
-      <div class="page-header">
-        <h1>📋 Order Management</h1>
-        <div class="date-time" id="currentDateTime"></div>
+      <div class="orders-table-wrapper overflow-x-auto">
+        <table class="w-full text-left">
+          <thead class="bg-[#f8fafc] border-b border-[#bbcbbb]/20">
+            <tr>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Order ID</th>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Customer</th>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Amount</th>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Status</th>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Date</th>
+              <th class="px-5 py-4 text-table-header uppercase text-[#3d4a3e]">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody" class="divide-y divide-[#bbcbbb]/10">
+            <tr>
+              <td colspan="6" class="text-center py-10 text-[#3d4a3e]">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
-      <!-- Stats Row -->
-      <div class="stats-row" id="statsRow">
-        <div class="stat-card">
-          <div class="stat-value" id="totalOrders">0</div>
-          <div class="stat-label">Total Orders</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="pendingOrders">0</div>
-          <div class="stat-label">Pending</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="deliveredOrders">0</div>
-          <div class="stat-label">Delivered</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="todayRevenue">₹0</div>
-          <div class="stat-label">Today's Revenue</div>
-        </div>
+      
+      <!-- Pagination -->
+      <div class="p-5 border-t border-[#bbcbbb]/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span class="text-xs text-[#3d4a3e]" id="paginationInfo">Showing 0 to 0 of 0 entries</span>
+        <div class="flex items-center gap-2" id="paginationButtons"></div>
       </div>
-
-      <!-- Filter Bar -->
-      <div class="filter-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by order ID, name, phone...">
-        <select id="statusFilter" class="filter-select">
-          <option value="all">📋 All Status</option>
-          <option value="received">⏳ Received</option>
-          <option value="confirmed">✅ Confirmed</option>
-          <option value="preparing">🍳 Preparing</option>
-          <option value="out_for_delivery">🛵 Out for Delivery</option>
-          <option value="delivered">🎉 Delivered</option>
-          <option value="cancelled">❌ Cancelled</option>
-        </select>
-        <input type="date" id="dateFilter" class="date-input">
-        <button class="btn-reset" id="resetFiltersBtn">Reset Filters</button>
+    </div>
+    
+  </main>
+  
+  <!-- Order Detail Modal -->
+  <div class="order-modal" id="orderModal">
+    <div class="order-modal-content">
+      <div class="sticky top-0 bg-white border-b border-[#bbcbbb]/30 p-5 flex justify-between items-center">
+        <h3 class="text-lg font-bold">Order Details</h3>
+        <button class="w-8 h-8 rounded-full bg-[#f8fafc] flex items-center justify-center" id="closeModalBtn">✕</button>
       </div>
-
-      <!-- Orders Table -->
-      <div class="orders-container">
-        <div class="orders-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Customer</th>
-                <th>Phone</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Delivery</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-              <tr><td colspan="9" class="no-data">Loading orders...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- Status Update Modal -->
-  <div class="modal" id="statusModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Update Order Status</h3>
-        <button class="modal-close" onclick="closeStatusModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
-        <select id="modalStatusSelect" class="status-select">
-          <option value="received">📋 Received</option>
-          <option value="confirmed">✅ Confirmed</option>
-          <option value="preparing">🍳 Preparing</option>
-          <option value="out_for_delivery">🛵 Out for Delivery</option>
-          <option value="delivered">🎉 Delivered</option>
-          <option value="cancelled">❌ Cancelled</option>
-        </select>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" onclick="closeStatusModal()">Cancel</button>
-        <button class="action-btn" style="background:var(--primary);color:white;" onclick="updateOrderStatus()">Update Status</button>
+      <div class="p-5" id="orderModalBody">
+        <!-- Order details will be loaded here -->
       </div>
     </div>
   </div>
-
+  
   <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Delete Order</h3>
-        <button class="modal-close" onclick="closeDeleteModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this order?</p>
-        <p style="color: var(--danger); font-size: 0.8rem;">This action cannot be undone!</p>
-        <p><strong>Order ID:</strong> <span id="deleteOrderId"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" onclick="closeDeleteModal()">Cancel</button>
-        <button class="action-btn" style="background:var(--danger);color:white;" onclick="confirmDeleteOrder()">Delete Order</button>
+  <div class="order-modal" id="deleteModal">
+    <div class="order-modal-content max-w-sm">
+      <div class="p-5 text-center">
+        <div class="text-5xl mb-4">⚠️</div>
+        <h3 class="text-lg font-bold mb-2">Delete Order?</h3>
+        <p class="text-[#3d4a3e] text-sm mb-4">Are you sure you want to delete this order? This action cannot be undone.</p>
+        <div class="flex gap-3">
+          <button class="flex-1 px-4 py-2 border border-[#bbcbbb] rounded-lg" id="cancelDeleteBtn">Cancel</button>
+          <button class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg" id="confirmDeleteBtn">Delete</button>
+        </div>
       </div>
     </div>
   </div>
-
+  
   <!-- Toast -->
   <div class="toast" id="toast"></div>
-
+  
   <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== ORDER MANAGEMENT SYSTEM =====
+    // ===== ORDER MANAGEMENT - FULLY WORKING =====
     
     // DOM Elements
     const ordersTableBody = document.getElementById('ordersTableBody');
@@ -687,58 +582,63 @@
     const statusFilter = document.getElementById('statusFilter');
     const dateFilter = document.getElementById('dateFilter');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-    const statusModal = document.getElementById('statusModal');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const orderModal = document.getElementById('orderModal');
     const deleteModal = document.getElementById('deleteModal');
     const toast = document.getElementById('toast');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
     // State
     let allOrders = [];
-    let currentOrderId = null;
-    let currentDeleteId = null;
+    let filteredOrders = [];
+    let currentPage = 1;
+    let rowsPerPage = 10;
+    let deleteOrderId = null;
     
-    // Load Orders
+    // Sidebar Toggle
+    function openSidebar() {
+      mobileSidebar.classList.add('open');
+      sidebarOverlay.style.display = 'block';
+    }
+    
+    function closeSidebar() {
+      mobileSidebar.classList.remove('open');
+      sidebarOverlay.style.display = 'none';
+    }
+    
+    mobileMenuBtn?.addEventListener('click', openSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    
+    // Load Orders from Firebase
     async function loadOrders() {
+      showLoading(true);
       try {
         const snapshot = await db.collection('orders').orderBy('orderDate', 'desc').get();
         allOrders = [];
         snapshot.forEach(doc => {
           allOrders.push({ id: doc.id, ...doc.data() });
         });
+        console.log(`✅ Loaded ${allOrders.length} orders`);
+        filterOrders();
         updateStats();
-        renderOrders();
       } catch (error) {
         console.error('Error loading orders:', error);
         showToast('Error loading orders', 'error');
       }
-    }
-    
-    // Update Statistics
-    function updateStats() {
-      const total = allOrders.length;
-      const pending = allOrders.filter(o => o.status === 'received' || o.status === 'confirmed' || o.status === 'preparing' || o.status === 'out_for_delivery').length;
-      const delivered = allOrders.filter(o => o.status === 'delivered').length;
-      
-      const today = new Date().toDateString();
-      const todayRevenue = allOrders
-        .filter(o => {
-          const orderDate = o.orderDate?.toDate ? o.orderDate.toDate() : new Date(o.orderDate);
-          return o.status === 'delivered' && orderDate.toDateString() === today;
-        })
-        .reduce((sum, o) => sum + (o.total || 0), 0);
-      
-      document.getElementById('totalOrders').textContent = total;
-      document.getElementById('pendingOrders').textContent = pending;
-      document.getElementById('deliveredOrders').textContent = delivered;
-      document.getElementById('todayRevenue').textContent = `₹${todayRevenue.toLocaleString('en-IN')}`;
+      showLoading(false);
     }
     
     // Filter Orders
-    function getFilteredOrders() {
+    function filterOrders() {
       const search = searchInput.value.toLowerCase();
       const status = statusFilter.value;
       const date = dateFilter.value;
       
-      return allOrders.filter(order => {
+      filteredOrders = allOrders.filter(order => {
         // Search filter
         if (search) {
           const orderId = (order.orderId || order.id).toLowerCase();
@@ -765,45 +665,260 @@
         
         return true;
       });
+      
+      currentPage = 1;
+      renderOrders();
+      updatePagination();
     }
     
-    // Render Orders
+    // Render Orders Table
     function renderOrders() {
-      const filtered = getFilteredOrders();
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageOrders = filteredOrders.slice(start, end);
       
-      if (filtered.length === 0) {
-        ordersTableBody.innerHTML = '<tr><td colspan="9" class="no-data">No orders found</td></tr>';
+      if (pageOrders.length === 0) {
+        ordersTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-[#3d4a3e]">No orders found</td></tr>';
+        document.getElementById('ordersCount').textContent = `Showing 0 orders`;
         return;
       }
       
-      ordersTableBody.innerHTML = filtered.map(order => {
+      ordersTableBody.innerHTML = pageOrders.map(order => {
         const status = order.status || 'received';
-        const itemsCount = (order.items || []).length;
-        const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+        const statusConfig = getStatusConfig(status);
         
         return `
-          <tr>
-            <td><strong>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</strong></td>
-            <td>${order.customerName || order.name || 'N/A'}</td>
-            <td>${order.customerPhone || order.phone || 'N/A'}</td>
-            <td>${itemsCount} items</td>
-            <td><strong>₹${order.total || 0}</strong></td>
-            <td>${order.deliveryType === 'quick' ? '⚡ Quick' : '📅 Scheduled'}</td>
-            <td><span class="status-badge status-${status}">${getStatusText(status)}</span></td>
-            <td>${orderDate.toLocaleDateString('en-IN')}</td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn view-btn" onclick="viewOrderDetail('${order.id}')">View</button>
-                <button class="action-btn edit-btn" onclick="openStatusModal('${order.id}', '${status}')">Status</button>
-                <button class="action-btn delete-btn" onclick="openDeleteModal('${order.id}')">Delete</button>
+          <tr class="table-row-hover transition-colors hover:bg-[#f0fff4]">
+            <td class="px-5 py-4 font-bold text-[#006d37]">#${order.orderId || order.id.slice(0, 8).toUpperCase()}</td>
+            <td class="px-5 py-4">
+              <div class="font-medium text-sm">${escapeHtml(order.customerName || order.name || 'N/A')}</div>
+              <div class="text-xs text-[#3d4a3e]">${order.customerPhone || order.phone || ''}</div>
+            </td>
+            <td class="px-5 py-4 font-semibold">₹${order.total || 0}</td>
+            <td class="px-5 py-4">
+              <span class="status-badge ${statusConfig.bg} ${statusConfig.text} ${status === 'received' ? 'status-badge-pulse' : ''}">
+                <span class="w-1.5 h-1.5 rounded-full ${statusConfig.dot}"></span>
+                ${getStatusText(status)}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-[#3d4a3e] text-sm">${formatDate(order.orderDate)}</td>
+            <td class="px-5 py-4">
+              <div class="flex gap-2">
+                <button class="view-order-btn px-3 py-1.5 text-xs font-bold text-[#006d37] border border-[#006d37]/20 rounded-lg hover:bg-[#006d37] hover:text-white transition-all" data-id="${order.id}">View</button>
+                <button class="delete-order-btn px-3 py-1.5 text-xs font-bold text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-all" data-id="${order.id}">Delete</button>
               </div>
             </td>
           </tr>
         `;
       }).join('');
+      
+      document.getElementById('ordersCount').textContent = `Showing ${filteredOrders.length} orders`;
+      
+      // Attach event listeners
+      document.querySelectorAll('.view-order-btn').forEach(btn => {
+        btn.addEventListener('click', () => viewOrderDetails(btn.dataset.id));
+      });
+      
+      document.querySelectorAll('.delete-order-btn').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.dataset.id));
+      });
     }
     
-    // Get Status Text
+    // Update Pagination
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+      const paginationDiv = document.getElementById('paginationButtons');
+      const start = (currentPage - 1) * rowsPerPage + 1;
+      const end = Math.min(currentPage * rowsPerPage, filteredOrders.length);
+      
+      document.getElementById('paginationInfo').textContent = `Showing ${start} to ${end} of ${filteredOrders.length} entries`;
+      
+      if (totalPages <= 1) {
+        paginationDiv.innerHTML = '';
+        return;
+      }
+      
+      let buttons = '';
+      for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        buttons += `<button class="page-btn w-8 h-8 flex items-center justify-center rounded border border-[#bbcbbb] ${i === currentPage ? 'bg-[#006d37] text-white' : 'text-[#3d4a3e] hover:bg-[#e5e7fa]'} transition-colors" data-page="${i}">${i}</button>`;
+      }
+      
+      if (totalPages > 5) {
+        buttons += '<span class="px-1 text-[#3d4a3e]">...</span>';
+        buttons += `<button class="page-btn w-8 h-8 flex items-center justify-center rounded border border-[#bbcbbb] text-[#3d4a3e] hover:bg-[#e5e7fa] transition-colors" data-page="${totalPages}">${totalPages}</button>`;
+      }
+      
+      paginationDiv.innerHTML = buttons;
+      
+      document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = parseInt(btn.dataset.page);
+          renderOrders();
+          updatePagination();
+        });
+      });
+    }
+    
+    // Update Statistics
+    function updateStats() {
+      const total = allOrders.length;
+      const pending = allOrders.filter(o => o.status === 'received' || o.status === 'confirmed' || o.status === 'preparing' || o.status === 'out_for_delivery').length;
+      const delivered = allOrders.filter(o => o.status === 'delivered').length;
+      
+      const today = new Date().toDateString();
+      const todayRevenue = allOrders
+        .filter(o => {
+          const orderDate = o.orderDate?.toDate ? o.orderDate.toDate() : new Date(o.orderDate);
+          return o.status === 'delivered' && orderDate.toDateString() === today;
+        })
+        .reduce((sum, o) => sum + (o.total || 0), 0);
+      
+      document.getElementById('totalOrders').textContent = total;
+      document.getElementById('pendingOrders').textContent = pending;
+      document.getElementById('deliveredOrders').textContent = delivered;
+      document.getElementById('todayRevenue').textContent = `₹${todayRevenue.toLocaleString('en-IN')}`;
+    }
+    
+    // View Order Details
+    async function viewOrderDetails(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      
+      const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
+      const itemsHtml = (order.items || []).map(item => `
+        <div class="flex justify-between py-2 border-b border-[#bbcbbb]/20">
+          <span class="text-sm">${escapeHtml(item.name)} × ${item.quantity}</span>
+          <span class="font-semibold">₹${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+      `).join('');
+      
+      const status = order.status || 'received';
+      const statusConfig = getStatusConfig(status);
+      
+      document.getElementById('orderModalBody').innerHTML = `
+        <div class="space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="text-2xl font-bold text-[#006d37]">#${order.orderId || order.id.slice(0, 8).toUpperCase()}</div>
+              <div class="text-sm text-[#3d4a3e]">${orderDate.toLocaleString('en-IN')}</div>
+            </div>
+            <div class="flex gap-2">
+              <select id="modalStatusSelect" class="px-3 py-2 border border-[#bbcbbb] rounded-lg text-sm">
+                <option value="received" ${status === 'received' ? 'selected' : ''}>📋 Received</option>
+                <option value="confirmed" ${status === 'confirmed' ? 'selected' : ''}>✅ Confirmed</option>
+                <option value="preparing" ${status === 'preparing' ? 'selected' : ''}>🍳 Preparing</option>
+                <option value="out_for_delivery" ${status === 'out_for_delivery' ? 'selected' : ''}>🛵 Out for Delivery</option>
+                <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>🎉 Delivered</option>
+                <option value="cancelled" ${status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+              </select>
+              <button class="update-status-btn px-4 py-2 bg-[#006d37] text-white rounded-lg text-sm" data-id="${order.id}">Update</button>
+            </div>
+          </div>
+          
+          <div class="bg-[#f8fafc] p-4 rounded-xl">
+            <h4 class="font-bold mb-2">👤 Customer Information</h4>
+            <p class="text-sm"><strong>Name:</strong> ${escapeHtml(order.customerName || order.name || 'N/A')}</p>
+            <p class="text-sm"><strong>Phone:</strong> ${order.customerPhone || order.phone || 'N/A'}</p>
+            <p class="text-sm"><strong>Address:</strong> ${escapeHtml(order.customerAddress || order.address || 'N/A')}</p>
+            <p class="text-sm"><strong>Pincode:</strong> ${order.pincode || 'N/A'}</p>
+          </div>
+          
+          <div class="bg-[#f8fafc] p-4 rounded-xl">
+            <h4 class="font-bold mb-2">🛍️ Order Items</h4>
+            ${itemsHtml || '<p class="text-sm text-[#3d4a3e]">No items</p>'}
+          </div>
+          
+          <div class="bg-[#f8fafc] p-4 rounded-xl">
+            <h4 class="font-bold mb-2">💰 Payment Summary</h4>
+            <div class="flex justify-between py-1"><span>Subtotal:</span><span>₹${order.subtotal || 0}</span></div>
+            <div class="flex justify-between py-1"><span>Delivery:</span><span>₹${order.deliveryCharge || 0}</span></div>
+            ${order.discount ? `<div class="flex justify-between py-1 text-green-600"><span>Discount:</span><span>-₹${order.discount}</span></div>` : ''}
+            <div class="flex justify-between py-1 font-bold border-t border-[#bbcbbb]/20 mt-2 pt-2"><span>Total:</span><span>₹${order.total || 0}</span></div>
+          </div>
+        </div>
+      `;
+      
+      orderModal.classList.add('active');
+      
+      document.querySelector('.update-status-btn')?.addEventListener('click', async () => {
+        const newStatus = document.getElementById('modalStatusSelect').value;
+        await updateOrderStatus(order.id, newStatus);
+        orderModal.classList.remove('active');
+        await loadOrders();
+      });
+    }
+    
+    // Update Order Status
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        await db.collection('orders').doc(orderId).update({
+          status: newStatus,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast(`Order status updated to ${getStatusText(newStatus)}`, 'success');
+      } catch (error) {
+        console.error('Error updating status:', error);
+        showToast('Error updating status', 'error');
+      }
+    }
+    
+    // Open Delete Modal
+    function openDeleteModal(orderId) {
+      deleteOrderId = orderId;
+      deleteModal.classList.add('active');
+    }
+    
+    // Confirm Delete
+    async function confirmDelete() {
+      if (!deleteOrderId) return;
+      try {
+        await db.collection('orders').doc(deleteOrderId).delete();
+        showToast('Order deleted successfully', 'success');
+        deleteModal.classList.remove('active');
+        await loadOrders();
+      } catch (error) {
+        console.error('Error deleting order:', error);
+        showToast('Error deleting order', 'error');
+      }
+    }
+    
+    // Export to CSV
+    function exportToCSV() {
+      const headers = ['Order ID', 'Customer Name', 'Phone', 'Address', 'Amount', 'Status', 'Date'];
+      const rows = filteredOrders.map(order => [
+        order.orderId || order.id.slice(0, 8).toUpperCase(),
+        order.customerName || order.name || 'N/A',
+        order.customerPhone || order.phone || 'N/A',
+        (order.customerAddress || order.address || 'N/A').replace(/,/g, ' '),
+        order.total || 0,
+        order.status || 'received',
+        formatDate(order.orderDate)
+      ]);
+      
+      const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `orders_export_${new Date().toISOString().slice(0, 19)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Orders exported successfully', 'success');
+    }
+    
+    // Helper Functions
+    function getStatusConfig(status) {
+      const configs = {
+        received: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', dot: 'bg-[#d97706]' },
+        confirmed: { bg: 'bg-[#dbeafe]', text: 'text-[#2563eb]', dot: 'bg-[#2563eb]' },
+        preparing: { bg: 'bg-[#fef3c7]', text: 'text-[#d97706]', dot: 'bg-[#d97706]' },
+        out_for_delivery: { bg: 'bg-[#e0e7ff]', text: 'text-[#4338ca]', dot: 'bg-[#4338ca]' },
+        delivered: { bg: 'bg-[#d1fae5]', text: 'text-[#065f46]', dot: 'bg-[#065f46]' },
+        cancelled: { bg: 'bg-[#fee2e2]', text: 'text-[#dc2626]', dot: 'bg-[#dc2626]' }
+      };
+      return configs[status] || configs.received;
+    }
+    
     function getStatusText(status) {
       const texts = {
         received: 'Received',
@@ -816,84 +931,22 @@
       return texts[status] || status;
     }
     
-    // View Order Detail
-    window.viewOrderDetail = function(orderId) {
-      window.location.href = `order-detail.html?id=${orderId}`;
-    };
-    
-    // Open Status Modal
-    window.openStatusModal = function(orderId, currentStatus) {
-      currentOrderId = orderId;
-      document.getElementById('modalOrderId').textContent = `#${orderId.slice(0, 8).toUpperCase()}`;
-      document.getElementById('modalStatusSelect').value = currentStatus;
-      statusModal.classList.add('active');
-    };
-    
-    // Update Order Status
-    window.updateOrderStatus = async function() {
-      const newStatus = document.getElementById('modalStatusSelect').value;
-      
-      try {
-        await db.collection('orders').doc(currentOrderId).update({
-          status: newStatus,
-          updatedAt: new Date().toISOString()
-        });
-        
-        if (newStatus === 'delivered') {
-          await db.collection('orders').doc(currentOrderId).update({
-            deliveredAt: new Date().toISOString()
-          });
-        }
-        
-        showToast(`Order status updated to ${getStatusText(newStatus)}`, 'success');
-        closeStatusModal();
-        await loadOrders();
-      } catch (error) {
-        console.error('Error updating status:', error);
-        showToast('Error updating status', 'error');
-      }
-    };
-    
-    // Open Delete Modal
-    window.openDeleteModal = function(orderId) {
-      currentDeleteId = orderId;
-      document.getElementById('deleteOrderId').textContent = `#${orderId.slice(0, 8).toUpperCase()}`;
-      deleteModal.classList.add('active');
-    };
-    
-    // Confirm Delete Order
-    window.confirmDeleteOrder = async function() {
-      try {
-        await db.collection('orders').doc(currentDeleteId).delete();
-        showToast('Order deleted successfully', 'success');
-        closeDeleteModal();
-        await loadOrders();
-      } catch (error) {
-        console.error('Error deleting order:', error);
-        showToast('Error deleting order', 'error');
-      }
-    };
-    
-    // Close Modals
-    function closeStatusModal() {
-      statusModal.classList.remove('active');
-      currentOrderId = null;
+    function formatDate(timestamp) {
+      if (!timestamp) return 'N/A';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
     
-    function closeDeleteModal() {
-      deleteModal.classList.remove('active');
-      currentDeleteId = null;
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
     }
     
-    // Reset Filters
-    function resetFilters() {
-      searchInput.value = '';
-      statusFilter.value = 'all';
-      dateFilter.value = '';
-      renderOrders();
-    }
-    
-    // Show Toast
     function showToast(message, type) {
       toast.textContent = message;
       toast.className = `toast ${type}`;
@@ -901,43 +954,38 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    // Logout
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-      }
-    }
-    
-    // Update Date Time
-    function updateDateTime() {
-      const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-      document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-IN', options);
+    function showLoading(show) {
+      loadingOverlay.style.display = show ? 'flex' : 'none';
     }
     
     // Event Listeners
-    searchInput.addEventListener('input', renderOrders);
-    statusFilter.addEventListener('change', renderOrders);
-    dateFilter.addEventListener('change', renderOrders);
-    resetFiltersBtn.addEventListener('click', resetFilters);
-    
-    // Close modals on outside click
-    statusModal.addEventListener('click', (e) => {
-      if (e.target === statusModal) closeStatusModal();
+    searchInput.addEventListener('input', filterOrders);
+    statusFilter.addEventListener('change', filterOrders);
+    dateFilter.addEventListener('change', filterOrders);
+    resetFiltersBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      statusFilter.value = 'all';
+      dateFilter.value = '';
+      filterOrders();
     });
-    deleteModal.addEventListener('click', (e) => {
-      if (e.target === deleteModal) closeDeleteModal();
+    refreshBtn.addEventListener('click', () => loadOrders());
+    exportBtn.addEventListener('click', exportToCSV);
+    
+    document.getElementById('closeModalBtn')?.addEventListener('click', () => orderModal.classList.remove('active'));
+    document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => deleteModal.classList.remove('active'));
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', confirmDelete);
+    
+    orderModal?.addEventListener('click', (e) => {
+      if (e.target === orderModal) orderModal.classList.remove('active');
+    });
+    deleteModal?.addEventListener('click', (e) => {
+      if (e.target === deleteModal) deleteModal.classList.remove('active');
     });
     
     // Initialize
-    function init() {
-      updateDateTime();
-      setInterval(updateDateTime, 1000);
-      loadOrders();
-    }
+    loadOrders();
     
-    init();
+    console.log('✅ Order Management Page Loaded');
   </script>
 </body>
 </html>
