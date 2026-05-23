@@ -4,1187 +4,354 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Customer Management | OK Mart Admin</title>
-  <meta name="theme-color" content="#2ecc71">
+  <meta name="theme-color" content="#006d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --primary-light: #e8f8ef;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #10b981;
-      --info: #3b82f6;
-      --whatsapp: #25D366;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
-      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 20px;
-      --transition: all .2s ease;
-    }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    
-    /* Sidebar */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-    
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
-      color: white;
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 100;
-      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-    
-    .sidebar-brand {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .sidebar-logo-img {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    
-    .sidebar-logo-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #fff, var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: .6rem;
-      font-weight: 600;
-    }
-    
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 0;
-    }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,.7);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-      position: relative;
-    }
-    
-    .sidebar-nav a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(46,204,113,.1);
-      transition: width .3s;
-    }
-    
-    .sidebar-nav a:hover::before {
-      width: 100%;
-    }
-    
-    .sidebar-nav a:hover {
-      color: white;
-      padding-left: 28px;
-    }
-    
-    .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
-    
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid rgba(255,255,255,.1);
-    }
-    
-    .sidebar-footer button {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255,255,255,.08);
-      border: none;
-      color: rgba(255,255,255,.7);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .sidebar-footer button:hover {
-      background: rgba(239,68,68,.2);
-      color: var(--danger);
-    }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 12px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 280px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    /* Bulk Message Button */
-    .bulk-msg-btn {
-      background: linear-gradient(135deg, var(--whatsapp), #128C7E);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 12px rgba(37,211,102,.3);
-    }
-    
-    .bulk-msg-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37,211,102,.4);
-    }
-    
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .stat-card .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .stat-card .stat-label {
-      font-size: .8rem;
-      color: var(--muted);
-    }
-    
-    /* Control Bar */
-    .control-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      background: var(--card);
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    
-    .search-input {
-      flex: 2;
-      min-width: 200px;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .filter-select {
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-    }
-    
-    /* Bulk Actions Bar */
-    .bulk-actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      padding: 12px 16px;
-      background: var(--primary-light);
-      border-radius: var(--radius);
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .bulk-actions span {
-      font-weight: 600;
-      font-size: .85rem;
-    }
-    
-    .bulk-whatsapp-btn {
-      background: var(--whatsapp);
-      color: white;
-      border: none;
-      padding: 8px 20px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    /* Customer Grid */
-    .customer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 20px;
-    }
-    
-    /* Customer Card */
-    .customer-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      transition: var(--transition);
-      position: relative;
-    }
-    
-    .customer-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .customer-card.selected {
-      border: 2px solid var(--primary);
-      background: var(--primary-light);
-    }
-    
-    .customer-header {
-      background: linear-gradient(135deg, #f8fafc, var(--card));
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .customer-avatar {
-      width: 55px;
-      height: 55px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-    }
-    
-    .customer-info h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    
-    .customer-info p {
-      font-size: .75rem;
-      color: var(--muted);
-    }
-    
-    .customer-body {
-      padding: 16px 20px;
-    }
-    
-    .detail-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      font-size: .85rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .detail-row:last-child {
-      border-bottom: none;
-    }
-    
-    .detail-icon {
-      width: 28px;
-      color: var(--muted);
-    }
-    
-    .detail-label {
-      color: var(--muted);
-      width: 70px;
-    }
-    
-    .detail-value {
-      font-weight: 500;
-      flex: 1;
-    }
-    
-    .customer-footer {
-      padding: 12px 20px;
-      background: var(--bg);
-      display: flex;
-      gap: 8px;
-      border-top: 1px solid var(--border);
-    }
-    
-    .whatsapp-btn {
-      flex: 1;
-      background: var(--whatsapp);
-      color: white;
-      border: none;
-      padding: 8px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: .8rem;
-    }
-    
-    .view-orders-btn {
-      flex: 1;
-      background: var(--info);
-      color: white;
-      border: none;
-      padding: 8px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: .8rem;
-    }
-    
-    /* Select Checkbox */
-    .customer-select {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: var(--primary);
-    }
-    
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-    }
-    
-    .modal.active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: var(--card);
-      border-radius: 24px;
-      width: 90%;
-      max-width: 500px;
-      max-height: 85vh;
-      overflow-y: auto;
-      animation: slideUp 0.3s ease;
-    }
-    
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
-    
-    .form-group {
-      margin-bottom: 16px;
-    }
-    
-    .form-group label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    
-    .form-group textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-      resize: vertical;
-      font-family: inherit;
-    }
-    
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .template-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    
-    .template-btn {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: .7rem;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .template-btn:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-    }
-    
-    .send-whatsapp-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--whatsapp);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    
-    /* Customer Orders Modal */
-    .orders-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    
-    .order-item-card {
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .order-item-card:hover {
-      background: var(--primary-light);
-    }
-    
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    
-    .order-id {
-      font-weight: 700;
-      font-family: monospace;
-      color: var(--primary-dark);
-    }
-    
-    .order-status {
-      font-size: .7rem;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-    
-    .order-total {
-      font-weight: 700;
-    }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      z-index: 1000;
-      opacity: 0;
-      transition: all .3s;
-    }
-    
-    .toast.show {
-      opacity: 1;
-      bottom: 50px;
-    }
-    
-    .toast.success {
-      background: var(--success);
-    }
-    
-    .toast.error {
-      background: var(--danger);
-    }
-    
-    .no-data {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-        padding: 16px;
-      }
-      
-      .mobile-header {
-        display: flex;
-      }
-      
-      .control-bar {
-        flex-direction: column;
-      }
-      
-      .search-input, .filter-select {
-        width: 100%;
-      }
-      
-      .customer-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#006d37',
+            'primary-container': '#2ecc71',
+            'on-primary': '#ffffff',
+            'surface': '#faf8ff',
+            'surface-container-lowest': '#ffffff',
+            'surface-container': '#eaedff',
+            'surface-container-high': '#e5e7fa',
+            'surface-container-highest': '#dfe2f4',
+            'on-surface': '#171b28',
+            'on-surface-variant': '#3d4a3e',
+            'outline': '#6c7b6d',
+            'outline-variant': '#bbcbbb',
+            'error': '#ba1a1a',
+            'error-container': '#ffdad6',
+            'status-pending-bg': '#fef3c7',
+            'status-pending-text': '#d97706',
+            'status-delivered-bg': '#d1fae5',
+            'status-delivered-text': '#065f46',
+            'status-cancelled-bg': '#fee2e2',
+            'status-cancelled-text': '#dc2626',
+            'whatsapp': '#25D366',
+            'whatsapp-dark': '#128C7E'
+          },
+          fontFamily: {
+            'page-title': ['Inter', 'sans-serif'],
+            'stat-number': ['Inter', 'sans-serif'],
+            'table-header': ['Inter', 'sans-serif'],
+            'table-cell': ['Inter', 'sans-serif'],
+            'button': ['Inter', 'sans-serif'],
+            'body-sm': ['Inter', 'sans-serif']
+          },
+          fontSize: {
+            'page-title': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'stat-number': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '800' }],
+            'table-header': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+            'table-cell': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'button': ['13px', { lineHeight: '16px', fontWeight: '500' }],
+            'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }]
+          },
+          borderRadius: {
+            'DEFAULT': '0.25rem',
+            'lg': '0.5rem',
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'sidebar-width': '260px',
+            'gutter': '1.5rem'
+          }
+        }
       }
     }
-  </style>
+  </script>
   
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-page-entry { animation: fadeInSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .bento-card { background: #ffffff; border-radius: 1rem; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .bento-card:hover { transform: translateY(-2px); box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.08); }
+    .table-row-hover:hover { background-color: rgba(0, 109, 55, 0.05) !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #e5e7fa; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #006d37; border-radius: 10px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border-radius: 24px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; animation: fadeInSlideUp 0.3s ease; }
+    .toast { position: fixed; bottom: 30px; right: 30px; background: #171b28; color: white; padding: 12px 24px; border-radius: 40px; font-size: 13px; z-index: 1000; opacity: 0; transform: translateX(100px); transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateX(0); }
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+    .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .loading-spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #006d37; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .mobile-sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: #f2f3ff; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 200; overflow-y: auto; }
+    .mobile-sidebar.open { transform: translateX(0); }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 199; display: none; }
+    .bulk-actions-bar { background: #e8f8ef; border-radius: 12px; padding: 12px 16px; display: none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .bulk-actions-bar.show { display: flex; }
+    @media (max-width: 768px) { .table-wrapper { overflow-x: auto; } table { min-width: 800px; } }
+  </style>
 </head>
-<body>
-  <div class="admin-layout">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
-        <a href="products.html">📦 Products</a>
-        <a href="offers.html">🏷️ Offers</a>
-        <a href="delivery.html">🚚 Delivery</a>
-        <a href="customers.html" class="active">👥 Customers</a>
-        <a href="settings.html">⚙️ Settings</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
-      </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Customer Management</span>
-      <button class="menu-toggle" onclick="location.reload()">🔄</button>
+<body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
+  
+  <!-- Sidebar Overlay & Mobile Sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined text-2xl">storefront</span></div>
+      <div><h1 class="text-lg font-extrabold text-primary">OK Mart</h1><p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p></div>
     </div>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="index.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">dashboard</span><span>Dashboard</span></a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">shopping_cart</span><span>Orders</span></a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">inventory_2</span><span>Products</span></a>
+      <a href="customers.html" class="bg-primary/5 border-l-4 border-primary text-primary font-bold flex items-center px-4 py-3 gap-3"><span class="material-symbols-outlined text-xl">group</span><span>Customers</span></a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_offer</span><span>Offers</span></a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_shipping</span><span>Delivery</span></a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">settings</span><span>Settings</span></a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant"><a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()"><span class="material-symbols-outlined text-xl text-error">logout</span><span>Logout</span></a></div>
+  </div>
+  
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex flex-col h-screen fixed left-0 top-0 w-[260px] bg-surface-container-lowest border-r border-outline-variant z-50">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined text-2xl">storefront</span></div>
+      <div><h1 class="text-lg font-extrabold text-primary">OK Mart</h1><p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p></div>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="index.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">dashboard</span><span>Dashboard</span></a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">shopping_cart</span><span>Orders</span></a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">inventory_2</span><span>Products</span></a>
+      <a href="customers.html" class="bg-primary/5 border-l-4 border-primary text-primary font-bold flex items-center px-4 py-3 gap-3"><span class="material-symbols-outlined text-xl">group</span><span>Customers</span></a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_offer</span><span>Offers</span></a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">local_shipping</span><span>Delivery</span></a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg"><span class="material-symbols-outlined text-xl">settings</span><span>Settings</span></a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant"><a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()"><span class="material-symbols-outlined text-xl text-error">logout</span><span>Logout</span></a></div>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="lg:ml-[260px] flex flex-col min-h-screen">
+    <header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 h-16 bg-white border-b border-outline-variant shadow-sm">
+      <div class="flex items-center gap-4 flex-1">
+        <button class="lg:hidden text-on-surface" id="mobileMenuBtn"><span class="material-symbols-outlined">menu</span></button>
+        <div class="relative w-full max-w-md hidden md:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm" placeholder="Search customers...">
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block"><p class="text-[13px] font-bold text-on-surface">Admin User</p><p class="text-[11px] text-on-surface-variant">Store Manager</p></div>
+          <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+        </div>
+      </div>
+    </header>
+    
+    <section class="p-6 space-y-6 animate-page-entry">
       <!-- Page Header -->
-      <div class="page-header">
-        <h1>👥 Customer Management</h1>
-        <button class="bulk-msg-btn" id="bulkMessageBtn">📱 Send Bulk WhatsApp</button>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div><h2 class="text-page-title text-on-surface">Customer Management</h2><p class="text-on-surface-variant text-body-sm">Manage and engage with your store's customer base.</p></div>
+        <button id="addCustomerBtn" class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-button text-button flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"><span class="material-symbols-outlined">person_add</span>Add Customer</button>
       </div>
-
-      <!-- Stats -->
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalCustomers">0</div>
-          <div class="stat-label">Total Customers</div>
+      
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bento-card p-6 flex items-start justify-between"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Customers</p><h3 class="text-stat-number text-on-surface" id="totalCustomers">0</h3></div><div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary"><span class="material-symbols-outlined text-2xl">groups</span></div></div>
+        <div class="bento-card p-6 flex items-start justify-between"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Active Customers</p><h3 class="text-stat-number text-on-surface" id="activeCustomers">0</h3></div><div class="w-12 h-12 bg-status-delivered-bg rounded-2xl flex items-center justify-center text-status-delivered-text"><span class="material-symbols-outlined text-2xl">how_to_reg</span></div></div>
+        <div class="bento-card p-6 flex items-start justify-between"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Orders</p><h3 class="text-stat-number text-on-surface" id="totalOrders">0</h3></div><div class="w-12 h-12 bg-surface-container rounded-2xl flex items-center justify-center text-secondary"><span class="material-symbols-outlined text-2xl">receipt_long</span></div></div>
+        <div class="bento-card p-6 flex items-start justify-between"><div><p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Revenue</p><h3 class="text-stat-number text-on-surface" id="totalRevenue">₹0</h3></div><div class="w-12 h-12 bg-status-pending-bg rounded-2xl flex items-center justify-center text-status-pending-text"><span class="material-symbols-outlined text-2xl">payments</span></div></div>
+      </div>
+      
+      <!-- Filter Bar -->
+      <div class="bento-card p-4 flex flex-wrap items-center gap-4">
+        <div class="relative flex-1 min-w-[200px]"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span><input type="text" id="filterSearch" class="w-full pl-10 pr-4 py-2 bg-surface-background border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Search by name or phone..."></div>
+        <select id="statusFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm"><option value="all">All Statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="due">High Due</option></select>
+        <button id="bulkActionsDropdownBtn" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 border border-outline-variant">Bulk Actions<span class="material-symbols-outlined text-sm">expand_more</span></button>
+        <button id="whatsappBroadcastBtn" class="bg-whatsapp hover:bg-whatsapp-dark text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors"><span class="material-symbols-outlined text-sm">forum</span>WhatsApp Broadcast</button>
+        <button id="exportBtn" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 border border-outline-variant"><span class="material-symbols-outlined text-sm">download</span>Export CSV</button>
+      </div>
+      
+      <!-- Bulk Actions Bar -->
+      <div id="bulkActionsBar" class="bulk-actions-bar"><span id="selectedCount">0 customers selected</span><div class="flex gap-2"><button id="bulkWhatsappBtn" class="px-4 py-2 bg-whatsapp text-white rounded-lg text-sm font-semibold">Send WhatsApp</button><button id="bulkDeleteBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold">Delete</button></div></div>
+      
+      <!-- Customers Table -->
+      <div class="bento-card overflow-hidden">
+        <div class="table-wrapper overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-surface-background border-b border-outline-variant"><tr><th class="p-4 w-10"><input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 rounded text-primary"></th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase">Customer Info</th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase">Orders</th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase">Total Spent</th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase">Due Amount</th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase">Status</th><th class="p-4 font-table-header text-table-header text-on-surface-variant uppercase text-right">Actions</th></tr></thead>
+            <tbody id="customersTableBody" class="divide-y divide-outline-variant"><tr><td colspan="7" class="text-center py-10">Loading customers...</td></tr></tbody>
+          </table>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="activeCustomers">0</div>
-          <div class="stat-label">Active Customers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="totalOrders">0</div>
-          <div class="stat-label">Total Orders</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="totalSpent">₹0</div>
-          <div class="stat-label">Total Spent</div>
-        </div>
+        <div class="p-4 border-t border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-4"><p class="text-on-surface-variant text-sm" id="paginationInfo">Showing 0 to 0 of 0 customers</p><div class="flex items-center gap-2" id="paginationButtons"></div></div>
       </div>
-
-      <!-- Control Bar -->
-      <div class="control-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name, phone, email...">
-        <select id="orderCountFilter" class="filter-select">
-          <option value="all">All Customers</option>
-          <option value="returning">Returning (2+ orders)</option>
-          <option value="one-time">One-time (1 order)</option>
-          <option value="inactive">Inactive (no orders)</option>
-        </select>
-      </div>
-
-      <!-- Bulk Actions Bar (shown when customers selected) -->
-      <div class="bulk-actions" id="bulkActions" style="display: none;">
-        <span id="selectedCount">0 customers selected</span>
-        <button class="bulk-whatsapp-btn" id="bulkWhatsappSelected">📱 Send WhatsApp to Selected</button>
-        <button class="bulk-whatsapp-btn" onclick="clearSelection()" style="background:var(--danger);">Clear Selection</button>
-      </div>
-
-      <!-- Customers Grid -->
-      <div class="customer-grid" id="customersGrid">
-        <div class="no-data">Loading customers...</div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- WhatsApp Message Modal -->
-  <div class="modal" id="whatsappModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="whatsappModalTitle">Send WhatsApp Message</h3>
-        <button class="modal-close" onclick="closeWhatsappModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="template-buttons">
-          <button class="template-btn" onclick="setTemplate('offer')">🎉 Offer Message</button>
-          <button class="template-btn" onclick="setTemplate('order')">📦 Order Update</button>
-          <button class="template-btn" onclick="setTemplate('thanks')">🙏 Thank You</button>
-          <button class="template-btn" onclick="setTemplate('delivery')">🚚 Delivery Alert</button>
-        </div>
-        <div class="form-group">
-          <label>Message</label>
-          <textarea id="whatsappMessage" rows="6" placeholder="Type your message here..."></textarea>
-        </div>
-        <p style="font-size: .7rem; color: var(--muted); margin-top: 8px;">
-          💡 Tip: Use {name} to insert customer name automatically
-        </p>
-      </div>
-      <div class="modal-footer">
-        <button class="action-btn" onclick="closeWhatsappModal()">Cancel</button>
-        <button class="send-whatsapp-btn" id="sendWhatsappBtn">📱 Send Message</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Customer Orders Modal -->
-  <div class="modal" id="ordersModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="ordersModalTitle">Customer Orders</h3>
-        <button class="modal-close" onclick="closeOrdersModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="orders-list" id="ordersList"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
+    </section>
+  </main>
+  
+  <!-- Customer Modal -->
+  <div class="modal-overlay" id="customerModal"><div class="modal-content"><div class="sticky top-0 bg-white border-b p-5 flex justify-between items-center"><h3 class="text-lg font-bold" id="modalTitle">Add Customer</h3><button class="close-modal-btn w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">✕</button></div><div class="p-5 space-y-4"><input type="hidden" id="customerId"><div><label class="block text-sm font-semibold mb-1">Full Name *</label><input type="text" id="custName" class="w-full px-4 py-2 border rounded-xl"></div><div><label class="block text-sm font-semibold mb-1">Phone Number *</label><input type="tel" id="custPhone" class="w-full px-4 py-2 border rounded-xl" maxlength="10"></div><div><label class="block text-sm font-semibold mb-1">Email</label><input type="email" id="custEmail" class="w-full px-4 py-2 border rounded-xl"></div><div><label class="block text-sm font-semibold mb-1">Address</label><textarea id="custAddress" rows="2" class="w-full px-4 py-2 border rounded-xl"></textarea></div><div><label class="block text-sm font-semibold mb-1">City</label><input type="text" id="custCity" class="w-full px-4 py-2 border rounded-xl"></div><div><label class="block text-sm font-semibold mb-1">Pincode</label><input type="text" id="custPincode" class="w-full px-4 py-2 border rounded-xl" maxlength="6"></div><div><label class="block text-sm font-semibold mb-1">Status</label><select id="custStatus" class="w-full px-4 py-2 border rounded-xl"><option value="active">Active</option><option value="inactive">Inactive</option></select></div><div class="flex gap-3 pt-4"><button id="saveCustomerBtn" class="flex-1 bg-primary text-white py-3 rounded-xl font-semibold">Save Customer</button><button class="close-modal-btn flex-1 bg-gray-100 py-3 rounded-xl font-semibold">Cancel</button></div></div></div></div>
+  
+  <!-- WhatsApp Broadcast Modal -->
+  <div class="modal-overlay" id="whatsappModal"><div class="modal-content" style="max-width: 700px;"><div class="sticky top-0 bg-white border-b p-5 flex justify-between items-center"><h3 class="text-lg font-bold flex items-center gap-2"><span class="material-symbols-outlined text-whatsapp">forum</span>WhatsApp Broadcast</h3><button class="close-wa-modal-btn w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">✕</button></div><div class="p-5 space-y-5"><!-- Recipient Selection --><div><label class="block font-semibold text-sm mb-2">1. Select Recipients</label><div class="grid grid-cols-1 sm:grid-cols-3 gap-3"><label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer"><input type="radio" name="recipientType" value="existing" checked> <span>Existing Customers (<span id="existingCount">0</span>)</span></label><label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer"><input type="radio" name="recipientType" value="external"> <span>External Numbers</span></label><label class="flex items-center gap-2 p-3 border rounded-xl cursor-pointer"><input type="radio" name="recipientType" value="csv"> <span>Upload CSV</span></label></div></div><!-- External Numbers Input --><div id="externalNumbersDiv" style="display:none;"><label class="block font-semibold text-sm mb-2">2. Phone Numbers (with country code)</label><textarea id="externalNumbers" rows="3" class="w-full px-4 py-2 border rounded-xl" placeholder="919876543210&#10;919876543211&#10;919876543212"></textarea><p class="text-xs text-gray-500 mt-1">Enter one number per line, with country code (e.g., 919876543210)</p></div><!-- CSV Upload --><div id="csvUploadDiv" style="display:none;"><label class="block font-semibold text-sm mb-2">2. Upload CSV File</label><input type="file" id="csvFile" accept=".csv" class="w-full"><p class="text-xs text-gray-500 mt-1">CSV format: phone,name (optional)</p></div><!-- Template Selection --><div><label class="block font-semibold text-sm mb-2">3. Message Template</label><div class="flex flex-wrap gap-2 mb-3"><button class="template-btn px-3 py-1.5 bg-gray-100 rounded-full text-sm" data-template="offer">🎉 Offer</button><button class="template-btn px-3 py-1.5 bg-gray-100 rounded-full text-sm" data-template="order">📦 Order Update</button><button class="template-btn px-3 py-1.5 bg-gray-100 rounded-full text-sm" data-template="thankyou">🙏 Thank You</button><button class="template-btn px-3 py-1.5 bg-gray-100 rounded-full text-sm" data-template="delivery">🚚 Delivery Alert</button><button class="template-btn px-3 py-1.5 bg-gray-100 rounded-full text-sm" data-template="due">💰 Due Reminder</button></div><textarea id="messageContent" rows="5" class="w-full px-4 py-2 border rounded-xl" placeholder="Type your message here... Use {name} for customer name"></textarea></div><!-- Preview --><div><label class="block font-semibold text-sm mb-2">Preview</label><div class="bg-[#EFEAE2] p-4 rounded-xl"><div class="bg-[#075E54] text-white px-3 py-2 rounded-t-lg -mt-4 -mx-4 mb-3"><span class="text-sm">Customer Preview</span></div><div class="bg-white rounded-lg p-3 max-w-[85%]"><p id="previewText" class="text-sm">🎉 Special Offer for {name}! Get 20% OFF on next order.</p></div></div></div></div><div class="p-5 border-t bg-gray-50 flex justify-end gap-3"><button class="close-wa-modal-btn px-4 py-2 border rounded-lg">Cancel</button><button id="sendBroadcastBtn" class="px-6 py-2 bg-whatsapp text-white rounded-lg flex items-center gap-2"><span class="material-symbols-outlined text-sm">send</span>Send Broadcast</button></div></div></div>
+  
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="deleteModal"><div class="modal-content max-w-sm"><div class="p-6 text-center"><div class="text-5xl mb-4">⚠️</div><h3 class="text-lg font-bold mb-2">Delete Customer?</h3><p class="text-gray-500 text-sm mb-4">Are you sure you want to delete this customer? This action cannot be undone.</p><div class="flex gap-3"><button id="cancelDeleteBtn" class="flex-1 px-4 py-2 border rounded-lg">Cancel</button><button id="confirmDeleteBtn" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg">Delete</button></div></div></div></div>
+  
   <div class="toast" id="toast"></div>
-
+  
   <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== CUSTOMER MANAGEMENT SYSTEM WITH WHATSAPP =====
+    // ===== CUSTOMER MANAGEMENT - FULLY WORKING =====
     
-    // State
-    let allCustomers = [];
-    let allOrders = [];
-    let selectedCustomers = new Set();
-    let currentMessageTarget = null; // 'single' or 'bulk'
-    let currentCustomerPhone = null;
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const toast = document.getElementById('toast');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    // Templates
-    const templates = {
-      offer: `🎉 *Special Offer for {name}!* 🎉\n\nGet 20% OFF on your next order at OK Mart!\n\nUse code: SAVE20\n\nValid for today only!\n\nShop now: https://okmart.netlify.app`,
-      order: `📦 *Order Update* 📦\n\nHi {name}, your order has been confirmed and will be delivered soon.\n\nTrack your order: https://okmart.netlify.app/track-order.html\n\nThank you for shopping with OK Mart! 🙏`,
-      thanks: `🙏 *Thank You!* 🙏\n\nHi {name}, thank you for shopping at OK Mart!\n\nWe hope you enjoyed your experience.\n\nRate us: ⭐⭐⭐⭐⭐\n\nSee you again soon!`,
-      delivery: `🚚 *Delivery Alert* 🚚\n\nHi {name}, your order is out for delivery!\n\nExpected delivery in 10-15 minutes.\n\nTrack live: https://okmart.netlify.app/track-order.html`
-    };
+    function openSidebar() { mobileSidebar.classList.add('open'); sidebarOverlay.style.display = 'block'; }
+    function closeSidebar() { mobileSidebar.classList.remove('open'); sidebarOverlay.style.display = 'none'; }
+    mobileMenuBtn?.addEventListener('click', openSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
     
-    // Load Data
-    async function loadData() {
-      await loadOrders();
-      processCustomers();
-      renderCustomers();
-      updateStats();
-    }
+    let allCustomers = [], allOrders = [], filteredCustomers = [], selectedCustomers = new Set();
+    let currentPage = 1, rowsPerPage = 10, deleteCustomerId = null, editCustomerId = null;
     
-    // Load Orders
-    async function loadOrders() {
+    async function loadCustomers() {
+      showLoading(true);
       try {
-        const snapshot = await db.collection('orders').get();
+        const snapshot = await db.collection('customers').get();
+        allCustomers = [];
+        snapshot.forEach(doc => { allCustomers.push({ id: doc.id, ...doc.data() }); });
+        const ordersSnap = await db.collection('orders').get();
         allOrders = [];
-        snapshot.forEach(doc => {
-          allOrders.push({ id: doc.id, ...doc.data() });
-        });
-      } catch (error) {
-        console.error('Error loading orders:', error);
-      }
+        ordersSnap.forEach(doc => { allOrders.push(doc.data()); });
+        updateStats();
+        filterCustomers();
+      } catch(e) { showToast('Error loading customers', 'error'); }
+      showLoading(false);
     }
     
-    // Process Customers from Orders
-    function processCustomers() {
-      const customerMap = new Map();
-      
-      allOrders.forEach(order => {
-        const phone = order.customerPhone || order.phone;
-        if (!phone) return;
-        
-        if (!customerMap.has(phone)) {
-          customerMap.set(phone, {
-            phone: phone,
-            name: order.customerName || order.name || 'Customer',
-            email: order.email || '',
-            address: order.customerAddress || order.address || '',
-            city: order.city || '',
-            totalOrders: 0,
-            totalSpent: 0,
-            lastOrderDate: null,
-            firstOrderDate: null,
-            orders: []
-          });
-        }
-        
-        const customer = customerMap.get(phone);
-        customer.totalOrders++;
-        customer.totalSpent += order.total || 0;
-        
-        const orderDate = order.orderDate?.toDate ? order.orderDate.toDate() : new Date(order.orderDate);
-        if (!customer.firstOrderDate || orderDate < customer.firstOrderDate) {
-          customer.firstOrderDate = orderDate;
-        }
-        if (!customer.lastOrderDate || orderDate > customer.lastOrderDate) {
-          customer.lastOrderDate = orderDate;
-        }
-        
-        customer.orders.push({
-          id: order.id,
-          total: order.total,
-          status: order.status,
-          date: orderDate
-        });
-      });
-      
-      // Sort orders by date
-      customerMap.forEach(customer => {
-        customer.orders.sort((a, b) => b.date - a.date);
-      });
-      
-      allCustomers = Array.from(customerMap.values());
-    }
-    
-    // Update Stats
     function updateStats() {
-      const totalCustomers = allCustomers.length;
-      const activeCustomers = allCustomers.filter(c => c.totalOrders >= 2).length;
-      const totalOrders = allOrders.length;
-      const totalSpent = allCustomers.reduce((sum, c) => sum + c.totalSpent, 0);
-      
-      document.getElementById('totalCustomers').textContent = totalCustomers;
-      document.getElementById('activeCustomers').textContent = activeCustomers;
-      document.getElementById('totalOrders').textContent = totalOrders;
-      document.getElementById('totalSpent').textContent = `₹${totalSpent.toLocaleString('en-IN')}`;
+      document.getElementById('totalCustomers').textContent = allCustomers.length;
+      document.getElementById('activeCustomers').textContent = allCustomers.filter(c => c.status === 'active').length;
+      document.getElementById('totalOrders').textContent = allOrders.length;
+      document.getElementById('totalRevenue').textContent = `₹${allOrders.reduce((s,o)=>s+(o.total||0),0).toLocaleString('en-IN')}`;
     }
     
-    // Filter Customers
-    function getFilteredCustomers() {
-      const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
-      const filter = document.getElementById('orderCountFilter')?.value || 'all';
-      
-      return allCustomers.filter(c => {
-        if (search && !c.name.toLowerCase().includes(search) && !c.phone.includes(search)) {
-          return false;
-        }
-        if (filter === 'returning' && c.totalOrders < 2) return false;
-        if (filter === 'one-time' && c.totalOrders !== 1) return false;
-        if (filter === 'inactive' && c.totalOrders > 0) return false;
+    function filterCustomers() {
+      const search = document.getElementById('filterSearch').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      filteredCustomers = allCustomers.filter(c => {
+        if(search && !c.name?.toLowerCase().includes(search) && !c.phone?.includes(search)) return false;
+        if(status === 'active' && c.status !== 'active') return false;
+        if(status === 'inactive' && c.status !== 'inactive') return false;
+        if(status === 'due' && (c.dueAmount||0) < 5000) return false;
         return true;
       });
+      currentPage = 1; selectedCustomers.clear(); updateBulkBar(); renderCustomers(); updatePagination();
     }
     
-    // Render Customers
     function renderCustomers() {
-      const filtered = getFilteredCustomers();
-      const grid = document.getElementById('customersGrid');
-      
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="no-data">👥 No customers found</div>';
-        return;
-      }
-      
-      grid.innerHTML = filtered.map(c => {
-        const isSelected = selectedCustomers.has(c.phone);
-        const lastOrderDate = c.lastOrderDate ? c.lastOrderDate.toLocaleDateString('en-IN') : 'N/A';
-        
-        return `
-          <div class="customer-card ${isSelected ? 'selected' : ''}">
-            <input type="checkbox" class="customer-select" data-phone="${c.phone}" ${isSelected ? 'checked' : ''} onchange="toggleCustomerSelect('${c.phone}', this.checked)">
-            <div class="customer-header">
-              <div class="customer-avatar">${c.name.charAt(0).toUpperCase()}</div>
-              <div class="customer-info">
-                <h3>${escapeHtml(c.name)}</h3>
-                <p>Customer since: ${c.firstOrderDate ? c.firstOrderDate.toLocaleDateString('en-IN') : 'New'}</p>
-              </div>
-            </div>
-            <div class="customer-body">
-              <div class="detail-row">
-                <span class="detail-icon">📞</span>
-                <span class="detail-label">Phone</span>
-                <span class="detail-value">${c.phone}</span>
-              </div>
-              ${c.email ? `<div class="detail-row"><span class="detail-icon">✉️</span><span class="detail-label">Email</span><span class="detail-value">${escapeHtml(c.email)}</span></div>` : ''}
-              <div class="detail-row">
-                <span class="detail-icon">📦</span>
-                <span class="detail-label">Orders</span>
-                <span class="detail-value">${c.totalOrders} orders</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-icon">💰</span>
-                <span class="detail-label">Total Spent</span>
-                <span class="detail-value">₹${c.totalSpent.toLocaleString('en-IN')}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-icon">🕐</span>
-                <span class="detail-label">Last Order</span>
-                <span class="detail-value">${lastOrderDate}</span>
-              </div>
-            </div>
-            <div class="customer-footer">
-              <button class="whatsapp-btn" onclick="openSingleWhatsapp('${c.phone}', '${escapeHtml(c.name)}')">
-                📱 WhatsApp
-              </button>
-              <button class="view-orders-btn" onclick="viewCustomerOrders('${c.phone}')">
-                📋 View Orders
-              </button>
-            </div>
-          </div>
-        `;
+      const start = (currentPage-1)*rowsPerPage, end = start+rowsPerPage, pageCustomers = filteredCustomers.slice(start,end);
+      const tbody = document.getElementById('customersTableBody');
+      if(pageCustomers.length===0){ tbody.innerHTML='<tr><td colspan="7" class="text-center py-10">No customers found</td></tr>'; return; }
+      tbody.innerHTML = pageCustomers.map(c => {
+        const orders = allOrders.filter(o => o.customerPhone === c.phone || o.phone === c.phone);
+        const totalSpent = orders.reduce((s,o)=>s+(o.total||0),0);
+        const dueAmount = c.dueAmount || 0;
+        const statusClass = c.status === 'active' ? 'bg-status-delivered-bg text-status-delivered-text' : 'bg-surface-variant text-on-surface-variant';
+        const dueClass = dueAmount > 5000 ? 'text-red-500 font-bold' : '';
+        return `<tr class="table-row-hover"><td class="p-4"><input type="checkbox" class="customer-select" data-id="${c.id}"></td>
+        <td class="p-4"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">${c.name?.charAt(0)||'?'}</div><div><div class="font-medium">${escapeHtml(c.name)}</div><div class="text-xs text-gray-500">${c.phone}</div></div></div></td>
+        <td class="p-4">${orders.length}</td><td class="p-4 font-medium">₹${totalSpent.toLocaleString('en-IN')}</td>
+        <td class="p-4 ${dueClass}">₹${dueAmount.toLocaleString('en-IN')}</td>
+        <td class="p-4"><span class="px-2 py-1 rounded-full text-xs ${statusClass}">${c.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+        <td class="p-4 text-right"><div class="flex justify-end gap-2"><button class="edit-customer-btn p-1.5 hover:bg-gray-100 rounded" data-id="${c.id}"><span class="material-symbols-outlined text-sm">edit</span></button><button class="delete-customer-btn p-1.5 hover:bg-red-100 rounded text-red-500" data-id="${c.id}" data-name="${escapeHtml(c.name)}"><span class="material-symbols-outlined text-sm">delete</span></button><button class="whatsapp-customer-btn p-1.5 hover:bg-whatsapp/10 rounded text-whatsapp" data-phone="${c.phone}" data-name="${escapeHtml(c.name)}"><span class="material-symbols-outlined text-sm">forum</span></button></div></td></tr>`;
       }).join('');
-      
-      // Update bulk actions visibility
-      const bulkActions = document.getElementById('bulkActions');
-      if (selectedCustomers.size > 0) {
-        bulkActions.style.display = 'flex';
-        document.getElementById('selectedCount').textContent = `${selectedCustomers.size} customer${selectedCustomers.size !== 1 ? 's' : ''} selected`;
-      } else {
-        bulkActions.style.display = 'none';
-      }
+      document.querySelectorAll('.customer-select').forEach(cb=>cb.addEventListener('change',()=>{if(cb.checked)selectedCustomers.add(cb.dataset.id);else selectedCustomers.delete(cb.dataset.id);updateBulkBar();}));
+      document.querySelectorAll('.edit-customer-btn').forEach(btn=>btn.addEventListener('click',()=>editCustomer(btn.dataset.id)));
+      document.querySelectorAll('.delete-customer-btn').forEach(btn=>btn.addEventListener('click',()=>openDeleteModal(btn.dataset.id,btn.dataset.name)));
+      document.querySelectorAll('.whatsapp-customer-btn').forEach(btn=>btn.addEventListener('click',()=>sendSingleWhatsApp(btn.dataset.phone,btn.dataset.name)));
     }
     
-    // Toggle Customer Select
-    window.toggleCustomerSelect = function(phone, checked) {
-      if (checked) {
-        selectedCustomers.add(phone);
-      } else {
-        selectedCustomers.delete(phone);
-      }
-      renderCustomers();
-    };
+    function updateBulkBar(){ const count=selectedCustomers.size; document.getElementById('selectedCount').textContent=`${count} customer${count!==1?'s':''} selected`; document.getElementById('bulkActionsBar').classList.toggle('show',count>0); document.getElementById('selectAllCheckbox').checked=filteredCustomers.length>0&&filteredCustomers.every(c=>selectedCustomers.has(c.id)); }
     
-    function clearSelection() {
-      selectedCustomers.clear();
-      renderCustomers();
-    }
+    document.getElementById('selectAllCheckbox')?.addEventListener('change',(e)=>{if(e.target.checked)filteredCustomers.forEach(c=>selectedCustomers.add(c.id));else selectedCustomers.clear();renderCustomers();updateBulkBar();});
+    document.getElementById('bulkWhatsappBtn')?.addEventListener('click',()=>{if(selectedCustomers.size===0){showToast('Select customers first','error');return;}openBulkWhatsapp();});
+    document.getElementById('bulkDeleteBtn')?.addEventListener('click',async()=>{if(confirm(`Delete ${selectedCustomers.size} customers?`)){for(let id of selectedCustomers)await db.collection('customers').doc(id).delete();showToast(`${selectedCustomers.size} customers deleted`,'success');selectedCustomers.clear();await loadCustomers();}});
     
-    // View Customer Orders
-    window.viewCustomerOrders = async function(phone) {
-      const customer = allCustomers.find(c => c.phone === phone);
-      if (!customer) return;
-      
-      const ordersList = document.getElementById('ordersList');
-      document.getElementById('ordersModalTitle').textContent = `Orders - ${customer.name}`;
-      
-      if (customer.orders.length === 0) {
-        ordersList.innerHTML = '<div class="no-data">No orders found</div>';
-      } else {
-        ordersList.innerHTML = customer.orders.map(order => `
-          <div class="order-item-card" onclick="window.location.href='order-detail.html?id=${order.id}'">
-            <div class="order-header">
-              <span class="order-id">#${order.id.slice(0, 8).toUpperCase()}</span>
-              <span class="order-status status-${order.status || 'received'}">${order.status || 'Received'}</span>
-            </div>
-            <div class="order-header">
-              <span>📅 ${order.date.toLocaleDateString('en-IN')}</span>
-              <span class="order-total">₹${order.total || 0}</span>
-            </div>
-          </div>
-        `).join('');
-      }
-      
-      document.getElementById('ordersModal').classList.add('active');
-    };
+    function openAddModal(){ editCustomerId=null; document.getElementById('modalTitle').innerText='Add Customer'; document.getElementById('customerId').value=''; document.getElementById('custName').value=''; document.getElementById('custPhone').value=''; document.getElementById('custEmail').value=''; document.getElementById('custAddress').value=''; document.getElementById('custCity').value=''; document.getElementById('custPincode').value=''; document.getElementById('custStatus').value='active'; document.getElementById('customerModal').classList.add('active'); }
+    async function editCustomer(id){ const c=allCustomers.find(c=>c.id===id); if(!c)return; editCustomerId=id; document.getElementById('modalTitle').innerText='Edit Customer'; document.getElementById('customerId').value=id; document.getElementById('custName').value=c.name||''; document.getElementById('custPhone').value=c.phone||''; document.getElementById('custEmail').value=c.email||''; document.getElementById('custAddress').value=c.address||''; document.getElementById('custCity').value=c.city||''; document.getElementById('custPincode').value=c.pincode||''; document.getElementById('custStatus').value=c.status||'active'; document.getElementById('customerModal').classList.add('active'); }
+    async function saveCustomer(){ const data={ name:document.getElementById('custName').value.trim(), phone:document.getElementById('custPhone').value.trim(), email:document.getElementById('custEmail').value.trim(), address:document.getElementById('custAddress').value.trim(), city:document.getElementById('custCity').value.trim(), pincode:document.getElementById('custPincode').value.trim(), status:document.getElementById('custStatus').value, updatedAt:new Date().toISOString() }; if(!data.name||!data.phone){showToast('Name and phone required','error');return;} showLoading(true); try{ if(editCustomerId)await db.collection('customers').doc(editCustomerId).update(data); else{ data.createdAt=new Date().toISOString(); data.totalOrders=0; data.totalSpent=0; data.dueAmount=0; await db.collection('customers').add(data); } showToast(editCustomerId?'Customer updated':'Customer added','success'); document.getElementById('customerModal').classList.remove('active'); await loadCustomers(); }catch(e){showToast('Error saving','error');} showLoading(false); }
     
-    // Close Orders Modal
-    function closeOrdersModal() {
-      document.getElementById('ordersModal').classList.remove('active');
-    }
+    function openDeleteModal(id,name){ deleteCustomerId=id; document.getElementById('deleteModal').querySelector('p').innerHTML=`Are you sure you want to delete "<strong>${name}</strong>"?`; document.getElementById('deleteModal').classList.add('active'); }
+    async function confirmDelete(){ if(!deleteCustomerId)return; showLoading(true); try{ await db.collection('customers').doc(deleteCustomerId).delete(); showToast('Customer deleted','success'); document.getElementById('deleteModal').classList.remove('active'); await loadCustomers(); }catch(e){showToast('Error deleting','error');} showLoading(false); }
     
-    // WhatsApp Functions
-    function setTemplate(type) {
-      const messageBox = document.getElementById('whatsappMessage');
-      let template = templates[type] || '';
-      
-      // Replace {name} placeholder if single customer selected
-      if (currentCustomerPhone && currentMessageTarget === 'single') {
-        const customer = allCustomers.find(c => c.phone === currentCustomerPhone);
-        if (customer) {
-          template = template.replace(/{name}/g, customer.name);
-        }
-      }
-      
-      messageBox.value = template;
-    }
+    function updatePagination(){ const totalPages=Math.ceil(filteredCustomers.length/rowsPerPage); const paginationDiv=document.getElementById('paginationButtons'); const start=(currentPage-1)*rowsPerPage+1; const end=Math.min(currentPage*rowsPerPage,filteredCustomers.length); document.getElementById('paginationInfo').textContent=`Showing ${start} to ${end} of ${filteredCustomers.length} customers`; if(totalPages<=1){paginationDiv.innerHTML='';return;} let buttons=''; for(let i=1;i<=Math.min(totalPages,5);i++)buttons+=`<button class="page-btn w-9 h-9 flex items-center justify-center rounded-lg border ${i===currentPage?'bg-primary text-white':'hover:bg-gray-100'} transition-colors" data-page="${i}">${i}</button>`; paginationDiv.innerHTML=buttons; document.querySelectorAll('.page-btn').forEach(btn=>btn.addEventListener('click',()=>{currentPage=parseInt(btn.dataset.page);renderCustomers();updatePagination();})); }
     
-    function openSingleWhatsapp(phone, name) {
-      currentCustomerPhone = phone;
-      currentMessageTarget = 'single';
-      document.getElementById('whatsappModalTitle').textContent = `Send WhatsApp to ${name}`;
-      document.getElementById('whatsappMessage').value = templates.offer.replace(/{name}/g, name);
-      document.getElementById('whatsappModal').classList.add('active');
-    }
+    // WhatsApp Templates
+    const templates={ offer:`🎉 *Special Offer for {name}!* 🎉\n\nGet 20% OFF on your next order at OK Mart!\n\nUse code: SAVE20\n\nShop now: https://okmart.netlify.app`, order:`📦 *Order Update* 📦\n\nHi {name}, your order has been confirmed and will be delivered soon.\n\nTrack: https://okmart.netlify.app/track-order.html`, thankyou:`🙏 *Thank You {name}!* 🙏\n\nThank you for shopping at OK Mart!\n\nRate us: ⭐⭐⭐⭐⭐\n\nSee you again soon!`, delivery:`🚚 *Delivery Alert* 🚚\n\nHi {name}, your order is out for delivery!\n\nExpected in 10-15 minutes.`, due:`💰 *Payment Reminder* 💰\n\nDear {name}, your due amount of ₹{due} is pending.\n\nPlease clear at earliest.` };
+    document.querySelectorAll('.template-btn').forEach(btn=>btn.addEventListener('click',()=>{let msg=templates[btn.dataset.template]||''; document.getElementById('messageContent').value=msg; updatePreview();}));
+    function updatePreview(){ let msg=document.getElementById('messageContent').value; document.getElementById('previewText').innerHTML=msg.replace(/\n/g,'<br>'); }
+    document.getElementById('messageContent')?.addEventListener('input',updatePreview);
+    function sendSingleWhatsApp(phone,name){ let msg=document.getElementById('messageContent').value||templates.offer; msg=msg.replace(/{name}/g,name); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank'); }
+    function openBulkWhatsapp(){ let phones=[]; for(let id of selectedCustomers){ const c=allCustomers.find(c=>c.id===id); if(c&&c.phone) phones.push(c.phone); } if(phones.length===0){showToast('No valid phone numbers','error');return;} let msg=document.getElementById('messageContent').value||templates.offer; phones.forEach((phone,idx)=>setTimeout(()=>{let personalizedMsg=msg.replace(/{name}/g,allCustomers.find(c=>c.phone===phone)?.name||'Customer'); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(personalizedMsg)}`,'_blank');},idx*500)); showToast(`Opening WhatsApp for ${phones.length} customers`,'success'); }
     
-    function openBulkWhatsapp() {
-      if (selectedCustomers.size === 0) {
-        showToast('Please select customers first', 'error');
-        return;
-      }
-      currentCustomerPhone = null;
-      currentMessageTarget = 'bulk';
-      document.getElementById('whatsappModalTitle').textContent = `Send Bulk WhatsApp (${selectedCustomers.size} customers)`;
-      document.getElementById('whatsappMessage').value = templates.offer.replace(/{name}/g, 'Customer');
-      document.getElementById('whatsappModal').classList.add('active');
-    }
+    // Broadcast Modal
+    document.getElementById('whatsappBroadcastBtn')?.addEventListener('click',()=>{ document.getElementById('existingCount').innerText=allCustomers.length; document.getElementById('whatsappModal').classList.add('active'); });
+    document.querySelectorAll('input[name="recipientType"]').forEach(radio=>radio.addEventListener('change',()=>{ const val=document.querySelector('input[name="recipientType"]:checked').value; document.getElementById('externalNumbersDiv').style.display=val==='external'?'block':'none'; document.getElementById('csvUploadDiv').style.display=val==='csv'?'block':'none'; }));
+    document.getElementById('sendBroadcastBtn')?.addEventListener('click',()=>{ const type=document.querySelector('input[name="recipientType"]:checked').value; let phones=[]; let msg=document.getElementById('messageContent').value||templates.offer; if(type==='existing') phones=allCustomers.filter(c=>c.status==='active').map(c=>c.phone).filter(p=>p); else if(type==='external'){ const text=document.getElementById('externalNumbers').value; phones=text.split('\n').map(l=>l.trim()).filter(l=>l); } if(phones.length===0){showToast('No recipients selected','error');return;} phones.forEach((phone,idx)=>setTimeout(()=>{let personalizedMsg=msg.replace(/{name}/g,allCustomers.find(c=>c.phone===phone)?.name||'Customer'); window.open(`https://wa.me/${phone}?text=${encodeURIComponent(personalizedMsg)}`,'_blank');},idx*500)); showToast(`Broadcasting to ${phones.length} recipients`,'success'); document.getElementById('whatsappModal').classList.remove('active'); });
     
-    function closeWhatsappModal() {
-      document.getElementById('whatsappModal').classList.remove('active');
-      currentCustomerPhone = null;
-      currentMessageTarget = null;
-    }
+    // Export CSV
+    document.getElementById('exportBtn')?.addEventListener('click',()=>{ const headers=['Name','Phone','Email','Address','City','Pincode','Status','Orders','Total Spent']; const rows=allCustomers.map(c=>{ const orders=allOrders.filter(o=>o.customerPhone===c.phone||o.phone===c.phone); const totalSpent=orders.reduce((s,o)=>s+(o.total||0),0); return [c.name,c.phone,c.email||'',c.address||'',c.city||'',c.pincode||'',c.status,orders.length,totalSpent]; }); const csv=[headers,...rows].map(row=>row.join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`customers_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(url); showToast('Exported successfully','success'); });
     
-    function sendWhatsappMessage() {
-      let message = document.getElementById('whatsappMessage').value.trim();
-      if (!message) {
-        showToast('Please enter a message', 'error');
-        return;
-      }
-      
-      if (currentMessageTarget === 'single' && currentCustomerPhone) {
-        // Send to single customer
-        const whatsappUrl = `https://wa.me/${currentCustomerPhone}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-        showToast('Opening WhatsApp...', 'success');
-        closeWhatsappModal();
-      } 
-      else if (currentMessageTarget === 'bulk' && selectedCustomers.size > 0) {
-        // Bulk send - open multiple tabs
-        const phones = Array.from(selectedCustomers);
-        showToast(`Opening WhatsApp for ${phones.length} customers...`, 'success');
-        
-        phones.forEach((phone, index) => {
-          // Replace {name} with customer name
-          const customer = allCustomers.find(c => c.phone === phone);
-          let personalizedMessage = message;
-          if (customer) {
-            personalizedMessage = personalizedMessage.replace(/{name}/g, customer.name);
-          }
-          const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(personalizedMessage)}`;
-          
-          // Open in new window with delay to avoid blocking
-          setTimeout(() => {
-            window.open(whatsappUrl, '_blank');
-          }, index * 500);
-        });
-        
-        closeWhatsappModal();
-      }
-    }
+    function showLoading(show){ loadingOverlay.style.display=show?'flex':'none'; }
+    function showToast(msg,type){ toast.textContent=msg; toast.className=`toast ${type}`; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;}); }
+    function logout(){ if(confirm('Logout?')){ localStorage.clear(); window.location.href='login.html'; } }
     
-    // Search and Filter Events
-    document.getElementById('searchInput')?.addEventListener('input', () => renderCustomers());
-    document.getElementById('orderCountFilter')?.addEventListener('change', () => renderCustomers());
-    document.getElementById('bulkMessageBtn')?.addEventListener('click', openBulkWhatsapp);
-    document.getElementById('bulkWhatsappSelected')?.addEventListener('click', openBulkWhatsapp);
-    document.getElementById('sendWhatsappBtn')?.addEventListener('click', sendWhatsappMessage);
+    document.getElementById('addCustomerBtn')?.addEventListener('click',openAddModal);
+    document.getElementById('saveCustomerBtn')?.addEventListener('click',saveCustomer);
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click',confirmDelete);
+    document.getElementById('cancelDeleteBtn')?.addEventListener('click',()=>document.getElementById('deleteModal').classList.remove('active'));
+    document.querySelectorAll('.close-modal-btn, .close-wa-modal-btn').forEach(btn=>btn.addEventListener('click',()=>{ document.getElementById('customerModal')?.classList.remove('active'); document.getElementById('whatsappModal')?.classList.remove('active'); document.getElementById('deleteModal')?.classList.remove('active'); }));
+    document.getElementById('filterSearch')?.addEventListener('input',filterCustomers);
+    document.getElementById('statusFilter')?.addEventListener('change',filterCustomers);
     
-    // Close modals on outside click
-    document.getElementById('whatsappModal')?.addEventListener('click', (e) => {
-      if (e.target === document.getElementById('whatsappModal')) closeWhatsappModal();
-    });
-    document.getElementById('ordersModal')?.addEventListener('click', (e) => {
-      if (e.target === document.getElementById('ordersModal')) closeOrdersModal();
-    });
-    
-    // Helper Functions
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
-    
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-      }
-    }
-    
-    // Initialize
-    loadData();
+    loadCustomers();
   </script>
 </body>
 </html>
