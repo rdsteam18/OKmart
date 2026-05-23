@@ -4,453 +4,185 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Product Management | OK Mart Admin</title>
-  <meta name="theme-color" content="#2ecc71">
+  <meta name="theme-color" content="#006d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
+  <!-- Tailwind CSS + Custom Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#006d37',
+            'primary-container': '#2ecc71',
+            'on-primary': '#ffffff',
+            'surface': '#faf8ff',
+            'surface-dim': '#d6d9eb',
+            'surface-bright': '#faf8ff',
+            'surface-container': '#eaedff',
+            'surface-container-low': '#f2f3ff',
+            'surface-container-high': '#e5e7fa',
+            'surface-container-highest': '#dfe2f4',
+            'surface-container-lowest': '#ffffff',
+            'on-surface': '#171b28',
+            'on-surface-variant': '#3d4a3e',
+            'outline': '#6c7b6d',
+            'outline-variant': '#bbcbbb',
+            'inverse-surface': '#2c303e',
+            'inverse-on-surface': '#eef0ff',
+            'inverse-primary': '#4ae183',
+            'error': '#ba1a1a',
+            'error-container': '#ffdad6',
+            'status-pending-bg': '#fef3c7',
+            'status-pending-text': '#d97706',
+            'status-delivered-bg': '#d1fae5',
+            'status-delivered-text': '#065f46',
+            'status-preparing-bg': '#fef3c7',
+            'status-preparing-text': '#d97706'
+          },
+          fontFamily: {
+            'page-title': ['Inter', 'sans-serif'],
+            'stat-number': ['Inter', 'sans-serif'],
+            'table-header': ['Inter', 'sans-serif'],
+            'table-cell': ['Inter', 'sans-serif'],
+            'button': ['Inter', 'sans-serif'],
+            'body-sm': ['Inter', 'sans-serif']
+          },
+          fontSize: {
+            'page-title': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'stat-number': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '800' }],
+            'table-header': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+            'table-cell': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'button': ['13px', { lineHeight: '16px', fontWeight: '500' }],
+            'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }]
+          },
+          borderRadius: {
+            'DEFAULT': '0.25rem',
+            'lg': '0.5rem',
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'sidebar-width': '260px',
+            'gutter': '1.5rem',
+            'stack-sm': '0.5rem',
+            'stack-md': '1rem',
+            'stack-lg': '1.5rem'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* Custom Animations */
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
-    :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --primary-light: #e8f8ef;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1a1e2b;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --success: #10b981;
-      --info: #3b82f6;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,.04);
-      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 20px;
-      --transition: all .2s ease;
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
     
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
     
-    /* Sidebar */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
+    .animate-page-entry {
+      animation: fadeInSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(180deg, #1a1e2b 0%, #0f1119 100%);
-      color: white;
+    .bento-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .bento-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .table-row-hover {
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .table-row-hover:hover {
+      background-color: rgba(0, 109, 55, 0.05) !important;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #e5e7fa;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #006d37;
+      border-radius: 10px;
+    }
+    
+    /* Modal Animation */
+    .modal-enter {
+      animation: fadeInSlideUp 0.3s ease;
+    }
+    
+    /* Toast */
+    .toast {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 100;
-      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-    
-    .sidebar-brand {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .sidebar-logo-img {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    
-    .sidebar-logo-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #fff, var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .sidebar-badge {
-      background: var(--primary);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: .6rem;
-      font-weight: 600;
-    }
-    
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 0;
-    }
-    
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
-      color: rgba(255,255,255,.7);
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-      position: relative;
-    }
-    
-    .sidebar-nav a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(46,204,113,.1);
-      transition: width .3s;
-    }
-    
-    .sidebar-nav a:hover::before {
-      width: 100%;
-    }
-    
-    .sidebar-nav a:hover {
+      bottom: 30px;
+      right: 30px;
+      background: #171b28;
       color: white;
-      padding-left: 28px;
-    }
-    
-    .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
-    
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid rgba(255,255,255,.1);
-    }
-    
-    .sidebar-footer button {
-      width: 100%;
-      padding: 12px;
-      background: rgba(255,255,255,.08);
-      border: none;
-      color: rgba(255,255,255,.7);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .sidebar-footer button:hover {
-      background: rgba(239,68,68,.2);
-      color: var(--danger);
-    }
-    
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 12px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      margin-left: 280px;
-      padding: 24px;
-      max-width: 1400px;
-    }
-    
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    
-    .page-header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    
-    .add-product-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
       padding: 12px 24px;
       border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 12px rgba(46,204,113,.3);
+      font-size: 13px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateX(100px);
+      transition: all 0.3s;
     }
     
-    .add-product-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(46,204,113,.4);
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
     }
     
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+    .toast.success {
+      background: #10b981;
     }
     
-    .stat-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
+    .toast.error {
+      background: #ef4444;
     }
     
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .stat-card .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .stat-card .stat-label {
-      font-size: .8rem;
-      color: var(--muted);
-    }
-    
-    /* Filter Bar */
-    .filter-bar {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      background: var(--card);
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    
-    .search-input {
-      flex: 2;
-      min-width: 200px;
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .filter-select {
-      padding: 12px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
-    }
-    
-    .bulk-actions {
-      display: flex;
-      gap: 8px;
-      margin-left: auto;
-    }
-    
-    .bulk-btn {
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition);
-    }
-    
-    .bulk-btn-danger {
-      background: #fee2e2;
-      color: var(--danger);
-    }
-    
-    .bulk-btn-success {
-      background: #d1fae5;
-      color: var(--success);
-    }
-    
-    .bulk-btn-warning {
-      background: #fef3c7;
-      color: var(--warning);
-    }
-    
-    .bulk-btn:hover {
-      transform: translateY(-2px);
-    }
-    
-    /* Products Table */
-    .products-container {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    
-    .products-table {
-      width: 100%;
-      overflow-x: auto;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    th {
-      text-align: left;
-      padding: 14px 16px;
-      font-size: .75rem;
-      font-weight: 600;
-      color: var(--muted);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-    
-    td {
-      padding: 14px 16px;
-      font-size: .85rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    
-    tr:hover {
-      background: var(--bg);
-    }
-    
-    .product-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      object-fit: cover;
-    }
-    
-    /* Stock Badge */
-    .stock-badge {
-      display: inline-flex;
-      padding: 4px 10px;
-      border-radius: 30px;
-      font-size: .7rem;
-      font-weight: 600;
-    }
-    
-    .stock-high { background: #d1fae5; color: #065f46; }
-    .stock-medium { background: #fef3c7; color: #92400e; }
-    .stock-low { background: #fee2e2; color: #991b1b; }
-    .stock-out { background: #f1f5f9; color: #64748b; }
-    
-    /* Toggle Switch */
-    .toggle-switch {
-      width: 48px;
-      height: 24px;
-      background: #cbd5e1;
-      border-radius: 30px;
-      position: relative;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .toggle-switch.active {
-      background: var(--primary);
-    }
-    
-    .toggle-switch::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      top: 2px;
-      left: 3px;
-      transition: var(--transition);
-    }
-    
-    .toggle-switch.active::after {
-      left: 25px;
-    }
-    
-    /* Action Buttons */
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .action-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: .75rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition);
-    }
-    
-    .edit-btn {
-      background: var(--warning);
-      color: white;
-    }
-    
-    .delete-btn {
-      background: var(--danger);
-      color: white;
-    }
-    
-    .action-btn:hover {
-      transform: translateY(-2px);
-    }
-    
-    /* Checkbox */
-    .select-checkbox {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--primary);
-    }
-    
-    /* Modal */
-    .modal {
+    /* Loading Overlay */
+    .loading-overlay {
       position: fixed;
       top: 0;
       left: 0;
@@ -464,536 +196,572 @@
       backdrop-filter: blur(4px);
     }
     
-    .modal.active {
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #006d37;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Mobile Sidebar */
+    .mobile-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: #f2f3ff;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 200;
+      overflow-y: auto;
+    }
+    
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+      display: none;
+    }
+    
+    /* Modal */
+    .product-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .product-modal.active {
       display: flex;
     }
     
-    .modal-content {
-      background: var(--card);
+    .product-modal-content {
+      background: white;
       border-radius: 24px;
       width: 90%;
-      max-width: 550px;
+      max-width: 600px;
       max-height: 85vh;
       overflow-y: auto;
-      animation: slideUp 0.3s ease;
+      animation: fadeInSlideUp 0.3s ease;
     }
     
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
+    /* Bulk Actions Bar */
+    .bulk-actions-bar {
+      background: #e8f8ef;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: none;
       align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    
-    .modal-body {
-      padding: 20px;
-    }
-    
-    .modal-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 12px;
-      justify-content: flex-end;
-    }
-    
-    .form-group {
       margin-bottom: 16px;
     }
     
-    .form-group label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-    
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: .9rem;
-    }
-    
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .form-row {
+    .bulk-actions-bar.show {
       display: flex;
-      gap: 12px;
     }
     
-    .form-row .form-group {
-      flex: 1;
-    }
-    
-    .form-check {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 16px 0;
-    }
-    
-    .save-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      z-index: 1000;
-      opacity: 0;
-      transition: all .3s;
-    }
-    
-    .toast.show {
-      opacity: 1;
-      bottom: 50px;
-    }
-    
-    .toast.success {
-      background: var(--success);
-    }
-    
-    .toast.error {
-      background: var(--danger);
-    }
-    
-    .no-data {
-      text-align: center;
-      padding: 60px;
-      color: var(--muted);
-    }
-    
-    /* Responsive */
+    /* Responsive Table */
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-        padding: 16px;
-      }
-      
-      .mobile-header {
-        display: flex;
-      }
-      
-      .filter-bar {
-        flex-direction: column;
-      }
-      
-      .search-input, .filter-select {
-        width: 100%;
-      }
-      
-      .bulk-actions {
-        margin-left: 0;
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .stats-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      .action-buttons {
-        flex-direction: column;
-      }
-      
-      .products-table {
+      .products-table-wrapper {
         overflow-x: auto;
       }
-      
-      .form-row {
-        flex-direction: column;
+      table {
+        min-width: 800px;
       }
     }
   </style>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <div class="admin-layout">
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
+<body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
+  <!-- Mobile Sidebar -->
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-2xl">storefront</span>
       </div>
-      <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="orders.html">📋 Orders</a>
-        <a href="products.html" class="active">📦 Products</a>
-        <a href="offers.html">🏷️ Offers</a>
-        <a href="delivery.html">🚚 Delivery</a>
-        <a href="customers.html">👥 Customers</a>
-        <a href="settings.html">⚙️ Settings</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
+      <div>
+        <h1 class="text-lg font-extrabold text-primary">OK Mart</h1>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p>
       </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Product Management</span>
-      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
-
-    <!-- Main Content -->
-    <main class="main-content">
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="dashboard.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span class="text-button">Dashboard</span>
+      </a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        <span class="text-button">Orders</span>
+      </a>
+      <a href="products.html" class="sidebar-active flex items-center px-4 py-3 gap-3 bg-primary/5 border-l-4 border-primary text-primary font-bold">
+        <span class="material-symbols-outlined text-xl">inventory_2</span>
+        <span class="text-button">Products</span>
+      </a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">group</span>
+        <span class="text-button">Customers</span>
+      </a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_offer</span>
+        <span class="text-button">Offers</span>
+      </a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_shipping</span>
+        <span class="text-button">Delivery</span>
+      </a>
+      <a href="reports.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">analytics</span>
+        <span class="text-button">Reports</span>
+      </a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">settings</span>
+        <span class="text-button">Settings</span>
+      </a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant">
+      <a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()">
+        <span class="material-symbols-outlined text-xl text-error">logout</span>
+        <span class="text-button">Logout</span>
+      </a>
+    </div>
+  </div>
+  
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex flex-col h-screen fixed left-0 top-0 w-[260px] bg-surface-container-lowest border-r border-outline-variant z-50">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-2xl">storefront</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-extrabold text-primary">OK Mart</h1>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="dashboard.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span class="text-button">Dashboard</span>
+      </a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        <span class="text-button">Orders</span>
+      </a>
+      <a href="products.html" class="sidebar-active flex items-center px-4 py-3 gap-3 bg-primary/5 border-l-4 border-primary text-primary font-bold">
+        <span class="material-symbols-outlined text-xl">inventory_2</span>
+        <span class="text-button">Products</span>
+      </a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">group</span>
+        <span class="text-button">Customers</span>
+      </a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_offer</span>
+        <span class="text-button">Offers</span>
+      </a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_shipping</span>
+        <span class="text-button">Delivery</span>
+      </a>
+      <a href="reports.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">analytics</span>
+        <span class="text-button">Reports</span>
+      </a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">settings</span>
+        <span class="text-button">Settings</span>
+      </a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant">
+      <a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()">
+        <span class="material-symbols-outlined text-xl text-error">logout</span>
+        <span class="text-button">Logout</span>
+      </a>
+    </div>
+  </aside>
+  
+  <!-- Main Content -->
+  <main class="lg:ml-[260px] flex flex-col min-h-screen">
+    
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 h-16 bg-white border-b border-outline-variant shadow-sm">
+      <div class="flex items-center gap-4 flex-1">
+        <button class="lg:hidden text-on-surface" id="mobileMenuBtn">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="relative w-full max-w-md hidden md:block">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input type="text" id="searchInput" class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm" placeholder="Search products...">
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block">
+            <p class="text-[13px] font-bold text-on-surface">Admin User</p>
+            <p class="text-[11px] text-on-surface-variant">Store Manager</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Content Area -->
+    <section class="p-6 space-y-6">
       
       <!-- Page Header -->
-      <div class="page-header">
-        <h1>📦 Product Management</h1>
-        <button class="add-product-btn" onclick="openAddModal()">➕ Add New Product</button>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-page-title text-on-surface">Product Management</h2>
+          <p class="text-on-surface-variant text-body-sm">Manage and monitor your store inventory in real-time.</p>
+        </div>
+        <button id="addProductBtn" class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-button text-button flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+          <span class="material-symbols-outlined">add_box</span>
+          Add Product
+        </button>
       </div>
-
-      <!-- Stats Grid -->
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalProducts">0</div>
-          <div class="stat-label">Total Products</div>
+      
+      <!-- Stats Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bento-card p-6 flex items-start justify-between">
+          <div>
+            <p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Total Products</p>
+            <h3 class="text-stat-number text-on-surface" id="totalProducts">0</h3>
+            <p class="text-status-delivered-text text-xs font-bold mt-2" id="totalProductsChange">+0% from last month</p>
+          </div>
+          <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-2xl">inventory_2</span>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="activeProducts">0</div>
-          <div class="stat-label">Active</div>
+        
+        <div class="bento-card p-6 flex items-start justify-between">
+          <div>
+            <p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Active Products</p>
+            <h3 class="text-stat-number text-on-surface" id="activeProducts">0</h3>
+            <p class="text-status-confirmed-text text-xs font-bold mt-2">Currently published</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-secondary">
+            <span class="material-symbols-outlined text-2xl">check_circle</span>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="outOfStockCount">0</div>
-          <div class="stat-label">Out of Stock</div>
+        
+        <div class="bento-card p-6 flex items-start justify-between">
+          <div>
+            <p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Out of Stock</p>
+            <h3 class="text-stat-number text-error" id="outOfStock">0</h3>
+            <p class="text-error text-xs font-bold mt-2">Requires attention</p>
+          </div>
+          <div class="w-12 h-12 bg-error-container rounded-2xl flex items-center justify-center text-error">
+            <span class="material-symbols-outlined text-2xl">error_outline</span>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="lowStockCount">0</div>
-          <div class="stat-label">Low Stock (&lt;10)</div>
+        
+        <div class="bento-card p-6 flex items-start justify-between">
+          <div>
+            <p class="text-on-surface-variant font-semibold text-xs uppercase tracking-wider mb-2">Low Stock</p>
+            <h3 class="text-stat-number text-status-preparing-text" id="lowStock">0</h3>
+            <p class="text-status-preparing-text text-xs font-bold mt-2">Restock suggested</p>
+          </div>
+          <div class="w-12 h-12 bg-status-preparing-bg rounded-2xl flex items-center justify-center text-status-preparing-text">
+            <span class="material-symbols-outlined text-2xl">warning</span>
+          </div>
         </div>
       </div>
-
+      
       <!-- Filter Bar -->
-      <div class="filter-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name, brand...">
-        <select id="categoryFilter" class="filter-select">
-          <option value="all">All Categories</option>
-          <option value="dairy">🥛 Dairy</option>
-          <option value="fruits">🍎 Fruits</option>
-          <option value="vegetables">🥬 Vegetables</option>
-          <option value="snacks">🍿 Snacks</option>
-          <option value="beverages">🥤 Beverages</option>
-          <option value="grocery">🛒 Grocery</option>
-          <option value="personal">🧴 Personal Care</option>
-          <option value="household">🧹 Household</option>
-          <option value="bakery">🥖 Bakery</option>
-          <option value="electronics">📱 Electronics</option>
-        </select>
-        <select id="stockFilter" class="filter-select">
-          <option value="all">All Stock</option>
-          <option value="in_stock">✅ In Stock</option>
-          <option value="low_stock">⚠️ Low Stock (&lt;10)</option>
-          <option value="out_of_stock">❌ Out of Stock</option>
-        </select>
-        <select id="statusFilter" class="filter-select">
-          <option value="all">All Status</option>
-          <option value="active">✅ Active</option>
-          <option value="inactive">⛔ Inactive</option>
-        </select>
-        <div class="bulk-actions" id="bulkActions" style="display:none;">
-          <button class="bulk-btn bulk-btn-success" onclick="bulkActivate()">✅ Activate</button>
-          <button class="bulk-btn bulk-btn-warning" onclick="bulkDeactivate()">⛔ Deactivate</button>
-          <button class="bulk-btn bulk-btn-danger" onclick="bulkDelete()">🗑️ Delete</button>
+      <div class="bento-card p-4 flex flex-wrap items-center gap-4">
+        <div class="relative flex-1 min-w-[240px]">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+          <input type="text" id="filterSearch" class="w-full pl-10 pr-4 py-2 bg-surface-background border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm" placeholder="Search products...">
         </div>
-      </div>
-
-      <!-- Products Table -->
-      <div class="products-container">
-        <div class="products-table">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:40px;"><input type="checkbox" id="selectAllCheckbox" style="display:none;" onchange="toggleSelectAll()"></th>
-                <th>Image</th>
-                <th>Name / Brand</th>
-                <th>Price</th>
-                <th>MRP</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="productsTableBody">
-              <tr><td colspan="9" class="no-data">Loading products...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- Product Modal -->
-  <div class="modal" id="productModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle">Add Product</h3>
-        <button class="modal-close" onclick="closeModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <form id="productForm">
-          <input type="hidden" id="productId">
-          <div class="form-group">
-            <label>Product Name *</label>
-            <input type="text" id="prodName" required placeholder="e.g., Amul Taaza Milk">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Price (₹) *</label>
-              <input type="number" id="prodPrice" required placeholder="26" step="0.01">
-            </div>
-            <div class="form-group">
-              <label>MRP (₹)</label>
-              <input type="number" id="prodMrp" placeholder="30" step="0.01">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Image URL *</label>
-            <input type="url" id="prodImage" required placeholder="https://...">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Category *</label>
-              <select id="prodCategory" required>
-                <option value="">Select Category</option>
-                <option value="dairy">🥛 Dairy</option>
-                <option value="fruits">🍎 Fruits</option>
-                <option value="vegetables">🥬 Vegetables</option>
-                <option value="snacks">🍿 Snacks</option>
-                <option value="beverages">🥤 Beverages</option>
-                <option value="grocery">🛒 Grocery</option>
-                <option value="personal">🧴 Personal Care</option>
-                <option value="household">🧹 Household</option>
-                <option value="bakery">🥖 Bakery</option>
-                <option value="electronics">📱 Electronics</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Unit</label>
-              <input type="text" id="prodUnit" placeholder="e.g., 500ml, 1kg">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Brand</label>
-              <input type="text" id="prodBrand" placeholder="Brand name">
-            </div>
-            <div class="form-group">
-              <label>Stock *</label>
-              <input type="number" id="prodStock" required placeholder="100" value="100">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Tags (comma separated)</label>
-            <input type="text" id="prodTags" placeholder="trending, popular, bestseller">
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea id="prodDesc" rows="2" placeholder="Product description..."></textarea>
-          </div>
-          <div class="form-check">
-            <input type="checkbox" id="prodActive" checked>
-            <label>✅ Active (visible on store)</label>
-          </div>
-          <div class="form-check">
-            <input type="checkbox" id="prodPopular">
-            <label>⭐ Popular / Trending</label>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" onclick="closeModal()">Cancel</button>
-        <button class="save-btn" onclick="saveProduct()">Save Product</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Delete Product</h3>
-        <button class="modal-close" onclick="closeDeleteModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this product?</p>
-        <p style="color: var(--danger); font-size: 0.8rem;">This action cannot be undone!</p>
-        <p><strong>Product:</strong> <span id="deleteProductName"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-reset" onclick="closeDeleteModal()">Cancel</button>
-        <button class="action-btn" style="background:var(--danger);color:white;" onclick="confirmDeleteProduct()">Delete Product</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bulk Edit Modal -->
-  <div class="modal" id="bulkModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Bulk Edit Products</h3>
-        <button class="modal-close" onclick="closeBulkModal()">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Selected <span id="bulkCount">0</span> products</p>
-        <div class="form-group">
-          <label>Increase Stock by</label>
-          <input type="number" id="bulkStockIncrement" placeholder="Enter number">
-        </div>
-        <div class="form-group">
-          <label>Set Category</label>
-          <select id="bulkCategory">
-            <option value="">No Change</option>
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="categoryFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="all">Category: All</option>
             <option value="dairy">Dairy</option>
             <option value="fruits">Fruits</option>
             <option value="vegetables">Vegetables</option>
             <option value="snacks">Snacks</option>
             <option value="beverages">Beverages</option>
             <option value="grocery">Grocery</option>
+            <option value="personal">Personal Care</option>
+            <option value="household">Household</option>
+            <option value="bakery">Bakery</option>
+            <option value="electronics">Electronics</option>
           </select>
-        </div>
-        <div class="form-group">
-          <label>Set Status</label>
-          <select id="bulkStatus">
-            <option value="">No Change</option>
+          
+          <select id="stockFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="all">Stock Status</option>
+            <option value="in_stock">In Stock</option>
+            <option value="low_stock">Low Stock (&lt;10)</option>
+            <option value="out_of_stock">Out of Stock</option>
+          </select>
+          
+          <select id="statusFilter" class="bg-white border border-outline-variant rounded-xl px-4 py-2 text-sm text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="all">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+          
+          <button id="bulkActionsBtn" class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 hover:bg-surface-variant transition-colors border border-outline-variant">
+            Bulk Actions
+            <span class="material-symbols-outlined text-sm">expand_more</span>
+          </button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn-reset" onclick="closeBulkModal()">Cancel</button>
-        <button class="save-btn" onclick="applyBulkEdit()">Apply Changes</button>
+      
+      <!-- Bulk Actions Bar -->
+      <div id="bulkActionsBar" class="bulk-actions-bar">
+        <span id="selectedCount" class="text-sm font-semibold">0 products selected</span>
+        <div class="flex gap-2">
+          <button id="bulkActivateBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold">Activate</button>
+          <button id="bulkDeactivateBtn" class="px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-semibold">Deactivate</button>
+          <button id="bulkDeleteBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold">Delete</button>
+        </div>
+      </div>
+      
+      <!-- Products Table -->
+      <div class="bento-card overflow-hidden">
+        <div class="products-table-wrapper overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-surface-background border-b border-outline-variant">
+              <tr>
+                <th class="p-4 w-10">
+                  <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 rounded text-primary focus:ring-primary border-outline-variant">
+                </th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">IMAGE</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">PRODUCT NAME</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">CATEGORY</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">PRICE</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">STOCK</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant">STATUS</th>
+                <th class="p-4 font-table-header text-table-header text-on-surface-variant text-right">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody" class="divide-y divide-outline-variant">
+              <tr><td colspan="8" class="text-center py-10 text-on-surface-variant">Loading products...</td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="p-4 border-t border-outline-variant bg-surface flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p class="text-on-surface-variant text-sm" id="paginationInfo">Showing 0 to 0 of 0 products</p>
+          <div class="flex items-center gap-2" id="paginationButtons"></div>
+        </div>
+      </div>
+      
+    </section>
+  </main>
+  
+  <!-- Product Modal -->
+  <div class="product-modal" id="productModal">
+    <div class="product-modal-content">
+      <div class="sticky top-0 bg-white border-b border-outline-variant p-5 flex justify-between items-center">
+        <h3 class="text-lg font-bold" id="modalTitle">Add Product</h3>
+        <button class="close-modal-btn w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center">✕</button>
+      </div>
+      <div class="p-5 space-y-4">
+        <input type="hidden" id="productId">
+        
+        <div>
+          <label class="block text-sm font-semibold mb-1">Product Name *</label>
+          <input type="text" id="prodName" class="w-full px-4 py-2 border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1">Brand</label>
+            <input type="text" id="prodBrand" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">Category *</label>
+            <select id="prodCategory" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+              <option value="dairy">Dairy</option>
+              <option value="fruits">Fruits</option>
+              <option value="vegetables">Vegetables</option>
+              <option value="snacks">Snacks</option>
+              <option value="beverages">Beverages</option>
+              <option value="grocery">Grocery</option>
+              <option value="personal">Personal Care</option>
+              <option value="household">Household</option>
+              <option value="bakery">Bakery</option>
+              <option value="electronics">Electronics</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1">Price (₹) *</label>
+            <input type="number" id="prodPrice" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">MRP (₹)</label>
+            <input type="number" id="prodMrp" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1">Unit</label>
+            <input type="text" id="prodUnit" placeholder="500ml, 1kg" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">Stock *</label>
+            <input type="number" id="prodStock" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold mb-1">Image URL *</label>
+          <input type="url" id="prodImage" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+          <div id="imagePreview" class="mt-2 hidden">
+            <img id="previewImg" class="w-20 h-20 rounded-lg object-cover border">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold mb-1">Description</label>
+          <textarea id="prodDesc" rows="3" class="w-full px-4 py-2 border border-outline-variant rounded-xl"></textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-semibold mb-1">Tags (comma separated)</label>
+          <input type="text" id="prodTags" class="w-full px-4 py-2 border border-outline-variant rounded-xl">
+        </div>
+        
+        <div class="flex gap-6">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="prodActive" checked> <span>Active</span>
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" id="prodPopular"> <span>Popular</span>
+          </label>
+        </div>
+        
+        <div class="flex gap-3 pt-4">
+          <button id="saveProductBtn" class="flex-1 bg-primary text-white py-3 rounded-xl font-semibold">Save Product</button>
+          <button class="close-modal-btn flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
-
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="product-modal" id="deleteModal">
+    <div class="product-modal-content max-w-sm">
+      <div class="p-6 text-center">
+        <div class="text-5xl mb-4">⚠️</div>
+        <h3 class="text-lg font-bold mb-2">Delete Product?</h3>
+        <p class="text-on-surface-variant text-sm mb-4">Are you sure you want to delete this product? This action cannot be undone.</p>
+        <div class="flex gap-3">
+          <button id="cancelDeleteBtn" class="flex-1 px-4 py-2 border border-outline-variant rounded-lg">Cancel</button>
+          <button id="confirmDeleteBtn" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <!-- Toast -->
   <div class="toast" id="toast"></div>
-
+  
   <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
   <script>
-    // ===== PRODUCT MANAGEMENT SYSTEM =====
+    // ===== PRODUCT MANAGEMENT - FULLY WORKING =====
     
     // DOM Elements
     const productsTableBody = document.getElementById('productsTableBody');
-    const searchInput = document.getElementById('searchInput');
+    const filterSearch = document.getElementById('filterSearch');
     const categoryFilter = document.getElementById('categoryFilter');
     const stockFilter = document.getElementById('stockFilter');
     const statusFilter = document.getElementById('statusFilter');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const productModal = document.getElementById('productModal');
+    const deleteModal = document.getElementById('deleteModal');
+    const toast = document.getElementById('toast');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-    const bulkActions = document.getElementById('bulkActions');
+    const bulkActionsBar = document.getElementById('bulkActionsBar');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const bulkActivateBtn = document.getElementById('bulkActivateBtn');
+    const bulkDeactivateBtn = document.getElementById('bulkDeactivateBtn');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
     
     // State
     let allProducts = [];
+    let filteredProducts = [];
     let selectedProducts = new Set();
-    let editingId = null;
-    let deleteId = null;
+    let currentPage = 1;
+    let rowsPerPage = 10;
+    let deleteProductId = null;
+    let editProductId = null;
     
-    // Load Products
+    // Sidebar Functions
+    function openSidebar() { mobileSidebar.classList.add('open'); sidebarOverlay.style.display = 'block'; }
+    function closeSidebar() { mobileSidebar.classList.remove('open'); sidebarOverlay.style.display = 'none'; }
+    mobileMenuBtn?.addEventListener('click', openSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    
+    // Load Products from Firebase
     async function loadProducts() {
+      showLoading(true);
       try {
         const snapshot = await db.collection('products').get();
         allProducts = [];
         snapshot.forEach(doc => {
           allProducts.push({ id: doc.id, ...doc.data() });
         });
+        console.log(`✅ Loaded ${allProducts.length} products`);
+        filterProducts();
         updateStats();
-        renderProducts();
       } catch (error) {
         console.error('Error loading products:', error);
         showToast('Error loading products', 'error');
       }
-    }
-    
-    // Update Statistics
-    function updateStats() {
-      const total = allProducts.length;
-      const active = allProducts.filter(p => p.active !== false).length;
-      const outOfStock = allProducts.filter(p => (p.stock || 0) === 0).length;
-      const lowStock = allProducts.filter(p => (p.stock || 0) > 0 && (p.stock || 0) < 10).length;
-      
-      document.getElementById('totalProducts').textContent = total;
-      document.getElementById('activeProducts').textContent = active;
-      document.getElementById('outOfStockCount').textContent = outOfStock;
-      document.getElementById('lowStockCount').textContent = lowStock;
-    }
-    
-    // Get Stock Class
-    function getStockClass(stock) {
-      if (!stock || stock === 0) return 'stock-out';
-      if (stock < 10) return 'stock-low';
-      if (stock < 50) return 'stock-medium';
-      return 'stock-high';
-    }
-    
-    function getStockText(stock) {
-      if (!stock || stock === 0) return 'Out of Stock';
-      if (stock < 10) return `⚠️ Low: ${stock}`;
-      return `📦 ${stock}`;
+      showLoading(false);
     }
     
     // Filter Products
-    function getFilteredProducts() {
-      const search = searchInput.value.toLowerCase();
+    function filterProducts() {
+      const search = filterSearch.value.toLowerCase();
       const category = categoryFilter.value;
       const stock = stockFilter.value;
       const status = statusFilter.value;
       
-      return allProducts.filter(p => {
+      filteredProducts = allProducts.filter(p => {
         if (search && !p.name?.toLowerCase().includes(search) && !(p.brand || '').toLowerCase().includes(search)) return false;
         if (category !== 'all' && p.category !== category) return false;
         if (status === 'active' && p.active === false) return false;
@@ -1006,207 +774,148 @@
         
         return true;
       });
+      
+      currentPage = 1;
+      selectedProducts.clear();
+      updateBulkActionsBar();
+      renderProducts();
+      updatePagination();
     }
     
-    // Render Products
+    // Render Products Table
     function renderProducts() {
-      const filtered = getFilteredProducts();
-      const showBulk = selectedProducts.size > 0;
-      bulkActions.style.display = showBulk ? 'flex' : 'none';
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageProducts = filteredProducts.slice(start, end);
       
-      if (filtered.length === 0) {
-        productsTableBody.innerHTML = '<tr><td colspan="9" class="no-data">No products found</td></tr>';
+      if (pageProducts.length === 0) {
+        productsTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-on-surface-variant">No products found</td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td><td style="display: none;"></td></tr>';
         return;
       }
       
-      productsTableBody.innerHTML = filtered.map(p => {
-        const isActive = p.active !== false;
-        const stock = p.stock || 0;
-        const discount = p.mrp && p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+      productsTableBody.innerHTML = pageProducts.map(product => {
+        const stock = product.stock || 0;
+        const isActive = product.active !== false;
+        const discount = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+        const isSelected = selectedProducts.has(product.id);
+        
+        let stockBadge = '';
+        let stockClass = '';
+        if (stock === 0) {
+          stockBadge = '<span class="px-3 py-1 bg-error-container text-error rounded-full text-[11px] font-bold">Out of Stock</span>';
+          stockClass = 'text-error';
+        } else if (stock < 10) {
+          stockBadge = `<span class="px-3 py-1 bg-status-preparing-bg text-status-preparing-text rounded-full text-[11px] font-bold">Low: ${stock}</span>`;
+          stockClass = 'text-status-preparing-text';
+        } else {
+          stockBadge = `<span class="px-3 py-1 bg-status-delivered-bg text-status-delivered-text rounded-full text-[11px] font-bold">Stock: ${stock}</span>`;
+          stockClass = 'text-status-delivered-text';
+        }
         
         return `
-          <tr>
-            <td><input type="checkbox" class="product-select" data-id="${p.id}" ${selectedProducts.has(p.id) ? 'checked' : ''} onchange="toggleProductSelect('${p.id}', this.checked)"></td>
-            <td><img src="${p.image}" class="product-img" onerror="this.src='https://via.placeholder.com/50'"></td>
-            <td>
-              <strong>${escapeHtml(p.name)}</strong><br>
-              <small style="color:var(--muted);">${p.brand || 'No brand'}</small>
-              ${discount > 0 ? `<br><small style="color:var(--success);">🔥 ${discount}% OFF</small>` : ''}
+          <tr class="table-row-hover transition-colors">
+            <td class="p-4">
+              <input type="checkbox" class="product-select w-4 h-4 rounded text-primary" data-id="${product.id}" ${isSelected ? 'checked' : ''}>
             </td>
-            <td><strong>₹${p.price || 0}</strong>${p.mrp ? `<br><small style="text-decoration:line-through;color:var(--muted);">₹${p.mrp}</small>` : ''}</td>
-            <td style="color:var(--muted);">${p.mrp || '-'}</td>
-            <td><span style="background:var(--bg);padding:4px 8px;border-radius:20px;font-size:.7rem;">${p.category || '-'}</span></td>
-            <td class="${getStockClass(stock)}">${getStockText(stock)}</td>
-            <td>
-              <div class="toggle-switch ${isActive ? 'active' : ''}" onclick="toggleProductStatus('${p.id}', ${!isActive})"></div>
+            <td class="p-4">
+              <img src="${product.image}" class="w-12 h-12 rounded-lg object-cover border border-outline-variant" onerror="this.src='https://via.placeholder.com/48'">
             </td>
-            <td>
-              <div class="action-buttons">
-                <button class="action-btn edit-btn" onclick="editProduct('${p.id}')">✏️ Edit</button>
-                <button class="action-btn delete-btn" onclick="openDeleteModal('${p.id}', '${escapeHtml(p.name)}')">🗑️ Delete</button>
+            <td class="p-4">
+              <p class="font-table-cell text-on-surface font-bold">${escapeHtml(product.name)}</p>
+              <p class="text-[11px] text-on-surface-variant">ID: ${product.id.slice(0, 8).toUpperCase()}</p>
+              ${discount > 0 ? `<p class="text-[10px] text-green-600">${discount}% OFF</p>` : ''}
+            </td>
+            <td class="p-4">
+              <span class="text-sm text-on-surface-variant">${product.category || '-'}</span>
+            </td>
+            <td class="p-4">
+              <span class="font-bold text-on-surface">₹${product.price || 0}</span>
+              ${product.mrp ? `<span class="text-xs text-on-surface-variant line-through ml-1">₹${product.mrp}</span>` : ''}
+            </td>
+            <td class="p-4">
+              ${stockBadge}
+            </td>
+            <td class="p-4">
+              <span class="px-3 py-1 ${isActive ? 'bg-status-delivered-bg text-status-delivered-text' : 'bg-surface-container-highest text-on-surface-variant'} rounded-full text-[11px] font-bold">${isActive ? 'Active' : 'Inactive'}</span>
+            </td>
+            <td class="p-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button class="edit-product-btn w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" data-id="${product.id}">
+                  <span class="material-symbols-outlined text-[18px]">edit</span>
+                </button>
+                <button class="delete-product-btn w-8 h-8 rounded-lg flex items-center justify-center text-error hover:bg-error-container/20 transition-colors" data-id="${product.id}" data-name="${escapeHtml(product.name)}">
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
               </div>
             </td>
           </tr>
         `;
       }).join('');
       
-      // Update select all checkbox
-      const allChecked = filtered.length > 0 && filtered.every(p => selectedProducts.has(p.id));
-      selectAllCheckbox.checked = allChecked;
+      // Attach event listeners
+      document.querySelectorAll('.product-select').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const id = e.target.dataset.id;
+          if (e.target.checked) selectedProducts.add(id);
+          else selectedProducts.delete(id);
+          updateBulkActionsBar();
+        });
+      });
+      
+      document.querySelectorAll('.edit-product-btn').forEach(btn => {
+        btn.addEventListener('click', () => editProduct(btn.dataset.id));
+      });
+      
+      document.querySelectorAll('.delete-product-btn').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.dataset.id, btn.dataset.name));
+      });
     }
     
-    // Toggle Product Select
-    window.toggleProductSelect = function(id, checked) {
-      if (checked) selectedProducts.add(id);
-      else selectedProducts.delete(id);
-      renderProducts();
-    };
+    // Update Bulk Actions Bar
+    function updateBulkActionsBar() {
+      const count = selectedProducts.size;
+      selectedCountSpan.textContent = `${count} product${count !== 1 ? 's' : ''} selected`;
+      if (count > 0) {
+        bulkActionsBar.classList.add('show');
+      } else {
+        bulkActionsBar.classList.remove('show');
+      }
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = filteredProducts.length > 0 && filteredProducts.every(p => selectedProducts.has(p.id));
+      }
+    }
     
-    // Toggle Select All
-    window.toggleSelectAll = function() {
-      const filtered = getFilteredProducts();
-      if (selectAllCheckbox.checked) {
-        filtered.forEach(p => selectedProducts.add(p.id));
+    // Select All
+    selectAllCheckbox?.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        filteredProducts.forEach(p => selectedProducts.add(p.id));
       } else {
         selectedProducts.clear();
       }
       renderProducts();
-    };
-    
-    // Toggle Product Status
-    window.toggleProductStatus = async function(id, newStatus) {
-      try {
-        await db.collection('products').doc(id).update({ active: newStatus });
-        showToast(`Product ${newStatus ? 'activated' : 'deactivated'}`, 'success');
-        await loadProducts();
-      } catch (error) {
-        showToast('Error updating status', 'error');
-      }
-    };
-    
-    // Open Add Modal
-    window.openAddModal = function() {
-      editingId = null;
-      document.getElementById('modalTitle').textContent = 'Add Product';
-      document.getElementById('productForm').reset();
-      document.getElementById('productId').value = '';
-      document.getElementById('prodActive').checked = true;
-      document.getElementById('productModal').classList.add('active');
-    };
-    
-    // Edit Product
-    window.editProduct = function(id) {
-      const product = allProducts.find(p => p.id === id);
-      if (!product) return;
-      
-      editingId = id;
-      document.getElementById('modalTitle').textContent = 'Edit Product';
-      document.getElementById('productId').value = id;
-      document.getElementById('prodName').value = product.name || '';
-      document.getElementById('prodPrice').value = product.price || '';
-      document.getElementById('prodMrp').value = product.mrp || '';
-      document.getElementById('prodImage').value = product.image || '';
-      document.getElementById('prodCategory').value = product.category || '';
-      document.getElementById('prodUnit').value = product.unit || '';
-      document.getElementById('prodBrand').value = product.brand || '';
-      document.getElementById('prodStock').value = product.stock || 100;
-      document.getElementById('prodTags').value = (product.tags || []).join(',');
-      document.getElementById('prodDesc').value = product.description || '';
-      document.getElementById('prodActive').checked = product.active !== false;
-      document.getElementById('prodPopular').checked = product.popular === true;
-      
-      document.getElementById('productModal').classList.add('active');
-    };
-    
-    // Close Modal
-    function closeModal() {
-      document.getElementById('productModal').classList.remove('active');
-    }
-    
-    // Save Product
-    window.saveProduct = async function() {
-      const productData = {
-        name: document.getElementById('prodName').value.trim(),
-        price: Number(document.getElementById('prodPrice').value),
-        mrp: Number(document.getElementById('prodMrp').value) || 0,
-        image: document.getElementById('prodImage').value.trim(),
-        category: document.getElementById('prodCategory').value,
-        unit: document.getElementById('prodUnit').value.trim(),
-        brand: document.getElementById('prodBrand').value.trim(),
-        stock: Number(document.getElementById('prodStock').value) || 0,
-        tags: document.getElementById('prodTags').value.split(',').map(t => t.trim()).filter(t => t),
-        description: document.getElementById('prodDesc').value.trim(),
-        active: document.getElementById('prodActive').checked,
-        popular: document.getElementById('prodPopular').checked,
-        updatedAt: new Date().toISOString()
-      };
-      
-      if (!productData.name || !productData.image || !productData.category) {
-        showToast('Please fill all required fields', 'error');
-        return;
-      }
-      
-      try {
-        if (editingId) {
-          await db.collection('products').doc(editingId).update(productData);
-          showToast('Product updated!', 'success');
-        } else {
-          productData.createdAt = new Date().toISOString();
-          productData.salesCount = 0;
-          await db.collection('products').add(productData);
-          showToast('Product added!', 'success');
-        }
-        closeModal();
-        await loadProducts();
-      } catch (error) {
-        showToast('Error saving product', 'error');
-      }
-    };
-    
-    // Open Delete Modal
-    window.openDeleteModal = function(id, name) {
-      deleteId = id;
-      document.getElementById('deleteProductName').textContent = name;
-      document.getElementById('deleteModal').classList.add('active');
-    };
-    
-    function closeDeleteModal() {
-      document.getElementById('deleteModal').classList.remove('active');
-      deleteId = null;
-    }
-    
-    window.confirmDeleteProduct = async function() {
-      if (!deleteId) return;
-      try {
-        await db.collection('products').doc(deleteId).delete();
-        showToast('Product deleted', 'success');
-        closeDeleteModal();
-        await loadProducts();
-      } catch (error) {
-        showToast('Error deleting product', 'error');
-      }
-    };
+      updateBulkActionsBar();
+    });
     
     // Bulk Actions
-    window.bulkActivate = async function() {
+    bulkActivateBtn?.addEventListener('click', async () => {
       for (let id of selectedProducts) {
         await db.collection('products').doc(id).update({ active: true });
       }
       showToast(`${selectedProducts.size} products activated`, 'success');
       selectedProducts.clear();
       await loadProducts();
-    };
+    });
     
-    window.bulkDeactivate = async function() {
+    bulkDeactivateBtn?.addEventListener('click', async () => {
       for (let id of selectedProducts) {
         await db.collection('products').doc(id).update({ active: false });
       }
       showToast(`${selectedProducts.size} products deactivated`, 'success');
       selectedProducts.clear();
       await loadProducts();
-    };
+    });
     
-    window.bulkDelete = async function() {
+    bulkDeleteBtn?.addEventListener('click', async () => {
       if (confirm(`Delete ${selectedProducts.size} products permanently?`)) {
         for (let id of selectedProducts) {
           await db.collection('products').doc(id).delete();
@@ -1215,17 +924,169 @@
         selectedProducts.clear();
         await loadProducts();
       }
-    };
+    });
     
-    // Show Toast
-    function showToast(message, type) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+    // Update Statistics
+    function updateStats() {
+      const total = allProducts.length;
+      const active = allProducts.filter(p => p.active !== false).length;
+      const outOfStock = allProducts.filter(p => (p.stock || 0) === 0).length;
+      const lowStock = allProducts.filter(p => (p.stock || 0) > 0 && (p.stock || 0) < 10).length;
+      
+      document.getElementById('totalProducts').textContent = total;
+      document.getElementById('activeProducts').textContent = active;
+      document.getElementById('outOfStock').textContent = outOfStock;
+      document.getElementById('lowStock').textContent = lowStock;
     }
     
+    // Update Pagination
+    function updatePagination() {
+      const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
+      const paginationDiv = document.getElementById('paginationButtons');
+      const start = (currentPage - 1) * rowsPerPage + 1;
+      const end = Math.min(currentPage * rowsPerPage, filteredProducts.length);
+      
+      document.getElementById('paginationInfo').textContent = `Showing ${start} to ${end} of ${filteredProducts.length} products`;
+      
+      if (totalPages <= 1) {
+        paginationDiv.innerHTML = '';
+        return;
+      }
+      
+      let buttons = '';
+      for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        buttons += `<button class="page-btn w-9 h-9 flex items-center justify-center rounded-lg border border-outline-variant ${i === currentPage ? 'bg-primary text-white' : 'hover:bg-surface-container'} transition-colors" data-page="${i}">${i}</button>`;
+      }
+      
+      paginationDiv.innerHTML = buttons;
+      
+      document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = parseInt(btn.dataset.page);
+          renderProducts();
+          updatePagination();
+        });
+      });
+    }
+    
+    // Add Product
+    function openAddModal() {
+      editProductId = null;
+      document.getElementById('modalTitle').textContent = 'Add Product';
+      document.getElementById('productId').value = '';
+      document.getElementById('prodName').value = '';
+      document.getElementById('prodBrand').value = '';
+      document.getElementById('prodCategory').value = 'dairy';
+      document.getElementById('prodPrice').value = '';
+      document.getElementById('prodMrp').value = '';
+      document.getElementById('prodUnit').value = '';
+      document.getElementById('prodStock').value = '100';
+      document.getElementById('prodImage').value = '';
+      document.getElementById('prodDesc').value = '';
+      document.getElementById('prodTags').value = '';
+      document.getElementById('prodActive').checked = true;
+      document.getElementById('prodPopular').checked = false;
+      document.getElementById('imagePreview').classList.add('hidden');
+      productModal.classList.add('active');
+    }
+    
+    // Edit Product
+    async function editProduct(id) {
+      const product = allProducts.find(p => p.id === id);
+      if (!product) return;
+      
+      editProductId = id;
+      document.getElementById('modalTitle').textContent = 'Edit Product';
+      document.getElementById('productId').value = id;
+      document.getElementById('prodName').value = product.name || '';
+      document.getElementById('prodBrand').value = product.brand || '';
+      document.getElementById('prodCategory').value = product.category || 'dairy';
+      document.getElementById('prodPrice').value = product.price || '';
+      document.getElementById('prodMrp').value = product.mrp || '';
+      document.getElementById('prodUnit').value = product.unit || '';
+      document.getElementById('prodStock').value = product.stock || 100;
+      document.getElementById('prodImage').value = product.image || '';
+      document.getElementById('prodDesc').value = product.description || '';
+      document.getElementById('prodTags').value = (product.tags || []).join(', ');
+      document.getElementById('prodActive').checked = product.active !== false;
+      document.getElementById('prodPopular').checked = product.popular === true;
+      
+      if (product.image) {
+        document.getElementById('previewImg').src = product.image;
+        document.getElementById('imagePreview').classList.remove('hidden');
+      } else {
+        document.getElementById('imagePreview').classList.add('hidden');
+      }
+      
+      productModal.classList.add('active');
+    }
+    
+    // Save Product
+    async function saveProduct() {
+      const productData = {
+        name: document.getElementById('prodName').value.trim(),
+        brand: document.getElementById('prodBrand').value.trim(),
+        category: document.getElementById('prodCategory').value,
+        price: Number(document.getElementById('prodPrice').value),
+        mrp: Number(document.getElementById('prodMrp').value) || 0,
+        unit: document.getElementById('prodUnit').value.trim(),
+        stock: Number(document.getElementById('prodStock').value) || 0,
+        image: document.getElementById('prodImage').value.trim(),
+        description: document.getElementById('prodDesc').value.trim(),
+        tags: document.getElementById('prodTags').value.split(',').map(t => t.trim()).filter(t => t),
+        active: document.getElementById('prodActive').checked,
+        popular: document.getElementById('prodPopular').checked,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      if (!productData.name || !productData.category || !productData.price || !productData.image) {
+        showToast('Please fill all required fields', 'error');
+        return;
+      }
+      
+      showLoading(true);
+      try {
+        if (editProductId) {
+          await db.collection('products').doc(editProductId).update(productData);
+          showToast('Product updated successfully', 'success');
+        } else {
+          productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          productData.salesCount = 0;
+          await db.collection('products').add(productData);
+          showToast('Product added successfully', 'success');
+        }
+        productModal.classList.remove('active');
+        await loadProducts();
+      } catch (error) {
+        console.error('Error saving product:', error);
+        showToast('Error saving product', 'error');
+      }
+      showLoading(false);
+    }
+    
+    // Delete Product
+    function openDeleteModal(id, name) {
+      deleteProductId = id;
+      document.getElementById('deleteModal').querySelector('p').innerHTML = `Are you sure you want to delete "<strong>${name}</strong>"? This action cannot be undone.`;
+      deleteModal.classList.add('active');
+    }
+    
+    async function confirmDelete() {
+      if (!deleteProductId) return;
+      showLoading(true);
+      try {
+        await db.collection('products').doc(deleteProductId).delete();
+        showToast('Product deleted successfully', 'success');
+        deleteModal.classList.remove('active');
+        await loadProducts();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        showToast('Error deleting product', 'error');
+      }
+      showLoading(false);
+    }
+    
+    // Helper Functions
     function escapeHtml(str) {
       if (!str) return '';
       return str.replace(/[&<>]/g, function(m) {
@@ -1236,7 +1097,17 @@
       });
     }
     
-    // Logout
+    function showToast(message, type) {
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    function showLoading(show) {
+      loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+    
     function logout() {
       if (confirm('Are you sure you want to logout?')) {
         localStorage.clear();
@@ -1244,14 +1115,45 @@
       }
     }
     
+    // Image Preview
+    document.getElementById('prodImage')?.addEventListener('input', (e) => {
+      const url = e.target.value;
+      if (url) {
+        document.getElementById('previewImg').src = url;
+        document.getElementById('imagePreview').classList.remove('hidden');
+      } else {
+        document.getElementById('imagePreview').classList.add('hidden');
+      }
+    });
+    
     // Event Listeners
-    searchInput.addEventListener('input', renderProducts);
-    categoryFilter.addEventListener('change', renderProducts);
-    stockFilter.addEventListener('change', renderProducts);
-    statusFilter.addEventListener('change', renderProducts);
+    filterSearch.addEventListener('input', filterProducts);
+    categoryFilter.addEventListener('change', filterProducts);
+    stockFilter.addEventListener('change', filterProducts);
+    statusFilter.addEventListener('change', filterProducts);
+    addProductBtn.addEventListener('click', openAddModal);
+    document.getElementById('saveProductBtn')?.addEventListener('click', saveProduct);
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', confirmDelete);
+    document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => deleteModal.classList.remove('active'));
+    
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        productModal.classList.remove('active');
+        deleteModal.classList.remove('active');
+      });
+    });
+    
+    productModal?.addEventListener('click', (e) => {
+      if (e.target === productModal) productModal.classList.remove('active');
+    });
+    deleteModal?.addEventListener('click', (e) => {
+      if (e.target === deleteModal) deleteModal.classList.remove('active');
+    });
     
     // Initialize
     loadProducts();
+    
+    console.log('✅ Product Management Page Loaded');
   </script>
 </body>
 </html>
