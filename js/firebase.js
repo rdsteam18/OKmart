@@ -1,4 +1,4 @@
-// ===== OK MART - COMPLETE WORKING FIREBASE CONFIGURATION =====
+"// ===== OK MART - COMPLETE WORKING FIREBASE CONFIGURATION =====
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -12,11 +12,13 @@ const firebaseConfig = {
 };
 
 // ============================================
-// INITIALIZE FIREBASE
+// SAFE FIREBASE INITIALIZATION
 // ============================================
 
-// Initialize Firebase only once
-if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+// Check if Firebase SDK is loaded
+if (typeof firebase === 'undefined') {
+  console.error('❌ Firebase SDK not loaded');
+} else if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
   console.log('✅ Firebase initialized successfully');
 }
@@ -24,31 +26,51 @@ if (typeof firebase !== 'undefined' && !firebase.apps.length) {
 // Get Firestore instance
 const db = firebase.firestore();
 
-// Enable offline persistence
-db.enablePersistence({ synchronizeTabs: true })
-  .then(() => console.log('✅ Firestore persistence enabled'))
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('⚠️ Multiple tabs open, persistence enabled in first tab only');
-    } else if (err.code === 'unimplemented') {
-      console.warn('⚠️ Browser doesn\'t support persistence');
-    }
-  });
+// ============================================
+// SAFE FIRESTORE PERSISTENCE
+// ============================================
+
+if (typeof db.enablePersistence === 'function') {
+  db.enablePersistence({ synchronizeTabs: true })
+    .then(() => console.log('✅ Firestore persistence enabled'))
+    .catch((err) => {
+      if (err.code === 'failed-precondition') {
+        console.warn('⚠️ Multiple tabs open, persistence enabled in first tab only');
+      } else if (err.code === 'unimplemented') {
+        console.warn('⚠️ Browser doesn\\'t support persistence');
+      } else {
+        console.warn('⚠️ Persistence unavailable:', err.code);
+      }
+    });
+}
 
 // ============================================
-// FIREBASE MESSAGING (FCM) SETUP 🔥
+// SAFE FIREBASE MESSAGING (FCM) SETUP 🔥
 // ============================================
 
 const VAPID_KEY = 'BB4zUY58GxVmnRD-M_CW0NVp2YWbIzeV8-DYEkP8J5MX8f9lLR2BbSnvwo4HpiRN1X9u5Pbs8kv8va8TFw7qZdE';
 
 let messaging = null;
-if (firebase.messaging && firebase.messaging.isSupported && firebase.messaging.isSupported()) {
-  messaging = firebase.messaging();
-  console.log('✅ Firebase Messaging initialized');
+
+try {
+  const messagingSupported =
+    'Notification' in window &&
+    'serviceWorker' in navigator &&
+    firebase.messaging &&
+    typeof firebase.messaging === 'function';
+
+  if (messagingSupported) {
+    messaging = firebase.messaging();
+    console.log('✅ Firebase Messaging initialized');
+  } else {
+    console.log('ℹ️ Messaging not supported on this device');
+  }
+} catch (err) {
+  console.warn('⚠️ Messaging initialization failed:', err);
 }
 
 // ============================================
-// COLLECTION REFERENCES
+// COLLECTION REFERENCES (CONSISTENT NAMING)
 // ============================================
 
 const collections = {
@@ -60,7 +82,7 @@ const collections = {
   pincodes: db.collection('pincodes'),
   users: db.collection('users'),
   settings: db.collection('settings'),
-  fcmTokens: db.collection('fcmTokens')  // 🔥 FCM Tokens collection
+  fcmTokens: db.collection('fcmTokens')  // 🔥 FCM Tokens collection (consistent naming)
 };
 
 // ============================================
@@ -285,10 +307,10 @@ async function checkPincodeServiceability(pincode) {
 // FCM TOKEN FUNCTIONS 🔥🔥🔥
 // ============================================
 
-// Get and store FCM Token
+// Get and store FCM Token (MANUAL - called on button click)
 async function getAndStoreFCMToken() {
   if (!messaging) {
-    console.log('⚠️ Firebase Messaging not supported');
+    console.log('ℹ️ Firebase Messaging not supported on this device');
     return null;
   }
   
@@ -303,7 +325,7 @@ async function getAndStoreFCMToken() {
       const token = await messaging.getToken({ vapidKey: VAPID_KEY });
       
       if (token) {
-        console.log('📨 FCM Token generated:', token);
+        console.log('📨 FCM Token generated:', token.substring(0, 20) + '...');
         
         // Save to localStorage
         localStorage.setItem('fcm_token', token);
@@ -313,8 +335,11 @@ async function getAndStoreFCMToken() {
         
         return token;
       }
-    } else {
+    } else if (permission === 'denied') {
       console.log('❌ Notification permission denied');
+      localStorage.setItem('notifications_blocked', 'true');
+    } else {
+      console.log('⚠️ Notification permission not granted');
     }
   } catch (error) {
     console.error('Error getting FCM token:', error);
@@ -337,15 +362,29 @@ async function saveTokenToFirestore(token) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       userAgent: navigator.userAgent,
-      platform: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+      platform: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      browser: getBrowserName()
     }, { merge: true });
     
-    console.log('✅ FCM Token saved to Firestore');
+    console.log('✅ FCM Token saved to Firestore for user:', userId);
+    localStorage.setItem('fcm_token_saved', 'true');
+    localStorage.setItem('fcm_token_time', Date.now().toString());
     return true;
   } catch (error) {
     console.error('Error saving FCM token:', error);
     return false;
   }
+}
+
+// Get browser name
+function getBrowserName() {
+  const ua = navigator.userAgent;
+  if (ua.includes('Chrome')) return 'Chrome';
+  if (ua.includes('Firefox')) return 'Firefox';
+  if (ua.includes('Safari')) return 'Safari';
+  if (ua.includes('Edge')) return 'Edge';
+  if (ua.includes('Opera')) return 'Opera';
+  return 'Unknown';
 }
 
 // Get all FCM tokens (for admin)
@@ -378,6 +417,8 @@ async function removeFCMToken() {
     if (userId) {
       await collections.fcmTokens.doc(userId).delete();
       localStorage.removeItem('fcm_token');
+      localStorage.removeItem('fcm_token_saved');
+      localStorage.removeItem('fcm_token_time');
       console.log('✅ FCM token removed');
     }
   } catch (error) {
@@ -385,14 +426,22 @@ async function removeFCMToken() {
   }
 }
 
-// Listen for token refresh
-if (messaging) {
+// SAFE Token refresh listener (no crash)
+if (
+  messaging &&
+  typeof messaging.onTokenRefresh === 'function'
+) {
   messaging.onTokenRefresh(async () => {
     console.log('🔄 Token refreshed');
-    const newToken = await messaging.getToken({ vapidKey: VAPID_KEY });
-    if (newToken) {
-      localStorage.setItem('fcm_token', newToken);
-      await saveTokenToFirestore(newToken);
+    try {
+      const newToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+      if (newToken) {
+        localStorage.setItem('fcm_token', newToken);
+        await saveTokenToFirestore(newToken);
+        console.log('✅ Refreshed token saved');
+      }
+    } catch (error) {
+      console.error('Error during token refresh:', error);
     }
   });
 }
@@ -471,13 +520,11 @@ function escapeHtml(str) {
 }
 
 // ============================================
-// AUTO-INITIALIZE FCM ON PAGE LOAD
+// NO AUTO NOTIFICATION - WAIT FOR USER ACTION
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    getAndStoreFCMToken();
-  }, 2000);
+  console.log('🔔 FCM waiting for user interaction - enable notifications from button click');
 });
 
 // ============================================
@@ -529,3 +576,5 @@ console.log('✅ Firebase fully loaded!');
 console.log('📦 Firestore:', db ? 'Available' : 'Not available');
 console.log('📨 Messaging:', messaging ? 'Available' : 'Not available');
 console.log('🔥 FCM Tokens collection:', collections.fcmTokens ? 'Ready' : 'Not ready');
+console.log('🔔 Notification permission will be requested on button click only');
+"
