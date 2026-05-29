@@ -1,4 +1,4 @@
-// ===== OK MART - FCM TOKEN AUTO-SAVE SYSTEM =====
+"// ===== OK MART - FCM TOKEN AUTO-SAVE SYSTEM =====
 // Yeh file automatically token capture karegi aur Firebase mein save karegi
 
 (function() {
@@ -12,7 +12,10 @@
 
   // ========== CHECK IF FIREBASE IS READY ==========
   function isFirebaseReady() {
-    return typeof firebase !== 'undefined' && firebase.messaging;
+    return (
+      typeof firebase !== 'undefined' &&
+      typeof firebase.messaging === 'function'
+    );
   }
 
   // ========== GET OR CREATE USER ID ==========
@@ -47,8 +50,8 @@
         lastIP: await getClientIP()
       };
 
-      // Save to fcm_tokens collection
-      await db.collection('fcm_tokens').doc(userId).set(tokenData, { merge: true });
+      // Save to fcmTokens collection
+      await db.collection('fcmTokens').doc(userId).set(tokenData, { merge: true });
       console.log('✅ FCM Token saved to Firestore for user:', userId);
       tokenSaved = true;
       
@@ -229,13 +232,32 @@
 
   // ========== INITIALIZE MESSAGING ==========
   function initMessaging() {
+    // Browser support check
+    if (!('serviceWorker' in navigator)) {
+      console.log('⚠️ Service Worker not supported');
+      return;
+    }
+
+    if (!('Notification' in window)) {
+      console.log('⚠️ Notifications not supported');
+      return;
+    }
+
+    if (!('PushManager' in window)) {
+      console.log('⚠️ Push Manager not supported');
+      return;
+    }
+
     // Wait for Firebase to be ready
     const checkInterval = setInterval(() => {
       if (isFirebaseReady() && firebase.messaging) {
         clearInterval(checkInterval);
         
         try {
-          if (firebase.messaging.isSupported()) {
+          if (
+            firebase.messaging &&
+            typeof firebase.messaging === 'function'
+          ) {
             messaging = firebase.messaging();
             console.log('✅ Firebase Messaging initialized');
             
@@ -243,22 +265,21 @@
             if (Notification.permission === 'granted') {
               requestPermissionAndGetToken();
             } else if (Notification.permission !== 'denied') {
-              // Auto request after 3 seconds
-              setTimeout(() => {
-                requestPermissionAndGetToken();
-              }, 3000);
+              showNotificationPrompt();
             }
             
             // Handle token refresh
-            messaging.onTokenRefresh(async () => {
-              console.log('🔄 Token refreshed');
-              const newToken = await messaging.getToken({ vapidKey: VAPID_KEY });
-              if (newToken) {
-                const userId = getUserId();
-                await saveTokenToFirestore(newToken, userId);
-                localStorage.setItem('fcm_token', newToken);
-              }
-            });
+            if (messaging && typeof messaging.onTokenRefresh === 'function') {
+              messaging.onTokenRefresh(async () => {
+                console.log('🔄 Token refreshed');
+                const newToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+                if (newToken) {
+                  const userId = getUserId();
+                  await saveTokenToFirestore(newToken, userId);
+                  localStorage.setItem('fcm_token', newToken);
+                }
+              });
+            }
             
             // Handle foreground messages
             messaging.onMessage((payload) => {
@@ -269,7 +290,8 @@
             });
             
           } else {
-            console.log('⚠️ Firebase Messaging not supported in this browser');
+            console.log('⚠️ Firebase Messaging not available');
+            return;
           }
         } catch (error) {
           console.error('Error initializing messaging:', error);
@@ -280,8 +302,11 @@
     // Timeout after 10 seconds
     setTimeout(() => {
       clearInterval(checkInterval);
+
       if (!messaging) {
-        console.warn('⚠️ Firebase not loaded within timeout');
+        console.log(
+          'ℹ️ FCM initialization skipped (unsupported browser or messaging unavailable)'
+        );
       }
     }, 10000);
   }
@@ -315,3 +340,4 @@
   }
   
 })();
+"
