@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OK Mart - Order Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stepper-line {
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 4px, #c4c9b5 4px, #c4c9b5 8px);
+        }
+        .stepper-line-active {
+            background: #48680a;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-surface": "#1a1d14",
+                "inverse-on-surface": "#f0f2e4",
+                "primary-fixed": "#c8f086",
+                "on-background": "#1a1d14",
+                "inverse-surface": "#2e3228",
+                "outline": "#747968",
+                "on-primary-fixed-variant": "#344e00",
+                "on-tertiary": "#ffffff",
+                "surface-container-low": "#F5F6E9",
+                "secondary-container": "#dde3c1",
+                "surface-container-high": "#E9EBDD",
+                "surface-container-lowest": "#ffffff",
+                "on-surface-variant": "#44493a",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#ffdbcc",
+                "secondary-fixed-dim": "#c4caa9",
+                "surface-variant": "#e2e4d6",
+                "surface": "#f9fbec",
+                "on-secondary": "#ffffff",
+                "surface-dim": "#d9dbce",
+                "on-secondary-fixed": "#181e08",
+                "tertiary-fixed-dim": "#ffb694",
+                "tertiary": "#813200",
+                "surface-bright": "#f9fbec",
+                "on-tertiary-container": "#ffd7c6",
+                "on-tertiary-fixed-variant": "#7b2f00",
+                "outline-variant": "#c4c9b5",
+                "on-secondary-container": "#5f654a",
+                "surface-tint": "#48680a",
+                "surface-container": "#edefe1",
+                "on-tertiary-fixed": "#351000",
+                "on-secondary-fixed-variant": "#444930",
+                "on-primary": "#ffffff",
+                "secondary": "#5b6146",
+                "background": "#f9fbec",
+                "secondary-fixed": "#e0e6c4",
+                "on-primary-fixed": "#121f00",
+                "on-error-container": "#93000a",
+                "tertiary-container": "#a84300",
+                "error-container": "#ffdad6",
+                "inverse-primary": "#add36d",
+                "primary": "#375300"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "gutter-desktop": "20px",
+                "gutter-mobile": "12px",
+                "base": "8px",
+                "margin-mobile": "16px",
+                "touch-target": "48px",
+                "margin-desktop": "24px"
+            },
+            "fontFamily": {
+                "label-lg": ["Plus Jakarta Sans"],
+                "title-lg": ["Plus Jakarta Sans"],
+                "title-sm": ["Plus Jakarta Sans"],
+                "data-tabular": ["JetBrains Mono"],
+                "body-lg": ["Plus Jakarta Sans"],
+                "body-sm": ["Plus Jakarta Sans"],
+                "headline-sm": ["Plus Jakarta Sans"],
+                "display-lg": ["Plus Jakarta Sans"],
+                "title-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                "title-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                "display-lg": ["57px", {"lineHeight": "64px", "fontWeight": "400"}],
+                "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col">
+<!-- Top App Bar (From Shared Components JSON) -->
+<header class="bg-surface border-b border-outline-variant docked full-width top-0 z-40 sticky">
+<div class="flex flex-col w-full px-margin-mobile md:px-margin-desktop py-base gap-base max-w-screen-2xl mx-auto">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-highest transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">Order Tracking</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">help_outline</span>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow pb-24">
+<!-- Map Preview Section -->
+<section class="relative h-[353px] w-full overflow-hidden">
+<div class="absolute inset-0 z-0 bg-surface-container" data-location="Ahmedabad" style="">
+<img class="w-full h-full object-cover opacity-80" data-alt="A highly detailed overhead map of Ahmedabad city streets, showcasing a clean and modern cartography style. The map features subtle green areas and light gray residential blocks, following a light-mode color palette with primary green accents. A small, vibrant motorcycle icon representing a delivery rider is positioned on a main thoroughfare, with a glowing pulse effect around it. The lighting is bright and clear, reflecting a reliable and efficient tech-forward service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA--9toNV5nqQxzDj7Qht-WnxPoMi1yfPz-1woryLczOop8uglKTXlA95B-Q3k6HADK8T1YV-EdIGIzvjNk_JCxv8EiaqElWUwAlkfdBW78rWNStqjbY3MI_7E2VD99npn195IIBIMShmgmWRvLyaqv7fdT8R1fu32Dycx4md4YCEokN12-rcd7mQ4uynO2vgyLPg6IxymBNQdHqztbDszaWmvhkdwP8qcNbrjuNeX7e66ObJIKaWxrYET8FrPwXpzQqA5UVMyFoTE"/>
+</div>
+<!-- Floating Time Estimate Badge -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+<div class="bg-primary text-on-primary px-6 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse-soft">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="font-title-md text-title-md">Arriving in 12 mins</span>
+</div>
+</div>
+<!-- Gradient Overlay for smooth transition -->
+<div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent z-10"></div>
+</section>
+<!-- Main Content Canvas -->
+<div class="px-margin-mobile -mt-8 relative z-20 space-y-6">
+<!-- Delivery Partner Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-fixed ring-2 ring-surface">
+<img class="w-full h-full object-cover" data-alt="A friendly and professional delivery partner portrait, a young man wearing a clean branded green polo shirt of OK Mart. He has a warm, trustworthy smile, set against a blurred urban Ahmedabad background in soft daylight. The image is captured with a high-end portrait lens, emphasizing reliability and local familiarity. The color scheme is dominated by fresh greens and natural skin tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2-lMr-53k6urznFX2gcLqvR0J_I0dAwIRO8hQIvxxCna59I8S37UpKGwtwd19viw8LmwgwuUUmhYKO5UCnFp2jtJMrX2za9GRXLhqq_5tmpW1IcctiQbT9mVmLKGUpI6qNZUqFabhNTDqPligFX5SNvHU6dq13APgTR6bFyMsNBYGfDqrOlhe4Hti__oOxIhDslmCKdirLsmMrMmSSJO7k12FnTli1R_LZnEMMubgawqX9hzU8mJ7wKFkrv0S0qjRfdDtWWvhXfk"/>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Rajesh Kumar</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            4.9 • Top Rated
+                        </p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-11 h-11 flex items-center justify-center rounded-full bg-secondary-container text-on-secondary-container active:scale-90 transition-transform">
+<span class="material-symbols-outlined">chat</span>
+</button>
+<button class="w-11 h-11 flex items-center justify-center rounded-full bg-primary-container text-on-primary-container active:scale-90 transition-transform">
+<span class="material-symbols-outlined">call</span>
+</button>
+</div>
+</div>
+<!-- Vertical Stepper (Order Status) -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-6">
+<h4 class="font-title-sm text-title-sm text-on-surface-variant uppercase tracking-wider mb-6">Order Status</h4>
+<div class="space-y-0">
+<!-- Step 1: Placed -->
+<div class="flex gap-4 min-h-[64px]">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div class="stepper-line stepper-line-active flex-grow"></div>
+</div>
+<div class="pb-8">
+<p class="font-title-md text-title-md text-on-surface">Order Placed</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">We've received your order at 10:45 AM</p>
+</div>
+</div>
+<!-- Step 2: Packed -->
+<div class="flex gap-4 min-h-[64px]">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div class="stepper-line stepper-line-active flex-grow"></div>
+</div>
+<div class="pb-8">
+<p class="font-title-md text-title-md text-on-surface">Order Packed</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Store has finished packing your items</p>
+</div>
+</div>
+<!-- Step 3: Out for Delivery (Active) -->
+<div class="flex gap-4 min-h-[64px]">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center z-10 ring-4 ring-primary-fixed/20 animate-pulse">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">delivery_dining</span>
+</div>
+<div class="stepper-line flex-grow"></div>
+</div>
+<div class="pb-8">
+<p class="font-title-md text-title-md text-primary font-bold">Out for Delivery</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rajesh is on the way to your location</p>
+</div>
+</div>
+<!-- Step 4: Delivered -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center z-10 border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">home</span>
+</div>
+</div>
+<div class="pb-4">
+<p class="font-title-md text-title-md text-outline">Delivered</p>
+<p class="font-body-sm text-body-sm text-outline-variant">Expected by 11:15 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Order Details Summary Chips -->
+<div class="flex flex-wrap gap-2">
+<div class="bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+<span class="font-label-lg text-label-lg">ID: #OKM-9821</span>
+</div>
+<div class="bg-surface-container-high text-on-surface-variant px-3 py-1.5 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">shopping_bag</span>
+<span class="font-label-lg text-label-lg">8 Items</span>
+</div>
+</div>
+<!-- Notification Banner -->
+<div class="bg-tertiary-fixed text-on-tertiary-fixed-variant p-4 rounded-xl flex gap-3 items-start">
+<span class="material-symbols-outlined text-tertiary">info</span>
+<p class="font-body-sm text-body-sm leading-relaxed">
+                    Contactless delivery is enabled. Your rider will leave the package at the doorstep and ring the bell.
+                </p>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (From Shared Components JSON) - Cart is active since this is transactional -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter-mobile py-base pb-safe md:hidden bg-surface dark:bg-inverse-surface border-t border-outline-variant shadow-md">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-lg text-label-lg">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">local_offer</span>
+<span class="font-label-lg text-label-lg">Offers</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-label-lg text-label-lg">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-lg text-label-lg">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for the "Call" button
+        const callBtn = document.querySelector('button.bg-primary-container');
+        if(callBtn) {
+            callBtn.addEventListener('click', () => {
+                const icon = callBtn.querySelector('.material-symbols-outlined');
+                icon.textContent = 'phone_in_talk';
+                setTimeout(() => {
+                    icon.textContent = 'call';
+                }, 2000);
+            });
+        }
+    </script>
+</body></html>

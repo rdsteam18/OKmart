@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OK Mart - Rapid Grocery Delivery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1a1d14",
+                    "inverse-on-surface": "#f0f2e4",
+                    "primary-fixed": "#c8f086",
+                    "on-background": "#1a1d14",
+                    "inverse-surface": "#2e3228",
+                    "outline": "#747968",
+                    "on-primary-fixed-variant": "#344e00",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#F5F6E9",
+                    "secondary-container": "#dde3c1",
+                    "surface-container-high": "#E9EBDD",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#44493a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdbcc",
+                    "secondary-fixed-dim": "#c4caa9",
+                    "surface-variant": "#e2e4d6",
+                    "surface": "#f9fbec",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#d9dbce",
+                    "on-secondary-fixed": "#181e08",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "tertiary": "#813200",
+                    "surface-bright": "#f9fbec",
+                    "on-tertiary-container": "#ffd7c6",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "outline-variant": "#c4c9b5",
+                    "on-secondary-container": "#5f654a",
+                    "surface-tint": "#48680a",
+                    "surface-container-highest": "#e2e4d6",
+                    "primary-fixed-dim": "#add36d",
+                    "on-primary-container": "#141F00",
+                    "primary-container": "#4c6c0f",
+                    "error": "#ba1a1a",
+                    "surface-container": "#edefe1",
+                    "on-tertiary-fixed": "#351000",
+                    "on-secondary-fixed-variant": "#444930",
+                    "on-primary": "#ffffff",
+                    "secondary": "#5b6146",
+                    "background": "#f9fbec",
+                    "secondary-fixed": "#e0e6c4",
+                    "on-primary-fixed": "#121f00",
+                    "on-error-container": "#93000a",
+                    "tertiary-container": "#a84300",
+                    "error-container": "#ffdad6",
+                    "inverse-primary": "#add36d",
+                    "primary": "#375300"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter-desktop": "20px",
+                    "gutter-mobile": "12px",
+                    "base": "8px",
+                    "margin-mobile": "16px",
+                    "touch-target": "48px",
+                    "margin-desktop": "24px"
+            },
+            "fontFamily": {
+                    "label-lg": ["Plus Jakarta Sans"],
+                    "title-lg": ["Plus Jakarta Sans"],
+                    "title-sm": ["Plus Jakarta Sans"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-sm": ["Plus Jakarta Sans"],
+                    "headline-sm": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "title-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-lg": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "title-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "display-lg": ["57px", {"lineHeight": "64px", "fontWeight": "400"}],
+                    "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .add-button-morph.active {
+            @apply bg-primary text-on-primary w-24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-surface border-b border-outline-variant px-margin-mobile py-base flex flex-col gap-base shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">OK Mart</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Satellite, Ahmedabad</p>
+</div>
+</div>
+<div class="flex items-center gap-base">
+<button class="w-touch-target h-touch-target flex items-center justify-center hover:bg-surface-container-highest rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="shopping_basket">shopping_basket</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative flex items-center bg-surface-container-high rounded-full px-4 h-12">
+<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-body-lg text-body-lg placeholder-on-surface-variant" placeholder='Search "milk"...' type="text"/>
+<span class="material-symbols-outlined text-on-surface-variant ml-3" data-icon="mic">mic</span>
+</div>
+</header>
+<main class="flex flex-col gap-6 pt-4">
+<!-- Promo Carousel -->
+<section class="px-margin-mobile overflow-x-auto hide-scrollbar flex gap-4 snap-x">
+<div class="flex-shrink-0 w-[85%] aspect-[16/7] rounded-xl overflow-hidden snap-center relative">
+<div class="absolute inset-0 bg-gradient-to-r from-primary-container to-transparent z-10 p-4 flex flex-col justify-center">
+<span class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded text-[10px] font-bold w-fit mb-1">UP TO 50% OFF</span>
+<h3 class="font-title-lg text-title-lg text-on-primary-container leading-tight">Fresh Organics<br/>Summer Fest</h3>
+</div>
+<img class="w-full h-full object-cover" data-alt="A high-fidelity commercial photography of a vibrant pile of fresh organic fruits and vegetables including tomatoes, leafy greens, and citrus, with bright studio lighting emphasizing textures and colors, designed for a modern light-mode grocery app banner." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsts4cEWknrKcBsM7PtRFED2AHeOJushkpJbRwpPEigW7P7RZiJU-ovVxsiLoopjCc_Vohc9Qa7J3ubUDrjjo1nqz8TES5J38JSR6fa87qGsPTwFp1IWhD9tEU3worswQkGxEDb6opHr2EEPGVRpC4ZgDq6pdx-kkI4WXHqXbST_pkxh75lOFsnABBZXnwozXlWtdUs7W_ZzdhtAgb0rYZtpBE2UrVkZPRrPOZO3NI5twUWl6vCzsWPZOT-eyv3iUQo6yY0pJLl_4"/>
+</div>
+<div class="flex-shrink-0 w-[85%] aspect-[16/7] rounded-xl overflow-hidden snap-center relative bg-secondary-container">
+<div class="absolute inset-0 bg-gradient-to-r from-secondary-container to-transparent z-10 p-4 flex flex-col justify-center">
+<span class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded text-[10px] font-bold w-fit mb-1">FREE DELIVERY</span>
+<h3 class="font-title-lg text-title-lg text-on-secondary-container leading-tight">Dairy Essentials<br/>Fast & Fresh</h3>
+</div>
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist commercial shot of milk bottles and artisanal cheese slices arranged on a light wood surface, soft natural morning light, focusing on the quality of farm-fresh dairy products for a high-end grocery delivery interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABjAFXBD2lzry57ktz05AUIB0ajExTUfvaKHUnWRgJubymNXSZJpghtZzlULDsL_zCMTqksNRf1j0kRKCCCHt07h5pr0uEn3wCJ9oIIkikrJkmJzYcOJdMgJZQ5kFK6ZRBCIPLPOQc1DRkWOGLX3qP-WRsOW72EZN_ask_0qe8mjURhHewIhU2CbSVx4cS06cnf79fYvIE2LGzU0QxwoMpw-hwNkDbH_UxSQg9XixHey2RNC27JDxwZIMpxudUSWfVXdmihfH_2s8"/>
+</div>
+</section>
+<!-- Flash Sale / Countdown -->
+<section class="mx-margin-mobile p-4 bg-tertiary-fixed rounded-xl flex items-center justify-between border border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="bg-tertiary text-on-tertiary p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-on-tertiary-fixed font-bold">Flash Sale</h4>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant">Limited time deals</p>
+</div>
+</div>
+<div class="font-data-tabular text-title-md bg-white/50 px-3 py-1 rounded-lg text-tertiary font-bold tracking-wider" id="countdown">
+                15:00
+            </div>
+</section>
+<!-- Category Scroll -->
+<section>
+<div class="px-margin-mobile flex items-center justify-between mb-3">
+<h2 class="font-title-lg text-title-lg text-on-surface font-bold">Shop by Category</h2>
+<button class="text-primary font-label-lg text-label-lg">See All</button>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-4 px-margin-mobile">
+<!-- Category Item -->
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="eco">eco</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Fruits</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="egg">egg</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Dairy</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="bakery_dining">bakery_dining</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Bakery</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="local_drink">local_drink</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Beverage</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="restaurant">restaurant</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Meat</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center border border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary scale-125" data-icon="fastfood">fastfood</span>
+</div>
+<span class="font-label-lg text-[12px] text-on-surface-variant">Snacks</span>
+</div>
+</div>
+</section>
+<!-- Featured Products -->
+<section class="px-margin-mobile">
+<h2 class="font-title-lg text-title-lg text-on-surface font-bold mb-4">Expressive Deals</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Product Card 1 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-3 group relative">
+<div class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded-sm absolute top-3 left-3 z-10 text-[10px] font-bold">15% OFF</div>
+<div class="aspect-square w-full rounded-lg overflow-hidden bg-white mb-3">
+<img class="w-full h-full object-cover" data-alt="A crisp, high-resolution product shot of a liter of fresh whole milk in a modern carton, soft studio lighting on a bright clean background, vibrant colors, emphasizing freshness and quality for a premium grocery app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCK8kM99Apz8HqMT60PH6etixo-Yxrg6UGV0mTZVVGQKB9rUOn4_KCEmihd2c-MpCp4UP_CFt8DRZ9V9QyKVWcEdYk4yrafy8oQzOyqubSb_3Bbzg4PlhlFJovUTVfaFOS8sBGB6jmhA8VjKEgbTNQiEKOJvK_SB0t7hCrCEbpVS-Sg7zgeSsgZhIxi6oW997IOV2Nk8RBgIYk4kJX2K6YbEEf3qZKzfXBDXNrP1dT5MxCbk8m95_UXN3EBXiIvroXyThDgJwrDdo"/>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface line-clamp-1">Farm Fresh Whole Milk</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">1000 ml</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-data-tabular text-title-md text-primary font-bold">₹72</span>
+<div class="relative flex items-center">
+<button class="add-button-morph flex items-center justify-center gap-1 border border-primary text-primary px-4 py-1.5 rounded-full font-label-lg text-label-lg hover:bg-primary-container transition-all active:scale-95" onclick="toggleAdd(this)">
+<span class="add-label">Add</span>
+<div class="qty-control hidden flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span>
+<span class="count">1</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-3 group relative">
+<div class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded-sm absolute top-3 left-3 z-10 text-[10px] font-bold">HOT DEAL</div>
+<div class="aspect-square w-full rounded-lg overflow-hidden bg-white mb-3">
+<img class="w-full h-full object-cover" data-alt="A commercial close-up photo of a bunch of bright yellow ripe bananas, perfectly speckled, on a neutral light grey background, high detail and vivid saturation, professional food photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAktYKD7i-0Agsjy16qCaFTId2YQ8cxXYTZ003kJpD3rV3lDynAV-Dfcu83cANg28tZCSa7NNfd6UgXPkAIbd5cmyWulhGHrr4OcYTZItbqA65_PtcRbzAWx1KiHHJtrSkmysE9rqJnqZ4kWwfJIMbXdol-I0To1ydboTc-mfo5DA3XreBXwvLMKn7Zj52Gzj8cXk5V7SegHBNSH8yHRtfdqAaY3pxOQ4YlUh8BvOhXbHjJa8vTsId0epTlpkVshPiE28BNppxi0eg"/>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface line-clamp-1">Organic Bananas</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">6 units</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-data-tabular text-title-md text-primary font-bold">₹45</span>
+<div class="relative flex items-center">
+<button class="add-button-morph flex items-center justify-center gap-1 border border-primary text-primary px-4 py-1.5 rounded-full font-label-lg text-label-lg hover:bg-primary-container transition-all active:scale-95" onclick="toggleAdd(this)">
+<span class="add-label">Add</span>
+<div class="qty-control hidden flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span>
+<span class="count">1</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-3 group relative">
+<div class="aspect-square w-full rounded-lg overflow-hidden bg-white mb-3">
+<img class="w-full h-full object-cover" data-alt="A professional studio photo of a pack of freshly baked multigrain bread, textures of seeds and crust visible, warm golden lighting, clean minimalist composition on a light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAUjcDhUIdtPsYZJoZqAaudFcDQ2HLfEpf5iQXZpMb-_bfbobCfNmANsfhs7BnuVo_gKjU8FDgfX6UNQGu5O9bMJPrQVs9Yvi619JhTCDPk5cffDwgDgXDUhUs9KLg6f2BzUvaHPFozOXMRLVBeh9lZP9tsMTjW0gaTC7zA8qczOcaB4TTTQ2I93ctXHuxDD6rP3exsE9c8arWlBLKFNAbu9Vn8BluRl79ORH-Tlz_on92aQmMdMcLui7OP-LaVah8wRDgajSy3Xg"/>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface line-clamp-1">Multigrain Bread</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">400 g</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-data-tabular text-title-md text-primary font-bold">₹55</span>
+<div class="relative flex items-center">
+<button class="add-button-morph flex items-center justify-center gap-1 border border-primary text-primary px-4 py-1.5 rounded-full font-label-lg text-label-lg hover:bg-primary-container transition-all active:scale-95" onclick="toggleAdd(this)">
+<span class="add-label">Add</span>
+<div class="qty-control hidden flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span>
+<span class="count">1</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-3 group relative">
+<div class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded-sm absolute top-3 left-3 z-10 text-[10px] font-bold">BESTSELLER</div>
+<div class="aspect-square w-full rounded-lg overflow-hidden bg-white mb-3">
+<img class="w-full h-full object-cover" data-alt="A studio photograph of a bowl of premium roasted salted almonds, vibrant brown skin, macro detail, bright lighting, high-end food marketing style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8d_wiuLf5dxpBJAxHfBhPHAz2LdZBMhbfL0htOsblHzAhEUM8PG5kOnKacobyptVQ2n0xZ8NTILO2976VL99yWJNMdGJgb-jQB3nlx_wHPOAFHcKXOQ-9QGWoP4xCSkdS0CCMDIcRGlhh2eQfAwMfspAJ821c_wV7hS4Vg1b2ZmsycLWxqfmtkGgFtMXWPkjc3W60SS8_wmmMAsZc6buC_-hAhcApBsmnkWy6Tev4orNLlaUBopDNAVrq8hX91IuWPOzPI9P8URo"/>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface line-clamp-1">Salted Almonds</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-2">100 g</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="font-data-tabular text-title-md text-primary font-bold">₹120</span>
+<div class="relative flex items-center">
+<button class="add-button-morph flex items-center justify-center gap-1 border border-primary text-primary px-4 py-1.5 rounded-full font-label-lg text-label-lg hover:bg-primary-container transition-all active:scale-95" onclick="toggleAdd(this)">
+<span class="add-label">Add</span>
+<div class="qty-control hidden flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="remove">remove</span>
+<span class="count">1</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sticky Cart Bar -->
+<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
+<div class="bg-primary text-on-primary rounded-xl p-3 flex items-center justify-between shadow-lg ring-1 ring-white/10 animate-bounce-subtle">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-primary bg-white overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Thumbnail of fresh milk carton." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX8ITczx5LlvuyehlA1rb50Yww3wnUU6jUgrYXuoYsdYIGYp7Lsnfm8XSNjBAgXAt4OvYf4nM64bFo0KkMDgpmTEuDU9rVZ54wguwvWPUcsAUIevYxIoL93dEwBN3o9vmKrA3hnCZwuB5ITua10ojtZMlOuUdO27tBVGPrfUhtgjn21Ew4tJ-sFG4TbKQWErprHgX8MndCNlOg1z21gzhGPDIHGTSaqOsf0NVhs3jsgmcH4BeSLc0p8aKYE_i3CiHAqiE5B0ZIQVs"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-primary bg-white overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Thumbnail of bananas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_VvBFYiLiOwTEu_bB_s3ZQW5Q-7P18waP_M1mY-aH-HFYXQ8l4ZKwNOeqC7tcqQdOyAZpN7bpY4lWEbi0cf9gjyyhgIjiFEuxMMXcbNRtcgpo2oWyuJNsuPOeQ-_JPlPdamCG8BlN2SPXNk2VCznupWR6JMzi8uqZ9aQiZtmKjF3GNEAnuoCdZpinzQLWe55ZCjmx83uMboubksFyBahy7W3sV687ARYr_dfXYQSBSYrh4yiwMGjYkRUc72VMb1cstZy3WCd59a8"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-primary bg-white overflow-hidden flex items-center justify-center text-[10px] text-primary font-bold">
+                        +1
+                    </div>
+</div>
+<div>
+<p class="font-label-lg text-label-lg leading-none">3 Items</p>
+<p class="font-data-tabular text-[12px] font-bold">₹162</p>
+</div>
+</div>
+<button class="bg-white text-primary px-6 py-2 rounded-full font-label-lg text-label-lg font-bold flex items-center gap-1">
+                View Cart
+                <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface border-t border-outline-variant flex justify-around items-center px-gutter-mobile py-base pb-safe shadow-md md:hidden">
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-label-lg text-label-lg">Search</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="local_offer">local_offer</span>
+<span class="font-label-lg text-label-lg">Offers</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-label-lg text-label-lg">Cart</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-lg text-label-lg">Profile</span>
+</button>
+</nav>
+<script>
+        // Countdown Logic
+        function startCountdown(duration) {
+            let timer = duration, minutes, seconds;
+            const display = document.querySelector('#countdown');
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        }
+        startCountdown(900); // 15 minutes
+
+        // Add Button Morphing Logic
+        function toggleAdd(btn) {
+            const label = btn.querySelector('.add-label');
+            const qty = btn.querySelector('.qty-control');
+            
+            if (btn.classList.contains('active')) {
+                // This would handle quantity adjustments in a real app
+                // For demo, we just toggle back if user clicks "minus" specifically
+            } else {
+                btn.classList.add('active', 'bg-primary', 'text-on-primary', 'border-none');
+                btn.classList.remove('text-primary');
+                label.classList.add('hidden');
+                qty.classList.remove('hidden');
+                qty.classList.add('flex');
+            }
+        }
+
+        // Prevent click propagation for internal button symbols if needed
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const countSpan = e.target.parentElement.querySelector('.count');
+                if(e.target.innerText === 'add') {
+                    if(countSpan) countSpan.innerText = parseInt(countSpan.innerText) + 1;
+                    e.stopPropagation();
+                } else if(e.target.innerText === 'remove') {
+                    if(countSpan && parseInt(countSpan.innerText) > 1) {
+                        countSpan.innerText = parseInt(countSpan.innerText) - 1;
+                    } else {
+                        // Logic to revert to "Add" state
+                        const btn = e.target.closest('.add-button-morph');
+                        btn.classList.remove('active', 'bg-primary', 'text-on-primary', 'border-none');
+                        btn.classList.add('text-primary', 'border-primary');
+                        btn.querySelector('.add-label').classList.remove('hidden');
+                        btn.querySelector('.qty-control').classList.add('hidden');
+                        btn.querySelector('.qty-control').classList.remove('flex');
+                    }
+                    e.stopPropagation();
+                }
+            });
+        });
+    </script>
+</body></html>
