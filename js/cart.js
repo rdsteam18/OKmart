@@ -35,8 +35,9 @@
   let allProducts = [];
   let coupons = [];
   let appliedCoupon = null;
-  const FREE_DELIVERY_THRESHOLD = 199;
-  const BASE_DELIVERY_CHARGE = 39;
+  // ✅ common.js से centralized values लें (fallback भी है)
+  const FREE_DELIVERY_THRESHOLD = window.FREE_DELIVERY_THRESHOLD || 199;
+  const BASE_DELIVERY_CHARGE = window.BASE_DELIVERY_CHARGE || 39;
 
   // ========== Load Data ==========
   async function loadData() {

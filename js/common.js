@@ -609,6 +609,45 @@ window.addEventListener('storage', (e) => {
 });
 
 // ============================================
+// CENTRALIZED CONSTANTS
+// ============================================
+
+// एक ही जगह free delivery threshold — सभी pages यहाँ से लें
+window.FREE_DELIVERY_THRESHOLD = 199;
+window.BASE_DELIVERY_CHARGE = 39;
+
+// ============================================
+// FETCH PRODUCTS FROM FIREBASE (Global)
+// ============================================
+
+/**
+ * Firebase से active products fetch करता है।
+ * cart.js, checkout.js, search.js etc. यही function use करें।
+ */
+window.fetchProducts = async function(filters = {}) {
+  try {
+    if (typeof db === 'undefined') {
+      console.warn('fetchProducts: Firestore (db) not available yet.');
+      return [];
+    }
+    let query = db.collection('products').where('active', '==', true);
+    if (filters.category) {
+      query = query.where('category', '==', filters.category);
+    }
+    if (filters.limit) {
+      query = query.limit(filters.limit);
+    }
+    const snapshot = await query.get();
+    const products = [];
+    snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+    return products;
+  } catch (error) {
+    console.error('fetchProducts error:', error);
+    return [];
+  }
+};
+
+// ============================================
 // EXPORTS (for compatibility)
 // ============================================
 
@@ -642,8 +681,9 @@ if ('serviceWorker' in navigator) {
           console.log('🔄 New Service Worker installing...');
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('📱 Update available! Refresh to install.');
-              showToast('New version available! Refresh to update.', 'info');
+              if (window.OKMart && window.OKMart.showToast) {
+                window.OKMart.showToast('New version available! Refresh to update.', 'info');
+              }
             }
           });
         });

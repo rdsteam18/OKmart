@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>My Orders | OK Mart</title>
   <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1a1e2b;min-height:100vh}
@@ -39,36 +42,83 @@
     </div>
   </div>
 
+  <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script>
-    const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-    const container = document.getElementById('ordersList');
-    
-    if (orders.length === 0) {
-      document.getElementById('emptyState').style.display = 'block';
-    } else {
-      container.innerHTML = orders.reverse().map(o => `
-        <div class="order-card" onclick="location.href='/tracking.html'">
-          <div class="order-header">
-            <span class="order-id">#${o.orderId || 'ORD-XXXX'}</span>
-            <span class="status-badge status-${o.status || 'received'}">${o.status || 'received'}</span>
+    async function loadAndRenderOrders() {
+      let orders = [];
+      
+      // ✅ Try Firebase first
+      try {
+        const userJson = localStorage.getItem('okmart_user');
+        const user = userJson ? JSON.parse(userJson) : null;
+        
+        if (user && user.phone && typeof db !== 'undefined') {
+          const phone = user.phone.replace('+91','').replace(/\s/g,'');
+          const snapshot = await db.collection('orders')
+            .where('phone', '==', phone)
+            .orderBy('createdAt', 'desc')
+            .limit(30)
+            .get();
+          
+          if (!snapshot.empty) {
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              orders.push({
+                ...data,
+                id: doc.id,
+                date: data.createdAt
+                  ? (data.createdAt.toDate ? data.createdAt.toDate().toISOString() : data.createdAt)
+                  : (data.date || new Date().toISOString())
+              });
+            });
+          }
+        }
+      } catch(e) {
+        console.warn('Firebase orders error:', e.message);
+      }
+      
+      // Fallback to localStorage
+      if (orders.length === 0) {
+        orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+        orders.sort((a,b) => new Date(b.date||b.orderDate) - new Date(a.date||a.orderDate));
+      }
+      
+      const container = document.getElementById('ordersList');
+      
+      if (orders.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+      } else {
+        container.innerHTML = orders.map(o => `
+          <div class="order-card" onclick="location.href='/track-order.html?order=${o.orderId||o.id||''}'">
+            <div class="order-header">
+              <span class="order-id">#${o.orderId || o.id || 'ORD-XXXX'}</span>
+              <span class="status-badge status-${o.status || 'received'}">${o.status || 'Received'}</span>
+            </div>
+            <div class="order-date">📅 ${new Date(o.date||o.orderDate||Date.now()).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div>
+            <div class="order-total">₹${Number(o.total || 0).toLocaleString('en-IN')}</div>
+            <div style="margin-top:8px;">
+              <button class="order-again-btn" onclick="event.stopPropagation();orderAgain(${JSON.stringify(o).replace(/"/g,'&quot;')})">🔄 Order Again</button>
+            </div>
           </div>
-          <div class="order-date">📅 ${new Date(o.orderDate || o.date).toLocaleDateString('en-IN')}</div>
-          <div class="order-total">₹${Number(o.total || 0).toLocaleString('en-IN')}</div>
-          <div style="margin-top:8px;">
-            <button class="order-again-btn" onclick="event.stopPropagation();orderAgain('${o.orderId}')">🔄 Order Again</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+        
+        window._allOrders = orders;
+      }
     }
     
-    function orderAgain(orderId) {
-      const order = orders.find(o => o.orderId === orderId);
-      if (order && order.items) {
-        localStorage.setItem('okmart_cart', JSON.stringify(order.items.map(i => ({...i, quantity: i.quantity}))));
+    function orderAgain(order) {
+      if (!order) return;
+      const o = typeof order === 'string' ? JSON.parse(order) : order;
+      if (o && o.items && o.items.length > 0) {
+        localStorage.setItem('okmart_cart', JSON.stringify(
+          o.items.map(i => ({...i, quantity: i.quantity || 1}))
+        ));
         location.href = '/cart.html';
       }
     }
+    
+    loadAndRenderOrders();
   </script>
 </body>
 </html>

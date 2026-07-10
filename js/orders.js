@@ -60,7 +60,44 @@
   
   // ---------- DATA LOADING ----------
   
-  function loadOrders() {
+  async function loadOrders() {
+    // ✅ Step 1: Firebase se load karo (if user logged in)
+    try {
+      const userJson = localStorage.getItem('okmart_user');
+      const user = userJson ? JSON.parse(userJson) : null;
+      
+      if (user && user.phone && typeof db !== 'undefined') {
+        // Firebase se orders load karo
+        const snapshot = await db.collection('orders')
+          .where('phone', '==', user.phone.replace('+91', '').replace(/\s/g,''))
+          .orderBy('createdAt', 'desc')
+          .limit(50)
+          .get();
+        
+        if (!snapshot.empty) {
+          allOrders = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            allOrders.push({
+              ...data,
+              firebaseId: doc.id,
+              // Normalize date field (Firebase Timestamp vs string)
+              date: data.createdAt 
+                ? (data.createdAt.toDate ? data.createdAt.toDate().toISOString() : data.createdAt)
+                : (data.date || new Date().toISOString())
+            });
+          });
+          
+          // ✅ Sync to localStorage as backup
+          localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders));
+          return allOrders;
+        }
+      }
+    } catch (firebaseError) {
+      console.warn('Firebase orders load failed, using localStorage:', firebaseError.message);
+    }
+    
+    // ⚠️ Fallback: localStorage se load karo
     const stored = localStorage.getItem(ORDERS_KEY);
     allOrders = stored ? JSON.parse(stored) : [];
     
@@ -416,19 +453,215 @@
     const total = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.querySelectorAll('.cart-badge').forEach(b => {
       if (b) b.textContent = total;
-    });
+// ---------- MODAL FUNCTIONS ----------
+
+function openOrderModal(order) {
+  currentOrder = order;
+  
+  modalOrderId.textContent = `#${order.orderId || 'OKM001'}`;
+  modalOrderDateTime.textContent = `${formatDate(order.date)} ${order.time ? '· ' + order.time : ''}`;
+  
+  const statusText = STATUS_DISPLAY[order.status] || STATUS_DISPLAY.received;
+  modalOrderStatus.textContent = statusText;
+  modalOrderStatus.className = `status-badge ${order.status || 'received'}`;
+  
+  modalPaymentMethod.textContent = order.paymentMethod || 'Cash on Delivery';
+  
+  // Customer details
+  modalCustomerName.textContent = order.customerName || 'Customer';
+  modalCustomerPhone.textContent = order.customerPhone ? `+91 ${order.customerPhone}` : '-';
+  modalCustomerAddress.textContent = order.customerAddress || 'Address not available';
+  
+  // Render items
+  renderModalItems(order.items);
+  
+  // Update totals
+  const subtotal = order.subtotal || order.total - (order.deliveryCharge || 0);
+  const delivery = order.deliveryCharge || 0;
+  const total = order.total || 0;
+  const couponDiscount = order.couponDiscount || 0;
+  
+  modalSubtotal.textContent = `₹${subtotal}`;
+  
+  if (couponDiscount > 0) {
+    modalCouponRow.style.display = 'flex';
+    modalCouponDiscount.textContent = `-₹${couponDiscount}`;
+  } else {
+    modalCouponRow.style.display = 'none';
   }
   
-  // ---------- INITIALIZATION ----------
+  modalDelivery.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
+  modalTotal.textContent = `₹${total}`;
   
-  function init() {
-    loadOrders();
-    updateUI();
-    updateCartBadge();
-    
-    console.log('✅ Orders page initialized |', allOrders.length, 'orders');
+  modalOverlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderModalItems(items) {
+  if (!modalOrderItems) return;
+  
+  modalOrderItems.innerHTML = '';
+  
+  if (!items || items.length === 0) {
+    modalOrderItems.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No items</p>';
+    return;
   }
   
-  init();
+  items.forEach(item => {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'modal-order-item';
+    itemEl.innerHTML = `
+      <img src="${item.image || 'https://via.placeholder.com/50'}" alt="${item.name}" class="item-image" onerror="this.src='https://via.placeholder.com/50?text=OK'">
+      <div class="item-details">
+        <div class="item-name">${item.name}</div>
+        <div class="item-qty">Qty: ${item.quantity}</div>
+      </div>
+      <div class="item-price">₹${item.price * item.quantity}</div>
+    `;
+    modalOrderItems.appendChild(itemEl);
+  });
+}
+
+function closeModal() {
+  modalOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+  currentOrder = null;
+}
+
+// ---------- ORDER AGAIN ----------
+
+function orderAgain(order) {
+  if (!order || !order.items || order.items.length === 0) {
+    showToast('No items to reorder', 'error');
+    return;
+  }
   
+  localStorage.removeItem(CART_KEY);
+  
+  const cartItems = order.items.map(item => ({
+    id: item.id || `reorder_${Date.now()}_${Math.random()}`,
+    name: item.name,
+    price: item.price,
+    mrp: item.mrp || item.price,
+    image: item.image || 'https://via.placeholder.com/100',
+    unit: item.unit || '',
+    quantity: item.quantity
+  }));
+  
+  localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
+  
+  if (window.OKMart && window.OKMart.updateStickyCartBar) {
+    window.OKMart.updateStickyCartBar();
+  }
+  
+  showToast(`${cartItems.length} items added to cart!`, 'success');
+  closeModal();
+  
+  setTimeout(() => {
+    window.location.href = '/cart.html';
+  }, 800);
+}
+
+// ---------- TRACK ORDER ----------
+
+function trackOrder(order) {
+  if (order && order.orderId) {
+    window.location.href = `/track.html?order=${order.orderId}`;
+  } else {
+    window.location.href = '/track.html';
+  }
+}
+
+// ---------- SUPPORT ----------
+
+function openSupport(order) {
+  const message = `Hello OK Mart,\n\nI need help with my order.\n\nOrder ID: ${order.orderId}\nStatus: ${order.status}\n\nPlease assist me.`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// ---------- TOAST ----------
+
+function showToast(message, type = 'info') {
+  if (!toastMessage) return;
+  
+  toastMessage.textContent = message;
+  toastMessage.className = `toast-message ${type}`;
+  toastMessage.classList.add('show');
+  
+  setTimeout(() => toastMessage.classList.remove('show'), 2500);
+}
+
+// ---------- EVENT LISTENERS ----------
+
+filterTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    filterTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderOrdersList();
+  });
+});
+
+if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+
+if (modalOverlay) {
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+}
+
+if (orderAgainBtn) {
+  orderAgainBtn.addEventListener('click', () => {
+    if (currentOrder) orderAgain(currentOrder);
+  });
+}
+
+if (trackOrderBtn) {
+  trackOrderBtn.addEventListener('click', () => {
+    if (currentOrder) trackOrder(currentOrder);
+  });
+}
+
+if (supportBtn) {
+  supportBtn.addEventListener('click', () => {
+    if (currentOrder) openSupport(currentOrder);
+  });
+}
+
+// Swipe down to close modal
+const modal = document.getElementById('orderModal');
+let startY = 0;
+if (modal) {
+  modal.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  modal.addEventListener('touchmove', (e) => {
+    const deltaY = e.touches[0].clientY - startY;
+    if (deltaY > 50) closeModal();
+  }, { passive: true });
+}
+
+// Update cart badge
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  document.querySelectorAll('.cart-badge').forEach(b => {
+    if (b) b.textContent = total;
+  });
+}
+
+// ---------- INITIALIZATION ----------
+
+async function init() {
+  // Show loading state
+  if (ordersLoadingState) ordersLoadingState.style.display = 'block';
+  
+  await loadOrders();
+  updateUI();
+  updateCartBadge();
+}
+
+init();
+
 })();

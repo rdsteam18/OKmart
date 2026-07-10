@@ -1,6 +1,8 @@
 // ===== OK MART - SERVICE WORKER FOR PWA =====
 
-const CACHE_NAME = 'okmart-v1.0.0';
+const CACHE_NAME = 'okmart-v1.0.1';
+const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX';
+
 const urlsToCache = [
   '/',
   '/index.html',
@@ -18,9 +20,9 @@ const urlsToCache = [
   '/js/common.js',
   '/js/firebase.js',
   '/js/home.js',
-  '/manifest.json',
-  '/assets/icons/icon-192x192.png',
-  '/assets/icons/icon-512x512.png'
+  '/manifest.json'
+  // \u2705 Note: External URLs (Blogger, CDN) cache nahi karte SW mein
+  // Local icon files exist nahi karte, isliye remove kiye
 ];
 
 // Install Service Worker
@@ -95,8 +97,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New update available!',
-    icon: '/assets/icons/icon-192x192.png',
-    badge: '/assets/icons/badge-72x72.png',
+    icon: LOGO_URL,
     vibrate: [200, 100, 200],
     data: {
       url: '/'

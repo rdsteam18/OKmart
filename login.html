@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Login | OK Mart</title>
+  <meta name="description" content="Login to OK Mart with your mobile number">
+  <meta name="theme-color" content="#2ecc71">
+  <meta name="robots" content="noindex">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #2ecc71;
+      --primary-dark: #27ae60;
+      --primary-light: #e8f8ef;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1a1e2b;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --error: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* ===== LOGO HEADER ===== */
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      margin: 0 auto 16px;
+      object-fit: contain;
+      background: var(--primary-light);
+      padding: 8px;
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ===== CARD ===== */
+    .login-card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 28px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    /* ===== STEP LABELS ===== */
+    .step-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ===== PHONE INPUT ===== */
+    .phone-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .country-code {
+      background: var(--primary-light);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      white-space: nowrap;
+      min-width: 64px;
+      text-align: center;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: white;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .form-input.error {
+      border-color: var(--error);
+    }
+
+    /* ===== OTP INPUTS ===== */
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .otp-digit {
+      width: 48px;
+      height: 56px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+      background: white;
+      outline: none;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .otp-digit.filled {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* ===== PRIMARY BUTTON ===== */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,204,113,0.35); }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-primary .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== SECONDARY BUTTON ===== */
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--primary-dark);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .btn-text:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== RESEND ROW ===== */
+    .resend-row {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .timer-text { font-weight: 600; color: var(--primary-dark); }
+
+    /* ===== ERROR MESSAGE ===== */
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--error);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    /* ===== SUCCESS STATE ===== */
+    .success-msg {
+      background: var(--primary-light);
+      border: 1px solid #a7f3d0;
+      color: var(--primary-dark);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .success-msg.show { display: block; }
+
+    /* ===== DIVIDER ===== */
+    .step-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .step-divider::before, .step-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ===== PHONE DISPLAY ===== */
+    .phone-display {
+      background: var(--primary-light);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--primary-dark);
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ===== STEPS VISIBILITY ===== */
+    #stepPhone, #stepOtp, #stepName { display: none; }
+    #stepPhone.active, #stepOtp.active, #stepName.active { display: block; }
+
+    /* ===== reCAPTCHA fix ===== */
+    #recaptcha-container { margin: 12px 0; }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+
+    /* ===== FOOTER ===== */
+    .login-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .login-footer a { color: var(--primary-dark); }
+
+    /* ===== PROFILE ICON ===== */
+    .profile-icon-circle {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+
+    <!-- Header -->
+    <div class="login-header">
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="login-logo">
+      <h1 class="login-title">OK Mart</h1>
+      <p class="login-subtitle">Fresh groceries delivered in 10-15 min</p>
+    </div>
+
+    <div class="login-card">
+
+      <!-- ===== STEP 1: PHONE NUMBER ===== -->
+      <div id="stepPhone" class="active">
+        <div class="step-label">Step 1 of 3</div>
+        <h2 class="step-title">Enter Your Number</h2>
+        <p class="step-desc">We'll send you a 6-digit OTP to verify your mobile number</p>
+
+        <div id="errorPhone" class="error-msg"></div>
+
+        <div class="phone-input-group">
+          <div class="country-code">🇮🇳 +91</div>
+          <input type="tel" id="phoneInput" class="form-input" placeholder="10-digit mobile number"
+            maxlength="10" inputmode="numeric" autocomplete="tel-national">
+        </div>
+
+        <!-- reCAPTCHA container -->
+        <div id="recaptcha-container"></div>
+
+        <button class="btn-primary" id="sendOtpBtn" onclick="sendOTP()">
+          <span>Send OTP</span>
+        </button>
+      </div>
+
+      <!-- ===== STEP 2: OTP VERIFICATION ===== -->
+      <div id="stepOtp">
+        <div class="step-label">Step 2 of 3</div>
+        <h2 class="step-title">Verify OTP</h2>
+        <p class="step-desc">Enter the 6-digit code sent to</p>
+        <div class="phone-display" id="phoneDisplay">📱 +91 XXXXXXXXXX</div>
+
+        <div id="errorOtp" class="error-msg"></div>
+        <div id="successOtp" class="success-msg"></div>
+
+        <div class="otp-inputs">
+          <input type="tel" class="otp-digit" id="otp1" maxlength="1" inputmode="numeric">
+          <input type="tel" class="otp-digit" id="otp2" maxlength="1" inputmode="numeric">
+          <input type="tel" class="otp-digit" id="otp3" maxlength="1" inputmode="numeric">
+          <input type="tel" class="otp-digit" id="otp4" maxlength="1" inputmode="numeric">
+          <input type="tel" class="otp-digit" id="otp5" maxlength="1" inputmode="numeric">
+          <input type="tel" class="otp-digit" id="otp6" maxlength="1" inputmode="numeric">
+        </div>
+
+        <button class="btn-primary" id="verifyOtpBtn" onclick="verifyOTP()">
+          <span>Verify & Continue</span>
+        </button>
+
+        <div class="resend-row">
+          <span id="resendText">Resend OTP in <span class="timer-text" id="timerDisplay">30s</span></span>
+          <button class="btn-text" id="resendBtn" style="display:none;" onclick="resendOTP()">Resend OTP</button>
+        </div>
+
+        <div style="text-align:center; margin-top:14px;">
+          <button class="btn-text" onclick="goBackToPhone()">← Change Number</button>
+        </div>
+      </div>
+
+      <!-- ===== STEP 3: PROFILE SETUP ===== -->
+      <div id="stepName">
+        <div class="step-label">Step 3 of 3</div>
+        <div class="profile-icon-circle">👤</div>
+        <h2 class="step-title" style="text-align:center;">Your Name</h2>
+        <p class="step-desc" style="text-align:center;">What should we call you?</p>
+
+        <div id="errorName" class="error-msg"></div>
+
+        <input type="text" id="nameInput" class="form-input" placeholder="Enter your full name"
+          autocomplete="name" style="margin-bottom:16px;">
+
+        <input type="email" id="emailInput" class="form-input" placeholder="Email (optional)"
+          autocomplete="email" style="margin-bottom:20px;">
+
+        <button class="btn-primary" id="saveProfileBtn" onclick="saveProfile()">
+          <span>🎉 Start Shopping</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      By continuing, you agree to our
+      <a href="/terms.html">Terms of Service</a> &
+      <a href="/terms.html">Privacy Policy</a>
+    </div>
+
+  </div>
+
+  <!-- Firebase Initialization -->
+  <script src="/js/firebase.js"></script>
+
+  <script>
+    'use strict';
+
+    // ============================================
+    // STATE
+    // ============================================
+    let confirmationResult = null;
+    let recaptchaVerifier = null;
+    let resendTimer = null;
+    const auth = firebase.auth();
+
+    // ============================================
+    // CHECK IF ALREADY LOGGED IN
+    // ============================================
+    (function checkSession() {
+      const user = localStorage.getItem('okmart_user');
+      if (user) {
+        try {
+          const parsed = JSON.parse(user);
+          if (parsed.uid || parsed.phone) {
+            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/';
+            window.location.href = redirect;
+          }
+        } catch(e) {}
+      }
+    })();
+
+    // ============================================
+    // RECAPTCHA SETUP
+    // ============================================
+    function setupRecaptcha() {
+      if (recaptchaVerifier) {
+        try { recaptchaVerifier.clear(); } catch(e) {}
+      }
+      recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        callback: () => {}
+      });
+    }
+
+    // Init recaptcha on load
+    window.addEventListener('load', setupRecaptcha);
+
+    // ============================================
+    // STEP 1 — SEND OTP
+    // ============================================
+    async function sendOTP() {
+      const phoneInput = document.getElementById('phoneInput');
+      const phone = phoneInput.value.trim();
+      const errorDiv = document.getElementById('errorPhone');
+      const sendBtn = document.getElementById('sendOtpBtn');
+
+      // Validate
+      if (!/^[6-9]\d{9}$/.test(phone)) {
+        showError(errorDiv, '⚠️ Please enter a valid 10-digit Indian mobile number');
+        phoneInput.classList.add('error');
+        return;
+      }
+
+      errorDiv.classList.remove('show');
+      phoneInput.classList.remove('error');
+      setLoading(sendBtn, true);
+
+      try {
+        if (!recaptchaVerifier) setupRecaptcha();
+        const fullPhone = '+91' + phone;
+        confirmationResult = await auth.signInWithPhoneNumber(fullPhone, recaptchaVerifier);
+
+        // Go to OTP step
+        document.getElementById('stepPhone').classList.remove('active');
+        document.getElementById('stepOtp').classList.add('active');
+        document.getElementById('phoneDisplay').textContent = '📱 +91 ' + phone;
+
+        startResendTimer();
+        setupOtpInputs();
+        document.getElementById('otp1').focus();
+
+      } catch (error) {
+        console.error('OTP send error:', error);
+        let msg = '❌ Failed to send OTP. Please try again.';
+        if (error.code === 'auth/too-many-requests') msg = '⏳ Too many attempts. Please wait a few minutes.';
+        if (error.code === 'auth/invalid-phone-number') msg = '⚠️ Invalid phone number format.';
+        showError(errorDiv, msg);
+        // Reset recaptcha
+        try { recaptchaVerifier.clear(); } catch(e) {}
+        setupRecaptcha();
+        setLoading(sendBtn, false);
+      }
+    }
+
+    // ============================================
+    // STEP 2 — VERIFY OTP
+    // ============================================
+    async function verifyOTP() {
+      const digits = ['otp1','otp2','otp3','otp4','otp5','otp6']
+        .map(id => document.getElementById(id).value).join('');
+
+      const errorDiv = document.getElementById('errorOtp');
+      const successDiv = document.getElementById('successOtp');
+      const verifyBtn = document.getElementById('verifyOtpBtn');
+
+      if (digits.length < 6) {
+        showError(errorDiv, '⚠️ Please enter the complete 6-digit OTP');
+        return;
+      }
+
+      if (!confirmationResult) {
+        showError(errorDiv, '❌ Session expired. Please go back and try again.');
+        return;
+      }
+
+      errorDiv.classList.remove('show');
+      setLoading(verifyBtn, true);
+
+      try {
+        const result = await confirmationResult.confirm(digits);
+        const user = result.user;
+
+        successDiv.textContent = '✅ Phone verified successfully!';
+        successDiv.classList.add('show');
+
+        // Check if user already has profile in Firestore
+        const userDoc = await db.collection('users').doc(user.uid).get();
+
+        setTimeout(() => {
+          if (userDoc.exists && userDoc.data().name) {
+            // Existing user — save session and redirect
+            saveUserSession(user.uid, userDoc.data());
+          } else {
+            // New user — ask for name
+            document.getElementById('stepOtp').classList.remove('active');
+            document.getElementById('stepName').classList.add('active');
+            clearInterval(resendTimer);
+            // Store uid temporarily
+            window._pendingUid = user.uid;
+            window._pendingPhone = user.phoneNumber;
+            document.getElementById('nameInput').focus();
+          }
+        }, 600);
+
+      } catch (error) {
+        console.error('OTP verify error:', error);
+        let msg = '❌ Invalid OTP. Please try again.';
+        if (error.code === 'auth/code-expired') msg = '⏳ OTP expired. Please resend.';
+        if (error.code === 'auth/invalid-verification-code') msg = '❌ Wrong OTP entered.';
+        showError(errorDiv, msg);
+        setLoading(verifyBtn, false);
+      }
+    }
+
+    // ============================================
+    // STEP 3 — SAVE PROFILE
+    // ============================================
+    async function saveProfile() {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const errorDiv = document.getElementById('errorName');
+      const saveBtn = document.getElementById('saveProfileBtn');
+
+      if (!name || name.length < 2) {
+        showError(errorDiv, '⚠️ Please enter your name (at least 2 characters)');
+        return;
+      }
+
+      errorDiv.classList.remove('show');
+      setLoading(saveBtn, true);
+
+      try {
+        const uid = window._pendingUid;
+        const phone = window._pendingPhone;
+
+        const userData = {
+          uid: uid,
+          name: name,
+          phone: phone,
+          email: email || null,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        // Save to Firestore
+        await db.collection('users').doc(uid).set(userData, { merge: true });
+
+        saveUserSession(uid, userData);
+
+      } catch (error) {
+        console.error('Profile save error:', error);
+        showError(errorDiv, '❌ Could not save profile. Please try again.');
+        setLoading(saveBtn, false);
+      }
+    }
+
+    // ============================================
+    // SAVE SESSION TO localStorage
+    // ============================================
+    function saveUserSession(uid, userData) {
+      const sessionData = {
+        uid: uid,
+        name: userData.name || 'User',
+        phone: userData.phone || '',
+        email: userData.email || ''
+      };
+      localStorage.setItem('okmart_user', JSON.stringify(sessionData));
+
+      // Redirect
+      const redirect = new URLSearchParams(window.location.search).get('redirect') || '/';
+      window.location.href = redirect;
+    }
+
+    // ============================================
+    // RESEND OTP
+    // ============================================
+    function startResendTimer() {
+      let seconds = 30;
+      const timerEl = document.getElementById('timerDisplay');
+      const resendText = document.getElementById('resendText');
+      const resendBtn = document.getElementById('resendBtn');
+
+      resendText.style.display = 'inline';
+      resendBtn.style.display = 'none';
+      timerEl.textContent = seconds + 's';
+
+      clearInterval(resendTimer);
+      resendTimer = setInterval(() => {
+        seconds--;
+        timerEl.textContent = seconds + 's';
+        if (seconds <= 0) {
+          clearInterval(resendTimer);
+          resendText.style.display = 'none';
+          resendBtn.style.display = 'inline';
+        }
+      }, 1000);
+    }
+
+    async function resendOTP() {
+      const phone = document.getElementById('phoneDisplay').textContent.replace('📱 +91 ', '').trim();
+      document.getElementById('errorOtp').classList.remove('show');
+      const resendBtn = document.getElementById('resendBtn');
+      resendBtn.disabled = true;
+
+      try {
+        setupRecaptcha();
+        confirmationResult = await auth.signInWithPhoneNumber('+91' + phone, recaptchaVerifier);
+        startResendTimer();
+        // Clear OTP fields
+        ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
+          document.getElementById(id).value = '';
+          document.getElementById(id).classList.remove('filled');
+        });
+        document.getElementById('otp1').focus();
+      } catch(e) {
+        document.getElementById('errorOtp').textContent = '❌ Failed to resend OTP.';
+        document.getElementById('errorOtp').classList.add('show');
+        resendBtn.disabled = false;
+      }
+    }
+
+    function goBackToPhone() {
+      document.getElementById('stepOtp').classList.remove('active');
+      document.getElementById('stepPhone').classList.add('active');
+      clearInterval(resendTimer);
+      // Clear OTP
+      ['otp1','otp2','otp3','otp4','otp5','otp6'].forEach(id => {
+        document.getElementById(id).value = '';
+        document.getElementById(id).classList.remove('filled');
+      });
+    }
+
+    // ============================================
+    // OTP INPUT NAVIGATION (auto-advance)
+    // ============================================
+    function setupOtpInputs() {
+      const digits = ['otp1','otp2','otp3','otp4','otp5','otp6'];
+
+      digits.forEach((id, index) => {
+        const input = document.getElementById(id);
+
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val;
+
+          if (val) {
+            e.target.classList.add('filled');
+            if (index < 5) document.getElementById(digits[index + 1]).focus();
+            // Auto-verify if all filled
+            const all = digits.every(d => document.getElementById(d).value);
+            if (all) verifyOTP();
+          } else {
+            e.target.classList.remove('filled');
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && index > 0) {
+            document.getElementById(digits[index - 1]).focus();
+          }
+        });
+
+        // Handle paste
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach((char, i) => {
+            if (digits[i]) {
+              const el = document.getElementById(digits[i]);
+              el.value = char;
+              el.classList.add('filled');
+            }
+          });
+          // Focus last filled
+          const lastIndex = Math.min(pasted.length - 1, 5);
+          document.getElementById(digits[lastIndex]).focus();
+          if (pasted.length === 6) setTimeout(verifyOTP, 200);
+        });
+      });
+    }
+
+    // ============================================
+    // ENTER KEY SUPPORT
+    // ============================================
+    document.getElementById('phoneInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendOTP();
+    });
+
+    document.getElementById('nameInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveProfile();
+    });
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function showError(el, msg) {
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function setLoading(btn, loading) {
+      btn.disabled = loading;
+      if (loading) {
+        btn.innerHTML = '<div class="spinner"></div>';
+      } else {
+        btn.innerHTML = btn.dataset.label || '<span>Continue</span>';
+      }
+    }
+
+    // Store default labels
+    document.getElementById('sendOtpBtn').dataset.label = '<span>Send OTP</span>';
+    document.getElementById('verifyOtpBtn').dataset.label = '<span>Verify & Continue</span>';
+    document.getElementById('saveProfileBtn').dataset.label = '<span>🎉 Start Shopping</span>';
+  </script>
+
+</body>
+</html>

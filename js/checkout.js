@@ -26,9 +26,10 @@
   let userAddress = null;
   let currentDeliveryType = 'quick';
   let currentPaymentMethod = 'cod';
-  let deliveryCharge = 30;
-  const FREE_DELIVERY_THRESHOLD = 499;
-  const ADMIN_WHATSAPP = '919982239821'; // Admin WhatsApp number
+  let deliveryCharge = window.BASE_DELIVERY_CHARGE || 39;
+  // ✅ common.js का centralized threshold use करें
+  const FREE_DELIVERY_THRESHOLD = window.FREE_DELIVERY_THRESHOLD || 199;
+  const ADMIN_WHATSAPP = '919982239821';
 
   // ========== Load Data ==========
   async function loadData() {
@@ -151,10 +152,11 @@
     
     orderItemsList.innerHTML = items || '<div style="text-align:center;padding:20px;color:#6b7280;">No items</div>';
     
-    // Calculate delivery charge
-    let delivery = 30;
+    // Calculate delivery charge using centralized constant
+    const baseCharge = window.BASE_DELIVERY_CHARGE || 39;
+    let delivery = baseCharge;
     if (currentDeliveryType === 'scheduled') {
-      delivery = 20;
+      delivery = Math.round(baseCharge * 0.75); // Scheduled = 75% of quick charge
     }
     if (subtotal >= FREE_DELIVERY_THRESHOLD) {
       delivery = 0;
@@ -307,9 +309,10 @@ ${itemsList}
       return sum + (product.price * (item.quantity || 1));
     }, 0);
     
-    let delivery = 30;
+    const baseCharge = window.BASE_DELIVERY_CHARGE || 39;
+    let delivery = baseCharge;
     if (currentDeliveryType === 'scheduled') {
-      delivery = 20;
+      delivery = Math.round(baseCharge * 0.75);
     }
     if (subtotal >= FREE_DELIVERY_THRESHOLD) {
       delivery = 0;

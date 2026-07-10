@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: User is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: Check if matching own user document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // 1. Products Collection
+    // Read: Allowed for anyone (so guests can browse)
+    // Write: Blocked for regular users (only admins can add/edit products)
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false; // Only admin panel backend/admin user
+    }
+
+    // 2. Banners Collection (Promotional Banners)
+    // Read: Allowed for anyone
+    // Write: Admin only
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 3. Offers Collection (Promo coupons)
+    // Read: Allowed for anyone
+    // Write: Admin only
+    match /offers/{offerId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 4. Settings Collection (delivery fees, thresholds)
+    // Read: Allowed for anyone
+    // Write: Admin only
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // 5. Users Collection (Addresses and Profiles)
+    // Read/Write: Only matching user can read/write their own details
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // 6. Orders Collection
+    // Read: Allowed if user is authenticated
+    // Write: Allowed if authenticated
+    match /orders/{orderId} {
+      allow create: if isSignedIn();
+      allow read: if isSignedIn() && (
+        resource.data.phone == request.auth.token.phone_number ||
+        resource.data.customerPhone == request.auth.token.phone_number ||
+        request.auth.uid != null
+      );
+      allow update, delete: if false; // Orders cannot be modified/deleted by users after placement
+    }
+    
+    // 7. Admins Collection
+    // Read: Only when logging in
+    // Write: Blocked for clients
+    match /admins/{adminId} {
+      allow read: if true; 
+      allow write: if false;
+    }
+  }
+}

@@ -309,9 +309,13 @@
           const settings = doc.data();
           
           // Update delivery info card
-          const freeThreshold = settings.freeDeliveryThreshold || 499;
-          const baseCharge = settings.baseDeliveryCharge || 39;
+          const freeThreshold = settings.freeDeliveryThreshold || window.FREE_DELIVERY_THRESHOLD || 199;
+          const baseCharge = settings.baseDeliveryCharge || window.BASE_DELIVERY_CHARGE || 39;
           const quickTime = settings.quickDeliveryTime || 15;
+          
+          // ✅ Global constants ko bhi update karo for consistency
+          window.FREE_DELIVERY_THRESHOLD = freeThreshold;
+          window.BASE_DELIVERY_CHARGE = baseCharge;
           
           document.getElementById('deliveryInfoTitle').innerHTML = `Free Delivery Above ₹${freeThreshold}`;
           document.getElementById('deliveryInfoSub').innerHTML = `Standard delivery charge: ₹${baseCharge} | Quick delivery in ${quickTime} mins`;
@@ -328,10 +332,12 @@
             window.updateCartDelivery();
           }
         } else {
-          // Default settings
+          // Default settings — common.js ke values use karo
+          const freeThreshold = window.FREE_DELIVERY_THRESHOLD || 199;
+          const baseCharge = window.BASE_DELIVERY_CHARGE || 39;
           window.deliverySettings = {
-            freeThreshold: 499,
-            baseCharge: 39,
+            freeThreshold: freeThreshold,
+            baseCharge: baseCharge,
             quickTime: 15
           };
         }

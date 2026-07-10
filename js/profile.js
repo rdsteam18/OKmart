@@ -104,6 +104,18 @@
 
   // ========== User Info Functions ==========
   function loadUserInfo() {
+    // Check active login first
+    const activeUser = localStorage.getItem('okmart_user');
+    if (activeUser) {
+      try {
+        const u = JSON.parse(activeUser);
+        userInfo.name = u.name || '';
+        userInfo.phone = (u.phone || '').replace('+91', '').replace(/\s/g, '') || '';
+        userInfo.email = u.email || '';
+        return;
+      } catch(e) {}
+    }
+
     const savedUser = localStorage.getItem('okmart_user_details');
     if (savedUser) {
       try {
@@ -115,8 +127,31 @@
     }
   }
 
-  function saveUserInfo() {
+  async function saveUserInfo() {
     localStorage.setItem('okmart_user_details', JSON.stringify(userInfo));
+    
+    // Sync back to main login session key
+    const activeUser = localStorage.getItem('okmart_user');
+    if (activeUser) {
+      try {
+        const u = JSON.parse(activeUser);
+        u.name = userInfo.name;
+        u.phone = userInfo.phone;
+        u.email = userInfo.email;
+        localStorage.setItem('okmart_user', JSON.stringify(u));
+        
+        // Save to Firebase Firestore under users/{uid}
+        if (typeof db !== 'undefined' && u.uid) {
+          await db.collection('users').doc(u.uid).set({
+            name: userInfo.name,
+            phone: userInfo.phone,
+            email: userInfo.email,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true });
+        }
+      } catch(e) {}
+    }
+
     // Also save to localStorage for checkout
     const addressForCheckout = {
       name: userInfo.name,
@@ -171,7 +206,7 @@
   }
 
   // ========== Address Functions ==========
-  function loadAddresses() {
+  async function loadAddresses() {
     const savedAddresses = localStorage.getItem('okmart_user_addresses');
     if (savedAddresses) {
       try {
@@ -199,9 +234,30 @@
         }
       } catch(e) {}
     }
+
+    // Try loading addresses from Firestore (users collection) for persistence
+    const activeUser = localStorage.getItem('okmart_user');
+    if (activeUser && typeof db !== 'undefined') {
+      try {
+        const u = JSON.parse(activeUser);
+        if (u.uid) {
+          const userDoc = await db.collection('users').doc(u.uid).get();
+          if (userDoc.exists) {
+            const data = userDoc.data();
+            if (data.addresses && Array.isArray(data.addresses) && data.addresses.length > 0) {
+              addresses = data.addresses;
+              localStorage.setItem('okmart_user_addresses', JSON.stringify(addresses));
+              renderAddresses();
+            }
+          }
+        }
+      } catch(dbErr) {
+        console.warn('Could not fetch addresses from Firestore:', dbErr.message);
+      }
+    }
   }
 
-  function saveAddresses() {
+  async function saveAddresses() {
     localStorage.setItem('okmart_user_addresses', JSON.stringify(addresses));
     
     // Also save default address for checkout
@@ -223,6 +279,21 @@
         ...addressForCheckout
       };
       localStorage.setItem('okmart_user_address', JSON.stringify(userDetails));
+    }
+
+    // Sync saved addresses to Firestore users collection
+    const activeUser = localStorage.getItem('okmart_user');
+    if (activeUser && typeof db !== 'undefined') {
+      try {
+        const u = JSON.parse(activeUser);
+        if (u.uid) {
+          await db.collection('users').doc(u.uid).set({
+            addresses: addresses
+          }, { merge: true });
+        }
+      } catch(dbErr) {
+        console.warn('Could not sync addresses to Firestore:', dbErr.message);
+      }
     }
   }
 
@@ -579,6 +650,7 @@
   function logout() {
     if (confirm('Are you sure you want to logout?')) {
       // Clear all user data from localStorage
+      localStorage.removeItem('okmart_user');
       localStorage.removeItem('okmart_user_details');
       localStorage.removeItem('okmart_user_address');
       localStorage.removeItem('okmart_user_addresses');

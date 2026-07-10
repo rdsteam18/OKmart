@@ -7,14 +7,12 @@
   <title>OK Mart | Fresh Grocery Delivery in 10-15 Minutes</title>
   <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast delivery in 10-15 minutes.">
   <meta name="theme-color" content="#2ecc71">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- App -->
   <link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="OK Mart">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Mart">
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
@@ -30,17 +28,14 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <style>
-    /* Additional critical styles to prevent zoom issues */
+    /* Touch optimization — CSS se double-tap zoom bandh (accessibility-safe) */
     body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
-      -ms-touch-action: manipulation;
     }
-    
     input, select, textarea, button, a {
       touch-action: manipulation;
     }
-    
     /* Prevent zoom on input focus on iOS */
     @media screen and (max-width: 768px) {
       input, select, textarea {
@@ -144,7 +139,7 @@
               <div class="timer-block"><span id="seconds">00</span><span>s</span></div>
             </div>
           </div>
-          <a href="/flash-sale" class="view-all-link">View All →</a>
+          <a href="/offers.html" class="view-all-link">View All →</a>
         </div>
         <div class="flash-sale-grid" id="flashSaleGrid"></div>
       </section>
@@ -161,7 +156,7 @@
       <section class="new-arrivals-section" id="newArrivalsSection" style="display: none;">
         <div class="section-header">
           <h2 class="section-title">✨ New Arrivals</h2>
-          <a href="/new-arrivals" class="view-all-link">View All →</a>
+          <a href="/categories/all.html" class="view-all-link">View All →</a>
         </div>
         <div class="new-arrivals-grid" id="newArrivalsGrid"></div>
       </section>
@@ -170,7 +165,7 @@
       <section class="trending-section" id="trendingSection" style="display: none;">
         <div class="section-header">
           <h2 class="section-title">🔥 Hot Today</h2>
-          <a href="/trending" class="view-all-link">View All →</a>
+          <a href="/categories/all.html" class="view-all-link">View All →</a>
         </div>
         <div class="trending-grid" id="trendingGrid"></div>
       </section>
@@ -307,10 +302,10 @@
           <div class="profile-phone" id="profilePhone">Not logged in</div>
           <button class="login-btn" id="loginBtn">Login / Sign Up</button>
           <div class="profile-menu">
-            <a href="/orders" class="profile-menu-item">📋 My Orders</a>
-            <a href="/wishlist" class="profile-menu-item">❤️ Wishlist</a>
-            <a href="/addresses" class="profile-menu-item">📍 Saved Addresses</a>
-            <a href="/settings" class="profile-menu-item">⚙️ Settings</a>
+            <a href="/orders.html" class="profile-menu-item">📋 My Orders</a>
+            <a href="/wishlist.html" class="profile-menu-item">❤️ Wishlist</a>
+            <a href="/profile.html" class="profile-menu-item">📍 Saved Addresses</a>
+            <a href="/profile.html" class="profile-menu-item">⚙️ Settings</a>
           </div>
         </div>
       </div>
@@ -355,11 +350,11 @@
       if (e.target === profileModal) profileModal.classList.remove('active');
     });
     
-    // Login button
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
       loginBtn.addEventListener('click', () => {
-        window.location.href = '/login.html';
+        // login.html अभी नहीं है — profile page पर redirect करें
+        window.location.href = '/user-details.html';
       });
     }
     
@@ -374,17 +369,11 @@
       } catch(e) {}
     }
     
-    // Prevent zoom on double tap
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', (e) => {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
+    // Double-tap zoom — CSS touch-action se handle hota hai ab
+    // JS preventDefault hata diya (accessibility ke liye harmful tha)
+    // See <style> block above for the CSS fix
     
-    console.log('✅ UI enhancements loaded - Zoom disabled, Profile added');
+    // console.log removed in production
   </script>
 </body>
 </html>

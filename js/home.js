@@ -26,7 +26,8 @@
   let currentLocation = null;
   let recentlyViewed = [];
   let isLocationServiceable = true;
-  const FREE_DELIVERY_THRESHOLD = 199;
+  // ✅ common.js ka centralized threshold use karo
+  const FREE_DELIVERY_THRESHOLD = window.FREE_DELIVERY_THRESHOLD || 199;
   
   // ========== LOAD PRODUCTS FROM FIREBASE ==========
   async function loadProducts() {
@@ -145,17 +146,17 @@
   
   // ========== RENDER CATEGORY GRID ==========
   const categories = [
-    { id: 'dairy', name: '🥛 Dairy', emoji: '🥛' },
-    { id: 'fruits', name: '🍎 Fruits', emoji: '🍎' },
-    { id: 'vegetables', name: '🥬 Vegetables', emoji: '🥬' },
-    { id: 'snacks', name: '🍿 Snacks', emoji: '🍿' },
-    { id: 'beverages', name: '🥤 Beverages', emoji: '🥤' },
-    { id: 'icecream', name: 'Icecream', emoji: '🍦' },
-    { id: 'grocery', name: '🛒 Grocery', emoji: '🛒' },
-    { id: 'personal-care', name: '🧴 Personal Care', emoji: '🧴' },
-    { id: 'household', name: '🧹 Household', emoji: '🧹' },
-    { id: 'bakery', name: '🥖 Bakery', emoji: '🥖' },
-    { id: 'electronics', name: '📱 Electronics', emoji: '📱' }
+    { id: 'dairy',         name: 'Dairy',         emoji: '🥛' },
+    { id: 'fruits',        name: 'Fruits',        emoji: '🍎' },
+    { id: 'vegetables',    name: 'Vegetables',    emoji: '🥬' },
+    { id: 'snacks',        name: 'Snacks',        emoji: '🍿' },
+    { id: 'beverages',     name: 'Beverages',     emoji: '🥤' },
+    { id: 'icecream',      name: 'Ice Cream',     emoji: '🍦' },
+    { id: 'grocery',       name: 'Grocery',       emoji: '🛒' },
+    { id: 'personal-care', name: 'Personal Care', emoji: '🧴' },
+    { id: 'household',     name: 'Household',     emoji: '🧹' },
+    { id: 'bakery',        name: 'Bakery',        emoji: '🥖' },
+    { id: 'electronics',   name: 'Electronics',   emoji: '📱' }
   ];
   
   function renderCategoryGrid() {
@@ -247,7 +248,7 @@
     const isOutOfStock = (product.stock || 0) === 0;
     
     return `
-      <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
+      <div class="product-card" data-product-id="${product.id}" data-id="${product.id}" onclick="viewProduct('${product.id}')">
         <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
         ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
         ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
@@ -631,6 +632,8 @@
   }
   
   // ========== SEARCH FUNCTIONALITY ==========
+  let searchDebounceTimer = null;
+
   function initSearch() {
     if (!searchInput) return;
     
@@ -640,8 +643,23 @@
         clearSearchBtn.classList.toggle('visible', query.length > 0);
       }
       
-      if (query.length > 1) {
-        window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
+      // ✅ Debounce fix: 600ms रुकें और minimum 3 chars चाहिए
+      clearTimeout(searchDebounceTimer);
+      if (query.length >= 3) {
+        searchDebounceTimer = setTimeout(() => {
+          window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
+        }, 600);
+      }
+    });
+    
+    // Enter key पर immediate redirect
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        if (query.length > 0) {
+          clearTimeout(searchDebounceTimer);
+          window.location.href = `/search.html?q=${encodeURIComponent(query)}`;
+        }
       }
     });
     
@@ -649,6 +667,7 @@
       clearSearchBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearSearchBtn.classList.remove('visible');
+        clearTimeout(searchDebounceTimer);
         searchInput.focus();
       });
     }
