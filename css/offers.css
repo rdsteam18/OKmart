@@ -2,9 +2,9 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --primary: #2ecc71;
-  --primary-dark: #27ae60;
-  --primary-light: #e8f8ef;
+  --primary: #84c225;
+  --primary-dark: #5f930e;
+  --primary-light: #f3f9eb;
   --bg: #f8fafc;
   --card: #ffffff;
   --text: #1a1e2b;
@@ -188,3 +188,4 @@ body {
 @media (min-width: 500px) {
   .app-container { max-width: 500px; }
 }
+

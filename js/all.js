@@ -142,3 +142,4 @@ function showToast(msg,type){const t=document.getElementById('toastMessage');t.t
 updateCartUI();
 console.log('✅ Explore page ready');
 })();
+

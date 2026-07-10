@@ -177,3 +177,4 @@ body {
 @media (min-width: 500px) { .app-container { max-width: 500px; } }
 @media (min-width: 768px) { .app-container { max-width: 720px; } .product-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1024px) { .app-container { max-width: 960px; } .product-grid { grid-template-columns: repeat(4, 1fr); } }
+

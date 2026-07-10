@@ -516,3 +516,4 @@ window.escapeHtml = escapeHtml;
 console.log('Firebase fully loaded');
 console.log('Firestore:', db ? 'Available' : 'Not available');
 console.log('Messaging:', messaging ? 'Available' : 'Not available');
+

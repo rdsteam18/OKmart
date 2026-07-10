@@ -233,8 +233,8 @@
     // Add circle for delivery radius
     L.circle([lat, lng], {
       radius: 500,
-      color: '#2ecc71',
-      fillColor: '#2ecc71',
+      color: '#84c225',
+      fillColor: '#84c225',
       fillOpacity: 0.1
     }).addTo(map);
   }
@@ -431,3 +431,4 @@
   // Start
   init();
 })();
+

@@ -127,7 +127,7 @@
           </div>
         </div>
         <div style="display:flex; gap:10px;">
-          <button id="enableNotifBtn" style="flex:1; padding:10px; background:#2ecc71; color:white; border:none; border-radius:30px; font-weight:600; cursor:pointer;">Enable</button>
+          <button id="enableNotifBtn" style="flex:1; padding:10px; background:#84c225; color:white; border:none; border-radius:30px; font-weight:600; cursor:pointer;">Enable</button>
           <button id="laterNotifBtn" style="flex:1; padding:10px; background:#f1f5f9; border:none; border-radius:30px; font-weight:600; cursor:pointer;">Later</button>
         </div>
       </div>
@@ -262,3 +262,4 @@
   }
   
 })();
+

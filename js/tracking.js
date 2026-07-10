@@ -436,8 +436,8 @@
     // Delivery radius circle
     L.circle([lat, lng], {
       radius: 500,
-      color: '#2ecc71',
-      fillColor: '#2ecc71',
+      color: '#84c225',
+      fillColor: '#84c225',
       fillOpacity: 0.1
     }).addTo(currentMap);
     
@@ -457,7 +457,7 @@
       
       // Draw route line
       const routePoints = [[deliveryLat, deliveryLng], [lat, lng]];
-      L.polyline(routePoints, { color: '#2ecc71', weight: 3, dashArray: '5, 10' }).addTo(currentMap);
+      L.polyline(routePoints, { color: '#84c225', weight: 3, dashArray: '5, 10' }).addTo(currentMap);
       
       // Fit bounds to show both
       const bounds = L.latLngBounds(routePoints);
@@ -614,3 +614,4 @@
   
   init();
 })();
+

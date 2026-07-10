@@ -140,7 +140,7 @@
       }
       
       .pwa-install-btn {
-        background: #2ecc71;
+        background: #84c225;
         color: white;
         border: none;
         padding: 10px 20px;
@@ -153,7 +153,7 @@
       }
       
       .pwa-install-btn:hover {
-        background: #27ae60;
+        background: #5f930e;
       }
       
       .pwa-dismiss-btn {
@@ -279,3 +279,4 @@
   console.log('[PWA] PWA module loaded');
   
 })();
+

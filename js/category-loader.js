@@ -140,7 +140,7 @@
         const badge = document.createElement('span');
         badge.className = 'product-badge';
         badge.textContent = '🔥 Popular';
-        badge.style.cssText = 'position:absolute;top:8px;left:8px;background:#27ae60;color:white;padding:4px 10px;border-radius:40px;font-size:0.65rem;font-weight:600;z-index:2;';
+        badge.style.cssText = 'position:absolute;top:8px;left:8px;background:#5f930e;color:white;padding:4px 10px;border-radius:40px;font-size:0.65rem;font-weight:600;z-index:2;';
         card.style.position = 'relative';
         card.insertBefore(badge, card.firstChild);
       }
@@ -255,3 +255,4 @@
   
   init();
 })();
+

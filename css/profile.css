@@ -112,13 +112,13 @@
 }
 
 .edit-btn, .add-btn {
-  background: #e8f8ef;
-  border: 1px solid #2ecc71;
+  background: #f3f9eb;
+  border: 1px solid #84c225;
   padding: 6px 14px;
   border-radius: 30px;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #27ae60;
+  color: #5f930e;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -151,7 +151,7 @@
 .save-edit-btn {
   flex: 1;
   padding: 10px;
-  background: #2ecc71;
+  background: #84c225;
   color: white;
   border: none;
   border-radius: 30px;
@@ -175,8 +175,8 @@
 }
 
 .address-item.default {
-  border: 2px solid #2ecc71;
-  background: #e8f8ef;
+  border: 2px solid #84c225;
+  background: #f3f9eb;
   position: relative;
 }
 
@@ -184,7 +184,7 @@
   position: absolute;
   top: -10px;
   right: 16px;
-  background: #2ecc71;
+  background: #84c225;
   color: white;
   padding: 2px 10px;
   border-radius: 20px;
@@ -323,7 +323,7 @@
 .save-modal-btn {
   flex: 1;
   padding: 12px;
-  background: #2ecc71;
+  background: #84c225;
   color: white;
   border: none;
   border-radius: 30px;
@@ -366,7 +366,7 @@
   font-weight: 700;
   font-family: monospace;
   font-size: 0.85rem;
-  color: #27ae60;
+  color: #5f930e;
 }
 
 .order-status {
@@ -440,7 +440,7 @@
 
 .saved-item-price {
   font-weight: 700;
-  color: #27ae60;
+  color: #5f930e;
   font-size: 0.8rem;
 }
 
@@ -451,14 +451,14 @@
 }
 
 .move-to-cart-btn {
-  background: #e8f8ef;
-  border: 1px solid #2ecc71;
+  background: #f3f9eb;
+  border: 1px solid #84c225;
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  color: #27ae60;
+  color: #5f930e;
 }
 
 .remove-saved-btn {
@@ -558,7 +558,7 @@
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background-color: #2ecc71;
+  background-color: #84c225;
 }
 
 .toggle-switch input:checked + .toggle-slider:before {
@@ -645,7 +645,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #2ecc71;
+  border-color: #84c225;
   box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
 }
 
@@ -663,7 +663,7 @@
 }
 
 .form-check input {
-  accent-color: #2ecc71;
+  accent-color: #84c225;
 }
 
 /* ========== LOADING STATE ========== */
@@ -760,3 +760,4 @@
     transform: translateX(-50%);
   }
 }
+

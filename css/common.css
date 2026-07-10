@@ -8,19 +8,19 @@
 }
 
 :root {
-  --primary: #2ecc71;
-  --primary-dark: #27ae60;
-  --primary-light: #e8f8ef;
-  --bg-light: #f8fafc;
+  --primary: #84c225;        /* BigBasket Lime Green */
+  --primary-dark: #5f930e;   /* BigBasket Dark Green */
+  --primary-light: #f3f9eb;  /* BigBasket Light Green tint */
+  --bg-light: #f4f3f2;
   --card-bg: #ffffff;
-  --text-dark: #1a1e2b;
-  --text-muted: #6b7280;
-  --border-light: #e5e7eb;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
-  --radius-card: 14px;
-  --radius-btn: 30px;
+  --text-dark: #222222;
+  --text-muted: #555555;
+  --border-light: #e0e0e0;
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --radius-card: 8px;        /* BigBasket uses cleaner, sharper card corners */
+  --radius-btn: 4px;         /* BigBasket uses sharper rectangular/slightly rounded buttons */
   --transition-fast: all 0.15s ease;
   --transition-normal: all 0.25s ease;
   --transition-slow: all 0.4s ease;
@@ -684,8 +684,8 @@ input:focus, textarea:focus, select:focus {
 
 .add-btn, .add-to-cart-btn {
   width: 100%;
-  padding: 10px;
-  background: var(--primary-light);
+  padding: 8px 10px;
+  background: #ffffff;
   border: 1.5px solid var(--primary);
   border-radius: var(--radius-btn);
   color: var(--primary-dark);
@@ -694,12 +694,18 @@ input:focus, textarea:focus, select:focus {
   text-transform: uppercase;
   cursor: pointer;
   transition: var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.add-btn:hover, .add-to-cart-btn:hover {
+  background: var(--primary);
+  color: #ffffff;
 }
 
 .add-btn:active, .add-to-cart-btn:active {
   transform: scale(0.96);
-  background: var(--primary);
-  color: white;
+  background: var(--primary-dark);
+  color: #ffffff;
 }
 
 .product-badge {
@@ -718,13 +724,13 @@ input:focus, textarea:focus, select:focus {
 .offer-badge {
   position: absolute;
   top: 8px;
-  right: 8px;
-  background: #ef4444;
+  left: 8px;
+  background: #e21d24;
   color: white;
-  padding: 4px 10px;
-  border-radius: 40px;
+  padding: 3px 6px;
+  border-radius: 3px;
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 700;
   z-index: 2;
 }
 
@@ -946,3 +952,4 @@ input:focus, textarea:focus, select:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dark);
 }
+

@@ -39,3 +39,4 @@ function adminLogout() {
 
 // Run auth check on page load
 checkAdminAuth();
+

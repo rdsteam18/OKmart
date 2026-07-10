@@ -359,7 +359,7 @@
     if (!element) return;
     
     element.style.transform = 'scale(0.9)';
-    element.style.background = '#27ae60';
+    element.style.background = '#5f930e';
     element.style.color = 'white';
     
     setTimeout(() => {
@@ -417,3 +417,4 @@
   });
   
 })();
+

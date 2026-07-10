@@ -13,21 +13,21 @@
    2. CSS VARIABLES (DEFAULT)
    ============================================ */
 :root {
-  --primary: #2ecc71;
-  --primary-dark: #27ae60;
-  --primary-light: #e8f8ef;
-  --accent: #2ecc71;
-  --bg: #f8fafc;
+  --primary: #84c225;
+  --primary-dark: #5f930e;
+  --primary-light: #f3f9eb;
+  --accent: #84c225;
+  --bg: #f4f3f2;
   --card: #ffffff;
-  --text: #1a1e2b;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --danger: #ef4444;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-  --radius-sm: 12px;
-  --radius: 16px;
-  --radius-lg: 20px;
+  --text: #222222;
+  --muted: #555555;
+  --border: #e0e0e0;
+  --danger: #e21d24;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1266,3 +1266,4 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+

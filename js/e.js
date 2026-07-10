@@ -160,3 +160,4 @@ addToCart = function(name, price) {
 
 /* on load */
 window.addEventListener("load", updateBottomBar);
+

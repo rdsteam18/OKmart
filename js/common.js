@@ -392,7 +392,7 @@ window.animateNumber = function(element, start, end, duration = 1000) {
 
 window.showConfetti = function() {
   // Simple confetti effect
-  const colors = ['#2ecc71', '#27ae60', '#f39c12', '#e74c3c', '#3498db'];
+  const colors = ['#84c225', '#5f930e', '#f39c12', '#e74c3c', '#3498db'];
   for (let i = 0; i < 50; i++) {
     const confetti = document.createElement('div');
     confetti.style.cssText = `
@@ -716,3 +716,4 @@ window.addEventListener('beforeinstallprompt', (e) => {
     });
   }
 });
+

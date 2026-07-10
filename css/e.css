@@ -27,7 +27,7 @@ body {
 header {
     position: sticky;
     top: 0;
-    background: #2ecc71;
+    background: #84c225;
     color: white;
     padding: 14px 16px;
     display: flex;
@@ -85,7 +85,7 @@ header div:first-child {
 
 .category-btn {
     background: white;
-    border: 1px solid #2ecc71;
+    border: 1px solid #84c225;
     padding: 8px 14px;
     border-radius: 20px;
     font-size: 14px;
@@ -95,7 +95,7 @@ header div:first-child {
 }
 
 .category-btn:hover {
-    background: #2ecc71;
+    background: #84c225;
     color: white;
 }
 
@@ -141,7 +141,7 @@ header div:first-child {
 button {
     width: 100%;
     padding: 10px;
-    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    background: linear-gradient(45deg, #84c225, #5f930e);
     border: none;
     color: white;
     border-radius: 10px;
@@ -317,3 +317,4 @@ input, textarea {
 .checkout-bar button {
     width: 50%;
 }
+

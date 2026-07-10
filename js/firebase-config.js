@@ -32,3 +32,4 @@ if (typeof db === 'undefined' && typeof firebase !== 'undefined') {
       });
   }
 }
+

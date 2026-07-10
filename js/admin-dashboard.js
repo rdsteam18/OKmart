@@ -186,7 +186,7 @@
       <tr>
         <td colspan="6" class="no-data" style="color:#ef4444;">
           ⚠️ ${message}
-          <br><button onclick="location.reload()" style="margin-top:8px;padding:8px 16px;background:#2ecc71;color:white;border:none;border-radius:8px;cursor:pointer;">Retry</button>
+          <br><button onclick="location.reload()" style="margin-top:8px;padding:8px 16px;background:#84c225;color:white;border:none;border-radius:8px;cursor:pointer;">Retry</button>
         </td>
       </tr>
     `;
@@ -211,3 +211,4 @@
   init();
   
 })();
+

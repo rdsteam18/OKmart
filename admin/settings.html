@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Settings | OK Mart Admin</title>
-  <meta name="theme-color" content="#2ecc71">
+  <meta name="theme-color" content="#84c225">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
@@ -17,9 +17,9 @@
     }
     
     :root {
-      --primary: #2ecc71;
-      --primary-dark: #27ae60;
-      --primary-light: #e8f8ef;
+      --primary: #84c225;
+      --primary-dark: #5f930e;
+      --primary-light: #f3f9eb;
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1a1e2b;
@@ -769,7 +769,7 @@
               <small>Main brand color</small>
             </div>
             <div class="input-group">
-              <input type="color" id="primaryColor" value="#2ecc71">
+              <input type="color" id="primaryColor" value="#84c225">
               <button class="save-setting-btn" onclick="savePrimaryColor()">Apply</button>
             </div>
           </div>
@@ -779,7 +779,7 @@
               <small>Accent color</small>
             </div>
             <div class="input-group">
-              <input type="color" id="secondaryColor" value="#27ae60">
+              <input type="color" id="secondaryColor" value="#5f930e">
               <button class="save-setting-btn" onclick="saveSecondaryColor()">Apply</button>
             </div>
           </div>
@@ -946,8 +946,8 @@
             storePhone: '+919982239821',
             storeEmail: 'support@okmart.com',
             storeAddress: '',
-            primaryColor: '#2ecc71',
-            secondaryColor: '#27ae60',
+            primaryColor: '#84c225',
+            secondaryColor: '#5f930e',
             logoUrl: '',
             faviconUrl: '',
             gstRate: 5,
@@ -988,8 +988,8 @@
       document.getElementById('maxDeliveryDistance').value = appSettings.maxDeliveryDistance || 10;
       document.getElementById('minOrderAmount').value = appSettings.minOrderAmount || 99;
       document.getElementById('autoCancelTime').value = appSettings.autoCancelTime || 30;
-      document.getElementById('primaryColor').value = appSettings.primaryColor || '#2ecc71';
-      document.getElementById('secondaryColor').value = appSettings.secondaryColor || '#27ae60';
+      document.getElementById('primaryColor').value = appSettings.primaryColor || '#84c225';
+      document.getElementById('secondaryColor').value = appSettings.secondaryColor || '#5f930e';
       document.getElementById('logoUrl').value = appSettings.logoUrl || '';
       document.getElementById('faviconUrl').value = appSettings.faviconUrl || '';
       document.getElementById('adminWhatsapp').value = appSettings.adminWhatsapp || '919982239821';
@@ -1253,8 +1253,8 @@
           storePhone: '+919982239821',
           storeEmail: 'support@okmart.com',
           storeAddress: '',
-          primaryColor: '#2ecc71',
-          secondaryColor: '#27ae60',
+          primaryColor: '#84c225',
+          secondaryColor: '#5f930e',
           gstRate: 5,
           serviceCharge: 0,
           convenienceFee: 0,
@@ -1368,3 +1368,4 @@
   </script>
 </body>
 </html>
+

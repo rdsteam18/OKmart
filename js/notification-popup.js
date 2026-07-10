@@ -110,3 +110,4 @@
   setTimeout(showPopup, DELAY);
   console.log('🔔 Notification popup ready');
 })();
+

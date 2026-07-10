@@ -4,7 +4,7 @@
   "description": "Fast grocery delivery in 10-15 minutes",
   "start_url": "/index.html",
   "display": "standalone",
-  "theme_color": "#2ecc71",
+  "theme_color": "#84c225",
   "background_color": "#ffffff",
   "orientation": "portrait",
   "scope": "/",
@@ -76,3 +76,4 @@
   "prefer_related_applications": false,
   "related_applications": []
 }
+

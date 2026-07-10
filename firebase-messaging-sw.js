@@ -105,3 +105,4 @@ self.addEventListener('activate', function(event) {
 });
 
 console.log('[SW] Firebase Messaging Service Worker ready');
+
