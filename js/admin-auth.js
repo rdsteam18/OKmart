@@ -1,35 +1,39 @@
 // ===== OK MART - ADMIN AUTHENTICATION =====
 
+function isCurrentPageLogin() {
+  const path = window.location.pathname.toLowerCase();
+  return path.endsWith('/login.html') || path.endsWith('/login') || path.endsWith('login.html');
+}
+
 // Check if admin is logged in
 function checkAdminAuth() {
+  // If on login page, DO NOT redirect automatically - let user view and use the login form
+  if (isCurrentPageLogin()) {
+    return;
+  }
+  
   const isLoggedIn = localStorage.getItem('okmart_isAdmin') === 'true' || 
                      localStorage.getItem('adminLoggedIn') === 'true' || 
                      localStorage.getItem('isAdmin') === 'true';
                      
   let loginTime = parseInt(localStorage.getItem('okmart_admin_loginTime') || localStorage.getItem('adminLoginTime') || '0');
-  const sessionExpiry = 12 * 60 * 60 * 1000; // 12 hours
-  const currentPage = window.location.pathname.split('/').pop() || '';
+  const sessionExpiry = 24 * 60 * 60 * 1000; // 24 hours
   
-  // If logged in but loginTime was missing, backfill it now
-  if (isLoggedIn && !loginTime) {
-    loginTime = Date.now();
-    localStorage.setItem('okmart_admin_loginTime', loginTime.toString());
-  }
-  
-  // Skip login page
-  if (currentPage === 'login.html') {
-    if (isLoggedIn && (Date.now() - loginTime) < sessionExpiry) {
-      window.location.href = 'index.html';
+  // If logged in, ensure all keys are synced and timestamp is active
+  if (isLoggedIn) {
+    if (!loginTime || (Date.now() - loginTime) >= sessionExpiry) {
+      loginTime = Date.now();
     }
-    return;
+    localStorage.setItem('okmart_isAdmin', 'true');
+    localStorage.setItem('okmart_admin_loginTime', loginTime.toString());
+    localStorage.setItem('adminLoggedIn', 'true');
+    return true;
   }
   
-  // Check for all admin pages
-  if (!isLoggedIn || (Date.now() - loginTime) >= sessionExpiry) {
-    // Clear admin session
-    clearAdminKeys();
-    window.location.href = 'login.html';
-  }
+  // Not logged in and on a protected admin page -> redirect to login.html cleanly
+  clearAdminKeys();
+  window.location.replace('login.html');
+  return false;
 }
 
 function clearAdminKeys() {
@@ -50,13 +54,14 @@ function clearAdminKeys() {
 function adminLogout() {
   if (confirm('Are you sure you want to logout?')) {
     clearAdminKeys();
-    window.location.href = 'login.html';
+    window.location.replace('login.html');
   }
 }
 
 // Expose globally
 window.adminLogout = adminLogout;
 window.logout = adminLogout;
+window.checkAdminAuth = checkAdminAuth;
 
 // Run auth check on page load
 checkAdminAuth();

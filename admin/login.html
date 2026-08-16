@@ -223,17 +223,6 @@
     const errorMessage = document.getElementById('errorMessage');
     const submitBtn = document.getElementById('submitBtn');
     
-    // Check if already logged in with valid session
-    (function checkExisting() {
-      const isAdmin = localStorage.getItem('okmart_isAdmin') === 'true' || localStorage.getItem('adminLoggedIn') === 'true';
-      const loginTime = parseInt(localStorage.getItem('okmart_admin_loginTime') || '0');
-      const sessionExpiry = 12 * 60 * 60 * 1000;
-      
-      if (isAdmin && (Date.now() - loginTime) < sessionExpiry) {
-        window.location.href = 'index.html';
-      }
-    })();
-    
     function setAdminSession(userIdentifier, role = 'admin') {
       const now = Date.now().toString();
       localStorage.setItem('okmart_isAdmin', 'true');
@@ -289,8 +278,8 @@
         setAdminSession(userInput, matchedRole);
         submitBtn.innerHTML = '<span>✅ Success! Redirecting...</span>';
         setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 400);
+          window.location.replace('index.html');
+        }, 300);
       } else {
         errorMessage.textContent = 'Invalid username/email or password. Please try again.';
         errorMessage.style.display = 'block';

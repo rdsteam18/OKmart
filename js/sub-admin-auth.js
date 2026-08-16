@@ -16,18 +16,16 @@
     const expired = loginTime > 0 && ((Date.now() - loginTime) > (12 * 60 * 60 * 1000));
     const currentPage = window.location.pathname.split('/').pop() || '';
     
-    // Skip checking on login page itself
-    if (currentPage === LOGIN_PAGE) {
-      if (isAdmin && adminRole === 'sub' && !expired) {
-        window.location.href = 'index.html';
-      }
+    // Skip checking on login page itself - NEVER redirect on login.html
+    const path = window.location.pathname.toLowerCase();
+    if (path.endsWith('/login.html') || path.endsWith('/login') || path.endsWith('login.html')) {
       return true;
     }
     
     if (!isAdmin || adminRole !== 'sub' || expired) {
       // Clear stale data
       clearSubAdminKeys();
-      window.location.href = LOGIN_PAGE;
+      window.location.replace(LOGIN_PAGE);
       return false;
     }
     

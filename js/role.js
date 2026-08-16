@@ -17,25 +17,20 @@
            localStorage.getItem("adminRole") === "sub";
   };
   
-  // Security check - runs on every page
   function securityCheck() {
-    const isAdmin = localStorage.getItem("isAdmin") === "true";
-    const role = localStorage.getItem("adminRole");
-    const loginTime = parseInt(localStorage.getItem("adminLoginTime") || '0');
-    const expired = (Date.now() - loginTime) > (12 * 60 * 60 * 1000);
+    const path = window.location.pathname.toLowerCase();
+    if (path.endsWith('/login.html') || path.endsWith('/login') || path.endsWith('login.html')) {
+      return true;
+    }
     
-    if (!isAdmin || role !== 'sub' || expired) {
-      if (expired) {
-        localStorage.clear();
-      }
-      const currentPage = window.location.pathname.split('/').pop();
-      if (currentPage !== 'login.html') {
-        window.location.href = LOGIN_PAGE;
-      }
+    const isAdmin = localStorage.getItem("okmart_isAdmin") === "true" || localStorage.getItem("isAdmin") === "true";
+    const role = localStorage.getItem("okmart_adminRole") || localStorage.getItem("okmart_subAdmin_role") || localStorage.getItem("adminRole");
+    
+    if (!isAdmin || role !== 'sub') {
+      window.location.replace(LOGIN_PAGE);
       return false;
     }
     
-    localStorage.setItem("adminLoginTime", Date.now().toString());
     return true;
   }
   
