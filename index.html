@@ -2,37 +2,22 @@
 <html class="light" lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" name="viewport"/>
-  <title>OK Mart - 15 Min Delivery | Fresh Grocery</title>
-  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast 15 minute delivery in your neighborhood.">
-  <meta name="theme-color" content="#006b22">
-
-  <!-- Manifest & Favicon -->
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>OK Mart - 15 Min Delivery</title>
+  
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
-  <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   
-  <!-- Google Fonts & Material Symbols -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 
-  <!-- Leaflet Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- App CSS -->
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/home.css">
-
-  <!-- Tailwind Custom Config Matching Stitch -->
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
-          colors: {
+          "colors": {
             "secondary-fixed": "#ffdea8",
             "background": "#f5fbef",
             "on-secondary-container": "#6b4b00",
@@ -85,8 +70,42 @@
             "background-alt": "#F5F7F6",
             "on-tertiary-container": "#fffbff"
           },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "xs": "4px",
+            "xl": "32px",
+            "gutter": "12px",
+            "lg": "24px",
+            "base": "4px",
+            "md": "16px",
+            "margin-desktop": "48px",
+            "sm": "8px",
+            "margin-mobile": "16px"
+          },
+          "fontFamily": {
+            "title-md": ["Inter"],
+            "price-display": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "title-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+            "price-display": ["18px", { "lineHeight": "24px", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "700" }]
           }
         }
       }
@@ -94,12 +113,9 @@
   </script>
 
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f5fbef;
-      color: #171d16;
-      touch-action: pan-x pan-y;
-      -webkit-text-size-adjust: 100%;
+    body { 
+      font-family: 'Inter', sans-serif; 
+      min-height: max(884px, 100dvh);
     }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -112,468 +128,489 @@
 
 <body class="bg-background text-on-background pb-32">
   
-  <!-- ========== TOP NAVIGATION SHELL ========== -->
-  <header class="sticky top-0 z-40 bg-surface shadow-sm pt-2 pb-2 px-4 flex flex-col w-full border-b border-outline-variant/20">
-    <div class="max-w-7xl w-full mx-auto flex flex-col gap-2">
-      
-      <!-- Top Row: Location & Actions -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity" id="locationBtn">
-          <span class="material-symbols-outlined text-primary text-xl">location_on</span>
-          <span class="font-bold text-sm md:text-base text-on-surface truncate max-w-[200px] md:max-w-[320px]" id="locationText">Jantanagar, Ahmedabad</span>
-          <span class="material-symbols-outlined text-on-surface-variant text-sm">arrow_drop_down</span>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <!-- Profile Button -->
-          <button class="relative hover:bg-surface-variant p-2 rounded-full transition-colors" id="profileBtn" aria-label="Profile">
-            <span class="material-symbols-outlined text-on-surface text-xl">person</span>
-          </button>
-          <!-- Wishlist Button -->
-          <a href="/wishlist.html" class="relative hover:bg-surface-variant p-2 rounded-full transition-colors" id="wishlistBtn" aria-label="Wishlist">
-            <span class="material-symbols-outlined text-tertiary text-xl">favorite</span>
-            <span class="absolute top-0 right-0 bg-primary text-on-primary font-bold text-[10px] w-4 h-4 flex items-center justify-center rounded-full" id="wishlistCount">0</span>
-          </a>
-          <!-- Cart Button (Desktop & Mobile) -->
-          <a href="/cart.html" class="relative hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center" id="headerCartBtn" aria-label="Cart">
-            <span class="material-symbols-outlined text-on-surface text-xl">shopping_cart</span>
-            <span class="absolute top-0 right-0 bg-primary text-on-primary font-bold text-[10px] w-4 h-4 flex items-center justify-center rounded-full" id="cartCount">0</span>
-          </a>
-        </div>
+  <!-- Top Navigation Shell -->
+  <header class="sticky top-0 z-40 bg-surface shadow-sm pt-sm pb-xs px-margin-mobile flex flex-col w-full">
+    <div class="flex items-center justify-between mb-sm">
+      <div class="flex items-center gap-xs cursor-pointer hover:opacity-80 transition-opacity" id="locationBtn">
+        <span class="material-symbols-outlined text-primary text-xl">location_on</span>
+        <span class="font-title-md text-title-md text-on-surface" id="locationText">Jantanagar, Ahmedabad</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-sm">arrow_drop_down</span>
       </div>
-
-      <!-- Middle Row: Search Bar -->
-      <div class="relative w-full">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
-        <input class="w-full bg-surface-container rounded-xl pl-10 pr-10 py-2.5 border-none focus:ring-2 focus:ring-primary text-sm text-on-surface placeholder:text-on-surface-variant shadow-inner transition-all" id="searchInput" placeholder="Search for milk, bread, vegetables..." type="text" autocomplete="off"/>
-        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface text-sm hidden" id="clearSearchBtn">✕</button>
+      <div class="flex items-center gap-md">
+        <button class="relative hover:bg-surface-variant p-sm rounded-full transition-colors" id="profileBtn">
+          <span class="material-symbols-outlined text-on-surface">person</span>
+        </button>
+        <a href="/wishlist.html" class="relative hover:bg-surface-variant p-sm rounded-full transition-colors">
+          <span class="material-symbols-outlined text-tertiary">favorite</span>
+          <span class="absolute top-0 right-0 bg-primary text-on-primary font-label-md text-label-md w-4 h-4 flex items-center justify-center rounded-full" id="wishlistCount">0</span>
+        </a>
+        <a href="/cart.html" class="relative hover:bg-surface-variant p-sm rounded-full transition-colors hidden md:block">
+          <span class="material-symbols-outlined text-on-surface">shopping_cart</span>
+          <span class="absolute top-0 right-0 bg-primary text-on-primary font-label-md text-label-md w-4 h-4 flex items-center justify-center rounded-full" id="desktopCartCount">0</span>
+        </a>
       </div>
-
-      <!-- Delivery Info Status Pill -->
-      <div class="flex items-center justify-center gap-2 bg-surface-container-low rounded-lg py-1 px-3 border border-outline-variant/30 text-xs font-semibold text-on-surface-variant" id="deliveryInfoBanner">
-        <span class="material-symbols-outlined text-delivery-blue text-sm">local_shipping</span>
-        <span id="deliveryThresholdText">Free delivery above ₹199</span>
-        <span class="text-outline-variant">|</span>
-        <span class="material-symbols-outlined text-secondary-container text-sm">bolt</span>
-        <span>15 min delivery</span>
-      </div>
-
+    </div>
+    
+    <div class="relative w-full">
+      <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+      <input class="w-full bg-surface-container rounded-xl pl-10 pr-4 py-2 border-none focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant shadow-inner" id="searchInput" placeholder="Search for milk, bread, vegetables" type="text" autocomplete="off"/>
+    </div>
+    
+    <div class="mt-sm flex items-center justify-center gap-sm bg-surface-container-low rounded-lg py-1 px-2 border border-outline-variant/30">
+      <span class="material-symbols-outlined text-delivery-blue text-sm">local_shipping</span>
+      <span class="font-label-md text-label-md text-on-surface-variant" id="deliveryNoticeText">Free delivery above ₹199</span>
+      <span class="text-outline-variant">|</span>
+      <span class="material-symbols-outlined text-secondary-container text-sm">bolt</span>
+      <span class="font-label-md text-label-md text-on-surface-variant">15 min delivery</span>
     </div>
   </header>
 
-  <!-- ========== MAIN CONTENT CONTAINER ========== -->
-  <main class="w-full max-w-7xl mx-auto px-4 md:px-8 space-y-6 pt-4">
-
+  <main class="w-full max-w-7xl mx-auto md:px-margin-desktop">
+    
     <!-- Hero Banner Carousel -->
-    <section class="w-full">
-      <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-secondary-container to-secondary-fixed shadow-md p-4 md:p-8 flex items-center justify-between min-h-[160px] md:min-h-[220px]" id="heroBannerCard">
+    <section class="mt-md px-margin-mobile md:px-0">
+      <div class="relative rounded-xl overflow-hidden bg-gradient-to-r from-secondary-container to-secondary-fixed shadow-md p-md md:p-xl flex items-center justify-between min-h-[160px]" id="heroBannerBox">
         <div class="z-10 flex flex-col items-start w-2/3">
-          <span class="bg-hot-deal-red text-white font-bold text-[11px] px-2.5 py-1 rounded-full uppercase tracking-wider mb-2 inline-block shadow-xs">
-            Limited Time Offer
-          </span>
-          <h2 class="text-xl md:text-3xl font-extrabold text-on-secondary-container mb-1 tracking-tight" id="heroBannerTitle">
-            OK Mart Super Savings
-          </h2>
-          <div class="text-on-secondary-container flex items-baseline gap-1 mb-1">
-            <span class="text-2xl md:text-3xl font-black" id="heroBannerPrice">Fresh Groceries</span>
+          <span class="bg-hot-deal-red text-on-primary font-label-md text-label-md px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Limited Time Offer</span>
+          <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-secondary-container mb-1">OK Mart</h2>
+          <div class="font-price-display text-price-display text-on-secondary-container flex items-baseline gap-1 mb-2">
+            <span class="text-xl">Super Savings</span>
           </div>
-          <p class="text-sm md:text-base font-semibold text-on-secondary-fixed-variant" id="heroBannerSubtitle">
-            Delivered in 15 Minutes at Your Doorstep!
-          </p>
+          <p class="font-title-md text-title-md text-on-secondary-fixed-variant">Fresh Groceries Delivered in 15 Mins</p>
         </div>
-
-        <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-25 pointer-events-none" style="background-image: radial-gradient(circle at 100% 50%, #ffffff 0%, transparent 70%);"></div>
-
-        <!-- Carousel Controls -->
-        <button class="absolute left-3 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full p-2 cursor-pointer transition-colors backdrop-blur-sm hidden md:flex items-center justify-center shadow-md z-20" id="carouselPrev" aria-label="Previous slide">
+        <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 100% 50%, #ffffff 0%, transparent 70%);"></div>
+        <div class="absolute left-2 top-1/2 -translate-y-1/2 bg-surface/50 hover:bg-surface rounded-full p-1 cursor-pointer transition-colors backdrop-blur-sm hidden md:block">
           <span class="material-symbols-outlined text-on-surface">chevron_left</span>
-        </button>
-        <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full p-2 cursor-pointer transition-colors backdrop-blur-sm hidden md:flex items-center justify-center shadow-md z-20" id="carouselNext" aria-label="Next slide">
+        </div>
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 bg-surface/50 hover:bg-surface rounded-full p-1 cursor-pointer transition-colors backdrop-blur-sm hidden md:block">
           <span class="material-symbols-outlined text-on-surface">chevron_right</span>
-        </button>
-
-        <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1.5 z-20" id="carouselDots">
+        </div>
+        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
           <div class="w-2 h-2 rounded-full bg-on-secondary-container"></div>
           <div class="w-2 h-2 rounded-full bg-on-secondary-container/30"></div>
           <div class="w-2 h-2 rounded-full bg-on-secondary-container/30"></div>
         </div>
-
-        <!-- Hidden Track for Carousel Compatibility -->
-        <div class="hidden" id="carouselTrack"></div>
       </div>
     </section>
 
     <!-- Shop by Category (Bento-style Grid) -->
-    <section class="w-full">
-      <h2 class="text-base md:text-xl font-bold text-on-surface mb-3.5 flex items-center gap-2">
-        <span class="material-symbols-outlined text-secondary-container text-2xl">folder_open</span>
+    <section class="mt-lg px-margin-mobile md:px-0">
+      <h2 class="font-title-md text-title-md text-on-surface mb-md flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary-container">folder_open</span>
         Shop by Category
       </h2>
-      <div class="grid grid-cols-4 md:grid-cols-8 gap-3" id="categoryGrid">
-        <!-- Fruits & Veg -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/fruits.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+      <div class="grid grid-cols-4 md:grid-cols-8 gap-gutter md:gap-md">
+        <!-- Category Item 1 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/fruits.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-xs">local_florist</span>
+            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-sm">local_florist</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Fruits & Veg</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Fruits &amp; Veg</span>
         </a>
-        <!-- Dairy & Breakfast -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/dairy.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 2 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/dairy.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-delivery-blue/5 group-hover:bg-delivery-blue/10 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-delivery-blue drop-shadow-xs">egg_alt</span>
+            <span class="material-symbols-outlined text-3xl text-delivery-blue drop-shadow-sm">egg_alt</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Dairy & Eggs</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Dairy &amp; Breakfast</span>
         </a>
-        <!-- Munchies / Snacks -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/snacks.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 3 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/snacks.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-secondary-container/10 group-hover:bg-secondary-container/20 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-secondary-container drop-shadow-xs">tapas</span>
+            <span class="material-symbols-outlined text-3xl text-secondary-container drop-shadow-sm">tapas</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Munchies</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Munchies</span>
         </a>
-        <!-- Cold Drinks -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/beverages.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 4 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/beverages.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-tertiary/5 group-hover:bg-tertiary/10 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-tertiary drop-shadow-xs">liquor</span>
+            <span class="material-symbols-outlined text-3xl text-tertiary drop-shadow-sm">liquor</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Cold Drinks</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Cold Drinks</span>
         </a>
-        <!-- Instant Food / Bakery -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/bakery.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 5 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/bakery.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-hot-deal-red/5 group-hover:bg-hot-deal-red/10 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-hot-deal-red drop-shadow-xs">bakery_dining</span>
+            <span class="material-symbols-outlined text-3xl text-hot-deal-red drop-shadow-sm">ramen_dining</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Bakery</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Instant Food</span>
         </a>
-        <!-- Cleaning & Household -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/household.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 6 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/household.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-outline/5 group-hover:bg-outline/10 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-outline drop-shadow-xs">cleaning_services</span>
+            <span class="material-symbols-outlined text-3xl text-outline drop-shadow-sm">cleaning_services</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Cleaning</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Cleaning</span>
         </a>
-        <!-- Personal Care -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/categories/personal-care.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 7 -->
+        <a class="flex flex-col items-center gap-sm group" href="/categories/personal-care.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-tertiary-container/10 group-hover:bg-tertiary-container/20 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-tertiary-container drop-shadow-xs">spa</span>
+            <span class="material-symbols-outlined text-3xl text-tertiary-container drop-shadow-sm">spa</span>
           </div>
-          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Personal Care</span>
+          <span class="font-label-md text-label-md text-on-surface text-center leading-tight">Personal Care</span>
         </a>
-        <!-- Special Offers -->
-        <a class="flex flex-col items-center gap-1.5 group" href="/offers.html">
-          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+        <!-- Category Item 8 -->
+        <a class="flex flex-col items-center gap-sm group" href="/offers.html">
+          <div class="w-full aspect-square rounded-xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-sm group-hover:shadow-md relative overflow-hidden">
             <div class="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors"></div>
-            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-xs">local_offer</span>
+            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-sm">local_offer</span>
           </div>
-          <span class="font-semibold text-xs text-primary font-bold text-center leading-tight">Special Offers</span>
+          <span class="font-label-md text-label-md text-primary font-bold text-center leading-tight">Offers</span>
         </a>
       </div>
     </section>
 
-    <!-- Flash Sale (Horizontal Snap Scroll) -->
-    <section class="w-full overflow-hidden" id="flashSaleSection">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary-container animate-pulse text-2xl">bolt</span>
+    <!-- Flash Sale (Horizontal Scroll) -->
+    <section class="mt-xl pl-margin-mobile md:px-margin-desktop md:pl-margin-desktop overflow-hidden">
+      <div class="flex items-center justify-between pr-margin-mobile md:pr-0 mb-sm">
+        <h2 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary-container animate-pulse">bolt</span>
           Flash Sale
         </h2>
-        <div class="flex items-center gap-1 text-xs font-bold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full shadow-xs" id="flashSaleTimer">
-          <span class="text-hot-deal-red" id="hours">00</span>h : <span class="text-hot-deal-red" id="minutes">00</span>m : <span class="text-hot-deal-red" id="seconds">00</span>s
+        <div class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant bg-surface-container px-2 py-1 rounded-full" id="flashTimer">
+          <span class="text-hot-deal-red font-bold" id="flashHours">00</span>h : <span class="text-hot-deal-red font-bold" id="flashMinutes">00</span>m : <span class="text-hot-deal-red font-bold" id="flashSeconds">00</span>s
         </div>
       </div>
-      <div class="flex overflow-x-auto hide-scrollbar gap-3.5 pb-2 pt-1 snap-x scroll-smooth" id="flashSaleGrid">
-        <!-- Products populated via JS -->
-      </div>
-    </section>
-
-    <!-- Category-wise Product Sections -->
-    <div class="space-y-6" id="categorySectionsContainer">
-      <!-- Live products loaded via JS -->
-    </div>
-
-    <!-- Free Delivery Progress Indicator -->
-    <section class="w-full" id="freeDeliveryProgress">
-      <div class="bg-surface border border-outline-variant/40 rounded-2xl p-3.5 shadow-xs flex flex-col relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full pointer-events-none"></div>
-        <p class="text-xs md:text-sm font-semibold text-on-surface mb-2 z-10 flex items-center gap-1.5" id="progressLabel">
-          Add <span class="font-bold">₹199</span> more to get <span class="text-primary font-bold">FREE delivery</span>
-          <span class="material-symbols-outlined text-hot-deal-red text-sm" style="font-variation-settings: 'FILL' 1;">redeem</span>
-        </p>
-        <div class="w-full bg-surface-variant rounded-full h-2.5 z-10 relative overflow-hidden">
-          <div class="bg-primary h-2.5 rounded-full w-[0%] relative transition-all duration-500" id="progressFill">
-            <!-- Shimmer effect -->
-            <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-[shimmer_1.5s_infinite]"></div>
+      <div class="flex overflow-x-auto hide-scrollbar gap-gutter pb-sm pt-xs snap-x" id="flashSaleContainer">
+        <!-- Live products loaded dynamically via Firestore -->
+        <div class="min-w-[140px] md:min-w-[180px] bg-surface rounded-xl p-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-surface-container snap-start flex flex-col relative group hover:-translate-y-1 transition-transform">
+          <span class="absolute top-sm left-sm bg-secondary-fixed text-on-secondary-fixed font-label-md text-[10px] px-1.5 py-0.5 rounded uppercase font-bold z-10">10% OFF</span>
+          <div class="w-full aspect-square bg-surface-container-lowest rounded-lg mb-sm flex items-center justify-center p-2 relative">
+            <img alt="Fresh Red Onions" class="object-contain w-full h-full mix-blend-multiply" src="https://images.pexels.com/photos/533342/pexels-photo-533342.jpeg?auto=compress&cs=tinysrgb&w=300"/>
+            <div class="absolute bottom-1 right-1 bg-surface/80 rounded px-1 flex items-center gap-0.5 backdrop-blur-sm">
+              <span class="material-symbols-outlined text-[10px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+              <span class="text-[9px] font-bold text-on-surface">15 MIN</span>
+            </div>
+          </div>
+          <div class="flex flex-col flex-grow">
+            <h3 class="font-body-md text-body-md text-on-surface line-clamp-2 leading-tight mb-1">Fresh Red Onions</h3>
+            <span class="font-label-md text-label-md text-on-surface-variant mb-2">1 kg</span>
+            <div class="mt-auto flex items-end justify-between">
+              <div class="flex flex-col">
+                <span class="text-[10px] text-on-surface-variant line-through">₹45</span>
+                <span class="font-price-display text-base text-on-surface">₹39</span>
+              </div>
+              <button class="bg-surface border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md px-3 py-1 rounded-full transition-colors font-bold uppercase shadow-sm" onclick="quickAdd('onion_1kg', 'Fresh Red Onions', 39, 'https://images.pexels.com/photos/533342/pexels-photo-533342.jpeg?auto=compress&cs=tinysrgb&w=300')">Add</button>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- New Arrivals Section -->
-    <section class="w-full" id="newArrivalsSection" style="display: none;">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-2xl">auto_awesome</span>
-          New Arrivals
-        </h2>
-        <a href="/categories/all.html" class="text-xs md:text-sm font-bold text-primary hover:underline">View All →</a>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="newArrivalsGrid"></div>
-    </section>
+    <!-- Category Sections Container (Dynamic Products from Firestore) -->
+    <div class="mt-lg px-margin-mobile md:px-0 space-y-8" id="categoryProductsContainer">
+      <!-- Injected from Firestore -->
+    </div>
 
-    <!-- Trending / Hot Today -->
-    <section class="w-full" id="trendingSection" style="display: none;">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-hot-deal-red text-2xl">local_fire_department</span>
-          Hot Today
-        </h2>
-        <a href="/categories/all.html" class="text-xs md:text-sm font-bold text-primary hover:underline">View All →</a>
+    <!-- Delivery Progress Indicator -->
+    <section class="mt-lg px-margin-mobile md:px-margin-desktop">
+      <div class="bg-surface border border-outline-variant/40 rounded-xl p-sm shadow-sm flex flex-col relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full pointer-events-none"></div>
+        <p class="font-body-md text-body-md text-on-surface mb-2 z-10 flex items-center gap-1" id="deliveryProgressText">
+          Add <span class="font-bold" id="deliveryRemainVal">₹199</span> more to get <span class="text-primary font-bold">FREE delivery</span>
+          <span class="material-symbols-outlined text-hot-deal-red text-sm" style="font-variation-settings: 'FILL' 1;">redeem</span>
+        </p>
+        <div class="w-full bg-surface-variant rounded-full h-2 z-10 relative overflow-hidden">
+          <div class="bg-primary h-2 rounded-full w-[10%] relative transition-all duration-500" id="deliveryProgressBar">
+            <!-- Shimmer effect -->
+            <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_1.5s_infinite]"></div>
+          </div>
+        </div>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="trendingGrid"></div>
-    </section>
-
-    <!-- Recently Viewed Section -->
-    <section class="w-full" id="recentlyViewedSection" style="display: none;">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-on-surface-variant text-2xl">history</span>
-          Recently Viewed
-        </h2>
-        <button class="text-xs font-bold text-on-surface-variant hover:text-error" id="clearRecentBtn">Clear All</button>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="recentlyViewedGrid"></div>
     </section>
 
   </main>
 
-  <!-- ========== FLOATING ACTION BUTTONS ========== -->
-  <div class="fixed right-4 bottom-24 md:bottom-8 flex flex-col gap-2.5 z-50">
-    <button class="w-11 h-11 bg-surface rounded-full shadow-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-surface-container cursor-pointer hidden" id="backToTopBtn" aria-label="Back to top">
-      <span class="material-symbols-outlined text-on-surface text-xl">arrow_upward</span>
-    </button>
-    <a class="w-11 h-11 bg-surface rounded-full shadow-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-surface-container" href="tel:+919982239821" aria-label="Call Store">
+  <!-- Floating Action Buttons -->
+  <div class="fixed right-margin-mobile bottom-24 md:bottom-8 flex flex-col gap-sm z-50">
+    <a class="w-12 h-12 bg-surface rounded-full shadow-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-surface-container" href="tel:+919982239821">
       <span class="material-symbols-outlined text-on-surface text-xl">call</span>
     </a>
-    <a class="w-13 h-13 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center hover:-translate-y-1 transition-transform p-3" href="https://wa.me/919982239821" target="_blank" aria-label="WhatsApp Store">
+    <a class="w-14 h-14 bg-[#25D366] rounded-full shadow-lg flex items-center justify-center hover:-translate-y-1 transition-transform" href="https://wa.me/919982239821" target="_blank">
       <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings: 'FILL' 1;">chat</span>
     </a>
   </div>
 
-  <!-- ========== FLOATING CART BAR (Mobile Floating Bar) ========== -->
-  <div class="fixed bottom-20 left-4 right-4 md:hidden z-40 bg-primary text-white rounded-2xl shadow-xl p-3.5 flex items-center justify-between transition-transform duration-300" id="floatingCartBar" style="display: none;">
-    <div class="flex items-center gap-2.5">
-      <span class="material-symbols-outlined text-2xl">shopping_cart</span>
-      <div class="flex flex-col leading-tight">
-        <span class="text-xs font-semibold opacity-90" id="floatingCartCount">0 items</span>
-        <span class="text-base font-extrabold" id="floatingCartTotal">₹0</span>
-      </div>
-    </div>
-    <a href="/cart.html" class="bg-white text-primary font-bold text-xs px-4 py-2 rounded-full shadow-xs hover:bg-surface transition-colors flex items-center gap-1">
-      View Cart
-      <span class="material-symbols-outlined text-sm">arrow_forward</span>
-    </a>
-  </div>
-
-  <!-- ========== BOTTOM NAVIGATION (Mobile Only) ========== -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden rounded-t-2xl border-t border-outline-variant/20">
+  <!-- BottomNavBar (Mobile Only) -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden rounded-t-xl border-t border-outline-variant/20">
     <!-- Home (Active) -->
     <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90" href="/">
-      <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">home</span>
-      <span class="text-[10px] font-bold mt-0.5">Home</span>
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+      <span class="font-label-md text-[10px] mt-0.5">Home</span>
     </a>
     <!-- Search -->
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/search.html">
-      <span class="material-symbols-outlined text-xl">search</span>
-      <span class="text-[10px] font-semibold mt-0.5">Search</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90" href="/search.html">
+      <span class="material-symbols-outlined">search</span>
+      <span class="font-label-md text-[10px] mt-0.5">Search</span>
     </a>
     <!-- Offers -->
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/offers.html">
-      <span class="material-symbols-outlined text-xl">local_offer</span>
-      <span class="text-[10px] font-semibold mt-0.5">Offers</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90" href="/offers.html">
+      <span class="material-symbols-outlined">local_offer</span>
+      <span class="font-label-md text-[10px] mt-0.5">Offers</span>
     </a>
     <!-- Track -->
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/tracking.html">
-      <span class="material-symbols-outlined text-xl">inventory_2</span>
-      <span class="text-[10px] font-semibold mt-0.5">Track</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90" href="/tracking.html">
+      <span class="material-symbols-outlined">inventory_2</span>
+      <span class="font-label-md text-[10px] mt-0.5">Track</span>
     </a>
     <!-- Cart -->
-    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 relative px-2 py-1" href="/cart.html">
-      <span class="material-symbols-outlined text-xl">shopping_cart</span>
-      <span class="text-[10px] font-semibold mt-0.5">Cart</span>
-      <span class="absolute top-0.5 right-1 bg-primary text-on-primary text-[9px] font-bold px-1 rounded-full border border-surface min-w-[15px] text-center" id="bottomNavCartCount">0</span>
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 relative" href="/cart.html">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span class="font-label-md text-[10px] mt-0.5">Cart</span>
+      <span class="absolute top-0 right-1 bg-primary text-on-primary text-[8px] font-bold px-1 rounded-full border border-surface min-w-[14px] text-center" id="mobileCartCount">0</span>
     </a>
   </nav>
 
-  <!-- ========== LOCATION MODAL ========== -->
-  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-opacity duration-300" id="locationModal">
-    <div class="bg-surface rounded-t-3xl md:rounded-3xl w-full max-w-md p-6 max-h-[85vh] overflow-y-auto transform translate-y-full md:translate-y-0 transition-transform duration-300 shadow-2xl">
-      <div class="flex items-center justify-between pb-4 border-b border-outline-variant/30">
-        <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+  <!-- Location Picker Modal -->
+  <div class="fixed inset-0 bg-black/50 z-50 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-opacity" id="locationModal">
+    <div class="bg-surface rounded-t-2xl md:rounded-2xl w-full max-w-md p-6 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-surface-container">
+        <h3 class="font-bold text-base flex items-center gap-2">
           <span class="material-symbols-outlined text-primary">location_on</span>
-          Select Delivery Location
+          Choose Delivery Area
         </h3>
-        <button class="text-on-surface-variant hover:text-on-surface text-xl font-bold p-1" id="closeLocationModal">✕</button>
+        <button class="font-bold text-lg p-1" onclick="toggleLocationModal(false)">✕</button>
       </div>
-      <div class="py-4 space-y-4">
-        <button class="w-full bg-primary/10 hover:bg-primary/15 text-primary font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-primary/20" id="useCurrentLocationBtn">
-          <span class="material-symbols-outlined text-lg">my_location</span>
-          <span>Use My Current Location</span>
-        </button>
-        <div class="flex items-center gap-3 text-xs text-on-surface-variant">
-          <div class="flex-1 h-px bg-outline-variant/30"></div>
-          <span>OR</span>
-          <div class="flex-1 h-px bg-outline-variant/30"></div>
+      <div class="space-y-2">
+        <div class="p-3 rounded-xl bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center gap-2 text-sm font-semibold" onclick="selectArea('Jantanagar, Ahmedabad')">
+          <span class="material-symbols-outlined text-primary">storefront</span>
+          Jantanagar, Ahmedabad (15 Min Delivery)
         </div>
-        <div class="flex gap-2">
-          <input type="text" id="pincodeInput" class="flex-1 bg-surface-container rounded-xl px-4 py-2.5 border-none text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary" placeholder="Enter 6-digit pincode" maxlength="6" inputmode="numeric">
-          <button class="bg-primary text-white font-bold px-5 py-2.5 rounded-xl hover:bg-primary-container transition-colors text-sm" id="checkPincodeBtn">Check</button>
+        <div class="p-3 rounded-xl bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center gap-2 text-sm font-semibold" onclick="selectArea('Satellite, Ahmedabad')">
+          <span class="material-symbols-outlined text-primary">storefront</span>
+          Satellite, Ahmedabad
         </div>
-        <div id="pincodeMessage" class="text-xs font-semibold"></div>
-        <div class="space-y-2 pt-2">
-          <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Popular Locations</div>
-          <div class="space-y-1.5" id="popularLocationsList">
-            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Jantanagar" data-city="Ahmedabad" data-pincode="382110">
-              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
-              Jantanagar, Ahmedabad (382110)
-            </div>
-            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Satellite" data-city="Ahmedabad" data-pincode="380015">
-              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
-              Satellite, Ahmedabad (380015)
-            </div>
-            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Prahlad Nagar" data-city="Ahmedabad" data-pincode="380015">
-              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
-              Prahlad Nagar, Ahmedabad (380015)
-            </div>
-          </div>
+        <div class="p-3 rounded-xl bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center gap-2 text-sm font-semibold" onclick="selectArea('Prahlad Nagar, Ahmedabad')">
+          <span class="material-symbols-outlined text-primary">storefront</span>
+          Prahlad Nagar, Ahmedabad
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ========== PROFILE MODAL ========== -->
-  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-opacity duration-300" id="profileModal">
-    <div class="bg-surface rounded-t-3xl md:rounded-3xl w-full max-w-md p-6 max-h-[85vh] overflow-y-auto transform translate-y-full md:translate-y-0 transition-transform duration-300 shadow-2xl">
-      <div class="flex items-center justify-between pb-4 border-b border-outline-variant/30">
-        <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">account_circle</span>
-          My Account
-        </h3>
-        <button class="text-on-surface-variant hover:text-on-surface text-xl font-bold p-1" id="closeProfileModal">✕</button>
-      </div>
-      <div class="py-5 text-center space-y-4">
-        <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-xs">
-          👤
-        </div>
-        <div>
-          <div class="text-base font-bold text-on-surface" id="profileName">Guest User</div>
-          <div class="text-xs text-on-surface-variant" id="profilePhone">Not logged in</div>
-        </div>
-        <button class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-container transition-colors shadow-xs text-sm" id="loginBtn">
-          Login / Sign Up
-        </button>
-        <div class="space-y-1 pt-2 text-left">
-          <a href="/orders.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
-            <span class="material-symbols-outlined text-primary">receipt_long</span>
-            My Orders & Invoices
-          </a>
-          <a href="/wishlist.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
-            <span class="material-symbols-outlined text-tertiary">favorite</span>
-            My Wishlist
-          </a>
-          <a href="/profile.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
-            <span class="material-symbols-outlined text-on-surface-variant">home_pin</span>
-            Saved Addresses
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Toast Notification -->
+  <div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-[#171d16] text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg z-50 opacity-0 pointer-events-none transition-opacity" id="toast"></div>
 
-  <!-- Toast Notification Container -->
-  <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-[#171d16] text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-2xl opacity-0 pointer-events-none transition-all duration-300 whitespace-nowrap" id="toastMessage"></div>
-
-  <!-- Scripts -->
+  <!-- Firebase Scripts & Live Sync -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/js/firebase.js"></script>
-  <script src="/js/common.js"></script>
-  <script src="/js/home.js"></script>
-  <script src="/js/fcm-token.js"></script>
 
   <script>
-    // Modal Helpers
-    const profileBtn = document.getElementById('profileBtn');
-    const profileModal = document.getElementById('profileModal');
-    const closeProfileModal = document.getElementById('closeProfileModal');
-    
-    if (profileBtn && profileModal) {
-      profileBtn.addEventListener('click', () => {
-        profileModal.classList.remove('opacity-0', 'pointer-events-none');
-        profileModal.querySelector('div')?.classList.remove('translate-y-full');
-      });
+    // State & Cart
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem('okmart_cart') || '[]'); } catch(e) { return []; }
     }
     
-    if (closeProfileModal && profileModal) {
-      closeProfileModal.addEventListener('click', () => {
-        profileModal.classList.add('opacity-0', 'pointer-events-none');
-        profileModal.querySelector('div')?.classList.add('translate-y-full');
-      });
+    function saveCart(cart) {
+      localStorage.setItem('okmart_cart', JSON.stringify(cart));
+      updateCartCounters();
     }
     
-    profileModal?.addEventListener('click', (e) => {
-      if (e.target === profileModal) {
-        profileModal.classList.add('opacity-0', 'pointer-events-none');
-        profileModal.querySelector('div')?.classList.add('translate-y-full');
+    function updateCartCounters() {
+      const cart = getCart();
+      const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      const subtotal = cart.reduce((s, i) => s + (i.price * (i.quantity || 1)), 0);
+      
+      const mCount = document.getElementById('mobileCartCount');
+      const dCount = document.getElementById('desktopCartCount');
+      if (mCount) mCount.textContent = count;
+      if (dCount) dCount.textContent = count;
+      
+      const remain = Math.max(0, 199 - subtotal);
+      const percent = Math.min(100, Math.round((subtotal / 199) * 100));
+      
+      const pBar = document.getElementById('deliveryProgressBar');
+      const rVal = document.getElementById('deliveryRemainVal');
+      const pText = document.getElementById('deliveryProgressText');
+      
+      if (pBar) pBar.style.width = percent + '%';
+      if (remain <= 0 && pText) {
+        pText.innerHTML = '🎉 <span class="text-primary font-bold">Free Delivery Unlocked!</span> <span class="material-symbols-outlined text-hot-deal-red text-sm" style="font-variation-settings: \\\'FILL\\\' 1;">redeem</span>';
+      } else if (rVal) {
+        rVal.textContent = '₹' + remain;
       }
-    });
-
-    const locationBtn = document.getElementById('locationBtn');
-    const locationModal = document.getElementById('locationModal');
-    const closeLocationModal = document.getElementById('closeLocationModal');
-
-    if (locationBtn && locationModal) {
-      locationBtn.addEventListener('click', () => {
-        locationModal.classList.remove('opacity-0', 'pointer-events-none');
-        locationModal.querySelector('div')?.classList.remove('translate-y-full');
-      });
     }
 
-    if (closeLocationModal && locationModal) {
-      closeLocationModal.addEventListener('click', () => {
-        locationModal.classList.add('opacity-0', 'pointer-events-none');
-        locationModal.querySelector('div')?.classList.add('translate-y-full');
-      });
-    }
-
-    locationModal?.addEventListener('click', (e) => {
-      if (e.target === locationModal) {
-        locationModal.classList.add('opacity-0', 'pointer-events-none');
-        locationModal.querySelector('div')?.classList.add('translate-y-full');
+    function quickAdd(id, name, price, image) {
+      const cart = getCart();
+      const existing = cart.find(i => i.id === id);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+      } else {
+        cart.push({ id, name, price, image, quantity: 1 });
       }
-    });
+      saveCart(cart);
+      showToast(name + ' added to cart!');
+    }
 
-    // Login profile check
-    const savedUser = localStorage.getItem('okmart_user');
-    if (savedUser) {
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.remove('opacity-0', 'pointer-events-none');
+      clearTimeout(window._t);
+      window._t = setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2000);
+    }
+
+    function toggleLocationModal(open) {
+      const m = document.getElementById('locationModal');
+      if (open) m.classList.remove('opacity-0', 'pointer-events-none');
+      else m.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function selectArea(area) {
+      document.getElementById('locationText').textContent = area;
+      localStorage.setItem('okmart_selected_area', area);
+      toggleLocationModal(false);
+    }
+
+    document.getElementById('locationBtn')?.addEventListener('click', () => toggleLocationModal(true));
+    document.getElementById('profileBtn')?.addEventListener('click', () => window.location.href = '/profile.html');
+
+    // Live Countdown Timer
+    function startTimer() {
+      function tick() {
+        const now = new Date();
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+        const diff = Math.max(0, end - now);
+        const h = String(Math.floor((diff / 3600000) % 24)).padStart(2, '0');
+        const m = String(Math.floor((diff / 60000) % 60)).padStart(2, '0');
+        const s = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+        const hEl = document.getElementById('flashHours');
+        const mEl = document.getElementById('flashMinutes');
+        const sEl = document.getElementById('flashSeconds');
+        if (hEl) hEl.textContent = h;
+        if (mEl) mEl.textContent = m;
+        if (sEl) sEl.textContent = s;
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    // Load Live Products from Firestore
+    async function loadLiveProducts() {
+      if (typeof db === 'undefined' || !db) return;
       try {
-        const u = JSON.parse(savedUser);
-        document.getElementById('profileName').textContent = u.name || 'OK Mart Customer';
-        document.getElementById('profilePhone').textContent = u.phone || u.email || 'Logged in';
-        document.getElementById('loginBtn').textContent = 'My Profile';
-      } catch(e) {}
+        const snap = await db.collection('products').where('active', '==', true).get();
+        const products = [];
+        snap.forEach(d => products.push({ id: d.id, ...d.data() }));
+        
+        if (products.length === 0) return;
+        
+        // 1. Populate Flash Sale
+        const flashEl = document.getElementById('flashSaleContainer');
+        if (flashEl) {
+          flashEl.innerHTML = products.slice(0, 8).map(p => {
+            const disc = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+            return `
+              <div class="min-w-[140px] md:min-w-[180px] bg-surface rounded-xl p-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-surface-container snap-start flex flex-col relative group hover:-translate-y-1 transition-transform">
+                ${disc > 0 ? `<span class="absolute top-sm left-sm bg-secondary-fixed text-on-secondary-fixed font-label-md text-[10px] px-1.5 py-0.5 rounded uppercase font-bold z-10">${disc}% OFF</span>` : ''}
+                <div class="w-full aspect-square bg-surface-container-lowest rounded-lg mb-sm flex items-center justify-center p-2 relative">
+                  <img alt="${p.name}" class="object-contain w-full h-full mix-blend-multiply" src="${p.image}" onerror="this.src=\'https://via.placeholder.com/160\'"/>
+                  <div class="absolute bottom-1 right-1 bg-surface/80 rounded px-1 flex items-center gap-0.5 backdrop-blur-sm">
+                    <span class="material-symbols-outlined text-[10px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                    <span class="text-[9px] font-bold text-on-surface">15 MIN</span>
+                  </div>
+                </div>
+                <div class="flex flex-col flex-grow">
+                  <h3 class="font-body-md text-body-md text-on-surface line-clamp-2 leading-tight mb-1 font-semibold">${p.name}</h3>
+                  <span class="font-label-md text-label-md text-on-surface-variant mb-2">${p.unit || ''}</span>
+                  <div class="mt-auto flex items-end justify-between">
+                    <div class="flex flex-col">
+                      ${p.mrp ? `<span class="text-[10px] text-on-surface-variant line-through">₹${p.mrp}</span>` : ''}
+                      <span class="font-price-display text-base text-on-surface font-bold">₹${p.price}</span>
+                    </div>
+                    <button class="bg-surface border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md px-3 py-1 rounded-full transition-colors font-bold uppercase shadow-sm" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\\'")}', ${p.price}, '${p.image}')">Add</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('') + `
+            <a href="/categories/all.html" class="min-w-[120px] bg-surface-container-low rounded-xl p-sm snap-start flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors group">
+              <div class="w-12 h-12 bg-surface rounded-full flex items-center justify-center mb-2 shadow-sm group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-primary">arrow_forward</span>
+              </div>
+              <span class="font-label-md text-label-md text-primary font-bold">View All</span>
+            </a>
+          `;
+        }
+
+        // 2. Populate Category Sections
+        const catContainer = document.getElementById('categoryProductsContainer');
+        const categories = [
+          { id: 'fruits', name: 'Fruits & Vegetables', icon: 'local_florist' },
+          { id: 'dairy', name: 'Dairy & Breakfast', icon: 'egg_alt' },
+          { id: 'snacks', name: 'Munchies & Snacks', icon: 'tapas' },
+          { id: 'beverages', name: 'Cold Drinks & Juices', icon: 'liquor' }
+        ];
+
+        if (catContainer) {
+          catContainer.innerHTML = categories.map(cat => {
+            const catProds = products.filter(p => p.category === cat.id).slice(0, 6);
+            if (catProds.length === 0) return '';
+            return `
+              <section class="overflow-hidden">
+                <div class="flex items-center justify-between mb-sm">
+                  <h2 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">${cat.icon}</span>
+                    ${cat.name}
+                  </h2>
+                  <a href="/categories/${cat.id}.html" class="text-primary font-bold text-xs hover:underline">View All →</a>
+                </div>
+                <div class="flex overflow-x-auto hide-scrollbar gap-gutter pb-sm pt-xs snap-x">
+                  ${catProds.map(p => `
+                    <div class="min-w-[140px] md:min-w-[180px] bg-surface rounded-xl p-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-surface-container snap-start flex flex-col relative group hover:-translate-y-1 transition-transform">
+                      <div class="w-full aspect-square bg-surface-container-lowest rounded-lg mb-sm flex items-center justify-center p-2 relative">
+                        <img alt="${p.name}" class="object-contain w-full h-full mix-blend-multiply" src="${p.image}" onerror="this.src=\'https://via.placeholder.com/160\'"/>
+                        <div class="absolute bottom-1 right-1 bg-surface/80 rounded px-1 flex items-center gap-0.5 backdrop-blur-sm">
+                          <span class="material-symbols-outlined text-[10px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                          <span class="text-[9px] font-bold text-on-surface">15 MIN</span>
+                        </div>
+                      </div>
+                      <div class="flex flex-col flex-grow">
+                        <h3 class="font-body-md text-body-md text-on-surface line-clamp-2 leading-tight mb-1 font-semibold">${p.name}</h3>
+                        <span class="font-label-md text-label-md text-on-surface-variant mb-2">${p.unit || ''}</span>
+                        <div class="mt-auto flex items-end justify-between">
+                          <div class="flex flex-col">
+                            ${p.mrp ? `<span class="text-[10px] text-on-surface-variant line-through">₹${p.mrp}</span>` : ''}
+                            <span class="font-price-display text-base text-on-surface font-bold">₹${p.price}</span>
+                          </div>
+                          <button class="bg-surface border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md px-3 py-1 rounded-full transition-colors font-bold uppercase shadow-sm" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\\'")}', ${p.price}, '${p.image}')">Add</button>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </section>
+            `;
+          }).join('');
+        }
+
+      } catch (err) {
+        console.warn('Firestore load warning:', err);
+      }
     }
-    
-    document.getElementById('loginBtn')?.addEventListener('click', () => {
-      window.location.href = '/user-details.html';
-    });
+
+    // Init
+    updateCartCounters();
+    startTimer();
+    loadLiveProducts();
+
+    // Restore saved location if any
+    const savedArea = localStorage.getItem('okmart_selected_area');
+    if (savedArea) {
+      const el = document.getElementById('locationText');
+      if (el) el.textContent = savedArea;
+    }
   </script>
 </body>
 </html>
