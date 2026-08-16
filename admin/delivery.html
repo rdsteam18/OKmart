@@ -606,6 +606,7 @@
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
+        z-index: 1000;
       }
       
       .sidebar.open {
@@ -614,7 +615,8 @@
       
       .main-content {
         margin-left: 0;
-        padding: 16px;
+        padding: 75px 16px 20px;
+        width: 100%;
       }
       
       .mobile-header {

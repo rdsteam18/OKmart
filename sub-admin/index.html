@@ -36,15 +36,32 @@
     .badge{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
     .badge-rec{background:#fef3c7;color:#92400e}.badge-prep{background:#dbeafe;color:#1e40af}
     .badge-out{background:#d1fae5;color:#065f46}.badge-del{background:#e0e7ff;color:#3730a3}
-    @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0;padding:16px}.stats{grid-template-columns:1fr 1fr}}
+    .mobile-header { display: none; }
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; background: white; margin-top: 12px; }
+    @media(max-width:768px){
+      .sidebar { transform: translateX(-100%); position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 1000; transition: transform .3s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; padding: 75px 16px 20px; width: 100%; }
+      .stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .mobile-header { display: flex; position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; z-index: 900; padding: 0 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); align-items: center; justify-content: space-between; }
+      .menu-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="mobile-header">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <span style="font-weight:700;">Sub Admin Dashboard</span>
+    <button class="menu-toggle" onclick="location.reload()">🔄</button>
+  </div>
   <div class="layout">
-    <aside class="sidebar">
+    <aside class="sidebar" id="subSidebar">
       <div class="sidebar-brand"><span>🛒 OK Mart</span><span class="sidebar-badge">Sub Admin</span></div>
       <nav class="sidebar-nav">
         <a href="index.html" class="active">📊 Dashboard</a>
@@ -64,8 +81,10 @@
         <div class="stat-card"><div class="stat-val" id="pendingOrders">0</div><div class="stat-label">Pending</div></div>
         <div class="stat-card"><div class="stat-val" id="totalProducts">0</div><div class="stat-label">Products</div></div>
       </div>
-      <h2 style="margin-bottom:14px;">📋 Recent Orders</h2>
-      <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
+      <h2 style="margin:20px 0 10px;">📋 Recent Orders</h2>
+      <div class="table-responsive">
+        <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody id="recentOrders"></tbody></table>
+      </div>
     </main>
   </div>
   <script src="../js/firebase.js"></script>
@@ -98,6 +117,11 @@
         return `<tr><td style="font-family:monospace;color:#4f46e5;">#${o.orderId||o.id.slice(-8)}</td><td>${o.customerName||o.name||'-'}</td><td>₹${total.toLocaleString('en-IN')}</td><td><span class="badge badge-${s==='received'?'rec':s==='preparing'?'prep':s==='outfordelivery'?'out':'del'}">${s}</span></td><td>${new Date(o.orderDate).toLocaleDateString('en-IN')}</td></tr>`;
       }).join('')||'<tr><td colspan="5">No orders</td></tr>';
     });
+
+    window.toggleSidebar = function() {
+      document.getElementById('subSidebar')?.classList.toggle('open');
+      document.getElementById('sidebarOverlay')?.classList.toggle('open');
+    };
   </script>
 </body>
 </html>

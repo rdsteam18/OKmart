@@ -607,11 +607,5 @@
     margin: 0 16px 16px;
     border-radius: 20px;
   }
-  
-  .bottom-nav {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
 }
 

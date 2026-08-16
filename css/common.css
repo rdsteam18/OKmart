@@ -823,38 +823,144 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN SYSTEM (Mobile, Tablet, Desktop)
    ============================================ */
 
-@media (min-width: 500px) {
+/* Container wrapper for balanced desktop presentation */
+.app-container,
+.main-wrapper,
+.home-main,
+.cart-main-container,
+.checkout-main-container,
+.product-main-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* Mobile Safe Bottom Padding for Sticky Navigation */
+@media (max-width: 767px) {
   body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding-bottom: 80px !important;
   }
   
-  .bottom-nav,
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+}
+
+/* Tablet & Desktop Adjustments */
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 20px;
+  }
+  
+  .bottom-nav {
+    display: none !important;
+  }
+  
   .sticky-cart-bar {
-    width: 480px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    max-width: 500px;
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   }
   
-  .sticky-cart-bar.visible {
-    transform: translateX(-50%) translateY(0);
-  }
-  
-  .fab-whatsapp {
-    right: calc(50% - 230px);
-  }
-  
+  .fab-whatsapp,
   .fab-call {
-    right: calc(50% - 230px);
+    right: 24px;
   }
   
   .back-to-top {
-    left: calc(50% - 230px);
+    left: 24px;
+  }
+}
+
+/* Fluid Responsive Grid Utilities */
+.responsive-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .responsive-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .responsive-product-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+}
+
+.responsive-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .responsive-category-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-category-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 16px;
+  }
+}
+
+/* Responsive Table Wrapper */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.table-responsive table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+/* Touch Friendly Mobile Targets */
+@media (max-width: 767px) {
+  button, 
+  .btn, 
+  input[type="button"], 
+  input[type="submit"],
+  .quantity-btn,
+  .nav-item,
+  .category-item {
+    min-height: 40px;
+    touch-action: manipulation;
   }
 }
 
@@ -862,25 +968,11 @@ input:focus, textarea:focus, select:focus {
    UTILITY CLASSES
    ============================================ */
 
-.hidden {
-  display: none !important;
-}
-
-.visible {
-  display: block !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
+.hidden { display: none !important; }
+.visible { display: block !important; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
 
 .mt-1 { margin-top: 4px; }
 .mt-2 { margin-top: 8px; }
@@ -900,35 +992,18 @@ input:focus, textarea:focus, select:focus {
 .p-4 { padding: 16px; }
 .p-5 { padding: 20px; }
 
-.flex {
-  display: flex;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
-.flex-between {
-  justify-content: space-between;
-}
-
-.flex-center {
-  justify-content: center;
-  align-items: center;
-}
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-between { justify-content: space-between; }
+.flex-center { justify-content: center; align-items: center; }
 
 .gap-1 { gap: 4px; }
 .gap-2 { gap: 8px; }
 .gap-3 { gap: 12px; }
 .gap-4 { gap: 16px; }
 
-.w-100 {
-  width: 100%;
-}
-
-.h-100 {
-  height: 100%;
-}
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
 
 /* ============================================
    SCROLLBAR (Desktop)

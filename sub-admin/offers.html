@@ -95,7 +95,16 @@
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-weight: 500; z-index: 300; opacity: 0; transition: .3s; }
     .toast.show { opacity: 1; bottom: 50px; } .toast.success { background: var(--success); } .toast.error { background: var(--danger); }
     
-    @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 16px; } .mobile-header { display: flex; } .form-row { flex-direction: column; } }
+    @media (max-width: 768px) { 
+      .sidebar { transform: translateX(-100%); position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 1000; transition: transform .3s ease; display: block !important; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; padding: 75px 16px 20px; width: 100%; } 
+      .mobile-header { display: flex; position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; z-index: 900; padding: 0 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); align-items: center; justify-content: space-between; } 
+      .form-row { flex-direction: column; } 
+      .menu-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    }
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -105,6 +114,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <div class="admin-layout">
     
     <!-- Sidebar -->
@@ -122,8 +132,9 @@
 
     <!-- Mobile Header -->
     <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Offers & Banners</span><span></span>
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <span style="font-weight:700;">Offers & Banners</span>
+      <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
 
     <!-- Main Content -->
@@ -496,6 +507,11 @@
       toast.classList.add('show');
       setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
+    
+    window.toggleSidebar = function() {
+      document.getElementById('sidebar')?.classList.toggle('open');
+      document.getElementById('sidebarOverlay')?.classList.toggle('open');
+    };
     
     console.log('✅ Sub-admin offers page ready');
   </script>
