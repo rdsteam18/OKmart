@@ -206,32 +206,56 @@
     grid.innerHTML = trendingProducts.map(product => createProductCard(product)).join('');
   }
   
-  // ========== RENDER CATEGORY SECTIONS (MATCHING IMAGE 1) ==========
+  // ========== RENDER CATEGORY SECTIONS (ONLY CATEGORIES IN DATABASE) ==========
   function renderCategorySections() {
     const container = document.getElementById('categorySectionsContainer');
     if (!container) return;
     
     container.innerHTML = '';
     
-    // Find categories that have active products or display standard categories
-    for (const category of categories) {
-      let categoryProducts = allProducts
-        .filter(p => (p.category === category.id || (category.id === 'energy-drinks' && (p.category === 'beverages' || (p.name || '').toLowerCase().includes('energy') || (p.name || '').toLowerCase().includes('bull')))) && p.active !== false)
-        .slice(0, 6);
-      
+    // Group active products by category
+    const productsByCategory = {};
+    allProducts.forEach(p => {
+      if (p.active === false) return;
+      const cat = (p.category || 'grocery').toLowerCase();
+      if (!productsByCategory[cat]) productsByCategory[cat] = [];
+      productsByCategory[cat].push(p);
+    });
+
+    const activeCatKeys = Object.keys(productsByCategory);
+
+    if (activeCatKeys.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">🛍️</div>
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #111827; margin-bottom: 4px;">No products available</h3>
+          <p style="font-size: 0.85rem;">Check back soon for fresh stock!</p>
+        </div>
+      `;
+      return;
+    }
+
+    for (const catKey of activeCatKeys) {
+      const categoryProducts = productsByCategory[catKey].slice(0, 8);
       if (categoryProducts.length === 0) continue;
+
+      const meta = categories.find(c => c.id === catKey) || {
+        id: catKey,
+        name: catKey.charAt(0).toUpperCase() + catKey.slice(1).replace('-', ' '),
+        emoji: '🛍️'
+      };
       
       const sectionHtml = `
-        <section class="category-products-section" id="sec-${category.id}">
+        <section class="category-products-section" id="sec-${meta.id}">
           <div class="category-section-header">
-            <h3 class="category-section-title">${category.emoji} ${category.name}</h3>
+            <h3 class="category-section-title">${meta.emoji} ${meta.name}</h3>
           </div>
           <div class="products-grid">
             ${categoryProducts.map(product => createProductCard(product)).join('')}
           </div>
           <div class="see-all-container">
-            <a href="/categories/${category.id}.html" class="see-all-pill-btn">
-              <span>See all ${category.name}</span>
+            <a href="/categories/${meta.id}.html" class="see-all-pill-btn">
+              <span>See all ${meta.name}</span>
               <span>›</span>
             </a>
           </div>
@@ -728,19 +752,36 @@
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
   
-  // ========== SHOW SKELETON ==========
+  // ========== SHOW SKELETON (GLOWING SHIMMER) ==========
   function showSkeleton() {
     const container = document.getElementById('categorySectionsContainer');
     if (!container) return;
     
     container.innerHTML = `
-      <div class="section-skeleton">
-        <div class="skeleton-header"></div>
-        <div class="skeleton-scroll">
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
-          <div class="skeleton-card"></div>
+      <div class="skeleton-section-block">
+        <div class="skeleton-shimmer skeleton-title-placeholder"></div>
+        <div class="skeleton-grid-placeholder">
+          ${Array(6).fill(0).map(() => `
+            <div class="skeleton-card-box">
+              <div class="skeleton-shimmer skeleton-card-img"></div>
+              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-price"></div>
+              <div class="skeleton-shimmer skeleton-card-btn"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="skeleton-section-block">
+        <div class="skeleton-shimmer skeleton-title-placeholder"></div>
+        <div class="skeleton-grid-placeholder">
+          ${Array(6).fill(0).map(() => `
+            <div class="skeleton-card-box">
+              <div class="skeleton-shimmer skeleton-card-img"></div>
+              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-price"></div>
+              <div class="skeleton-shimmer skeleton-card-btn"></div>
+            </div>
+          `).join('')}
         </div>
       </div>
     `;
