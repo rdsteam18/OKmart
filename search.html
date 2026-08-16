@@ -2,142 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>Search Products | OK Mart</title>
-  <meta name="description" content="Search for groceries, dairy, snacks, vegetables and more on OK Mart">
-  <meta name="theme-color" content="#84c225">
-  
-  <!-- Favicon -->
+  <meta name="description" content="Search for fresh fruits, vegetables, dairy, snacks, beverages and household products on OK Mart.">
+  <meta name="theme-color" content="#006b22">
+
+  <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
-  
-  <!-- CSS -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/search.css">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <div class="search-container">
-    
-    <!-- ========== HEADER ========== -->
-    <header class="search-header">
-      <button class="back-btn" onclick="history.back()">←</button>
-      <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="Search for milk, bread, vegetables, snacks..."
-          autocomplete="off"
-          autofocus
-        >
-        <button class="clear-input" id="clearInputBtn">✕</button>
+<body class="search-page">
+  <div class="app-container">
+
+    <!-- ========== SEARCH TOP HEADER (IMAGE 3 & 4) ========== -->
+    <header class="search-top-header">
+      <button class="search-back-btn" onclick="if(history.length>1){history.back();}else{location.href='/';}" aria-label="Back">
+        <span>←</span>
+      </button>
+      <div class="search-input-pill">
+        <span class="search-pill-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-main-input" placeholder="Search for 'Dairy', milk, bread..." autocomplete="off" autofocus>
+        <button class="clear-search-icon-btn" id="clearSearchBtn" aria-label="Clear">✕</button>
+        <button class="mic-search-icon-btn" id="voiceSearchBtn" aria-label="Voice Search">🎙️</button>
       </div>
     </header>
 
-    <!-- ========== MAIN CONTENT ========== -->
-    <main class="search-main">
-      
-      <!-- Search Suggestions -->
-      <div class="suggestions-section" id="suggestionsSection" style="display: none;">
-        <div class="section-header">
-          <h3>🔍 Suggestions</h3>
+    <!-- ========== LIVE SEARCH DROPDOWN SUGGESTIONS (IMAGE 4) ========== -->
+    <div class="live-suggestions-container" id="liveSuggestionsContainer" style="display: none;">
+      <div id="suggestionsList"></div>
+    </div>
+
+    <!-- ========== DEFAULT SEARCH CONTENT (WHEN NOT TYPING) ========== -->
+    <div id="defaultSearchContent">
+
+      <!-- 1. Past Searches (Image 3) -->
+      <section class="past-searches-section" id="pastSearchesSection">
+        <div class="section-title-row">
+          <h2 class="section-main-title">Past searches</h2>
+          <button class="section-link-action" id="clearPastSearchesBtn">Clear</button>
         </div>
-        <div class="suggestions-list" id="suggestionsList"></div>
-      </div>
-
-      <!-- Recent Searches -->
-      <div class="recent-section" id="recentSection">
-        <div class="section-header">
-          <h3>🕐 Recent Searches</h3>
-          <button class="clear-recent-btn" id="clearRecentBtn">Clear All</button>
+        <div class="past-chips-row" id="pastChipsContainer">
+          <!-- Populated from localStorage -->
+          <div class="past-search-chip" onclick="executeSearch('santoor soap')">santoor soap</div>
+          <div class="past-search-chip" onclick="executeSearch('madhur sugar')">madhur sugar</div>
+          <div class="past-search-chip" onclick="executeSearch('jasmine hair oil')">jasmine hair oil</div>
+          <div class="past-search-chip" onclick="executeSearch('milk')">milk</div>
         </div>
-        <div class="recent-list" id="recentList"></div>
-      </div>
+      </section>
 
-      <!-- Filters Bar -->
-      <div class="filters-bar" id="filtersBar" style="display: none;">
-        <button class="filter-btn active" data-sort="default">📊 Default</button>
-        <button class="filter-btn" data-sort="price_asc">💰 Price: Low to High</button>
-        <button class="filter-btn" data-sort="price_desc">💰 Price: High to Low</button>
-        <button class="filter-btn" data-sort="popular">🔥 Popular</button>
-        <button class="filter-category" id="categoryFilterBtn">📁 Category ▼</button>
-      </div>
-
-      <!-- Category Filter Dropdown -->
-      <div class="category-dropdown" id="categoryDropdown" style="display: none;">
-        <div class="category-option" data-cat="">All Categories</div>
-        <div class="category-option" data-cat="dairy">🥛 Dairy</div>
-        <div class="category-option" data-cat="fruits">🍎 Fruits</div>
-        <div class="category-option" data-cat="vegetables">🥬 Vegetables</div>
-        <div class="category-option" data-cat="snacks">🍿 Snacks</div>
-        <div class="category-option" data-cat="beverages">🥤 Beverages</div>
-        <div class="category-option" data-cat="icecream">🍦 Ice Cream</div>
-        <div class="category-option" data-cat="grocery">🛒 Grocery</div>
-        <div class="category-option" data-cat="personal">🧴 Personal Care</div>
-        <div class="category-option" data-cat="household">🧹 Household</div>
-        <div class="category-option" data-cat="bakery">🥖 Bakery</div>
-        <div class="category-option" data-cat="electronics">📱 Electronics</div>
-      </div>
-
-      <!-- Results Count -->
-      <div class="results-count" id="resultsCount" style="display: none;">
-        <span id="resultCountText">0</span> products found
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-state" id="loadingState">
-        <div class="spinner"></div>
-        <p>Loading products...</p>
-      </div>
-
-      <!-- Results Grid -->
-      <div class="results-grid" id="resultsGrid"></div>
-
-      <!-- No Results State -->
-      <div class="no-results" id="noResults" style="display: none;">
-        <div class="no-results-icon">🔍</div>
-        <h3>No products found</h3>
-        <p>Try searching with different keywords</p>
-        <div class="suggested-products" id="suggestedProducts"></div>
-      </div>
-
-      <!-- Recently Viewed Section -->
-      <div class="recently-viewed-section" id="recentlyViewedSection" style="display: none;">
-        <div class="section-header">
-          <h3>🕐 Recently Viewed</h3>
+      <!-- 2. Your Quick Picks (Image 3 & 4) -->
+      <section class="search-shelf-section" id="quickPicksSection">
+        <div class="section-title-row">
+          <h2 class="section-main-title">Your quick picks</h2>
+          <a href="/categories/all.html" class="section-link-action">View all</a>
         </div>
-        <div class="recently-viewed-grid" id="recentlyViewedGrid"></div>
+        <div class="shelf-horizontal-scroll" id="quickPicksScroll">
+          <!-- Populated dynamically via JS -->
+          <div style="padding: 10px; color: #888;">Loading quick picks...</div>
+        </div>
+      </section>
+
+      <!-- 3. Trending Today (Image 3) -->
+      <section class="search-shelf-section" id="trendingSection">
+        <div class="section-title-row">
+          <h2 class="section-main-title">Trending today</h2>
+          <a href="/categories/all.html" class="section-link-action">View all</a>
+        </div>
+        <div class="shelf-horizontal-scroll" id="trendingScroll">
+          <!-- Populated dynamically via JS -->
+          <div style="padding: 10px; color: #888;">Loading trending items...</div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ========== SEARCH RESULTS GRID (WHEN QUERY SUBMITTED) ========== -->
+    <div class="search-results-section" id="searchResultsSection" style="display: none;">
+      <div class="section-title-row" style="margin-bottom: 12px;">
+        <h2 class="section-main-title" id="resultsTitle">Search Results</h2>
+        <span style="font-size: 0.8rem; font-weight: 600; color: #6b7280;" id="resultsCount">0 products</span>
       </div>
+      <div class="search-results-grid" id="searchResultsGrid">
+        <!-- Search cards inserted here -->
+      </div>
+    </div>
 
-    </main>
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#111827; color:#fff; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; z-index:200; display:none;"></div>
 
-    <!-- ========== BOTTOM NAVIGATION ========== -->
-    <nav class="bottom-nav">
-      <a href="/" class="nav-item">🏠<span>Home</span></a>
-      <a href="/search" class="nav-item active">🔍<span>Search</span></a>
-      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
-      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
-      <a href="/profile" class="nav-item">👤<span>Profile</span></a>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-navbar">
+      <a href="/" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a href="/categories.html" class="nav-item">
+        <span class="nav-icon">📂</span>
+        <span>Categories</span>
+      </a>
+      <a href="/search.html" class="nav-item active">
+        <span class="nav-icon">🔍</span>
+        <span>Search</span>
+      </a>
+      <a href="/track-order.html" class="nav-item">
+        <span class="nav-icon">📦</span>
+        <span>Track</span>
+      </a>
+      <a href="/cart.html" class="nav-item">
+        <span class="nav-icon">🛒</span>
+        <span>Cart</span>
+        <span class="nav-badge" id="searchBottomCartCount">0</span>
+      </a>
+      <a href="/profile.html" class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span>Account</span>
+      </a>
     </nav>
 
-    <!-- Toast -->
-    <div class="toast-message" id="toastMessage"></div>
-    
   </div>
 
   <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/search.js"></script>
 </body>
 </html>
-

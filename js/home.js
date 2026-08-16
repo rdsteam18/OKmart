@@ -146,17 +146,16 @@
   
   // ========== RENDER CATEGORY GRID ==========
   const categories = [
-    { id: 'dairy',         name: 'Dairy',         emoji: '🥛' },
-    { id: 'fruits',        name: 'Fruits',        emoji: '🍎' },
-    { id: 'vegetables',    name: 'Vegetables',    emoji: '🥬' },
-    { id: 'snacks',        name: 'Snacks',        emoji: '🍿' },
-    { id: 'beverages',     name: 'Beverages',     emoji: '🥤' },
-    { id: 'icecream',      name: 'Ice Cream',     emoji: '🍦' },
-    { id: 'grocery',       name: 'Grocery',       emoji: '🛒' },
-    { id: 'personal-care', name: 'Personal Care', emoji: '🧴' },
-    { id: 'household',     name: 'Household',     emoji: '🧹' },
-    { id: 'bakery',        name: 'Bakery',        emoji: '🥖' },
-    { id: 'electronics',   name: 'Electronics',   emoji: '📱' }
+    { id: 'beverages',     name: 'Cold Drinks & Juices', emoji: '🥤' },
+    { id: 'fruits',        name: 'Fresh Fruits',        emoji: '🍎' },
+    { id: 'vegetables',    name: 'Fresh Vegetables',    emoji: '🥬' },
+    { id: 'dairy',         name: 'Dairy & Breakfast',   emoji: '🥛' },
+    { id: 'grocery',       name: 'Atta & Cooking Essentials', emoji: '🌾' },
+    { id: 'snacks',        name: 'Munchies & Snacks',   emoji: '🍿' },
+    { id: 'household',     name: 'Cleaning & Household', emoji: '🧹' },
+    { id: 'energy-drinks', name: 'Energy Drinks',       emoji: '⚡' },
+    { id: 'personal-care', name: 'Personal Care',       emoji: '🧴' },
+    { id: 'bakery',        name: 'Bakery & Breads',     emoji: '🍞' }
   ];
   
   function renderCategoryGrid() {
@@ -207,33 +206,34 @@
     grid.innerHTML = trendingProducts.map(product => createProductCard(product)).join('');
   }
   
-  // ========== RENDER CATEGORY SECTIONS ==========
+  // ========== RENDER CATEGORY SECTIONS (MATCHING IMAGE 1) ==========
   function renderCategorySections() {
     const container = document.getElementById('categorySectionsContainer');
     if (!container) return;
     
     container.innerHTML = '';
     
-    // Show top 6 categories with products
-    const categoriesWithProducts = categories.filter(cat => {
-      return allProducts.some(p => p.category === cat.id && p.active !== false);
-    }).slice(0, 6);
-    
-    for (const category of categoriesWithProducts) {
-      const categoryProducts = allProducts
-        .filter(p => p.category === category.id && p.active !== false)
-        .slice(0, 8);
+    // Find categories that have active products or display standard categories
+    for (const category of categories) {
+      let categoryProducts = allProducts
+        .filter(p => (p.category === category.id || (category.id === 'energy-drinks' && (p.category === 'beverages' || (p.name || '').toLowerCase().includes('energy') || (p.name || '').toLowerCase().includes('bull')))) && p.active !== false)
+        .slice(0, 6);
       
       if (categoryProducts.length === 0) continue;
       
       const sectionHtml = `
-        <section class="category-products-section">
-          <div class="category-products-header">
-            <h3 class="category-products-title">${category.emoji} ${category.name}</h3>
-            <a href="/categories/${category.id}.html" class="view-all-link">View All →</a>
+        <section class="category-products-section" id="sec-${category.id}">
+          <div class="category-section-header">
+            <h3 class="category-section-title">${category.emoji} ${category.name}</h3>
           </div>
-          <div class="category-products-scroll" id="scroll-${category.id}">
-            ${categoryProducts.map(product => createScrollProductCard(product)).join('')}
+          <div class="products-grid">
+            ${categoryProducts.map(product => createProductCard(product)).join('')}
+          </div>
+          <div class="see-all-container">
+            <a href="/categories/${category.id}.html" class="see-all-pill-btn">
+              <span>See all ${category.name}</span>
+              <span>›</span>
+            </a>
           </div>
         </section>
       `;
@@ -242,47 +242,43 @@
     }
   }
   
-  // ========== CREATE PRODUCT CARD ==========
+  // ========== CREATE PRODUCT CARD (MATCHING IMAGE 1) ==========
   function createProductCard(product) {
     const discount = calculateDiscount(product.price, product.mrp);
     const isOutOfStock = (product.stock || 0) === 0;
+    const cart = getCart();
+    const cartItem = cart.find(i => i.id === product.id);
+    const inCartQty = cartItem ? cartItem.quantity : 0;
+    const wishlist = getWishlist();
+    const isWishlisted = wishlist.includes(product.id);
     
     return `
-      <div class="product-card" data-product-id="${product.id}" data-id="${product.id}" onclick="viewProduct('${product.id}')">
-        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
-        ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
-        ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)">🤍</button>
-        <h3 class="product-name">${escapeHtml(product.name)}</h3>
-        <span class="product-unit">${product.unit || ''}</span>
-        <div class="price-row">
-          <span class="current-price">₹${product.price}</span>
-          ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
-        </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-          ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+      <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
+        ${discount > 0 ? `<span class="discount-tag">${discount}% off</span>` : ''}
+        <button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)" aria-label="Wishlist">
+          ${isWishlisted ? '❤️' : '🤍'}
         </button>
-      </div>
-    `;
-  }
-  
-  function createScrollProductCard(product) {
-    const discount = calculateDiscount(product.price, product.mrp);
-    const isOutOfStock = (product.stock || 0) === 0;
-    
-    return `
-      <div class="product-card scroll-product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
-        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140?text=OK'">
-        ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <h3 class="product-name">${escapeHtml(product.name)}</h3>
-        <span class="product-unit">${product.unit || ''}</span>
-        <div class="price-row">
-          <span class="current-price">₹${product.price}</span>
-          ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
+        <div class="product-image-container">
+          <img src="${product.image}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK+Mart'">
         </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-          ${isOutOfStock ? 'Out of Stock' : 'ADD'}
-        </button>
+        <span class="product-unit-pill">${product.unit || '1 Unit'}</span>
+        <div class="product-price-row">
+          <span class="product-curr-price">₹${product.price}</span>
+          ${product.mrp ? `<span class="product-mrp-price">₹${product.mrp}</span>` : ''}
+        </div>
+        <h4 class="product-name-title">${escapeHtml(product.name)}</h4>
+        <div class="product-quick-tag">⚡ Quick</div>
+        ${inCartQty > 0 ? `
+          <div class="qty-stepper-btn" onclick="event.stopPropagation()">
+            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', -1)">−</button>
+            <span class="qty-step-value">${inCartQty}</span>
+            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', 1)">+</button>
+          </div>
+        ` : `
+          <button class="product-add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+            ${isOutOfStock ? 'Out of Stock' : '+ ADD'}
+          </button>
+        `}
       </div>
     `;
   }
@@ -384,6 +380,19 @@
       setTimeout(() => { btn.style.transform = ''; }, 200);
     }
   };
+
+  window.updateCartItemQty = function(productId, delta) {
+    const cart = getCart();
+    const itemIndex = cart.findIndex(i => i.id === productId);
+    if (itemIndex === -1) return;
+
+    cart[itemIndex].quantity += delta;
+    if (cart[itemIndex].quantity <= 0) {
+      cart.splice(itemIndex, 1);
+    }
+    saveCart(cart);
+    renderCategorySections();
+  };
   
   function updateCartUI() {
     const cart = getCart();
@@ -391,6 +400,8 @@
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     if (cartCountSpan) cartCountSpan.textContent = totalItems;
+    const bCount = document.getElementById('bottomNavCartCount');
+    if (bCount) bCount.textContent = totalItems;
     if (floatingCartCount) floatingCartCount.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
     if (floatingCartTotal) floatingCartTotal.textContent = `₹${subtotal}`;
     

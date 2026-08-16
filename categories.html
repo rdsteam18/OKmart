@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>All Categories | OK Mart</title>
+  <meta name="description" content="Browse all grocery categories on OK Mart - Fresh, Snacks, Dairy, Cooking Essentials, Personal Care, Household & more.">
+  <meta name="theme-color" content="#006b22">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/category.css">
+</head>
+<body class="categories-page">
+  <div class="app-container">
+
+    <!-- Header (Green Quick-Commerce) -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="header-left">
+          <a href="/" style="color:#ffffff; font-size:1.2rem; font-weight:800; text-decoration:none; margin-right:4px;">←</a>
+          <div class="location-box">
+            <span class="location-label">📍 Delivery to</span>
+            <div class="location-btn">
+              <span class="location-text" id="catLocationText">Home / Jantanagar, Ahmedabad</span>
+              <span class="location-arrow">▾</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a href="/profile.html" class="header-icon-btn" aria-label="Account">
+            <span>👤</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-section">
+        <div class="search-bar" onclick="window.location.href='/search.html'">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder='Search for "Snacks", milk, fruits...' readonly>
+          <button class="mic-btn" aria-label="Voice Search">🎙️</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content: Category Directory Groups (Image 2) -->
+    <main class="categories-main">
+
+      <!-- 1. Fresh -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Fresh</h2>
+        <div class="category-group-grid">
+          <a href="/categories/vegetables.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Fresh Vegetables">
+            </div>
+            <span class="category-tile-label">Fresh Vegetables</span>
+          </a>
+          <a href="/categories/fruits.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Fresh Fruits">
+            </div>
+            <span class="category-tile-label">Fresh Fruits</span>
+          </a>
+          <a href="/categories/bakery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cakes, Rusk & More">
+            </div>
+            <span class="category-tile-label">Cakes, Rusk & More</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Batter & Chutney">
+            </div>
+            <span class="category-tile-label">Batter & Chutney</span>
+          </a>
+          <a href="/categories/bakery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Breads & Bakery">
+            </div>
+            <span class="category-tile-label">Bread & Bakery</span>
+          </a>
+          <a href="/categories/dairy.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Milk & Dairy">
+            </div>
+            <span class="category-tile-label">Milk & Milk Products</span>
+          </a>
+          <a href="/categories/dairy.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cheese & Paneer">
+            </div>
+            <span class="category-tile-label">Cheese, Paneer & Tofu</span>
+          </a>
+          <a href="/categories/icecream.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ice Cream & Frozen">
+            </div>
+            <span class="category-tile-label">Ice Cream & Frozen</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 2. Biscuits, Drinks & Packaged Foods -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Biscuits, Drinks & Packaged Foods</h2>
+        <div class="category-group-grid">
+          <a href="/categories/snacks.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/568805/pexels-photo-568805.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Chips & Namkeen">
+            </div>
+            <span class="category-tile-label">Chips & Namkeen</span>
+          </a>
+          <a href="/categories/snacks.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Biscuits & Cookies">
+            </div>
+            <span class="category-tile-label">Biscuits & Cookies</span>
+          </a>
+          <a href="/categories/snacks.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Chocolates & Candies">
+            </div>
+            <span class="category-tile-label">Chocolates & Candies</span>
+          </a>
+          <a href="/categories/bakery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1030973/pexels-photo-1030973.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Indian Sweets">
+            </div>
+            <span class="category-tile-label">Indian Sweets</span>
+          </a>
+          <a href="/categories/beverages.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Drinks & Juices">
+            </div>
+            <span class="category-tile-label">Drinks & Juices</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1340116/pexels-photo-1340116.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Breakfast Cereals">
+            </div>
+            <span class="category-tile-label">Breakfast Cereals</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Noodles, Pasta & Vermicelli">
+            </div>
+            <span class="category-tile-label">Noodles & Pasta</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ready To Cook & Eat">
+            </div>
+            <span class="category-tile-label">Ready To Cook</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200" alt="Spreads & Sauces">
+            </div>
+            <span class="category-tile-label">Spreads & Sauces</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1435895/pexels-photo-1435895.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pickles & Chutneys">
+            </div>
+            <span class="category-tile-label">Pickles & Chutneys</span>
+          </a>
+          <a href="/categories/beverages.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Tea & Coffee">
+            </div>
+            <span class="category-tile-label">Tea & Coffee</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 3. Cooking Essentials -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Cooking Essentials</h2>
+        <div class="category-group-grid">
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/6287295/pexels-photo-6287295.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Atta, Flours & Sooji">
+            </div>
+            <span class="category-tile-label">Atta, Flours & Sooji</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4110255/pexels-photo-4110255.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dals & Pulses">
+            </div>
+            <span class="category-tile-label">Dals & Pulses</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Rice">
+            </div>
+            <span class="category-tile-label">Rice</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4110256/pexels-photo-4110256.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Sabudana, Poha & Murmura">
+            </div>
+            <span class="category-tile-label">Sabudana & Poha</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200" alt="Edible Oils">
+            </div>
+            <span class="category-tile-label">Edible Oils</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/2802527/pexels-photo-2802527.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Masala & Spices">
+            </div>
+            <span class="category-tile-label">Masala & Spices</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4110257/pexels-photo-4110257.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Salt, Sugar & Jaggery">
+            </div>
+            <span class="category-tile-label">Salt, Sugar & Jaggery</span>
+          </a>
+          <a href="/categories/dairy.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ghee">
+            </div>
+            <span class="category-tile-label">Ghee</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/1295572/pexels-photo-1295572.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dry Fruits & Nuts">
+            </div>
+            <span class="category-tile-label">Dry Fruits & Nuts</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 4. Personal Care -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Personal Care</h2>
+        <div class="category-group-grid">
+          <a href="/categories/personal-care.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/3735657/pexels-photo-3735657.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Hair Care">
+            </div>
+            <span class="category-tile-label">Hair Care</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4202325/pexels-photo-4202325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bath & Hand Wash">
+            </div>
+            <span class="category-tile-label">Bath & Hand Wash</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Oral Care">
+            </div>
+            <span class="category-tile-label">Oral Care</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Skin Care">
+            </div>
+            <span class="category-tile-label">Skin Care</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Deo & Fragrances">
+            </div>
+            <span class="category-tile-label">Deos & Fragrances</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 5. Home & Household -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Home & Household</h2>
+        <div class="category-group-grid">
+          <a href="/categories/household.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dishwash">
+            </div>
+            <span class="category-tile-label">Dishwash</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Detergents & Cleaners">
+            </div>
+            <span class="category-tile-label">Detergents & Cleaners</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cleaning Tools">
+            </div>
+            <span class="category-tile-label">Cleaning Tools</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile">
+            <div class="category-tile-image-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pooja Needs">
+            </div>
+            <span class="category-tile-label">Pooja Needs</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Dynamic Extra Categories from Firebase -->
+      <div id="dynamicCategoriesContainer"></div>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-navbar">
+      <a href="/" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a href="/categories.html" class="nav-item active">
+        <span class="nav-icon">📂</span>
+        <span>Categories</span>
+      </a>
+      <a href="/search.html" class="nav-item">
+        <span class="nav-icon">🔍</span>
+        <span>Search</span>
+      </a>
+      <a href="/track-order.html" class="nav-item">
+        <span class="nav-icon">📦</span>
+        <span>Track</span>
+      </a>
+      <a href="/cart.html" class="nav-item">
+        <span class="nav-icon">🛒</span>
+        <span>Cart</span>
+        <span class="nav-badge" id="catBottomCartCount">0</span>
+      </a>
+      <a href="/profile.html" class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span>Account</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+
+  <script>
+    // Update cart badge
+    function updateCartCount() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+        const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+        const el = document.getElementById('catBottomCartCount');
+        if (el) el.textContent = count;
+      } catch(e) {}
+    }
+    updateCartCount();
+
+    // Restore saved location
+    const savedArea = localStorage.getItem('okmart_selected_area');
+    if (savedArea) {
+      const loc = document.getElementById('catLocationText');
+      if (loc) loc.textContent = savedArea;
+    }
+
+    // Dynamic Firebase Category Sync
+    async function loadDynamicCategories() {
+      if (typeof db === 'undefined' || !db) return;
+      try {
+        const snap = await db.collection('categories').get();
+        if (snap.empty) return;
+        
+        const extraCats = [];
+        snap.forEach(d => extraCats.push({ id: d.id, ...d.data() }));
+        if (extraCats.length === 0) return;
+
+        const container = document.getElementById('dynamicCategoriesContainer');
+        if (container) {
+          container.innerHTML = `
+            <section class="category-group-section">
+              <h2 class="category-group-title">More Categories</h2>
+              <div class="category-group-grid">
+                ${extraCats.map(cat => `
+                  <a href="/categories/all.html?category=${cat.id}" class="category-tile">
+                    <div class="category-tile-image-box">
+                      <img src="${cat.image || 'https://via.placeholder.com/140?text=' + encodeURIComponent(cat.name)}" alt="${cat.name}">
+                    </div>
+                    <span class="category-tile-label">${cat.name}</span>
+                  </a>
+                `).join('')}
+              </div>
+            </section>
+          `;
+        }
+      } catch (err) {
+        console.warn('Error loading dynamic categories:', err);
+      }
+    }
+    loadDynamicCategories();
+  </script>
+</body>
+</html>

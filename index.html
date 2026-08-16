@@ -2,318 +2,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
-  
-  <title>OK Mart | Fresh Grocery Delivery in 10-15 Minutes</title>
-  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast delivery in 10-15 minutes.">
-  <meta name="theme-color" content="#84c225">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>OK Mart - 15 Min Delivery | Fresh Grocery</title>
+  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks, cold drinks. Fast 15 minute delivery in your neighborhood.">
+  <meta name="theme-color" content="#006b22">
 
-  <!-- App -->
+  <!-- Manifest & Favicon -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="OK Mart">
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
-  
-  <!-- CSS -->
+
+  <!-- Google Fonts & Leaflet -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Leaflet for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <style>
-    /* Touch optimization — CSS se double-tap zoom bandh (accessibility-safe) */
-    body {
-      touch-action: pan-x pan-y;
-      -webkit-text-size-adjust: 100%;
-    }
-    input, select, textarea, button, a {
-      touch-action: manipulation;
-    }
-    /* Prevent zoom on input focus on iOS */
-    @media screen and (max-width: 768px) {
-      input, select, textarea {
-        font-size: 16px !important;
-      }
-    }
-  </style>
 </head>
 <body>
   <div class="app-container">
-    
-    <!-- ========== HEADER ========== -->
+
+    <!-- ========== HEADER (GREEN THEME - IMAGE 1) ========== -->
     <header class="app-header">
       <div class="header-top">
-        <div class="logo-section">
-          <a href="/" class="logo-link">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="logo-img">
-            <span class="logo-text"></span>
-          </a>
+        <div class="header-left">
+          <div class="location-box" id="locationBtn">
+            <span class="location-label">📍 Delivery to</span>
+            <div class="location-btn">
+              <span class="location-text" id="locationText">Home / Jantanagar, Ahmedabad</span>
+              <span class="location-arrow">▾</span>
+            </div>
+          </div>
         </div>
+
         <div class="header-actions">
-          <button class="location-btn" id="locationBtn">
-            <span class="location-icon">📍</span>
-            <span class="location-text" id="locationText">Select Location</span>
-            <span class="dropdown-icon">▼</span>
-          </button>
-          <button class="profile-btn" id="profileBtn" aria-label="Profile">
-            <span>👤</span>
-          </button>
-          <a href="/wishlist" class="wishlist-btn" aria-label="Wishlist">
-            <span>❤️</span>
-            <span class="wishlist-count" id="wishlistCount">0</span>
+          <a href="/wishlist.html" class="header-icon-btn" aria-label="Wishlist">
+            <span>🤍</span>
+            <span class="badge-count" id="wishlistCount">0</span>
           </a>
-          <a href="/cart" class="cart-btn" aria-label="Cart">
-            <span>🛒</span>
-            <span class="cart-count" id="cartCount">0</span>
+          <a href="/profile.html" class="header-icon-btn" aria-label="Account">
+            <span>👤</span>
           </a>
         </div>
       </div>
-      
+
       <!-- Search Bar -->
       <div class="search-section">
-        <div class="search-bar" id="searchBar">
+        <div class="search-bar" onclick="window.location.href='/search.html'">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, vegetables, snacks..." autocomplete="off">
-          <button class="clear-search" id="clearSearchBtn">✕</button>
-        </div>
-      </div>
-      
-      <!-- Delivery Info Banner -->
-      <div class="delivery-info-banner" id="deliveryInfoBanner">
-        <div class="delivery-info-content">
-          <span class="delivery-icon">🚚</span>
-          <span class="delivery-text">Free delivery above ₹199</span>
-          <span class="delivery-separator">|</span>
-          <span class="delivery-time">⚡ 10-15 min delivery</span>
+          <input type="text" class="search-input" id="homeSearchInput" placeholder='Search for "Snacks", milk, fruits...' readonly>
+          <button class="mic-btn" aria-label="Voice Search">🎙️</button>
         </div>
       </div>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
-    <main class="home-main">
-      
-      <!-- Offer Banner -->
-      <div class="offer-banner">
-        <div class="offer-banner-content">
-          <div class="offer-text">
-            <span class="offer-label">HOT DEAL</span>
-            <span class="offer-title">OK Mart</span>
-            <span class="offer-price">₹199</span>
-            <span class="offer-desc">1KG प्याज़ FREE!</span>
-          </div>
-          <div class="offer-badge">Limited Time Offer</div>
-        </div>
-      </div>
+    <main class="main-content" style="padding-bottom: 90px;">
 
-      <!-- Carousel Banner -->
-      <div class="carousel-container" id="carouselContainer">
-        <div class="carousel-track" id="carouselTrack">
-          <div class="carousel-slide">
-            <div class="carousel-loading">
-              <div class="skeleton-banner"></div>
+      <!-- ========== 1. TOP HERO BANNER CAROUSEL (IMAGE 1) ========== -->
+      <section class="hero-banner-section">
+        <div class="carousel-container" id="heroCarousel">
+          <div class="carousel-track" id="carouselTrack">
+            <!-- Fallback banner -->
+            <div class="carousel-slide">
+              <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart Banner">
             </div>
           </div>
-        </div>
-        <button class="carousel-prev" id="carouselPrev">❮</button>
-        <button class="carousel-next" id="carouselNext">❯</button>
-        <div class="carousel-dots" id="carouselDots"></div>
-      </div>
-
-      <!-- Flash Sale Section -->
-      <section class="flash-sale-section" id="flashSaleSection" style="display: none;">
-        <div class="section-header">
-          <div class="header-left">
-            <h2 class="section-title">⚡ Flash Sale</h2>
-            <div class="countdown-timer" id="flashSaleTimer">
-              <div class="timer-block"><span id="hours">00</span><span>h</span></div>
-              <div class="timer-sep">:</div>
-              <div class="timer-block"><span id="minutes">00</span><span>m</span></div>
-              <div class="timer-sep">:</div>
-              <div class="timer-block"><span id="seconds">00</span><span>s</span></div>
-            </div>
+          <div class="carousel-dots" id="carouselDots">
+            <div class="carousel-dot active"></div>
           </div>
-          <a href="/offers.html" class="view-all-link">View All →</a>
-        </div>
-        <div class="flash-sale-grid" id="flashSaleGrid"></div>
-      </section>
-
-      <!-- Category Grid -->
-      <section class="category-section">
-        <h2 class="section-title">📂 Shop by Category</h2>
-        <div class="category-grid" id="categoryGrid">
-          <!-- Categories loaded via JS -->
         </div>
       </section>
 
-      <!-- New Arrivals -->
-      <section class="new-arrivals-section" id="newArrivalsSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">✨ New Arrivals</h2>
-          <a href="/categories/all.html" class="view-all-link">View All →</a>
+      <!-- ========== 2. HORIZONTAL QUICK CATEGORY PILLS ========== -->
+      <section class="quick-pills-section">
+        <div class="pills-scroll" id="categoryPillsScroll">
+          <a href="/categories/beverages.html" class="category-pill">🥤 Cold Drinks</a>
+          <a href="/categories/fruits.html" class="category-pill">🍎 Fruits</a>
+          <a href="/categories/vegetables.html" class="category-pill">🥬 Vegetables</a>
+          <a href="/categories/dairy.html" class="category-pill">🥛 Dairy & Breakfast</a>
+          <a href="/categories/grocery.html" class="category-pill">🌾 Atta & Dal</a>
+          <a href="/categories/snacks.html" class="category-pill">🍿 Munchies</a>
+          <a href="/categories/household.html" class="category-pill">🧹 Cleaning</a>
+          <a href="/categories/personal-care.html" class="category-pill">🧴 Personal Care</a>
+          <a href="/categories/bakery.html" class="category-pill">🍞 Bakery</a>
+          <a href="/categories.html" class="category-pill" style="background:#f0fdf4; color:#006b22; font-weight:700;">📂 All Categories →</a>
         </div>
-        <div class="new-arrivals-grid" id="newArrivalsGrid"></div>
       </section>
 
-      <!-- Trending / Hot Today -->
-      <section class="trending-section" id="trendingSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🔥 Hot Today</h2>
-          <a href="/categories/all.html" class="view-all-link">View All →</a>
-        </div>
-        <div class="trending-grid" id="trendingGrid"></div>
-      </section>
-
-      <!-- Category-wise Product Sections -->
+      <!-- ========== 3. DYNAMIC CATEGORY PRODUCT SECTIONS (IMAGE 1) ========== -->
       <div id="categorySectionsContainer">
-        <div class="section-skeleton">
-          <div class="skeleton-header"></div>
-          <div class="skeleton-scroll">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-          </div>
+        <!-- Live products loaded from Firestore -->
+        <div style="padding: 20px; text-align: center; color: #888;">
+          <div class="spinner" style="margin: 0 auto 10px; width: 28px; height: 28px; border: 3px solid #e5e7eb; border-top-color: #006b22; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <span>Loading fresh products...</span>
         </div>
       </div>
 
-      <!-- Recently Viewed -->
-      <section class="recently-viewed-section" id="recentlyViewedSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🕐 Recently Viewed</h2>
-          <button class="clear-recent-btn" id="clearRecentBtn">Clear All</button>
+      <!-- ========== 4. FREE DELIVERY PROGRESS BAR ========== -->
+      <div class="delivery-progress-container" id="freeDeliveryProgress">
+        <div class="delivery-progress-text" id="progressLabel">
+          Add ₹199 more to get <strong>FREE delivery 🎁</strong>
         </div>
-        <div class="recently-viewed-grid" id="recentlyViewedGrid"></div>
-      </section>
-
-      <!-- Free Delivery Progress Bar -->
-      <div class="free-delivery-progress" id="freeDeliveryProgress">
-        <div class="progress-label" id="progressLabel">Add ₹199 more to get FREE delivery 🎁</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+        <div class="delivery-progress-track">
+          <div class="delivery-progress-fill" id="progressFill" style="width: 0%"></div>
         </div>
       </div>
 
     </main>
 
-    <!-- ========== FLOATING CART BAR ========== -->
-    <div class="floating-cart-bar" id="floatingCartBar" style="display: none;">
-      <div class="cart-bar-content">
-        <div class="cart-info">
-          <span class="cart-emoji">🛒</span>
-          <div class="cart-details">
-            <span class="cart-item-count" id="floatingCartCount">0 items</span>
-            <span class="cart-total" id="floatingCartTotal">₹0</span>
-          </div>
-        </div>
-        <a href="/cart" class="cart-action-btn">View Cart →</a>
-      </div>
-    </div>
-
-    <!-- ========== BOTTOM NAVIGATION ========== -->
-    <nav class="bottom-nav">
+    <!-- ========== FIXED BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-navbar">
       <a href="/" class="nav-item active">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">Home</span>
+        <span>Home</span>
       </a>
-      <a href="/search" class="nav-item">
+      <a href="/categories.html" class="nav-item">
+        <span class="nav-icon">📂</span>
+        <span>Categories</span>
+      </a>
+      <a href="/search.html" class="nav-item">
         <span class="nav-icon">🔍</span>
-        <span class="nav-label">Search</span>
+        <span>Search</span>
       </a>
-      <a href="/offers" class="nav-item">
-        <span class="nav-icon">🏷️</span>
-        <span class="nav-label">Offers</span>
-      </a>
-      <a href="/track-order" class="nav-item">
+      <a href="/track-order.html" class="nav-item">
         <span class="nav-icon">📦</span>
-        <span class="nav-label">Track</span>
+        <span>Track</span>
       </a>
-      <a href="/cart" class="nav-item">
+      <a href="/cart.html" class="nav-item">
         <span class="nav-icon">🛒</span>
-        <span class="nav-label">Cart</span>
+        <span>Cart</span>
+        <span class="nav-badge" id="bottomNavCartCount">0</span>
       </a>
-      <a href="/profile" class="nav-item">
+      <a href="/profile.html" class="nav-item">
         <span class="nav-icon">👤</span>
-        <span class="nav-label">Profile</span>
+        <span>Account</span>
       </a>
     </nav>
 
-    <!-- ========== FLOATING BUTTONS ========== -->
-    <button class="back-to-top" id="backToTopBtn" aria-label="Back to top">⬆️</button>
-    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" aria-label="WhatsApp">💬</a>
-    <a href="tel:+919982239821" class="fab-call" aria-label="Call">📞</a>
+    <!-- ========== FLOATING CALL & WHATSAPP BUTTONS ========== -->
+    <div class="floating-fabs">
+      <a href="tel:+919982239821" class="fab-btn fab-call" aria-label="Call OK Mart">📞</a>
+      <a href="https://wa.me/919982239821" class="fab-btn fab-whatsapp" target="_blank" aria-label="WhatsApp OK Mart">💬</a>
+    </div>
 
-    <!-- ========== LOCATION MODAL ========== -->
-    <div class="location-modal" id="locationModal">
-      <div class="location-modal-content">
-        <div class="location-modal-header">
-          <h3>📍 Select Delivery Location</h3>
-          <button class="location-modal-close" id="closeLocationModal">✕</button>
+    <!-- ========== LOCATION SELECTOR MODAL ========== -->
+    <div class="modal-overlay" id="locationModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800; color:#111827;">📍 Choose Delivery Location</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888;" id="closeLocationModal">✕</button>
         </div>
-        <div class="location-modal-body">
-          <button class="location-option" id="useCurrentLocationBtn">
-            <span>📍</span>
-            <span>Use My Current Location</span>
-          </button>
-          <div class="location-divider">OR</div>
-          <div class="pincode-input-group">
-            <input type="text" id="pincodeInput" class="pincode-input" placeholder="Enter pincode (e.g., 380001)" maxlength="6" pattern="[0-9]{6}" inputmode="numeric">
-            <button class="check-pincode-btn" id="checkPincodeBtn">Check</button>
+        
+        <button id="useCurrentLocationBtn" style="width:100%; background:#f0fdf4; border:1px solid #86efac; color:#006b22; font-weight:700; padding:12px; border-radius:10px; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🎯</span>
+          <span>Use Current Location (GPS)</span>
+        </button>
+
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <input type="text" id="pincodeInput" placeholder="Enter 6-digit pincode" maxlength="6" inputmode="numeric" style="flex:1; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          <button id="checkPincodeBtn" style="background:#006b22; color:#fff; font-weight:700; border:none; padding:10px 16px; border-radius:8px;">Check</button>
+        </div>
+        <div id="pincodeMessage" style="font-size:0.8rem; margin-bottom:12px;"></div>
+
+        <div style="font-size:0.78rem; font-weight:700; color:#6b7280; text-transform:uppercase; margin-bottom:6px;">Popular Areas</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div class="nearby-item" data-area="Jantanagar" data-city="Ahmedabad" data-pincode="382110" style="padding:10px; background:#f9fafb; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+            🏪 Jantanagar, Ahmedabad (382110)
           </div>
-          <div id="pincodeMessage" class="pincode-message"></div>
-          <div class="nearby-locations">
-            <div class="nearby-title">📍 Popular Locations</div>
-            <div class="nearby-list">
-              <div class="nearby-item" data-area="Jantanagar" data-city="Ahmedabad" data-pincode="382110">Jantanagar, Ahmedabad</div>
-              <div class="nearby-item" data-area="Satellite" data-city="Ahmedabad" data-pincode="380015">Satellite, Ahmedabad</div>
-              <div class="nearby-item" data-area="Prahlad Nagar" data-city="Ahmedabad" data-pincode="380015">Prahlad Nagar, Ahmedabad</div>
-              <div class="nearby-item" data-area="Vastrapur" data-city="Ahmedabad" data-pincode="380015">Vastrapur, Ahmedabad</div>
-              <div class="nearby-item" data-area="CG Road" data-city="Ahmedabad" data-pincode="380009">CG Road, Ahmedabad</div>
-            </div>
+          <div class="nearby-item" data-area="Satellite" data-city="Ahmedabad" data-pincode="380015" style="padding:10px; background:#f9fafb; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+            🏪 Satellite, Ahmedabad (380015)
+          </div>
+          <div class="nearby-item" data-area="Prahlad Nagar" data-city="Ahmedabad" data-pincode="380015" style="padding:10px; background:#f9fafb; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+            🏪 Prahlad Nagar, Ahmedabad (380015)
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Mini Order Summary Popup -->
-    <div class="mini-order-popup" id="miniOrderPopup">
-      <div class="popup-icon">✅</div>
-      <div class="popup-text">Added to cart!</div>
-    </div>
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toastMessage" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#111827; color:#fff; padding:8px 16px; border-radius:20px; font-size:0.8rem; font-weight:600; z-index:200; display:none;"></div>
 
-    <!-- Profile Modal -->
-    <div class="profile-modal" id="profileModal">
-      <div class="profile-modal-content">
-        <div class="profile-modal-header">
-          <h3>👤 My Account</h3>
-          <button class="profile-modal-close" id="closeProfileModal">✕</button>
-        </div>
-        <div class="profile-modal-body">
-          <div class="profile-avatar">
-            <span>👤</span>
-          </div>
-          <div class="profile-name" id="profileName">Guest User</div>
-          <div class="profile-phone" id="profilePhone">Not logged in</div>
-          <button class="login-btn" id="loginBtn">Login / Sign Up</button>
-          <div class="profile-menu">
-            <a href="/orders.html" class="profile-menu-item">📋 My Orders</a>
-            <a href="/wishlist.html" class="profile-menu-item">❤️ Wishlist</a>
-            <a href="/profile.html" class="profile-menu-item">📍 Saved Addresses</a>
-            <a href="/profile.html" class="profile-menu-item">⚙️ Settings</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Toast Message -->
-    <div class="toast-message" id="toastMessage"></div>
-    
   </div>
 
   <!-- Scripts -->
@@ -323,58 +193,6 @@
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
-  <!-- Add this before closing body tag -->
-<script src="/js/fcm-token.js"></script>
-  
-  <script>
-    // ========== ADDITIONAL UI FIXES ==========
-    
-    // Profile Modal
-    const profileBtn = document.getElementById('profileBtn');
-    const profileModal = document.getElementById('profileModal');
-    const closeProfileModal = document.getElementById('closeProfileModal');
-    
-    if (profileBtn) {
-      profileBtn.addEventListener('click', () => {
-        profileModal.classList.add('active');
-      });
-    }
-    
-    if (closeProfileModal) {
-      closeProfileModal.addEventListener('click', () => {
-        profileModal.classList.remove('active');
-      });
-    }
-    
-    profileModal?.addEventListener('click', (e) => {
-      if (e.target === profileModal) profileModal.classList.remove('active');
-    });
-    
-    const loginBtn = document.getElementById('loginBtn');
-    if (loginBtn) {
-      loginBtn.addEventListener('click', () => {
-        // login.html अभी नहीं है — profile page पर redirect करें
-        window.location.href = '/user-details.html';
-      });
-    }
-    
-    // Load user profile if logged in
-    const savedUser = localStorage.getItem('okmart_user');
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-        document.getElementById('profileName').textContent = user.name || 'User';
-        document.getElementById('profilePhone').textContent = user.phone || user.email || 'Logged in';
-        document.getElementById('loginBtn').textContent = 'View Profile';
-      } catch(e) {}
-    }
-    
-    // Double-tap zoom — CSS touch-action se handle hota hai ab
-    // JS preventDefault hata diya (accessibility ke liye harmful tha)
-    // See <style> block above for the CSS fix
-    
-    // console.log removed in production
-  </script>
+  <script src="/js/fcm-token.js"></script>
 </body>
 </html>
-

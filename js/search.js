@@ -1,341 +1,311 @@
-// ===== OK MART - ADVANCED SEARCH PAGE =====
+// ===== OK MART - ADVANCED SEARCH CONTROLLER (MATCHING IMAGES 3 & 4) =====
 
 (function() {
   'use strict';
 
-  // ========== DOM Elements ==========
+  // DOM Elements
   const searchInput = document.getElementById('searchInput');
-  const clearInputBtn = document.getElementById('clearInputBtn');
-  const suggestionsSection = document.getElementById('suggestionsSection');
+  const clearSearchBtn = document.getElementById('clearSearchBtn');
+  const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+  const liveSuggestionsContainer = document.getElementById('liveSuggestionsContainer');
   const suggestionsList = document.getElementById('suggestionsList');
-  const recentSection = document.getElementById('recentSection');
-  const recentList = document.getElementById('recentList');
-  const filtersBar = document.getElementById('filtersBar');
+  const defaultSearchContent = document.getElementById('defaultSearchContent');
+  const pastSearchesSection = document.getElementById('pastSearchesSection');
+  const pastChipsContainer = document.getElementById('pastChipsContainer');
+  const clearPastSearchesBtn = document.getElementById('clearPastSearchesBtn');
+  const quickPicksScroll = document.getElementById('quickPicksScroll');
+  const trendingScroll = document.getElementById('trendingScroll');
+  const searchResultsSection = document.getElementById('searchResultsSection');
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  const resultsTitle = document.getElementById('resultsTitle');
   const resultsCount = document.getElementById('resultsCount');
-  const resultCountText = document.getElementById('resultCountText');
-  const loadingState = document.getElementById('loadingState');
-  const resultsGrid = document.getElementById('resultsGrid');
-  const noResults = document.getElementById('noResults');
-  const suggestedProductsDiv = document.getElementById('suggestedProducts');
-  const recentlyViewedSection = document.getElementById('recentlyViewedSection');
-  const recentlyViewedGrid = document.getElementById('recentlyViewedGrid');
-  const clearRecentBtn = document.getElementById('clearRecentBtn');
-  const categoryFilterBtn = document.getElementById('categoryFilterBtn');
-  const categoryDropdown = document.getElementById('categoryDropdown');
+  const searchBottomCartCount = document.getElementById('searchBottomCartCount');
 
-  // ========== State ==========
+  // State
   let allProducts = [];
-  let currentQuery = '';
-  let currentSort = 'default';
-  let currentCategory = '';
-  let recentSearches = [];
-  let recentlyViewed = [];
-  let searchTimeout;
-  let suggestions = [];
+  let pastSearches = [];
+  let typingTimer;
 
-  // Categories list
-  const categories = [
-    { id: '', name: 'All Categories' },
-    { id: 'dairy', name: '🥛 Dairy' },
-    { id: 'fruits', name: '🍎 Fruits' },
-    { id: 'vegetables', name: '🥬 Vegetables' },
-    { id: 'snacks', name: '🍿 Snacks' },
-    { id: 'beverages', name: '🥤 Beverages' },
-    { id: 'icecream', name: '🍦 Ice Cream' },
-    { id: 'grocery', name: '🛒 Grocery' },
-    { id: 'personal', name: '🧴 Personal Care' },
-    { id: 'household', name: '🧹 Household' },
-    { id: 'bakery', name: '🥖 Bakery' },
-    { id: 'electronics', name: '📱 Electronics' }
-  ];
-
-  // ========== Load Data ==========
+  // 1. Load Products from Firebase
   async function loadProducts() {
     try {
-      allProducts = await fetchProducts();
-      loadRecentSearches();
-      loadRecentlyViewed();
-      renderRecentSearches();
-      renderRecentlyViewed();
-      loadingState.style.display = 'none';
-      filtersBar.style.display = 'flex';
-    } catch (error) {
-      console.error('Error loading products:', error);
-      loadingState.innerHTML = '<div class="spinner"></div><p>Error loading products. Please refresh.</p>';
-    }
-  }
-
-  // ========== Recent Searches ==========
-  function loadRecentSearches() {
-    try {
-      recentSearches = JSON.parse(localStorage.getItem('okmart_recent_searches') || '[]');
-    } catch(e) { recentSearches = []; }
-  }
-
-  function saveRecentSearches() {
-    localStorage.setItem('okmart_recent_searches', JSON.stringify(recentSearches.slice(0, 10)));
-  }
-
-  function addToRecentSearches(query) {
-    if (!query.trim()) return;
-    recentSearches = recentSearches.filter(q => q !== query);
-    recentSearches.unshift(query);
-    saveRecentSearches();
-    renderRecentSearches();
-  }
-
-  function clearRecentSearches() {
-    recentSearches = [];
-    saveRecentSearches();
-    renderRecentSearches();
-    showToast('Recent searches cleared', 'success');
-  }
-
-  function renderRecentSearches() {
-    if (!recentList) return;
-    
-    if (recentSearches.length === 0) {
-      recentSection.style.display = 'none';
-      return;
-    }
-    
-    recentSection.style.display = 'block';
-    recentList.innerHTML = recentSearches.map(search => `
-      <div class="recent-item" onclick="performSearch('${escapeHtml(search)}')">
-        <span>🕐</span>
-        <span>${escapeHtml(search)}</span>
-      </div>
-    `).join('');
-  }
-
-  // ========== Recently Viewed ==========
-  function loadRecentlyViewed() {
-    try {
-      recentlyViewed = JSON.parse(localStorage.getItem('okmart_recently_viewed') || '[]');
-    } catch(e) { recentlyViewed = []; }
-  }
-
-  function addToRecentlyViewed(productId) {
-    recentlyViewed = recentlyViewed.filter(id => id !== productId);
-    recentlyViewed.unshift(productId);
-    recentlyViewed = recentlyViewed.slice(0, 10);
-    localStorage.setItem('okmart_recently_viewed', JSON.stringify(recentlyViewed));
-    renderRecentlyViewed();
-  }
-
-  function renderRecentlyViewed() {
-    if (!recentlyViewedGrid) return;
-    
-    const recentProducts = recentlyViewed
-      .map(id => allProducts.find(p => p.id === id))
-      .filter(p => p && p.active !== false)
-      .slice(0, 4);
-    
-    if (recentProducts.length === 0) {
-      recentlyViewedSection.style.display = 'none';
-      return;
-    }
-    
-    recentlyViewedSection.style.display = 'block';
-    recentlyViewedGrid.innerHTML = recentProducts.map(product => createProductCard(product)).join('');
-  }
-
-  // ========== Search Logic ==========
-  function performSearch(query, isNewSearch = true) {
-    currentQuery = query;
-    
-    if (isNewSearch && query.trim()) {
-      addToRecentSearches(query);
-    }
-    
-    // Hide suggestions
-    suggestionsSection.style.display = 'none';
-    
-    // Filter products
-    let filtered = allProducts.filter(product => {
-      if (product.active === false) return false;
-      if (currentCategory && product.category !== currentCategory) return false;
-      
-      if (!query.trim()) return true;
-      
-      const searchTerm = query.toLowerCase();
-      const productName = (product.name || '').toLowerCase();
-      const productBrand = (product.brand || '').toLowerCase();
-      const productCategory = (product.category || '').toLowerCase();
-      
-      return productName.includes(searchTerm) || 
-             productBrand.includes(searchTerm) || 
-             productCategory.includes(searchTerm);
-    });
-    
-    // Apply sort
-    filtered = sortProducts(filtered, currentSort);
-    
-    // Update UI
-    updateResultsUI(filtered, query);
-  }
-
-  function sortProducts(products, sortType) {
-    const sorted = [...products];
-    
-    switch(sortType) {
-      case 'price_asc':
-        return sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-      case 'price_desc':
-        return sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-      case 'popular':
-        return sorted.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
-      default:
-        return sorted;
-    }
-  }
-
-  function updateResultsUI(filtered, query) {
-    // Update results count
-    const count = filtered.length;
-    resultCountText.textContent = count;
-    resultsCount.style.display = count > 0 ? 'block' : 'none';
-    
-    if (count === 0) {
-      resultsGrid.innerHTML = '';
-      noResults.style.display = 'block';
-      showSuggestedProducts(query);
-      return;
-    }
-    
-    noResults.style.display = 'none';
-    resultsGrid.innerHTML = filtered.map(product => createProductCard(product, query)).join('');
-  }
-
-  function showSuggestedProducts(query) {
-    // Show trending products instead
-    const trendingProducts = allProducts
-      .filter(p => p.active !== false && (p.popular === true || (p.salesCount || 0) > 5))
-      .slice(0, 6);
-    
-    suggestedProductsDiv.innerHTML = trendingProducts.map(product => `
-      <div class="suggested-product-item" onclick="performSearch('${escapeHtml(product.name)}', true)">
-        ${escapeHtml(product.name)}
-      </div>
-    `).join('');
-  }
-
-  // ========== Search Suggestions ==========
-  function updateSuggestions(query) {
-    if (!query.trim()) {
-      suggestionsSection.style.display = 'none';
-      return;
-    }
-    
-    const searchTerm = query.toLowerCase();
-    
-    // Get matching product names
-    const productSuggestions = allProducts
-      .filter(p => p.name && p.name.toLowerCase().includes(searchTerm))
-      .slice(0, 5)
-      .map(p => p.name);
-    
-    // Get matching categories
-    const categorySuggestions = categories
-      .filter(c => c.name.toLowerCase().includes(searchTerm) && c.id)
-      .slice(0, 3)
-      .map(c => c.name);
-    
-    suggestions = [...new Set([...productSuggestions, ...categorySuggestions])];
-    
-    if (suggestions.length === 0) {
-      suggestionsSection.style.display = 'none';
-      return;
-    }
-    
-    suggestionsSection.style.display = 'block';
-    suggestionsList.innerHTML = suggestions.map(suggestion => `
-      <div class="suggestion-item" onclick="performSearch('${escapeHtml(suggestion)}', true)">
-        <span>🔍</span>
-        <span>${highlightText(suggestion, query)}</span>
-      </div>
-    `).join('');
-  }
-
-  // ========== Filter Handlers ==========
-  function setActiveFilter(sortType) {
-    currentSort = sortType;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.dataset.sort === sortType) {
-        btn.classList.add('active');
+      if (typeof db !== 'undefined' && db) {
+        const snap = await db.collection('products').where('active', '==', true).get();
+        allProducts = [];
+        snap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
       }
-    });
-    performSearch(currentQuery, false);
+    } catch (e) {
+      console.warn('Fallback products:', e);
+    }
+    renderPastSearches();
+    renderQuickPicks();
+    renderTrending();
+    updateCartUI();
   }
 
-  function setCategory(categoryId, categoryName) {
-    currentCategory = categoryId;
-    categoryFilterBtn.textContent = `${categoryName || 'Category'} ▼`;
-    categoryDropdown.style.display = 'none';
-    performSearch(currentQuery, false);
+  // 2. Past Searches
+  function loadPastSearches() {
+    try {
+      pastSearches = JSON.parse(localStorage.getItem('okmart_recent_searches') || '[]');
+      if (pastSearches.length === 0) {
+        pastSearches = ['santoor soap', 'madhur sugar', 'jasmine hair oil', 'sprite', 'milk'];
+      }
+    } catch (e) {
+      pastSearches = ['santoor soap', 'madhur sugar', 'jasmine hair oil', 'sprite', 'milk'];
+    }
   }
 
-  // ========== Product Card Creator ==========
-  function createProductCard(product, highlightQuery = '') {
-    const discount = calculateDiscount(product.price, product.mrp);
-    const isOutOfStock = (product.stock || 0) === 0;
-    const displayName = highlightQuery ? highlightText(product.name, highlightQuery) : escapeHtml(product.name);
-    
+  function savePastSearches() {
+    localStorage.setItem('okmart_recent_searches', JSON.stringify(pastSearches.slice(0, 10)));
+  }
+
+  function addPastSearch(q) {
+    if (!q || !q.trim()) return;
+    const term = q.trim().toLowerCase();
+    pastSearches = pastSearches.filter(s => s.toLowerCase() !== term);
+    pastSearches.unshift(term);
+    savePastSearches();
+    renderPastSearches();
+  }
+
+  function renderPastSearches() {
+    if (!pastChipsContainer) return;
+    if (pastSearches.length === 0) {
+      if (pastSearchesSection) pastSearchesSection.style.display = 'none';
+      return;
+    }
+    if (pastSearchesSection) pastSearchesSection.style.display = 'block';
+    pastChipsContainer.innerHTML = pastSearches.slice(0, 8).map(term => `
+      <div class="past-search-chip" onclick="executeSearch('${escapeHtml(term)}')">${escapeHtml(term)}</div>
+    `).join('');
+  }
+
+  if (clearPastSearchesBtn) {
+    clearPastSearchesBtn.onclick = () => {
+      pastSearches = [];
+      savePastSearches();
+      renderPastSearches();
+      showToast('Past searches cleared');
+    };
+  }
+
+  // 3. Quick Picks & Trending Shelves (Image 3)
+  function renderQuickPicks() {
+    if (!quickPicksScroll) return;
+    const picks = allProducts.slice(0, 8);
+    if (picks.length === 0) {
+      quickPicksScroll.innerHTML = '<div style="padding:10px; color:#888;">No items found</div>';
+      return;
+    }
+    quickPicksScroll.innerHTML = picks.map(p => createShelfProductCard(p)).join('');
+  }
+
+  function renderTrending() {
+    if (!trendingScroll) return;
+    const trending = [...allProducts].reverse().slice(0, 8);
+    if (trending.length === 0) {
+      trendingScroll.innerHTML = '<div style="padding:10px; color:#888;">No items found</div>';
+      return;
+    }
+    trendingScroll.innerHTML = trending.map(p => createShelfProductCard(p)).join('');
+  }
+
+  function createShelfProductCard(p) {
+    const disc = p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+    const wishlist = JSON.parse(localStorage.getItem('okmart_wishlist') || '[]');
+    const isWishlisted = wishlist.includes(p.id);
+    const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+    const cartItem = cart.find(i => i.id === p.id);
+    const inCartQty = cartItem ? cartItem.quantity : 0;
+
     return `
-      <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
-        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
-        ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
-        ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <h3 class="product-name">${displayName}</h3>
-        <span class="product-unit">${product.unit || ''}</span>
-        <div class="price-row">
-          <span class="current-price">₹${product.price}</span>
-          ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
-        </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCartHandler('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-          ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+      <div class="shelf-product-card" onclick="location.href='/product.html?id=${p.id}'">
+        <button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${p.id}', this)" aria-label="Wishlist">
+          ${isWishlisted ? '❤️' : '🤍'}
         </button>
+        <div class="shelf-img-container">
+          <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/140?text=OK+Mart'">
+        </div>
+        <span class="shelf-unit-tag">${p.unit || '1 Unit'}</span>
+        <div class="shelf-price-row">
+          <span class="shelf-price-curr">₹${p.price}</span>
+          ${p.mrp ? `<span class="shelf-price-mrp">₹${p.mrp}</span>` : ''}
+          ${disc > 0 ? `<span class="shelf-price-discount">${disc}% off</span>` : ''}
+        </div>
+        <h4 class="shelf-title">${escapeHtml(p.name)}</h4>
+        <div class="shelf-quick-tag">⚡ Quick</div>
+        ${inCartQty > 0 ? `
+          <div class="qty-stepper-btn" onclick="event.stopPropagation()">
+            <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', -1)">−</button>
+            <span class="qty-step-value">${inCartQty}</span>
+            <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', 1)">+</button>
+          </div>
+        ` : `
+          <button class="shelf-add-btn" onclick="event.stopPropagation(); addProductToCart('${p.id}')">
+            ADD
+          </button>
+        `}
       </div>
     `;
   }
 
-  // ========== Helper Functions ==========
-  function highlightText(text, query) {
-    if (!query || !text) return escapeHtml(text);
-    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-    return escapeHtml(text).replace(regex, '<mark class="highlight">$1</mark>');
-  }
+  // 4. Live Typing Suggestions (Image 4)
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const val = searchInput.value.trim();
+      if (clearSearchBtn) {
+        if (val) clearSearchBtn.classList.add('visible');
+        else clearSearchBtn.classList.remove('visible');
+      }
 
-  function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
+      clearTimeout(typingTimer);
+      if (!val) {
+        liveSuggestionsContainer.style.display = 'none';
+        searchResultsSection.style.display = 'none';
+        defaultSearchContent.style.display = 'block';
+        return;
+      }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
+      typingTimer = setTimeout(() => {
+        showLiveSuggestions(val);
+      }, 150);
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = searchInput.value.trim();
+        if (val) {
+          executeSearch(val);
+        }
+      }
     });
   }
 
-  function calculateDiscount(price, mrp) {
-    if (!mrp || mrp <= price) return 0;
-    return Math.round(((mrp - price) / mrp) * 100);
+  if (clearSearchBtn) {
+    clearSearchBtn.onclick = () => {
+      searchInput.value = '';
+      clearSearchBtn.classList.remove('visible');
+      liveSuggestionsContainer.style.display = 'none';
+      searchResultsSection.style.display = 'none';
+      defaultSearchContent.style.display = 'block';
+      searchInput.focus();
+    };
   }
 
-  // ========== Cart Functions ==========
-  function addToCartHandler(productId) {
-    const product = allProducts.find(p => p.id === productId);
+  function showLiveSuggestions(query) {
+    const q = query.toLowerCase();
+    const matched = allProducts.filter(p => (p.name || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)).slice(0, 6);
+
+    if (matched.length === 0) {
+      suggestionsList.innerHTML = `
+        <div class="show-all-results-row" onclick="executeSearch('${escapeHtml(query)}')">
+          <span style="font-size:1.1rem;">🔍</span>
+          <span>Show all results for '<strong>${escapeHtml(query)}</strong>'</span>
+        </div>
+      `;
+    } else {
+      suggestionsList.innerHTML = matched.map(p => `
+        <div class="suggestion-row-item" onclick="executeSearch('${escapeHtml(p.name)}')">
+          <div class="suggestion-thumb-box">
+            <img src="${p.image}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/40'">
+          </div>
+          <div class="suggestion-text-label">
+            ${highlightMatch(p.name, query)}
+          </div>
+        </div>
+      `).join('') + `
+        <div class="show-all-results-row" onclick="executeSearch('${escapeHtml(query)}')">
+          <span style="font-size:1.1rem; color:#16a34a;">🔍</span>
+          <span>Show all results for '<strong>${escapeHtml(query)}</strong>'</span>
+        </div>
+      `;
+    }
+
+    liveSuggestionsContainer.style.display = 'block';
+    defaultSearchContent.style.display = 'none';
+    searchResultsSection.style.display = 'none';
+  }
+
+  function highlightMatch(text, query) {
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return escapeHtml(text);
+    const before = text.substring(0, idx);
+    const match = text.substring(idx, idx + query.length);
+    const after = text.substring(idx + query.length);
+    return `${escapeHtml(before)}<strong>${escapeHtml(match)}</strong>${escapeHtml(after)}`;
+  }
+
+  // 5. Execute Search (Display Results Grid)
+  window.executeSearch = function(query) {
+    if (!query) return;
+    if (searchInput) {
+      searchInput.value = query;
+      if (clearSearchBtn) clearSearchBtn.classList.add('visible');
+    }
+    addPastSearch(query);
+
+    const q = query.toLowerCase();
+    const results = allProducts.filter(p => 
+      (p.name || '').toLowerCase().includes(q) || 
+      (p.category || '').toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q)
+    );
+
+    liveSuggestionsContainer.style.display = 'none';
+    defaultSearchContent.style.display = 'none';
+    searchResultsSection.style.display = 'block';
+
+    resultsTitle.textContent = `Results for "${query}"`;
+    resultsCount.textContent = `${results.length} products`;
+
+    if (results.length === 0) {
+      searchResultsGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: #6b7280;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">🔍</div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 4px;">No products found</h3>
+          <p style="font-size: 0.82rem;">Try searching for milk, bread, fruits, snacks, or drinks.</p>
+        </div>
+      `;
+      return;
+    }
+
+    searchResultsGrid.innerHTML = results.map(p => createShelfProductCard(p)).join('');
+  };
+
+  // 6. Voice Search
+  if (voiceSearchBtn) {
+    voiceSearchBtn.onclick = () => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice search not supported in this browser');
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.start();
+      showToast('Listening... Speak now 🎙️');
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          executeSearch(transcript);
+        }
+      };
+      recognition.onerror = () => {
+        showToast('Voice search failed. Please try typing.');
+      };
+    };
+  }
+
+  // 7. Cart & Wishlist Handlers
+  window.addProductToCart = function(id) {
+    const product = allProducts.find(p => p.id === id);
     if (!product) return;
-    
+
     const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-    const existing = cart.find(item => item.id === productId);
-    
+    const existing = cart.find(i => i.id === id);
     if (existing) {
-      existing.quantity += 1;
+      existing.quantity = (existing.quantity || 1) + 1;
     } else {
       cart.push({
         id: product.id,
@@ -347,127 +317,86 @@
         quantity: 1
       });
     }
-    
     localStorage.setItem('okmart_cart', JSON.stringify(cart));
-    updateCartBadge();
-    showToast(`${product.name} added to cart!`, 'success');
-    
-    // Update floating cart bar if exists
-    const event = new CustomEvent('cartUpdated');
-    window.dispatchEvent(event);
-  }
+    updateCartUI();
+    refreshCards();
+    showToast(`${product.name} added to cart!`);
+  };
 
-  function updateCartBadge() {
+  window.updateSearchItemQty = function(id, delta) {
     const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.querySelectorAll('.cart-count, .cart-badge').forEach(el => {
-      if (el) el.textContent = total;
-    });
-  }
+    const idx = cart.findIndex(i => i.id === id);
+    if (idx === -1) return;
 
-  function viewProduct(productId) {
-    addToRecentlyViewed(productId);
-    window.location.href = `/product.html?id=${productId}`;
-  }
+    cart[idx].quantity += delta;
+    if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+    localStorage.setItem('okmart_cart', JSON.stringify(cart));
+    updateCartUI();
+    refreshCards();
+  };
 
-  function showToast(message, type) {
-    const toast = document.getElementById('toastMessage');
-    if (!toast) return;
-    
-    toast.textContent = message;
-    toast.className = `toast-message ${type}`;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 3000);
-  }
-
-  // ========== Event Listeners ==========
-  function initEventListeners() {
-    // Search input with debounce
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value;
-      clearInputBtn.classList.toggle('visible', query.length > 0);
-      
-      clearTimeout(searchTimeout);
-      
-      if (query.length > 0) {
-        updateSuggestions(query);
-        searchTimeout = setTimeout(() => {
-          performSearch(query, true);
-        }, 300);
-      } else {
-        suggestionsSection.style.display = 'none';
-        if (allProducts.length > 0) {
-          performSearch('', false);
-        }
-      }
-    });
-    
-    // Clear input
-    clearInputBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      clearInputBtn.classList.remove('visible');
-      performSearch('', false);
-      searchInput.focus();
-    });
-    
-    // Filter buttons
-    document.querySelectorAll('.filter-btn[data-sort]').forEach(btn => {
-      btn.addEventListener('click', () => setActiveFilter(btn.dataset.sort));
-    });
-    
-    // Category filter
-    categoryFilterBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isVisible = categoryDropdown.style.display === 'block';
-      categoryDropdown.style.display = isVisible ? 'none' : 'block';
-    });
-    
-    // Category options
-    document.querySelectorAll('.category-option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        const catId = opt.dataset.cat;
-        const catName = opt.textContent;
-        setCategory(catId, catName);
-      });
-    });
-    
-    // Close dropdown on click outside
-    document.addEventListener('click', (e) => {
-      if (!categoryFilterBtn.contains(e.target) && !categoryDropdown.contains(e.target)) {
-        categoryDropdown.style.display = 'none';
-      }
-    });
-    
-    // Clear recent searches
-    clearRecentBtn?.addEventListener('click', clearRecentSearches);
-  }
-
-  // ========== Expose Global Functions ==========
-  window.performSearch = performSearch;
-  window.addToCartHandler = addToCartHandler;
-  window.viewProduct = viewProduct;
-  window.highlightText = highlightText;
-
-  // ========== Initialize ==========
-  async function init() {
-    loadingState.style.display = 'block';
-    await loadProducts();
-    initEventListeners();
-    
-    // Check URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const q = urlParams.get('q');
-    if (q) {
-      searchInput.value = q;
-      performSearch(q, true);
+  window.toggleWishlist = function(id, btn) {
+    let wishlist = JSON.parse(localStorage.getItem('okmart_wishlist') || '[]');
+    const idx = wishlist.indexOf(id);
+    if (idx > -1) {
+      wishlist.splice(idx, 1);
+      if (btn) { btn.textContent = '🤍'; btn.classList.remove('active'); }
+      showToast('Removed from wishlist');
+    } else {
+      wishlist.push(id);
+      if (btn) { btn.textContent = '❤️'; btn.classList.add('active'); }
+      showToast('Added to wishlist');
     }
-    
-    console.log('✅ Search page initialized');
-  }
-  
-  init();
-})();
+    localStorage.setItem('okmart_wishlist', JSON.stringify(wishlist));
+  };
 
+  function updateCartUI() {
+    try {
+      const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+      const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      if (searchBottomCartCount) searchBottomCartCount.textContent = count;
+    } catch(e) {}
+  }
+
+  function refreshCards() {
+    renderQuickPicks();
+    renderTrending();
+    if (searchResultsSection.style.display === 'block') {
+      const q = (searchInput.value || '').trim();
+      if (q) executeSearch(q);
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      if (m === '"') return '&quot;';
+      if (m === "'") return '&#39;';
+      return m;
+    });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toastMessage');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(window._st);
+    window._st = setTimeout(() => t.style.display = 'none', 2000);
+  }
+
+  // Init
+  loadPastSearches();
+  loadProducts();
+
+  // Check URL param ?q=
+  const urlParams = new URLSearchParams(window.location.search);
+  const qParam = urlParams.get('q');
+  if (qParam) {
+    setTimeout(() => executeSearch(qParam), 300);
+  }
+
+})();

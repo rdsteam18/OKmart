@@ -2,246 +2,364 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  
-  <title>My Profile | OK Mart</title>
-  <meta name="description" content="Manage your profile, addresses, orders, and preferences">
-  <meta name="theme-color" content="#84c225">
-  
-  <!-- Favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>My Account | OK Mart</title>
+  <meta name="description" content="Manage your account, view past orders, delivery addresses, and customer support on OK Mart.">
+  <meta name="theme-color" content="#006b22">
+
+  <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
-  
-  <!-- CSS -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/profile.css">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <div class="profile-page">
-    
-    <!-- ========== HEADER ========== -->
-    <header class="profile-header">
-      <button class="back-btn" onclick="history.back()">←</button>
-      <h1 class="profile-title">My Profile</h1>
-      <div></div>
+<body class="account-page">
+  <div class="app-container">
+
+    <!-- ========== HEADER (IMAGE 5) ========== -->
+    <header class="account-header">
+      <button class="account-back-btn" onclick="if(history.length>1){history.back();}else{location.href='/';}" aria-label="Back">
+        <span>←</span>
+      </button>
+      <h1 class="account-header-title">Account</h1>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
-    <main class="profile-main">
-      
-      <!-- Loading State -->
-      <div class="loading-state" id="loadingState">
-        <div class="spinner"></div>
-        <p>Loading your profile...</p>
+    <main class="account-main">
+
+      <!-- User Info Card -->
+      <section class="account-user-card">
+        <h2 class="user-display-name" id="accountUserName">Devdhar --</h2>
+        <div class="user-phone-number" id="accountUserPhone">+91 9982239821</div>
+        <div class="enter-details-link" id="openEditProfileBtn">
+          <span>Enter details</span>
+          <span>›</span>
+        </div>
+      </section>
+
+      <!-- 4 Quick Action Cards (Image 5) -->
+      <section class="quick-action-cards-grid">
+        <a href="/orders.html" class="action-card-tile">
+          <span class="action-card-icon">📦</span>
+          <span class="action-card-label">Orders</span>
+        </a>
+        <a href="/wishlist.html" class="action-card-tile">
+          <span class="action-card-icon">🤍</span>
+          <span class="action-card-label">Wishlist</span>
+        </a>
+        <a href="/offers.html" class="action-card-tile">
+          <span class="action-card-icon">🏷️</span>
+          <span class="action-card-label">Offers</span>
+        </a>
+        <a href="https://wa.me/919982239821" target="_blank" class="action-card-tile">
+          <span class="action-card-icon">❓</span>
+          <span class="action-card-label">Help</span>
+        </a>
+      </section>
+
+      <!-- Group 1: YOUR INFORMATION -->
+      <div class="account-menu-group">
+        <div class="menu-group-header">YOUR INFORMATION</div>
+        
+        <a href="/orders.html" class="menu-item-row">
+          <div class="menu-item-icon-box">🛡️</div>
+          <div class="menu-item-title">My Orders</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+
+        <div class="menu-item-row" id="openAddressesBtn">
+          <div class="menu-item-icon-box">📍</div>
+          <div class="menu-item-title">Delivery Addresses</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+
+        <a href="/wishlist.html" class="menu-item-row">
+          <div class="menu-item-icon-box">❤️</div>
+          <div class="menu-item-title">My Wishlist</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
       </div>
 
-      <!-- Profile Content -->
-      <div class="profile-content" id="profileContent" style="display: none;">
+      <!-- Group 2: PAYMENT MODES -->
+      <div class="account-menu-group">
+        <div class="menu-group-header">PAYMENT MODES</div>
         
-        <!-- ========== 1. USER INFO CARD ========== -->
-        <div class="profile-card user-info-card">
-          <div class="card-header">
-            <h2 class="card-title">👤 Personal Information</h2>
-            <button class="edit-btn" id="editUserInfoBtn">Edit</button>
-          </div>
-          
-          <div class="user-info-display" id="userInfoDisplay">
-            <div class="info-row">
-              <span class="info-label">Name</span>
-              <span class="info-value" id="displayName">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Phone</span>
-              <span class="info-value" id="displayPhone">-</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Email</span>
-              <span class="info-value" id="displayEmail">-</span>
-            </div>
-          </div>
-          
-          <div class="user-info-edit" id="userInfoEdit" style="display: none;">
-            <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" id="editName" class="form-input" placeholder="Enter your name">
-            </div>
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="tel" id="editPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
-            </div>
-            <div class="form-group">
-              <label>Email (Optional)</label>
-              <input type="email" id="editEmail" class="form-input" placeholder="your@email.com">
-            </div>
-            <div class="edit-actions">
-              <button class="cancel-edit-btn" id="cancelEditBtn">Cancel</button>
-              <button class="save-edit-btn" id="saveUserInfoBtn">Save Changes</button>
-            </div>
-          </div>
+        <div class="menu-item-row" onclick="alert('OK Mart accepts Cash on Delivery (COD), UPI (GPay, PhonePe, Paytm), and QR Code payment at doorstep.')">
+          <div class="menu-item-icon-box">👛</div>
+          <div class="menu-item-title">Payment Options (UPI / COD)</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+      </div>
+
+      <!-- Group 3: HELP & SUPPORT -->
+      <div class="account-menu-group">
+        <div class="menu-group-header">HELP & SUPPORT</div>
+        
+        <a href="https://wa.me/919982239821" target="_blank" class="menu-item-row">
+          <div class="menu-item-icon-box">💬</div>
+          <div class="menu-item-title">WhatsApp Customer Support</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+
+        <a href="tel:+919982239821" class="menu-item-row">
+          <div class="menu-item-icon-box">📞</div>
+          <div class="menu-item-title">Call Us Directly (+91 9982239821)</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+      </div>
+
+      <!-- Group 4: OFFER & DISCOUNTS -->
+      <div class="account-menu-group">
+        <div class="menu-group-header">OFFER & DISCOUNTS</div>
+        
+        <a href="/offers.html" class="menu-item-row">
+          <div class="menu-item-icon-box">⚡</div>
+          <div class="menu-item-title">Offer Store</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+      </div>
+
+      <!-- Group 5: MORE INFORMATION -->
+      <div class="account-menu-group">
+        <div class="menu-group-header">MORE INFORMATION</div>
+        
+        <div class="menu-item-row" onclick="alert('OK Mart is your neighborhood 15-minute grocery delivery store providing fresh dairy, vegetables, snacks, and essentials.')">
+          <div class="menu-item-icon-box">⚙️</div>
+          <div class="menu-item-title">About OK Mart</div>
+          <div class="menu-item-arrow">›</div>
         </div>
 
-        <!-- ========== 2. ADDRESS MANAGEMENT ========== -->
-        <div class="profile-card address-card">
-          <div class="card-header">
-            <h2 class="card-title">📍 Delivery Address</h2>
-            <button class="add-btn" id="addAddressBtn">+ Add</button>
-          </div>
-          
-          <div id="addressList" class="address-list">
-            <!-- Addresses will be loaded here -->
-          </div>
+        <a href="/terms.html" class="menu-item-row">
+          <div class="menu-item-icon-box">🏛️</div>
+          <div class="menu-item-title">Legal Information & Terms</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+
+        <a href="/terms.html" class="menu-item-row">
+          <div class="menu-item-icon-box">🛡️</div>
+          <div class="menu-item-title">Privacy Policy</div>
+          <div class="menu-item-arrow">›</div>
+        </a>
+
+        <div class="menu-item-row" id="signOutBtn">
+          <div class="menu-item-icon-box">🚪</div>
+          <div class="menu-item-title" style="color:#e02020; font-weight:700;">Signout</div>
+          <div class="menu-item-arrow">›</div>
         </div>
+      </div>
 
-        <!-- Add/Edit Address Modal (Hidden by default) -->
-        <div class="address-modal" id="addressModal">
-          <div class="address-modal-content">
-            <div class="modal-header">
-              <h3 id="modalTitle">Add New Address</h3>
-              <button class="close-modal" id="closeModalBtn">✕</button>
-            </div>
-            <div class="modal-body">
-              <div class="form-group">
-                <label>Full Name *</label>
-                <input type="text" id="addressName" class="form-input" placeholder="Recipient name">
-              </div>
-              <div class="form-group">
-                <label>Phone Number *</label>
-                <input type="tel" id="addressPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
-              </div>
-              <div class="form-group">
-                <label>Address Line *</label>
-                <textarea id="addressLine" class="form-input" rows="2" placeholder="House/Flat number, Street, Area"></textarea>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>City</label>
-                  <input type="text" id="addressCity" class="form-input" placeholder="City">
-                </div>
-                <div class="form-group">
-                  <label>Pincode</label>
-                  <input type="text" id="addressPincode" class="form-input" placeholder="6-digit pincode" maxlength="6">
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Landmark (Optional)</label>
-                <input type="text" id="addressLandmark" class="form-input" placeholder="Nearby landmark">
-              </div>
-              <div class="form-check">
-                <input type="checkbox" id="setAsDefault"> 
-                <label for="setAsDefault">Set as default address</label>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button class="cancel-modal-btn" id="cancelModalBtn">Cancel</button>
-              <button class="save-modal-btn" id="saveAddressBtn">Save Address</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== 3. ORDER HISTORY ========== -->
-        <div class="profile-card orders-card">
-          <div class="card-header">
-            <h2 class="card-title">📦 Order History</h2>
-            <span class="orders-count" id="ordersCount">0 orders</span>
-          </div>
-          <div id="ordersList" class="orders-list">
-            <!-- Orders will be loaded here -->
-          </div>
-        </div>
-
-        <!-- ========== 4. SAVED ITEMS (Save for Later) ========== -->
-        <div class="profile-card saved-items-card">
-          <div class="card-header">
-            <h2 class="card-title">📦 Saved Items</h2>
-            <button class="clear-saved-btn" id="clearSavedBtn">Clear All</button>
-          </div>
-          <div id="savedItemsList" class="saved-items-list">
-            <!-- Saved items will be loaded here -->
-          </div>
-        </div>
-
-        <!-- ========== 5. SETTINGS / PREFERENCES ========== -->
-        <div class="profile-card settings-card">
-          <h2 class="card-title">⚙️ Preferences</h2>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-icon">🌙</span>
-              <div>
-                <strong>Dark Mode</strong>
-                <small>Switch between light and dark theme</small>
-              </div>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="darkModeToggle">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-icon">🔔</span>
-              <div>
-                <strong>Notifications</strong>
-                <small>Receive order updates and offers</small>
-              </div>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="notificationToggle">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- ========== 6. LOGOUT BUTTON ========== -->
-        <button class="logout-btn" id="logoutBtn">
-          🚪 Logout
-        </button>
-
-        <p class="version-text">OK Mart App v2.0.0</p>
-
+      <!-- Branding Footer -->
+      <div class="account-branding-footer">
+        <div class="branding-logo-text">OK Mart</div>
+        <div class="branding-app-version">App v2.4.0</div>
       </div>
 
     </main>
 
-    <!-- ========== BOTTOM NAVIGATION ========== -->
-    <nav class="bottom-nav">
-      <a href="/" class="nav-item">🏠<span>Home</span></a>
-      <a href="/search" class="nav-item">🔍<span>Search</span></a>
-      <a href="/offers" class="nav-item">🏷️<span>Offers</span></a>
-      <a href="/track-order" class="nav-item">📦<span>Track</span></a>
-      <a href="/cart" class="nav-item">🛒<span>Cart</span></a>
-      <a href="/profile" class="nav-item active">👤<span>Profile</span></a>
+    <!-- Bottom Navigation -->
+    <nav class="bottom-navbar">
+      <a href="/" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </a>
+      <a href="/categories.html" class="nav-item">
+        <span class="nav-icon">📂</span>
+        <span>Categories</span>
+      </a>
+      <a href="/search.html" class="nav-item">
+        <span class="nav-icon">🔍</span>
+        <span>Search</span>
+      </a>
+      <a href="/track-order.html" class="nav-item">
+        <span class="nav-icon">📦</span>
+        <span>Track</span>
+      </a>
+      <a href="/cart.html" class="nav-item">
+        <span class="nav-icon">🛒</span>
+        <span>Cart</span>
+        <span class="nav-badge" id="accountBottomCartCount">0</span>
+      </a>
+      <a href="/profile.html" class="nav-item active">
+        <span class="nav-icon">👤</span>
+        <span>Account</span>
+      </a>
     </nav>
 
-    <!-- Order Detail Modal -->
-    <div class="order-modal" id="orderModal">
-      <div class="order-modal-content">
-        <div class="modal-header">
-          <h3>Order Details</h3>
-          <button class="close-modal" id="closeOrderModalBtn">✕</button>
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800;">👤 Edit Profile Details</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888;" id="closeEditProfileModal">✕</button>
         </div>
-        <div class="modal-body" id="orderModalBody">
-          <!-- Order details will be loaded here -->
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#4b5563;">Your Name</label>
+            <input type="text" id="editProfileNameInput" placeholder="Enter full name" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem; margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#4b5563;">Mobile Number</label>
+            <input type="tel" id="editProfilePhoneInput" placeholder="10-digit number" maxlength="10" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem; margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-size:0.75rem; font-weight:700; color:#4b5563;">Email (Optional)</label>
+            <input type="email" id="editProfileEmailInput" placeholder="name@email.com" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem; margin-top:4px;">
+          </div>
+          <button id="saveProfileBtn" style="background:#006b22; color:#fff; font-weight:700; border:none; padding:12px; border-radius:8px; cursor:pointer; margin-top:6px;">Save Changes</button>
         </div>
       </div>
     </div>
 
-    <!-- Toast Message -->
-    <div class="toast-message" id="toastMessage"></div>
-    
+    <!-- Saved Addresses Modal -->
+    <div class="modal-overlay" id="addressesModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800;">📍 Delivery Addresses</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888;" id="closeAddressesModal">✕</button>
+        </div>
+        <div id="savedAddressesList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+          <!-- Loaded dynamically -->
+        </div>
+        <button id="addNewAddressBtn" style="width:100%; background:#f0fdf4; border:1.5px dashed #16a34a; color:#006b22; font-weight:700; padding:10px; border-radius:8px; cursor:pointer;">+ Add New Address</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
-  <script src="/js/profile.js"></script>
+
+  <script>
+    // 1. Load User Profile from localStorage
+    function loadUserProfile() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('okmart_user') || '{}');
+        const nameEl = document.getElementById('accountUserName');
+        const phoneEl = document.getElementById('accountUserPhone');
+        
+        if (saved.name) {
+          nameEl.textContent = saved.name;
+        } else {
+          nameEl.textContent = 'Devdhar --';
+        }
+
+        if (saved.phone) {
+          phoneEl.textContent = '+91 ' + saved.phone;
+        } else {
+          phoneEl.textContent = '+91 9982239821';
+        }
+      } catch(e) {}
+    }
+
+    // 2. Modals Control
+    const editModal = document.getElementById('editProfileModal');
+    const openEditBtn = document.getElementById('openEditProfileBtn');
+    const closeEditBtn = document.getElementById('closeEditProfileModal');
+    const saveBtn = document.getElementById('saveProfileBtn');
+
+    if (openEditBtn) {
+      openEditBtn.onclick = () => {
+        const saved = JSON.parse(localStorage.getItem('okmart_user') || '{}');
+        document.getElementById('editProfileNameInput').value = saved.name || 'Devdhar';
+        document.getElementById('editProfilePhoneInput').value = saved.phone || '9982239821';
+        document.getElementById('editProfileEmailInput').value = saved.email || '';
+        editModal.classList.add('active');
+      };
+    }
+
+    if (closeEditBtn) {
+      closeEditBtn.onclick = () => editModal.classList.remove('active');
+    }
+
+    if (saveBtn) {
+      saveBtn.onclick = () => {
+        const name = document.getElementById('editProfileNameInput').value.trim();
+        const phone = document.getElementById('editProfilePhoneInput').value.trim();
+        const email = document.getElementById('editProfileEmailInput').value.trim();
+
+        if (!name) {
+          alert('Please enter your name');
+          return;
+        }
+
+        const user = { name, phone: phone || '9982239821', email };
+        localStorage.setItem('okmart_user', JSON.stringify(user));
+        loadUserProfile();
+        editModal.classList.remove('active');
+        alert('Profile details saved successfully!');
+      };
+    }
+
+    // 3. Addresses Modal
+    const addrModal = document.getElementById('addressesModal');
+    const openAddrBtn = document.getElementById('openAddressesBtn');
+    const closeAddrBtn = document.getElementById('closeAddressesModal');
+    const addAddrBtn = document.getElementById('addNewAddressBtn');
+    const addrList = document.getElementById('savedAddressesList');
+
+    if (openAddrBtn) {
+      openAddrBtn.onclick = () => {
+        renderAddresses();
+        addrModal.classList.add('active');
+      };
+    }
+
+    if (closeAddrBtn) {
+      closeAddrBtn.onclick = () => addrModal.classList.remove('active');
+    }
+
+    function renderAddresses() {
+      let addrs = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
+      if (addrs.length === 0) {
+        addrs = [{ tag: 'Home', address: 'Jantanagar, Chandkheda, Ahmedabad - 382110' }];
+        localStorage.setItem('okmart_saved_addresses', JSON.stringify(addrs));
+      }
+      addrList.innerHTML = addrs.map((a, i) => `
+        <div style="padding:10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; font-size:0.85rem;">
+          <div style="font-weight:700; color:#16a34a; margin-bottom:2px;">🏠 ${a.tag || 'Address ' + (i+1)}</div>
+          <div style="color:#4b5563;">${a.address}</div>
+        </div>
+      `).join('');
+    }
+
+    if (addAddrBtn) {
+      addAddrBtn.onclick = () => {
+        const addr = prompt('Enter your complete delivery address:');
+        if (addr && addr.trim()) {
+          const addrs = JSON.parse(localStorage.getItem('okmart_saved_addresses') || '[]');
+          addrs.push({ tag: 'Home', address: addr.trim() });
+          localStorage.setItem('okmart_saved_addresses', JSON.stringify(addrs));
+          renderAddresses();
+        }
+      };
+    }
+
+    // 4. Sign Out
+    document.getElementById('signOutBtn')?.addEventListener('click', () => {
+      if (confirm('Are you sure you want to sign out?')) {
+        localStorage.removeItem('okmart_user');
+        alert('You have been signed out.');
+        location.href = '/';
+      }
+    });
+
+    // 5. Update Cart Counter
+    function updateCartCount() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+        const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+        const el = document.getElementById('accountBottomCartCount');
+        if (el) el.textContent = count;
+      } catch(e) {}
+    }
+
+    loadUserProfile();
+    updateCartCount();
+  </script>
 </body>
 </html>
-
