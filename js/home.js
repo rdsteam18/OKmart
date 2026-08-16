@@ -227,12 +227,15 @@
       if (categoryProducts.length === 0) continue;
       
       const sectionHtml = `
-        <section class="category-products-section">
-          <div class="category-products-header">
-            <h3 class="category-products-title">${category.emoji} ${category.name}</h3>
-            <a href="/categories/${category.id}.html" class="view-all-link">View All →</a>
+        <section class="w-full">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
+              <span class="text-xl">${category.emoji}</span>
+              ${category.name}
+            </h3>
+            <a href="/categories/${category.id}.html" class="text-xs md:text-sm font-bold text-primary hover:underline">View All →</a>
           </div>
-          <div class="category-products-scroll" id="scroll-${category.id}">
+          <div class="flex overflow-x-auto hide-scrollbar gap-3.5 pb-2 pt-1 snap-x scroll-smooth" id="scroll-${category.id}">
             ${categoryProducts.map(product => createScrollProductCard(product)).join('')}
           </div>
         </section>
@@ -248,20 +251,31 @@
     const isOutOfStock = (product.stock || 0) === 0;
     
     return `
-      <div class="product-card" data-product-id="${product.id}" data-id="${product.id}" onclick="viewProduct('${product.id}')">
-        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
-        ${product.popular ? '<span class="product-badge">🔥</span>' : ''}
-        ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)">🤍</button>
-        <h3 class="product-name">${escapeHtml(product.name)}</h3>
-        <span class="product-unit">${product.unit || ''}</span>
-        <div class="price-row">
-          <span class="current-price">₹${product.price}</span>
-          ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
-        </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-          ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+      <div class="product-card bg-surface rounded-2xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-surface-container flex flex-col relative group hover:-translate-y-1 transition-transform cursor-pointer" data-product-id="${product.id}" data-id="${product.id}" onclick="viewProduct('${product.id}')">
+        ${discount > 0 ? `<span class="absolute top-2 left-2 bg-secondary-fixed text-on-secondary-fixed font-bold text-[10px] px-1.5 py-0.5 rounded uppercase z-10">${discount}% OFF</span>` : ''}
+        <button class="wishlist-btn absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-surface/80 hover:bg-surface flex items-center justify-center transition-colors shadow-xs" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)" aria-label="Add to Wishlist">
+          <span class="material-symbols-outlined text-sm text-tertiary">favorite_border</span>
         </button>
+        <div class="w-full aspect-square bg-surface-container-lowest rounded-xl mb-2 flex items-center justify-center p-2 relative overflow-hidden">
+          <img src="${product.image}" alt="${escapeHtml(product.name)}" class="object-contain w-full h-full" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK'">
+          <div class="absolute bottom-1 right-1 bg-surface/90 rounded px-1 flex items-center gap-0.5 backdrop-blur-xs shadow-xs">
+            <span class="material-symbols-outlined text-[10px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+            <span class="text-[9px] font-bold text-on-surface">15 MIN</span>
+          </div>
+        </div>
+        <div class="flex flex-col flex-grow">
+          <h3 class="text-xs md:text-sm font-bold text-on-surface line-clamp-2 leading-tight mb-1">${escapeHtml(product.name)}</h3>
+          <span class="text-[11px] text-on-surface-variant mb-2">${product.unit || ''}</span>
+          <div class="mt-auto flex items-end justify-between gap-1">
+            <div class="flex flex-col">
+              ${product.mrp ? `<span class="text-[10px] text-on-surface-variant line-through">₹${product.mrp}</span>` : ''}
+              <span class="font-extrabold text-sm md:text-base text-on-surface">₹${product.price}</span>
+            </div>
+            <button class="add-btn bg-surface border border-primary text-primary hover:bg-primary hover:text-white font-bold text-xs px-3.5 py-1 rounded-full uppercase shadow-xs transition-colors" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+              ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+            </button>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -271,18 +285,31 @@
     const isOutOfStock = (product.stock || 0) === 0;
     
     return `
-      <div class="product-card scroll-product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
-        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/140?text=OK'">
-        ${discount > 0 ? `<span class="offer-badge">${discount}% OFF</span>` : ''}
-        <h3 class="product-name">${escapeHtml(product.name)}</h3>
-        <span class="product-unit">${product.unit || ''}</span>
-        <div class="price-row">
-          <span class="current-price">₹${product.price}</span>
-          ${product.mrp ? `<span class="mrp-price">₹${product.mrp}</span>` : ''}
-        </div>
-        <button class="add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-          ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+      <div class="min-w-[145px] md:min-w-[190px] max-w-[190px] bg-surface rounded-2xl p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-surface-container snap-start flex flex-col relative group hover:-translate-y-1 transition-transform cursor-pointer" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
+        ${discount > 0 ? `<span class="absolute top-2 left-2 bg-secondary-fixed text-on-secondary-fixed font-bold text-[10px] px-1.5 py-0.5 rounded uppercase z-10">${discount}% OFF</span>` : ''}
+        <button class="wishlist-btn absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-surface/80 hover:bg-surface flex items-center justify-center transition-colors shadow-xs" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)" aria-label="Add to Wishlist">
+          <span class="material-symbols-outlined text-sm text-tertiary">favorite_border</span>
         </button>
+        <div class="w-full aspect-square bg-surface-container-lowest rounded-xl mb-2 flex items-center justify-center p-2 relative overflow-hidden">
+          <img src="${product.image}" alt="${escapeHtml(product.name)}" class="object-contain w-full h-full" loading="lazy" onerror="this.src='https://via.placeholder.com/160?text=OK'">
+          <div class="absolute bottom-1 right-1 bg-surface/90 rounded px-1 flex items-center gap-0.5 backdrop-blur-xs shadow-xs">
+            <span class="material-symbols-outlined text-[10px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">bolt</span>
+            <span class="text-[9px] font-bold text-on-surface">15 MIN</span>
+          </div>
+        </div>
+        <div class="flex flex-col flex-grow">
+          <h3 class="text-xs md:text-sm font-bold text-on-surface line-clamp-2 leading-tight mb-1">${escapeHtml(product.name)}</h3>
+          <span class="text-[11px] text-on-surface-variant mb-2">${product.unit || ''}</span>
+          <div class="mt-auto flex items-end justify-between gap-1">
+            <div class="flex flex-col">
+              ${product.mrp ? `<span class="text-[10px] text-on-surface-variant line-through">₹${product.mrp}</span>` : ''}
+              <span class="font-extrabold text-sm md:text-base text-on-surface">₹${product.price}</span>
+            </div>
+            <button class="add-btn bg-surface border border-primary text-primary hover:bg-primary hover:text-white font-bold text-xs px-3.5 py-1 rounded-full uppercase shadow-xs transition-colors" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+              ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+            </button>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -391,20 +418,18 @@
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     if (cartCountSpan) cartCountSpan.textContent = totalItems;
+    const bottomNavCartCount = document.getElementById('bottomNavCartCount');
+    if (bottomNavCartCount) bottomNavCartCount.textContent = totalItems;
     if (floatingCartCount) floatingCartCount.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
     if (floatingCartTotal) floatingCartTotal.textContent = `₹${subtotal}`;
     
     if (floatingCartBar) {
       if (totalItems > 0) {
         floatingCartBar.classList.add('visible');
-        floatingCartBar.style.display = 'block';
+        floatingCartBar.style.display = 'flex';
       } else {
         floatingCartBar.classList.remove('visible');
-        setTimeout(() => {
-          if (!floatingCartBar.classList.contains('visible')) {
-            floatingCartBar.style.display = 'none';
-          }
-        }, 300);
+        floatingCartBar.style.display = 'none';
       }
     }
   }
@@ -419,9 +444,9 @@
     if (progressFill) progressFill.style.width = `${deliveryCalc.percentForFree}%`;
     if (progressLabel) {
       if (deliveryCalc.remainingForFree <= 0) {
-        progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
+        progressLabel.innerHTML = '🎉 <span class="font-bold text-primary">Free delivery unlocked!</span> 🎉';
       } else {
-        progressLabel.innerHTML = `Add ₹${deliveryCalc.remainingForFree} more to get FREE delivery 🎁`;
+        progressLabel.innerHTML = `Add <span class="font-bold">₹${deliveryCalc.remainingForFree}</span> more to get <span class="text-primary font-bold">FREE delivery</span> <span class="material-symbols-outlined text-hot-deal-red text-sm" style="font-variation-settings: 'FILL' 1;">redeem</span>`;
       }
     }
   }
@@ -735,6 +760,58 @@
     `;
   }
   
+  // ========== RENDER FLASH SALE ==========
+  function renderFlashSale() {
+    const section = document.getElementById('flashSaleSection');
+    const grid = document.getElementById('flashSaleGrid');
+    if (!grid) return;
+
+    let saleProducts = allProducts.filter(p => p.active !== false && (p.mrp > p.price || p.popular));
+    if (saleProducts.length === 0) {
+      saleProducts = allProducts.filter(p => p.active !== false).slice(0, 8);
+    }
+
+    if (saleProducts.length === 0) {
+      if (section) section.style.display = 'none';
+      return;
+    }
+
+    if (section) section.style.display = 'block';
+    grid.innerHTML = saleProducts.map(p => createScrollProductCard(p)).join('') + `
+      <a href="/categories/all.html" class="min-w-[120px] bg-surface-container-low rounded-2xl p-3 snap-start flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container transition-colors group">
+        <div class="w-12 h-12 bg-surface rounded-full flex items-center justify-center mb-2 shadow-xs group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-primary text-xl">arrow_forward</span>
+        </div>
+        <span class="text-xs text-primary font-bold">View All</span>
+      </a>
+    `;
+
+    initFlashSaleTimer();
+  }
+
+  function initFlashSaleTimer() {
+    function updateTimer() {
+      const now = new Date();
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const diff = Math.max(0, endOfDay - now);
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      const hEl = document.getElementById('hours');
+      const mEl = document.getElementById('minutes');
+      const sEl = document.getElementById('seconds');
+
+      if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+      if (mEl) mEl.textContent = String(minutes).padStart(2, '0');
+      if (sEl) sEl.textContent = String(seconds).padStart(2, '0');
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
   // ========== EXPOSE GLOBALLY ==========
   window.viewProduct = viewProduct;
   window.addToCart = addToCart;
@@ -754,6 +831,7 @@
     await loadBanners();
     
     renderCategoryGrid();
+    renderFlashSale();
     renderNewArrivals();
     renderTrending();
     renderCategorySections();

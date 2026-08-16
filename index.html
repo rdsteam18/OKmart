@@ -1,320 +1,503 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
-  
-  <title>OK Mart | Fresh Grocery Delivery in 10-15 Minutes</title>
-  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast delivery in 10-15 minutes.">
-  <meta name="theme-color" content="#84c225">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" name="viewport"/>
+  <title>OK Mart - 15 Min Delivery | Fresh Grocery</title>
+  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks. Fast 15 minute delivery in your neighborhood.">
+  <meta name="theme-color" content="#006b22">
 
-  <!-- App -->
+  <!-- Manifest & Favicon -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="OK Mart">
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   
-  <!-- CSS -->
+  <!-- Google Fonts & Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- App CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Leaflet for Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
+
+  <!-- Tailwind Custom Config Matching Stitch -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed": "#ffdea8",
+            "background": "#f5fbef",
+            "on-secondary-container": "#6b4b00",
+            "on-background": "#171d16",
+            "tertiary": "#a52e59",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#3e4a3d",
+            "on-primary-fixed-variant": "#005318",
+            "delivery-blue": "#2E72D2",
+            "error-container": "#ffdad6",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#ffd9e0",
+            "on-tertiary-fixed": "#3f001a",
+            "hot-deal-red": "#E02020",
+            "secondary-fixed-dim": "#ffba20",
+            "surface-bright": "#f5fbef",
+            "inverse-primary": "#6fdd77",
+            "surface-variant": "#dee5d9",
+            "outline": "#6e7a6b",
+            "on-tertiary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#5e4200",
+            "surface-container-high": "#e4eade",
+            "error": "#ba1a1a",
+            "surface-dim": "#d5dcd0",
+            "primary-fixed-dim": "#6fdd77",
+            "inverse-on-surface": "#ecf3e7",
+            "on-error-container": "#93000a",
+            "inverse-surface": "#2c322a",
+            "on-secondary-fixed": "#271900",
+            "secondary": "#7c5800",
+            "primary": "#006b22",
+            "surface-container-low": "#eff6ea",
+            "primary-container": "#02872d",
+            "on-tertiary-fixed-variant": "#881644",
+            "surface": "#f5fbef",
+            "tertiary-container": "#c54771",
+            "surface-tint": "#006e23",
+            "primary-fixed": "#8bfb91",
+            "tertiary-fixed-dim": "#ffb1c4",
+            "surface-container-highest": "#dee5d9",
+            "secondary-container": "#feb700",
+            "on-surface": "#171d16",
+            "on-primary-fixed": "#002105",
+            "on-primary-container": "#f7fff1",
+            "outline-variant": "#becab9",
+            "success-green": "#21963A",
+            "surface-container": "#e9f0e4",
+            "on-error": "#ffffff",
+            "background-alt": "#F5F7F6",
+            "on-tertiary-container": "#fffbff"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    /* Touch optimization — CSS se double-tap zoom bandh (accessibility-safe) */
     body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5fbef;
+      color: #171d16;
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
     }
-    input, select, textarea, button, a {
-      touch-action: manipulation;
-    }
-    /* Prevent zoom on input focus on iOS */
-    @media screen and (max-width: 768px) {
-      input, select, textarea {
-        font-size: 16px !important;
-      }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
   </style>
 </head>
-<body>
-  <div class="app-container">
-    
-    <!-- ========== HEADER ========== -->
-    <header class="app-header">
-      <div class="header-top">
-        <div class="logo-section">
-          <a href="/" class="logo-link">
-            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="logo-img">
-            <span class="logo-text"></span>
+
+<body class="bg-background text-on-background pb-32">
+  
+  <!-- ========== TOP NAVIGATION SHELL ========== -->
+  <header class="sticky top-0 z-40 bg-surface shadow-sm pt-2 pb-2 px-4 flex flex-col w-full border-b border-outline-variant/20">
+    <div class="max-w-7xl w-full mx-auto flex flex-col gap-2">
+      
+      <!-- Top Row: Location & Actions -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity" id="locationBtn">
+          <span class="material-symbols-outlined text-primary text-xl">location_on</span>
+          <span class="font-bold text-sm md:text-base text-on-surface truncate max-w-[200px] md:max-w-[320px]" id="locationText">Jantanagar, Ahmedabad</span>
+          <span class="material-symbols-outlined text-on-surface-variant text-sm">arrow_drop_down</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Profile Button -->
+          <button class="relative hover:bg-surface-variant p-2 rounded-full transition-colors" id="profileBtn" aria-label="Profile">
+            <span class="material-symbols-outlined text-on-surface text-xl">person</span>
+          </button>
+          <!-- Wishlist Button -->
+          <a href="/wishlist.html" class="relative hover:bg-surface-variant p-2 rounded-full transition-colors" id="wishlistBtn" aria-label="Wishlist">
+            <span class="material-symbols-outlined text-tertiary text-xl">favorite</span>
+            <span class="absolute top-0 right-0 bg-primary text-on-primary font-bold text-[10px] w-4 h-4 flex items-center justify-center rounded-full" id="wishlistCount">0</span>
+          </a>
+          <!-- Cart Button (Desktop & Mobile) -->
+          <a href="/cart.html" class="relative hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center" id="headerCartBtn" aria-label="Cart">
+            <span class="material-symbols-outlined text-on-surface text-xl">shopping_cart</span>
+            <span class="absolute top-0 right-0 bg-primary text-on-primary font-bold text-[10px] w-4 h-4 flex items-center justify-center rounded-full" id="cartCount">0</span>
           </a>
         </div>
-        <div class="header-actions">
-          <button class="location-btn" id="locationBtn">
-            <span class="location-icon">📍</span>
-            <span class="location-text" id="locationText">Select Location</span>
-            <span class="dropdown-icon">▼</span>
-          </button>
-          <button class="profile-btn" id="profileBtn" aria-label="Profile">
-            <span>👤</span>
-          </button>
-          <a href="/wishlist" class="wishlist-btn" aria-label="Wishlist">
-            <span>❤️</span>
-            <span class="wishlist-count" id="wishlistCount">0</span>
-          </a>
-          <a href="/cart" class="cart-btn" aria-label="Cart">
-            <span>🛒</span>
-            <span class="cart-count" id="cartCount">0</span>
-          </a>
-        </div>
       </div>
-      
-      <!-- Search Bar -->
-      <div class="search-section">
-        <div class="search-bar" id="searchBar">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search for milk, bread, vegetables, snacks..." autocomplete="off">
-          <button class="clear-search" id="clearSearchBtn">✕</button>
-        </div>
-      </div>
-      
-      <!-- Delivery Info Banner -->
-      <div class="delivery-info-banner" id="deliveryInfoBanner">
-        <div class="delivery-info-content">
-          <span class="delivery-icon">🚚</span>
-          <span class="delivery-text">Free delivery above ₹199</span>
-          <span class="delivery-separator">|</span>
-          <span class="delivery-time">⚡ 10-15 min delivery</span>
-        </div>
-      </div>
-    </header>
 
-    <!-- ========== MAIN CONTENT ========== -->
-    <main class="home-main">
-      
-      <!-- Offer Banner -->
-      <div class="offer-banner">
-        <div class="offer-banner-content">
-          <div class="offer-text">
-            <span class="offer-label">HOT DEAL</span>
-            <span class="offer-title">OK Mart</span>
-            <span class="offer-price">₹199</span>
-            <span class="offer-desc">1KG प्याज़ FREE!</span>
+      <!-- Middle Row: Search Bar -->
+      <div class="relative w-full">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+        <input class="w-full bg-surface-container rounded-xl pl-10 pr-10 py-2.5 border-none focus:ring-2 focus:ring-primary text-sm text-on-surface placeholder:text-on-surface-variant shadow-inner transition-all" id="searchInput" placeholder="Search for milk, bread, vegetables..." type="text" autocomplete="off"/>
+        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface text-sm hidden" id="clearSearchBtn">✕</button>
+      </div>
+
+      <!-- Delivery Info Status Pill -->
+      <div class="flex items-center justify-center gap-2 bg-surface-container-low rounded-lg py-1 px-3 border border-outline-variant/30 text-xs font-semibold text-on-surface-variant" id="deliveryInfoBanner">
+        <span class="material-symbols-outlined text-delivery-blue text-sm">local_shipping</span>
+        <span id="deliveryThresholdText">Free delivery above ₹199</span>
+        <span class="text-outline-variant">|</span>
+        <span class="material-symbols-outlined text-secondary-container text-sm">bolt</span>
+        <span>15 min delivery</span>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========== MAIN CONTENT CONTAINER ========== -->
+  <main class="w-full max-w-7xl mx-auto px-4 md:px-8 space-y-6 pt-4">
+
+    <!-- Hero Banner Carousel -->
+    <section class="w-full">
+      <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-secondary-container to-secondary-fixed shadow-md p-4 md:p-8 flex items-center justify-between min-h-[160px] md:min-h-[220px]" id="heroBannerCard">
+        <div class="z-10 flex flex-col items-start w-2/3">
+          <span class="bg-hot-deal-red text-white font-bold text-[11px] px-2.5 py-1 rounded-full uppercase tracking-wider mb-2 inline-block shadow-xs">
+            Limited Time Offer
+          </span>
+          <h2 class="text-xl md:text-3xl font-extrabold text-on-secondary-container mb-1 tracking-tight" id="heroBannerTitle">
+            OK Mart Super Savings
+          </h2>
+          <div class="text-on-secondary-container flex items-baseline gap-1 mb-1">
+            <span class="text-2xl md:text-3xl font-black" id="heroBannerPrice">Fresh Groceries</span>
           </div>
-          <div class="offer-badge">Limited Time Offer</div>
+          <p class="text-sm md:text-base font-semibold text-on-secondary-fixed-variant" id="heroBannerSubtitle">
+            Delivered in 15 Minutes at Your Doorstep!
+          </p>
         </div>
-      </div>
 
-      <!-- Carousel Banner -->
-      <div class="carousel-container" id="carouselContainer">
-        <div class="carousel-track" id="carouselTrack">
-          <div class="carousel-slide">
-            <div class="carousel-loading">
-              <div class="skeleton-banner"></div>
-            </div>
+        <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-25 pointer-events-none" style="background-image: radial-gradient(circle at 100% 50%, #ffffff 0%, transparent 70%);"></div>
+
+        <!-- Carousel Controls -->
+        <button class="absolute left-3 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full p-2 cursor-pointer transition-colors backdrop-blur-sm hidden md:flex items-center justify-center shadow-md z-20" id="carouselPrev" aria-label="Previous slide">
+          <span class="material-symbols-outlined text-on-surface">chevron_left</span>
+        </button>
+        <button class="absolute right-3 top-1/2 -translate-y-1/2 bg-surface/70 hover:bg-surface rounded-full p-2 cursor-pointer transition-colors backdrop-blur-sm hidden md:flex items-center justify-center shadow-md z-20" id="carouselNext" aria-label="Next slide">
+          <span class="material-symbols-outlined text-on-surface">chevron_right</span>
+        </button>
+
+        <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1.5 z-20" id="carouselDots">
+          <div class="w-2 h-2 rounded-full bg-on-secondary-container"></div>
+          <div class="w-2 h-2 rounded-full bg-on-secondary-container/30"></div>
+          <div class="w-2 h-2 rounded-full bg-on-secondary-container/30"></div>
+        </div>
+
+        <!-- Hidden Track for Carousel Compatibility -->
+        <div class="hidden" id="carouselTrack"></div>
+      </div>
+    </section>
+
+    <!-- Shop by Category (Bento-style Grid) -->
+    <section class="w-full">
+      <h2 class="text-base md:text-xl font-bold text-on-surface mb-3.5 flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary-container text-2xl">folder_open</span>
+        Shop by Category
+      </h2>
+      <div class="grid grid-cols-4 md:grid-cols-8 gap-3" id="categoryGrid">
+        <!-- Fruits & Veg -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/fruits.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-xs">local_florist</span>
           </div>
-        </div>
-        <button class="carousel-prev" id="carouselPrev">❮</button>
-        <button class="carousel-next" id="carouselNext">❯</button>
-        <div class="carousel-dots" id="carouselDots"></div>
-      </div>
-
-      <!-- Flash Sale Section -->
-      <section class="flash-sale-section" id="flashSaleSection" style="display: none;">
-        <div class="section-header">
-          <div class="header-left">
-            <h2 class="section-title">⚡ Flash Sale</h2>
-            <div class="countdown-timer" id="flashSaleTimer">
-              <div class="timer-block"><span id="hours">00</span><span>h</span></div>
-              <div class="timer-sep">:</div>
-              <div class="timer-block"><span id="minutes">00</span><span>m</span></div>
-              <div class="timer-sep">:</div>
-              <div class="timer-block"><span id="seconds">00</span><span>s</span></div>
-            </div>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Fruits & Veg</span>
+        </a>
+        <!-- Dairy & Breakfast -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/dairy.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-delivery-blue/5 group-hover:bg-delivery-blue/10 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-delivery-blue drop-shadow-xs">egg_alt</span>
           </div>
-          <a href="/offers.html" class="view-all-link">View All →</a>
-        </div>
-        <div class="flash-sale-grid" id="flashSaleGrid"></div>
-      </section>
-
-      <!-- Category Grid -->
-      <section class="category-section">
-        <h2 class="section-title">📂 Shop by Category</h2>
-        <div class="category-grid" id="categoryGrid">
-          <!-- Categories loaded via JS -->
-        </div>
-      </section>
-
-      <!-- New Arrivals -->
-      <section class="new-arrivals-section" id="newArrivalsSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">✨ New Arrivals</h2>
-          <a href="/categories/all.html" class="view-all-link">View All →</a>
-        </div>
-        <div class="new-arrivals-grid" id="newArrivalsGrid"></div>
-      </section>
-
-      <!-- Trending / Hot Today -->
-      <section class="trending-section" id="trendingSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🔥 Hot Today</h2>
-          <a href="/categories/all.html" class="view-all-link">View All →</a>
-        </div>
-        <div class="trending-grid" id="trendingGrid"></div>
-      </section>
-
-      <!-- Category-wise Product Sections -->
-      <div id="categorySectionsContainer">
-        <div class="section-skeleton">
-          <div class="skeleton-header"></div>
-          <div class="skeleton-scroll">
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Dairy & Eggs</span>
+        </a>
+        <!-- Munchies / Snacks -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/snacks.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-secondary-container/10 group-hover:bg-secondary-container/20 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-secondary-container drop-shadow-xs">tapas</span>
           </div>
-        </div>
-      </div>
-
-      <!-- Recently Viewed -->
-      <section class="recently-viewed-section" id="recentlyViewedSection" style="display: none;">
-        <div class="section-header">
-          <h2 class="section-title">🕐 Recently Viewed</h2>
-          <button class="clear-recent-btn" id="clearRecentBtn">Clear All</button>
-        </div>
-        <div class="recently-viewed-grid" id="recentlyViewedGrid"></div>
-      </section>
-
-      <!-- Free Delivery Progress Bar -->
-      <div class="free-delivery-progress" id="freeDeliveryProgress">
-        <div class="progress-label" id="progressLabel">Add ₹199 more to get FREE delivery 🎁</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- ========== FLOATING CART BAR ========== -->
-    <div class="floating-cart-bar" id="floatingCartBar" style="display: none;">
-      <div class="cart-bar-content">
-        <div class="cart-info">
-          <span class="cart-emoji">🛒</span>
-          <div class="cart-details">
-            <span class="cart-item-count" id="floatingCartCount">0 items</span>
-            <span class="cart-total" id="floatingCartTotal">₹0</span>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Munchies</span>
+        </a>
+        <!-- Cold Drinks -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/beverages.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-tertiary/5 group-hover:bg-tertiary/10 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-tertiary drop-shadow-xs">liquor</span>
           </div>
-        </div>
-        <a href="/cart" class="cart-action-btn">View Cart →</a>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Cold Drinks</span>
+        </a>
+        <!-- Instant Food / Bakery -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/bakery.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-hot-deal-red/5 group-hover:bg-hot-deal-red/10 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-hot-deal-red drop-shadow-xs">bakery_dining</span>
+          </div>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Bakery</span>
+        </a>
+        <!-- Cleaning & Household -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/household.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-outline/5 group-hover:bg-outline/10 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-outline drop-shadow-xs">cleaning_services</span>
+          </div>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Cleaning</span>
+        </a>
+        <!-- Personal Care -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/categories/personal-care.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-tertiary-container/10 group-hover:bg-tertiary-container/20 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-tertiary-container drop-shadow-xs">spa</span>
+          </div>
+          <span class="font-semibold text-xs text-on-surface text-center leading-tight">Personal Care</span>
+        </a>
+        <!-- Special Offers -->
+        <a class="flex flex-col items-center gap-1.5 group" href="/offers.html">
+          <div class="w-full aspect-square rounded-2xl bg-surface-container flex items-center justify-center group-hover:-translate-y-1 transition-transform shadow-xs group-hover:shadow-md relative overflow-hidden">
+            <div class="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors"></div>
+            <span class="material-symbols-outlined text-3xl text-primary drop-shadow-xs">local_offer</span>
+          </div>
+          <span class="font-semibold text-xs text-primary font-bold text-center leading-tight">Special Offers</span>
+        </a>
       </div>
+    </section>
+
+    <!-- Flash Sale (Horizontal Snap Scroll) -->
+    <section class="w-full overflow-hidden" id="flashSaleSection">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary-container animate-pulse text-2xl">bolt</span>
+          Flash Sale
+        </h2>
+        <div class="flex items-center gap-1 text-xs font-bold text-on-surface-variant bg-surface-container px-3 py-1 rounded-full shadow-xs" id="flashSaleTimer">
+          <span class="text-hot-deal-red" id="hours">00</span>h : <span class="text-hot-deal-red" id="minutes">00</span>m : <span class="text-hot-deal-red" id="seconds">00</span>s
+        </div>
+      </div>
+      <div class="flex overflow-x-auto hide-scrollbar gap-3.5 pb-2 pt-1 snap-x scroll-smooth" id="flashSaleGrid">
+        <!-- Products populated via JS -->
+      </div>
+    </section>
+
+    <!-- Category-wise Product Sections -->
+    <div class="space-y-6" id="categorySectionsContainer">
+      <!-- Live products loaded via JS -->
     </div>
 
-    <!-- ========== BOTTOM NAVIGATION ========== -->
-    <nav class="bottom-nav">
-      <a href="/" class="nav-item active">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Home</span>
-      </a>
-      <a href="/search" class="nav-item">
-        <span class="nav-icon">🔍</span>
-        <span class="nav-label">Search</span>
-      </a>
-      <a href="/offers" class="nav-item">
-        <span class="nav-icon">🏷️</span>
-        <span class="nav-label">Offers</span>
-      </a>
-      <a href="/track-order" class="nav-item">
-        <span class="nav-icon">📦</span>
-        <span class="nav-label">Track</span>
-      </a>
-      <a href="/cart" class="nav-item">
-        <span class="nav-icon">🛒</span>
-        <span class="nav-label">Cart</span>
-      </a>
-      <a href="/profile" class="nav-item">
-        <span class="nav-icon">👤</span>
-        <span class="nav-label">Profile</span>
-      </a>
-    </nav>
-
-    <!-- ========== FLOATING BUTTONS ========== -->
-    <button class="back-to-top" id="backToTopBtn" aria-label="Back to top">⬆️</button>
-    <a href="https://wa.me/919982239821" class="fab-whatsapp" target="_blank" aria-label="WhatsApp">💬</a>
-    <a href="tel:+919982239821" class="fab-call" aria-label="Call">📞</a>
-
-    <!-- ========== LOCATION MODAL ========== -->
-    <div class="location-modal" id="locationModal">
-      <div class="location-modal-content">
-        <div class="location-modal-header">
-          <h3>📍 Select Delivery Location</h3>
-          <button class="location-modal-close" id="closeLocationModal">✕</button>
-        </div>
-        <div class="location-modal-body">
-          <button class="location-option" id="useCurrentLocationBtn">
-            <span>📍</span>
-            <span>Use My Current Location</span>
-          </button>
-          <div class="location-divider">OR</div>
-          <div class="pincode-input-group">
-            <input type="text" id="pincodeInput" class="pincode-input" placeholder="Enter pincode (e.g., 380001)" maxlength="6" pattern="[0-9]{6}" inputmode="numeric">
-            <button class="check-pincode-btn" id="checkPincodeBtn">Check</button>
-          </div>
-          <div id="pincodeMessage" class="pincode-message"></div>
-          <div class="nearby-locations">
-            <div class="nearby-title">📍 Popular Locations</div>
-            <div class="nearby-list">
-              <div class="nearby-item" data-area="Jantanagar" data-city="Ahmedabad" data-pincode="382110">Jantanagar, Ahmedabad</div>
-              <div class="nearby-item" data-area="Satellite" data-city="Ahmedabad" data-pincode="380015">Satellite, Ahmedabad</div>
-              <div class="nearby-item" data-area="Prahlad Nagar" data-city="Ahmedabad" data-pincode="380015">Prahlad Nagar, Ahmedabad</div>
-              <div class="nearby-item" data-area="Vastrapur" data-city="Ahmedabad" data-pincode="380015">Vastrapur, Ahmedabad</div>
-              <div class="nearby-item" data-area="CG Road" data-city="Ahmedabad" data-pincode="380009">CG Road, Ahmedabad</div>
-            </div>
+    <!-- Free Delivery Progress Indicator -->
+    <section class="w-full" id="freeDeliveryProgress">
+      <div class="bg-surface border border-outline-variant/40 rounded-2xl p-3.5 shadow-xs flex flex-col relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full pointer-events-none"></div>
+        <p class="text-xs md:text-sm font-semibold text-on-surface mb-2 z-10 flex items-center gap-1.5" id="progressLabel">
+          Add <span class="font-bold">₹199</span> more to get <span class="text-primary font-bold">FREE delivery</span>
+          <span class="material-symbols-outlined text-hot-deal-red text-sm" style="font-variation-settings: 'FILL' 1;">redeem</span>
+        </p>
+        <div class="w-full bg-surface-variant rounded-full h-2.5 z-10 relative overflow-hidden">
+          <div class="bg-primary h-2.5 rounded-full w-[0%] relative transition-all duration-500" id="progressFill">
+            <!-- Shimmer effect -->
+            <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-[shimmer_1.5s_infinite]"></div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Mini Order Summary Popup -->
-    <div class="mini-order-popup" id="miniOrderPopup">
-      <div class="popup-icon">✅</div>
-      <div class="popup-text">Added to cart!</div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div class="profile-modal" id="profileModal">
-      <div class="profile-modal-content">
-        <div class="profile-modal-header">
-          <h3>👤 My Account</h3>
-          <button class="profile-modal-close" id="closeProfileModal">✕</button>
-        </div>
-        <div class="profile-modal-body">
-          <div class="profile-avatar">
-            <span>👤</span>
-          </div>
-          <div class="profile-name" id="profileName">Guest User</div>
-          <div class="profile-phone" id="profilePhone">Not logged in</div>
-          <button class="login-btn" id="loginBtn">Login / Sign Up</button>
-          <div class="profile-menu">
-            <a href="/orders.html" class="profile-menu-item">📋 My Orders</a>
-            <a href="/wishlist.html" class="profile-menu-item">❤️ Wishlist</a>
-            <a href="/profile.html" class="profile-menu-item">📍 Saved Addresses</a>
-            <a href="/profile.html" class="profile-menu-item">⚙️ Settings</a>
-          </div>
-        </div>
+    <!-- New Arrivals Section -->
+    <section class="w-full" id="newArrivalsSection" style="display: none;">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-2xl">auto_awesome</span>
+          New Arrivals
+        </h2>
+        <a href="/categories/all.html" class="text-xs md:text-sm font-bold text-primary hover:underline">View All →</a>
       </div>
-    </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="newArrivalsGrid"></div>
+    </section>
 
-    <!-- Toast Message -->
-    <div class="toast-message" id="toastMessage"></div>
-    
+    <!-- Trending / Hot Today -->
+    <section class="w-full" id="trendingSection" style="display: none;">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-hot-deal-red text-2xl">local_fire_department</span>
+          Hot Today
+        </h2>
+        <a href="/categories/all.html" class="text-xs md:text-sm font-bold text-primary hover:underline">View All →</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="trendingGrid"></div>
+    </section>
+
+    <!-- Recently Viewed Section -->
+    <section class="w-full" id="recentlyViewedSection" style="display: none;">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-xl font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-on-surface-variant text-2xl">history</span>
+          Recently Viewed
+        </h2>
+        <button class="text-xs font-bold text-on-surface-variant hover:text-error" id="clearRecentBtn">Clear All</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" id="recentlyViewedGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- ========== FLOATING ACTION BUTTONS ========== -->
+  <div class="fixed right-4 bottom-24 md:bottom-8 flex flex-col gap-2.5 z-50">
+    <button class="w-11 h-11 bg-surface rounded-full shadow-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-surface-container cursor-pointer hidden" id="backToTopBtn" aria-label="Back to top">
+      <span class="material-symbols-outlined text-on-surface text-xl">arrow_upward</span>
+    </button>
+    <a class="w-11 h-11 bg-surface rounded-full shadow-md flex items-center justify-center hover:bg-surface-variant transition-colors border border-surface-container" href="tel:+919982239821" aria-label="Call Store">
+      <span class="material-symbols-outlined text-on-surface text-xl">call</span>
+    </a>
+    <a class="w-13 h-13 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center hover:-translate-y-1 transition-transform p-3" href="https://wa.me/919982239821" target="_blank" aria-label="WhatsApp Store">
+      <span class="material-symbols-outlined text-white text-2xl" style="font-variation-settings: 'FILL' 1;">chat</span>
+    </a>
   </div>
+
+  <!-- ========== FLOATING CART BAR (Mobile Floating Bar) ========== -->
+  <div class="fixed bottom-20 left-4 right-4 md:hidden z-40 bg-primary text-white rounded-2xl shadow-xl p-3.5 flex items-center justify-between transition-transform duration-300" id="floatingCartBar" style="display: none;">
+    <div class="flex items-center gap-2.5">
+      <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+      <div class="flex flex-col leading-tight">
+        <span class="text-xs font-semibold opacity-90" id="floatingCartCount">0 items</span>
+        <span class="text-base font-extrabold" id="floatingCartTotal">₹0</span>
+      </div>
+    </div>
+    <a href="/cart.html" class="bg-white text-primary font-bold text-xs px-4 py-2 rounded-full shadow-xs hover:bg-surface transition-colors flex items-center gap-1">
+      View Cart
+      <span class="material-symbols-outlined text-sm">arrow_forward</span>
+    </a>
+  </div>
+
+  <!-- ========== BOTTOM NAVIGATION (Mobile Only) ========== -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_12px_rgba(0,0,0,0.05)] md:hidden rounded-t-2xl border-t border-outline-variant/20">
+    <!-- Home (Active) -->
+    <a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90" href="/">
+      <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">home</span>
+      <span class="text-[10px] font-bold mt-0.5">Home</span>
+    </a>
+    <!-- Search -->
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/search.html">
+      <span class="material-symbols-outlined text-xl">search</span>
+      <span class="text-[10px] font-semibold mt-0.5">Search</span>
+    </a>
+    <!-- Offers -->
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/offers.html">
+      <span class="material-symbols-outlined text-xl">local_offer</span>
+      <span class="text-[10px] font-semibold mt-0.5">Offers</span>
+    </a>
+    <!-- Track -->
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 px-2 py-1" href="/tracking.html">
+      <span class="material-symbols-outlined text-xl">inventory_2</span>
+      <span class="text-[10px] font-semibold mt-0.5">Track</span>
+    </a>
+    <!-- Cart -->
+    <a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all active:scale-90 relative px-2 py-1" href="/cart.html">
+      <span class="material-symbols-outlined text-xl">shopping_cart</span>
+      <span class="text-[10px] font-semibold mt-0.5">Cart</span>
+      <span class="absolute top-0.5 right-1 bg-primary text-on-primary text-[9px] font-bold px-1 rounded-full border border-surface min-w-[15px] text-center" id="bottomNavCartCount">0</span>
+    </a>
+  </nav>
+
+  <!-- ========== LOCATION MODAL ========== -->
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-opacity duration-300" id="locationModal">
+    <div class="bg-surface rounded-t-3xl md:rounded-3xl w-full max-w-md p-6 max-h-[85vh] overflow-y-auto transform translate-y-full md:translate-y-0 transition-transform duration-300 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-outline-variant/30">
+        <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">location_on</span>
+          Select Delivery Location
+        </h3>
+        <button class="text-on-surface-variant hover:text-on-surface text-xl font-bold p-1" id="closeLocationModal">✕</button>
+      </div>
+      <div class="py-4 space-y-4">
+        <button class="w-full bg-primary/10 hover:bg-primary/15 text-primary font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors border border-primary/20" id="useCurrentLocationBtn">
+          <span class="material-symbols-outlined text-lg">my_location</span>
+          <span>Use My Current Location</span>
+        </button>
+        <div class="flex items-center gap-3 text-xs text-on-surface-variant">
+          <div class="flex-1 h-px bg-outline-variant/30"></div>
+          <span>OR</span>
+          <div class="flex-1 h-px bg-outline-variant/30"></div>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="pincodeInput" class="flex-1 bg-surface-container rounded-xl px-4 py-2.5 border-none text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary" placeholder="Enter 6-digit pincode" maxlength="6" inputmode="numeric">
+          <button class="bg-primary text-white font-bold px-5 py-2.5 rounded-xl hover:bg-primary-container transition-colors text-sm" id="checkPincodeBtn">Check</button>
+        </div>
+        <div id="pincodeMessage" class="text-xs font-semibold"></div>
+        <div class="space-y-2 pt-2">
+          <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Popular Locations</div>
+          <div class="space-y-1.5" id="popularLocationsList">
+            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Jantanagar" data-city="Ahmedabad" data-pincode="382110">
+              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
+              Jantanagar, Ahmedabad (382110)
+            </div>
+            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Satellite" data-city="Ahmedabad" data-pincode="380015">
+              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
+              Satellite, Ahmedabad (380015)
+            </div>
+            <div class="nearby-item p-2.5 rounded-lg hover:bg-surface-container cursor-pointer transition-colors text-xs font-medium flex items-center gap-2" data-area="Prahlad Nagar" data-city="Ahmedabad" data-pincode="380015">
+              <span class="material-symbols-outlined text-sm text-primary">storefront</span>
+              Prahlad Nagar, Ahmedabad (380015)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PROFILE MODAL ========== -->
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end md:items-center justify-center p-0 md:p-4 opacity-0 pointer-events-none transition-opacity duration-300" id="profileModal">
+    <div class="bg-surface rounded-t-3xl md:rounded-3xl w-full max-w-md p-6 max-h-[85vh] overflow-y-auto transform translate-y-full md:translate-y-0 transition-transform duration-300 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-outline-variant/30">
+        <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">account_circle</span>
+          My Account
+        </h3>
+        <button class="text-on-surface-variant hover:text-on-surface text-xl font-bold p-1" id="closeProfileModal">✕</button>
+      </div>
+      <div class="py-5 text-center space-y-4">
+        <div class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto text-3xl font-bold shadow-xs">
+          👤
+        </div>
+        <div>
+          <div class="text-base font-bold text-on-surface" id="profileName">Guest User</div>
+          <div class="text-xs text-on-surface-variant" id="profilePhone">Not logged in</div>
+        </div>
+        <button class="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-container transition-colors shadow-xs text-sm" id="loginBtn">
+          Login / Sign Up
+        </button>
+        <div class="space-y-1 pt-2 text-left">
+          <a href="/orders.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
+            <span class="material-symbols-outlined text-primary">receipt_long</span>
+            My Orders & Invoices
+          </a>
+          <a href="/wishlist.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
+            <span class="material-symbols-outlined text-tertiary">favorite</span>
+            My Wishlist
+          </a>
+          <a href="/profile.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container text-xs font-semibold transition-colors">
+            <span class="material-symbols-outlined text-on-surface-variant">home_pin</span>
+            Saved Addresses
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-[#171d16] text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-2xl opacity-0 pointer-events-none transition-all duration-300 whitespace-nowrap" id="toastMessage"></div>
 
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -323,58 +506,74 @@
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
-  <!-- Add this before closing body tag -->
-<script src="/js/fcm-token.js"></script>
-  
+  <script src="/js/fcm-token.js"></script>
+
   <script>
-    // ========== ADDITIONAL UI FIXES ==========
-    
-    // Profile Modal
+    // Modal Helpers
     const profileBtn = document.getElementById('profileBtn');
     const profileModal = document.getElementById('profileModal');
     const closeProfileModal = document.getElementById('closeProfileModal');
     
-    if (profileBtn) {
+    if (profileBtn && profileModal) {
       profileBtn.addEventListener('click', () => {
-        profileModal.classList.add('active');
+        profileModal.classList.remove('opacity-0', 'pointer-events-none');
+        profileModal.querySelector('div')?.classList.remove('translate-y-full');
       });
     }
     
-    if (closeProfileModal) {
+    if (closeProfileModal && profileModal) {
       closeProfileModal.addEventListener('click', () => {
-        profileModal.classList.remove('active');
+        profileModal.classList.add('opacity-0', 'pointer-events-none');
+        profileModal.querySelector('div')?.classList.add('translate-y-full');
       });
     }
     
     profileModal?.addEventListener('click', (e) => {
-      if (e.target === profileModal) profileModal.classList.remove('active');
+      if (e.target === profileModal) {
+        profileModal.classList.add('opacity-0', 'pointer-events-none');
+        profileModal.querySelector('div')?.classList.add('translate-y-full');
+      }
     });
-    
-    const loginBtn = document.getElementById('loginBtn');
-    if (loginBtn) {
-      loginBtn.addEventListener('click', () => {
-        // login.html अभी नहीं है — profile page पर redirect करें
-        window.location.href = '/user-details.html';
+
+    const locationBtn = document.getElementById('locationBtn');
+    const locationModal = document.getElementById('locationModal');
+    const closeLocationModal = document.getElementById('closeLocationModal');
+
+    if (locationBtn && locationModal) {
+      locationBtn.addEventListener('click', () => {
+        locationModal.classList.remove('opacity-0', 'pointer-events-none');
+        locationModal.querySelector('div')?.classList.remove('translate-y-full');
       });
     }
-    
-    // Load user profile if logged in
+
+    if (closeLocationModal && locationModal) {
+      closeLocationModal.addEventListener('click', () => {
+        locationModal.classList.add('opacity-0', 'pointer-events-none');
+        locationModal.querySelector('div')?.classList.add('translate-y-full');
+      });
+    }
+
+    locationModal?.addEventListener('click', (e) => {
+      if (e.target === locationModal) {
+        locationModal.classList.add('opacity-0', 'pointer-events-none');
+        locationModal.querySelector('div')?.classList.add('translate-y-full');
+      }
+    });
+
+    // Login profile check
     const savedUser = localStorage.getItem('okmart_user');
     if (savedUser) {
       try {
-        const user = JSON.parse(savedUser);
-        document.getElementById('profileName').textContent = user.name || 'User';
-        document.getElementById('profilePhone').textContent = user.phone || user.email || 'Logged in';
-        document.getElementById('loginBtn').textContent = 'View Profile';
+        const u = JSON.parse(savedUser);
+        document.getElementById('profileName').textContent = u.name || 'OK Mart Customer';
+        document.getElementById('profilePhone').textContent = u.phone || u.email || 'Logged in';
+        document.getElementById('loginBtn').textContent = 'My Profile';
       } catch(e) {}
     }
     
-    // Double-tap zoom — CSS touch-action se handle hota hai ab
-    // JS preventDefault hata diya (accessibility ke liye harmful tha)
-    // See <style> block above for the CSS fix
-    
-    // console.log removed in production
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      window.location.href = '/user-details.html';
+    });
   </script>
 </body>
 </html>
-
