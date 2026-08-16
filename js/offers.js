@@ -83,88 +83,9 @@
     });
   }
   
-  // ========== LOAD COUPONS ==========
-  async function loadCoupons() {
-    try {
-      const snap = await db.collection('offers').where('active', '==', true).get();
-      
-      couponCount.textContent = snap.size + ' active';
-      
-      if (snap.empty) {
-        couponsList.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px;">No active coupons at the moment</p>';
-        return;
-      }
-      
-      couponsList.innerHTML = '';
-      snap.forEach(doc => {
-        const o = doc.data();
-        const card = document.createElement('div');
-        card.className = 'coupon-card';
-        card.innerHTML = `
-          <div class="coupon-header">
-            <span class="coupon-code-display">${o.code}</span>
-            <span class="coupon-type-badge">${o.type === 'flat' ? '₹' + o.discount + ' OFF' : o.discount + '% OFF'}</span>
-          </div>
-          <div class="coupon-description">${o.description || 'Save on your order'}</div>
-          <div class="coupon-details">
-            <span class="coupon-detail-item">🛒 Min: ₹${o.minOrder}</span>
-            ${o.maxDiscount ? `<span class="coupon-detail-item">📌 Max: ₹${o.maxDiscount}</span>` : ''}
-          </div>
-          <div class="coupon-actions">
-            <button class="copy-coupon-btn" data-code="${o.code}">📋 Copy Code</button>
-            <a href="/cart.html" class="apply-btn">Apply →</a>
-          </div>
-        `;
-        
-        card.querySelector('.copy-coupon-btn').addEventListener('click', function() {
-          copyCode(o.code, this);
-        });
-        
-        couponsList.appendChild(card);
-      });
-      
-    } catch (err) {
-      console.error('Coupons error:', err);
-      couponsList.innerHTML = '<p style="text-align:center;color:var(--muted);">Could not load coupons</p>';
-    }
-  }
-  
-  async function copyCode(code, button) {
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = code;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-    }
-    
-    button.textContent = '✓ Copied!';
-    button.classList.add('copied');
-    setTimeout(() => {
-      button.textContent = '📋 Copy Code';
-      button.classList.remove('copied');
-    }, 2000);
-    
-    showToast(`Code "${code}" copied!`, 'success');
-  }
-  
-  // ========== TOAST ==========
-  function showToast(msg, type = 'info') {
-    const toast = toastMessage;
-    toast.textContent = msg;
-    toast.style.background = type === 'success' ? '#10b981' : '#1a1e2b';
-    toast.style.color = 'white';
-    toast.classList.add('show');
-    clearTimeout(window._t);
-    window._t = setTimeout(() => toast.classList.remove('show'), 2500);
-  }
-  
   // ========== INIT ==========
   async function init() {
-    await Promise.all([loadBanners(), loadCoupons()]);
+    await loadBanners();
     console.log('✅ Offers page ready');
   }
   

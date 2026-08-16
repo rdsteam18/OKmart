@@ -40,73 +40,58 @@
         <div class="banner-dots" id="bannerDots"></div>
       </div>
 
-      <!-- Hero Promo -->
-      <div class="hero-promo">
-        <div class="promo-content">
-          <span class="promo-icon">🎉</span>
-          <div class="promo-text">
-            <h2>Big Savings Today!</h2>
-            <p>Use code <strong>SAVE20</strong> for ₹20 off on ₹250+</p>
+      <!-- Store Highlights / Perks -->
+      <div class="perks-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0;">
+        <div style="background:#fff;padding:16px;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.04);display:flex;align-items:center;gap:12px;">
+          <span style="font-size:2rem;">⚡</span>
+          <div>
+            <h3 style="font-size:0.85rem;font-weight:700;margin-bottom:2px;">Fast Delivery</h3>
+            <p style="font-size:0.75rem;color:#6b7280;">Delivered directly to your door</p>
           </div>
-          <span class="promo-icon">🎉</span>
+        </div>
+        <div style="background:#fff;padding:16px;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.04);display:flex;align-items:center;gap:12px;">
+          <span style="font-size:2rem;">🥬</span>
+          <div>
+            <h3 style="font-size:0.85rem;font-weight:700;margin-bottom:2px;">Fresh Quality</h3>
+            <p style="font-size:0.75rem;color:#6b7280;">100% genuine & fresh products</p>
+          </div>
+        </div>
+        <div style="background:#fff;padding:16px;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.04);display:flex;align-items:center;gap:12px;">
+          <span style="font-size:2rem;">💰</span>
+          <div>
+            <h3 style="font-size:0.85rem;font-weight:700;margin-bottom:2px;">Best Prices</h3>
+            <p style="font-size:0.75rem;color:#6b7280;">Great daily local grocery prices</p>
+          </div>
+        </div>
+        <div style="background:#fff;padding:16px;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.04);display:flex;align-items:center;gap:12px;">
+          <span style="font-size:2rem;">💬</span>
+          <div>
+            <h3 style="font-size:0.85rem;font-weight:700;margin-bottom:2px;">Easy Support</h3>
+            <p style="font-size:0.75rem;color:#6b7280;">Quick WhatsApp help & ordering</p>
+          </div>
         </div>
       </div>
 
-      <!-- Coupons Section -->
-      <section class="coupons-section">
-        <div class="section-header">
-          <h2>🏷️ Available Coupons</h2>
-          <span class="section-badge" id="couponCount">0 active</span>
-        </div>
-        <div class="coupons-list" id="couponsList">
-          <div class="loading-skeleton">
-            <div class="skeleton-coupon"></div>
-            <div class="skeleton-coupon"></div>
-          </div>
-        </div>
-      </section>
+      <!-- Personal Promo Card -->
+      <div style="background:linear-gradient(135deg,#f3f9eb,#e8f5d8);border:1.5px dashed var(--primary);border-radius:18px;padding:22px;margin:20px 0;text-align:center;">
+        <span style="font-size:2.4rem;display:block;margin-bottom:8px;">🎁</span>
+        <h2 style="font-size:1.15rem;font-weight:800;color:var(--primary-dark);margin-bottom:6px;">Have a Personal Promo Code?</h2>
+        <p style="font-size:0.85rem;color:#4b5563;margin-bottom:16px;line-height:1.5;">
+          If you received an exclusive discount code from OK Mart, simply enter it in your <strong>Shopping Cart</strong> during checkout for instant savings!
+        </p>
+        <a href="/cart.html" style="display:inline-block;background:var(--primary);color:white;font-weight:700;padding:12px 24px;border-radius:30px;text-decoration:none;box-shadow:0 4px 12px rgba(132,194,37,0.35);">
+          🛒 Go to Cart & Apply Code
+        </a>
+      </div>
 
-      <!-- Today's Deals -->
-      <section class="deals-section">
-        <div class="section-header">
-          <h2>🔥 Today's Deals</h2>
-        </div>
-        <div class="deals-grid" id="dealsGrid">
-          <div class="deal-card static">
-            <span class="deal-icon">🧅</span>
-            <div class="deal-info">
-              <h3>1kg Onion FREE</h3>
-              <p>On orders above ₹199</p>
-            </div>
-            <span class="deal-tag">AUTO</span>
-          </div>
-          <div class="deal-card static">
-            <span class="deal-icon">🚚</span>
-            <div class="deal-info">
-              <h3>FREE Delivery</h3>
-              <p>On orders above ₹199</p>
-            </div>
-            <span class="deal-tag">AUTO</span>
-          </div>
-          <div class="deal-card static">
-            <span class="deal-icon">💳</span>
-            <div class="deal-info">
-              <h3>5% Cashback</h3>
-              <p>On UPI payments</p>
-            </div>
-            <span class="deal-tag">BANK</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- How to Use -->
-      <div class="how-to-use">
-        <h3>📋 How to Use Coupons</h3>
-        <div class="steps">
-          <div class="step"><span class="step-num">1</span><span>Copy coupon code</span></div>
-          <div class="step"><span class="step-num">2</span><span>Add items to cart</span></div>
-          <div class="step"><span class="step-num">3</span><span>Apply at checkout</span></div>
-          <div class="step"><span class="step-num">4</span><span>Enjoy savings! 🎉</span></div>
+      <!-- How to Redeem -->
+      <div class="how-to-use" style="background:#fff;border-radius:16px;padding:18px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;">📋 How to Redeem Personal Promo Codes</h3>
+        <div class="steps" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+          <div class="step" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#4b5563;"><span class="step-num">1</span><span>Add grocery items to cart</span></div>
+          <div class="step" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#4b5563;"><span class="step-num">2</span><span>Open your Cart page</span></div>
+          <div class="step" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#4b5563;"><span class="step-num">3</span><span>Enter code in Promo box</span></div>
+          <div class="step" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#4b5563;"><span class="step-num">4</span><span>Enjoy discount instantly! 🎉</span></div>
         </div>
       </div>
 

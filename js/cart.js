@@ -78,7 +78,7 @@
     }
   }
 
-  // ========== Load Coupons from Firebase ==========
+  // ========== Load Coupons from Firebase (For Manual Validation) ==========
   async function loadCoupons() {
     try {
       const snapshot = await db.collection('offers')
@@ -89,16 +89,7 @@
       snapshot.forEach(doc => {
         coupons.push({ id: doc.id, ...doc.data() });
       });
-      
-      // Show available coupons
-      if (coupons.length > 0 && availableCoupons) {
-        availableCoupons.style.display = 'block';
-        couponChips.innerHTML = coupons.slice(0, 4).map(c => `
-          <div class="coupon-chip" onclick="applyCouponCode('${c.code}')">
-            🏷️ ${c.code} ${c.type === 'flat' ? `₹${c.discount} OFF` : `${c.discount}% OFF`}
-          </div>
-        `).join('');
-      }
+      // Note: Public coupon list is hidden. Users enter codes directly in coupon input.
     } catch (error) {
       console.error('Error loading coupons:', error);
     }
