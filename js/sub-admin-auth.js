@@ -7,26 +7,27 @@
   const LOGIN_PAGE = 'login.html';
   
   function checkAccess() {
-    const isAdmin = localStorage.getItem('okmart_isAdmin') === 'true';
+    const isAdmin = localStorage.getItem('okmart_isAdmin') === 'true' || localStorage.getItem('isAdmin') === 'true';
     const adminRole = localStorage.getItem('okmart_adminRole') || 
-                     localStorage.getItem('okmart_subAdmin_role');
-    const loginTime = parseInt(localStorage.getItem('okmart_subAdmin_loginTime') || '0');
-    const expired = (Date.now() - loginTime) > (12 * 60 * 60 * 1000);
+                      localStorage.getItem('okmart_subAdmin_role') ||
+                      localStorage.getItem('adminRole');
+                      
+    let loginTime = parseInt(localStorage.getItem('okmart_subAdmin_loginTime') || localStorage.getItem('adminLoginTime') || '0');
+    const expired = loginTime > 0 && ((Date.now() - loginTime) > (12 * 60 * 60 * 1000));
+    const currentPage = window.location.pathname.split('/').pop() || '';
+    
+    // Skip checking on login page itself
+    if (currentPage === LOGIN_PAGE) {
+      if (isAdmin && adminRole === 'sub' && !expired) {
+        window.location.href = 'index.html';
+      }
+      return true;
+    }
     
     if (!isAdmin || adminRole !== 'sub' || expired) {
       // Clear stale data
-      if (expired) {
-        const keys = ['okmart_isAdmin','okmart_isSubAdmin','okmart_adminRole',
-                      'okmart_subAdmin_role','okmart_admin_username','okmart_subAdmin_username',
-                      'okmart_admin_categories','okmart_subAdmin_categories',
-                      'okmart_admin_loginTime','okmart_subAdmin_loginTime'];
-        keys.forEach(k => localStorage.removeItem(k));
-      }
-      
-      const currentPage = window.location.pathname.split('/').pop();
-      if (currentPage !== LOGIN_PAGE) {
-        window.location.href = LOGIN_PAGE;
-      }
+      clearSubAdminKeys();
+      window.location.href = LOGIN_PAGE;
       return false;
     }
     
@@ -38,6 +39,27 @@
     return true;
   }
   
+  function clearSubAdminKeys() {
+    const keys = [
+      'okmart_isAdmin',
+      'okmart_isSubAdmin',
+      'okmart_adminRole',
+      'okmart_subAdmin_role',
+      'okmart_admin_username',
+      'okmart_subAdmin_username',
+      'okmart_admin_categories',
+      'okmart_subAdmin_categories',
+      'okmart_admin_loginTime',
+      'okmart_subAdmin_loginTime',
+      'isAdmin',
+      'adminRole',
+      'adminUsername',
+      'allowedCategories',
+      'adminLoginTime'
+    ];
+    keys.forEach(k => localStorage.removeItem(k));
+  }
+  
   // Run check
   checkAccess();
   
@@ -45,18 +67,18 @@
   window.getAllowedCategories = function() {
     try {
       return JSON.parse(localStorage.getItem('okmart_subAdmin_categories') || 
-                        localStorage.getItem('okmart_admin_categories') || '[]');
+                        localStorage.getItem('okmart_admin_categories') || 
+                        localStorage.getItem('allowedCategories') || '[]');
     } catch(e) { return []; }
   };
   
   window.subAdminLogout = function() {
-    const keys = ['okmart_isAdmin','okmart_isSubAdmin','okmart_adminRole',
-                  'okmart_subAdmin_role','okmart_admin_username','okmart_subAdmin_username',
-                  'okmart_admin_categories','okmart_subAdmin_categories',
-                  'okmart_admin_loginTime','okmart_subAdmin_loginTime'];
-    keys.forEach(k => localStorage.removeItem(k));
-    window.location.href = LOGIN_PAGE;
+    if (confirm('Are you sure you want to logout?')) {
+      clearSubAdminKeys();
+      window.location.href = LOGIN_PAGE;
+    }
   };
   
+  window.logout = window.subAdminLogout;
+  
 })();
-

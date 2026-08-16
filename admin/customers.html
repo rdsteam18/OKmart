@@ -10,7 +10,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <!-- Auth Protection -->
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/admin-auth.js"></script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -232,7 +232,7 @@
   
   <div class="toast" id="toast"></div>
   
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     // ===== CUSTOMER MANAGEMENT - FULLY WORKING =====
     
@@ -342,7 +342,7 @@
     function showLoading(show){ loadingOverlay.style.display=show?'flex':'none'; }
     function showToast(msg,type){ toast.textContent=msg; toast.className=`toast ${type}`; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); }
     function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,function(m){if(m==='&')return'&amp;';if(m==='<')return'&lt;';if(m==='>')return'&gt;';return m;}); }
-    function logout(){ if(confirm('Logout?')){ localStorage.clear(); window.location.href='login.html'; } }
+    function logout(){ if(typeof adminLogout === 'function'){ adminLogout(); } else if(confirm('Logout?')){ const keys=['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail']; keys.forEach(k=>localStorage.removeItem(k)); window.location.href='login.html'; } }
     
     document.getElementById('addCustomerBtn')?.addEventListener('click',openAddModal);
     document.getElementById('saveCustomerBtn')?.addEventListener('click',saveCustomer);

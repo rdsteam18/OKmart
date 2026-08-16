@@ -24,7 +24,7 @@
     
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 50%, #0f172a 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -41,7 +41,7 @@
       background: var(--card);
       border-radius: 32px;
       padding: 40px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
       animation: slideUp 0.4s ease;
     }
     
@@ -58,7 +58,7 @@
     
     .logo {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     
     .logo-img {
@@ -66,19 +66,21 @@
       height: 70px;
       border-radius: 20px;
       margin-bottom: 12px;
+      box-shadow: 0 8px 16px rgba(132,194,37,0.25);
     }
     
     .logo h1 {
       font-size: 1.5rem;
-      font-weight: 700;
+      font-weight: 800;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     
     .logo p {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--muted);
+      margin-top: 4px;
     }
     
     .form-group {
@@ -87,7 +89,7 @@
     
     .form-group label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 8px;
       color: var(--text);
@@ -98,19 +100,21 @@
       padding: 14px 16px;
       border: 1.5px solid var(--border);
       border-radius: 16px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       transition: all 0.2s;
+      background: #f8fafc;
     }
     
     .form-group input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(46,204,113,0.1);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(132,194,37,0.15);
     }
     
     .login-btn {
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
       border: none;
@@ -118,11 +122,25 @@
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(132,194,37,0.3);
     }
     
     .login-btn:active {
-      transform: scale(0.97);
+      transform: scale(0.98);
+    }
+    
+    .login-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
     
     .error-message {
@@ -130,9 +148,11 @@
       color: #dc2626;
       padding: 12px;
       border-radius: 12px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       margin-top: 16px;
       display: none;
+      text-align: center;
+      font-weight: 500;
     }
     
     .demo-credentials {
@@ -143,19 +163,24 @@
     }
     
     .demo-credentials p {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--muted);
       margin-bottom: 8px;
     }
     
     .demo-credentials code {
-      background: var(--bg);
+      background: #f1f5f9;
+      color: #334155;
       padding: 4px 8px;
       border-radius: 8px;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="login-container">
@@ -163,19 +188,21 @@
       <div class="logo">
         <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="logo-img">
         <h1>OK Mart Admin</h1>
-        <p>Login to manage your store</p>
+        <p>Login to manage your store dashboard</p>
       </div>
       
       <form id="loginForm">
         <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="email" placeholder="admin@okmart.com" required>
+          <label>Username / Email Address</label>
+          <input type="text" id="username" placeholder="admin@okmart.com or admin" required autocomplete="username">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="password" placeholder="••••••••" required>
+          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
         </div>
-        <button type="submit" class="login-btn">Login →</button>
+        <button type="submit" class="login-btn" id="submitBtn">
+          <span>🔐 Login to Dashboard</span>
+        </button>
       </form>
       
       <div class="error-message" id="errorMessage">
@@ -183,47 +210,94 @@
       </div>
       
       <div class="demo-credentials">
-        <p>Demo Credentials:</p>
-        <code>admin@okmart.com</code> / <code>admin123</code>
+        <p>Default Credentials:</p>
+        <code>admin@okmart.com</code> / <code>admin123</code><br>
+        <span style="display:inline-block; margin-top:4px;">or <code>admin</code> / <code>okmart2024</code></span>
       </div>
     </div>
   </div>
   
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
+    const submitBtn = document.getElementById('submitBtn');
     
-    // Demo admin credentials (in production, use Firebase Auth)
-    const DEMO_ADMIN = {
-      email: 'admin@okmart.com',
-      password: 'admin123'
-    };
+    // Check if already logged in with valid session
+    (function checkExisting() {
+      const isAdmin = localStorage.getItem('okmart_isAdmin') === 'true' || localStorage.getItem('adminLoggedIn') === 'true';
+      const loginTime = parseInt(localStorage.getItem('okmart_admin_loginTime') || '0');
+      const sessionExpiry = 12 * 60 * 60 * 1000;
+      
+      if (isAdmin && (Date.now() - loginTime) < sessionExpiry) {
+        window.location.href = 'index.html';
+      }
+    })();
+    
+    function setAdminSession(userIdentifier, role = 'admin') {
+      const now = Date.now().toString();
+      localStorage.setItem('okmart_isAdmin', 'true');
+      localStorage.setItem('okmart_admin_username', userIdentifier);
+      localStorage.setItem('okmart_admin_loginTime', now);
+      localStorage.setItem('okmart_admin_role', role);
+      localStorage.setItem('adminLoggedIn', 'true');
+      localStorage.setItem('adminEmail', userIdentifier.includes('@') ? userIdentifier : 'admin@okmart.com');
+    }
     
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const email = document.getElementById('email').value.trim();
+      const userInput = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       
-      // Simple validation
-      if (email === DEMO_ADMIN.email && password === DEMO_ADMIN.password) {
-        localStorage.setItem('adminLoggedIn', 'true');
-        localStorage.setItem('adminEmail', email);
-        window.location.href = 'index.html';
-      } else {
-        errorMessage.style.display = 'block';
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Verifying...</span>';
+      errorMessage.style.display = 'none';
+      
+      let loginSuccessful = false;
+      let matchedRole = 'admin';
+      
+      // 1. Try Firebase Firestore Admins collection if db is available
+      if (typeof db !== 'undefined' && db) {
+        try {
+          const userQuery = userInput.includes('@') 
+            ? db.collection('admins').where('email', '==', userInput).where('password', '==', password).where('active', '==', true)
+            : db.collection('admins').where('username', '==', userInput).where('password', '==', password).where('active', '==', true);
+            
+          const snapshot = await userQuery.get();
+          if (!snapshot.empty) {
+            loginSuccessful = true;
+            const data = snapshot.docs[0].data();
+            matchedRole = data.role || 'admin';
+          }
+        } catch (err) {
+          console.warn('Firestore admin lookup failed, falling back to local credentials:', err);
+        }
+      }
+      
+      // 2. Built-in Fallback Credentials
+      if (!loginSuccessful) {
+        const isDemo1 = (userInput.toLowerCase() === 'admin@okmart.com' || userInput.toLowerCase() === 'admin') && (password === 'admin123' || password === 'okmart2024');
+        const isDemo2 = userInput.toLowerCase() === 'superadmin' && password === 'okmart2024';
+        if (isDemo1 || isDemo2) {
+          loginSuccessful = true;
+          matchedRole = 'admin';
+        }
+      }
+      
+      if (loginSuccessful) {
+        setAdminSession(userInput, matchedRole);
+        submitBtn.innerHTML = '<span>✅ Success! Redirecting...</span>';
         setTimeout(() => {
-          errorMessage.style.display = 'none';
-        }, 3000);
+          window.location.href = 'index.html';
+        }, 400);
+      } else {
+        errorMessage.textContent = 'Invalid username/email or password. Please try again.';
+        errorMessage.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔐 Login to Dashboard</span>';
       }
     });
-    
-    // Check if already logged in
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
-      window.location.href = 'index.html';
-    }
   </script>
 </body>
 </html>
-

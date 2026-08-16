@@ -20,9 +20,8 @@ const urlsToCache = [
   '/js/common.js',
   '/js/firebase.js',
   '/js/home.js',
-  '/manifest.json'
-  // \u2705 Note: External URLs (Blogger, CDN) cache nahi karte SW mein
-  // Local icon files exist nahi karte, isliye remove kiye
+  '/manifest.json',
+  '/offline.html'
 ];
 
 // Install Service Worker

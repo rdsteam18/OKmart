@@ -10,7 +10,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <!-- Auth Protection -->
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/admin-auth.js"></script>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -222,7 +222,7 @@
   
   <div class="toast" id="toast"></div>
   
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     // ===== OFFERS & COUPONS MANAGEMENT - FULLY WORKING =====
     
@@ -290,7 +290,7 @@
     document.getElementById('bannerSearch')?.addEventListener('input',()=>renderBanners());
     document.getElementById('exportCouponsBtn')?.addEventListener('click',()=>{ const headers=['Code','Type','Discount','Min Order','Max Discount','Usage Limit','Used','Valid From','Valid To','Status']; const rows=allCoupons.map(c=>[c.code,c.type,c.discount,c.minOrder||0,c.maxDiscount||'',c.usageLimit||'',c.usageCount||0,c.validFrom||'',c.validTo||'',c.active?'Active':'Inactive']); const csv=[headers,...rows].map(r=>r.join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`coupons_${new Date().toISOString().slice(0,19)}.csv`; a.click(); URL.revokeObjectURL(url); showToast('Exported successfully','success'); });
     
-    function logout(){ if(confirm('Logout?')){ localStorage.clear(); window.location.href='login.html'; } }
+    function logout(){ if(typeof adminLogout === 'function'){ adminLogout(); } else if(confirm('Logout?')){ const keys=['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail']; keys.forEach(k=>localStorage.removeItem(k)); window.location.href='login.html'; } }
     
     loadCoupons();
   </script>

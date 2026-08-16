@@ -609,12 +609,247 @@ window.addEventListener('storage', (e) => {
 });
 
 // ============================================
-// CENTRALIZED CONSTANTS
+// DYNAMIC STORE SETTINGS & CHARGES ENGINE
 // ============================================
 
-// एक ही जगह free delivery threshold — सभी pages यहाँ से लें
-window.FREE_DELIVERY_THRESHOLD = 199;
-window.BASE_DELIVERY_CHARGE = 39;
+// Default fallback settings
+const DEFAULT_SETTINGS = {
+  storeName: 'OK Mart',
+  storePhone: '+919982239821',
+  storeEmail: 'support@okmart.com',
+  storeAddress: '',
+  baseDeliveryCharge: 39,
+  defaultDeliveryCharge: 39,
+  freeDeliveryThreshold: 199,
+  globalFreeThreshold: 199,
+  minOrderAmount: 99,
+  handlingFee: 0,
+  convenienceFee: 0,
+  gstRate: 0,
+  serviceCharge: 0,
+  quickDeliveryTime: 15,
+  isStoreOpen: true,
+  storeClosedNotice: 'Store is currently closed. We will resume taking orders soon!',
+  announcementEnabled: false,
+  announcementText: '⚡ Fast 15-Minute Grocery Delivery across your neighborhood!',
+  allowCod: true,
+  allowOnline: true
+};
+
+// Cached settings from localStorage if available
+let cachedSettings = DEFAULT_SETTINGS;
+try {
+  const saved = localStorage.getItem('okmart_store_settings');
+  if (saved) {
+    cachedSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+  }
+} catch (e) {}
+
+window.OKMartSettings = { ...cachedSettings };
+window.FREE_DELIVERY_THRESHOLD = window.OKMartSettings.freeDeliveryThreshold || 199;
+window.BASE_DELIVERY_CHARGE = window.OKMartSettings.baseDeliveryCharge || 39;
+
+// Listeners for setting changes
+const _settingsListeners = [];
+
+window.onStoreSettingsChange = function(fn) {
+  if (typeof fn === 'function') {
+    _settingsListeners.push(fn);
+    // Call once immediately with current settings
+    fn(window.OKMartSettings);
+  }
+};
+
+function notifySettingsChange() {
+  window.FREE_DELIVERY_THRESHOLD = window.OKMartSettings.freeDeliveryThreshold || 199;
+  window.BASE_DELIVERY_CHARGE = window.OKMartSettings.baseDeliveryCharge || 39;
+  
+  try {
+    localStorage.setItem('okmart_store_settings', JSON.stringify(window.OKMartSettings));
+  } catch (e) {}
+  
+  // Update banner UI across page
+  updateStoreBannersAndUI();
+  
+  _settingsListeners.forEach(fn => {
+    try { fn(window.OKMartSettings); } catch(err) { console.error('Settings listener error:', err); }
+  });
+}
+
+// Real-time Firestore Settings Listener
+function initRealtimeSettings() {
+  if (typeof db === 'undefined' || !db) return;
+  
+  // 1. Listen to settings/app
+  try {
+    db.collection('settings').doc('app').onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        window.OKMartSettings = {
+          ...window.OKMartSettings,
+          ...data,
+          // Sync threshold aliases
+          freeDeliveryThreshold: Number(data.globalFreeThreshold || data.freeDeliveryThreshold || window.OKMartSettings.freeDeliveryThreshold || 199),
+          baseDeliveryCharge: Number(data.defaultDeliveryCharge || data.baseDeliveryCharge || window.OKMartSettings.baseDeliveryCharge || 39),
+          minOrderAmount: Number(data.minOrderAmount || window.OKMartSettings.minOrderAmount || 99),
+          convenienceFee: Number(data.convenienceFee || 0),
+          handlingFee: Number(data.handlingFee || data.packagingFee || 0),
+          gstRate: Number(data.gstRate || 0)
+        };
+        notifySettingsChange();
+      }
+    }, err => {
+      console.warn('Could not listen to settings/app:', err);
+    });
+  } catch (e) {}
+  
+  // 2. Listen to settings/delivery
+  try {
+    db.collection('settings').doc('delivery').onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        window.OKMartSettings = {
+          ...window.OKMartSettings,
+          ...data,
+          freeDeliveryThreshold: Number(data.freeDeliveryThreshold || window.OKMartSettings.freeDeliveryThreshold || 199),
+          baseDeliveryCharge: Number(data.baseDeliveryCharge || window.OKMartSettings.baseDeliveryCharge || 39),
+          quickDeliveryTime: Number(data.quickDeliveryTime || window.OKMartSettings.quickDeliveryTime || 15)
+        };
+        notifySettingsChange();
+      }
+    }, err => {
+      console.warn('Could not listen to settings/delivery:', err);
+    });
+  } catch (e) {}
+}
+
+// Global UI Updater for Announcement & Delivery Banner
+function updateStoreBannersAndUI() {
+  const s = window.OKMartSettings;
+  
+  // Update homepage delivery info text
+  const deliveryTextEl = document.querySelector('#deliveryInfoBanner .delivery-text, .delivery-info-banner .delivery-text');
+  if (deliveryTextEl) {
+    deliveryTextEl.textContent = `Free delivery above ₹${s.freeDeliveryThreshold}`;
+  }
+  
+  const deliveryTimeEl = document.querySelector('#deliveryInfoBanner .delivery-time, .delivery-info-banner .delivery-time');
+  if (deliveryTimeEl) {
+    deliveryTimeEl.textContent = `⚡ ${s.quickDeliveryTime || 15} min delivery`;
+  }
+  
+  // Update cart page delivery info
+  const cartDeliveryTitle = document.getElementById('deliveryInfoTitle');
+  if (cartDeliveryTitle) {
+    cartDeliveryTitle.textContent = `Free Delivery Above ₹${s.freeDeliveryThreshold}`;
+  }
+  const cartDeliverySub = document.getElementById('deliveryInfoSub');
+  if (cartDeliverySub) {
+    cartDeliverySub.textContent = `Standard delivery charge: ₹${s.baseDeliveryCharge}`;
+  }
+  
+  // Top Announcement / Notice Bar injection
+  let noticeBar = document.getElementById('okmartNoticeBar');
+  if (s.announcementEnabled && s.announcementText) {
+    if (!noticeBar) {
+      noticeBar = document.createElement('div');
+      noticeBar.id = 'okmartNoticeBar';
+      noticeBar.style.cssText = 'background:linear-gradient(90deg, #16a34a, #84c225);color:#fff;font-size:12px;font-weight:600;padding:6px 12px;text-align:center;position:relative;z-index:999;letter-spacing:0.3px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);';
+      document.body.prepend(noticeBar);
+    }
+    noticeBar.innerHTML = `<span>📢 ${escapeHtml(s.announcementText)}</span>`;
+    noticeBar.style.display = 'flex';
+  } else if (noticeBar) {
+    noticeBar.style.display = 'none';
+  }
+  
+  // Store Closed Banner injection on cart/checkout
+  let closedBanner = document.getElementById('okmartStoreClosedBanner');
+  if (s.isStoreOpen === false) {
+    if (!closedBanner && (window.location.pathname.includes('cart') || window.location.pathname.includes('checkout'))) {
+      closedBanner = document.createElement('div');
+      closedBanner.id = 'okmartStoreClosedBanner';
+      closedBanner.style.cssText = 'background:#fef2f2;border:1.5px solid #ef4444;color:#b91c1c;padding:12px 16px;border-radius:12px;margin:16px auto;max-width:600px;text-align:center;font-weight:600;font-size:14px;box-shadow:0 4px 12px rgba(239,68,68,0.1);';
+      const mainEl = document.querySelector('main') || document.body;
+      mainEl.prepend(closedBanner);
+    }
+    if (closedBanner) {
+      closedBanner.innerHTML = `🚫 <strong>Store Closed:</strong> ${escapeHtml(s.storeClosedNotice || 'We are currently not accepting new orders.')}`;
+      closedBanner.style.display = 'block';
+    }
+  } else if (closedBanner) {
+    closedBanner.style.display = 'none';
+  }
+}
+
+// Global Calculation Helper
+window.getStoreSettings = function() {
+  return { ...window.OKMartSettings };
+};
+
+window.calculateDelivery = function(subtotal, pincode = null) {
+  const s = window.OKMartSettings;
+  const threshold = s.freeDeliveryThreshold || 199;
+  const baseCharge = s.baseDeliveryCharge || 39;
+  
+  const isFree = subtotal >= threshold;
+  const deliveryCharge = isFree ? 0 : baseCharge;
+  const remainingForFree = Math.max(0, threshold - subtotal);
+  const percentForFree = Math.min(100, (subtotal / threshold) * 100);
+  
+  return {
+    deliveryCharge,
+    isFree,
+    threshold,
+    remainingForFree,
+    percentForFree,
+    baseCharge
+  };
+};
+
+window.calculateOrderTotals = function(cartItems = [], couponDiscount = 0) {
+  const s = window.OKMartSettings;
+  const subtotal = cartItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 1)), 0);
+  const discount = Math.min(couponDiscount, subtotal);
+  const afterDiscount = subtotal - discount;
+  
+  const deliveryInfo = window.calculateDelivery(afterDiscount);
+  const handlingFee = s.handlingFee || s.packagingFee || 0;
+  const convenienceFee = s.convenienceFee || 0;
+  const gstRate = s.gstRate || 0;
+  const taxAmount = gstRate > 0 ? Math.round((afterDiscount * gstRate) / 100) : 0;
+  
+  const grandTotal = Math.max(0, afterDiscount + deliveryInfo.deliveryCharge + handlingFee + convenienceFee + taxAmount);
+  
+  return {
+    subtotal,
+    discount,
+    afterDiscount,
+    deliveryCharge: deliveryInfo.deliveryCharge,
+    isFreeDelivery: deliveryInfo.isFree,
+    freeDeliveryThreshold: deliveryInfo.threshold,
+    remainingForFree: deliveryInfo.remainingForFree,
+    percentForFree: deliveryInfo.percentForFree,
+    handlingFee,
+    convenienceFee,
+    taxAmount,
+    gstRate,
+    grandTotal,
+    minOrderAmount: s.minOrderAmount || 0,
+    isMinOrderMet: subtotal >= (s.minOrderAmount || 0)
+  };
+};
+
+// Initialize settings on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initRealtimeSettings();
+    updateStoreBannersAndUI();
+  });
+} else {
+  initRealtimeSettings();
+  updateStoreBannersAndUI();
+}
 
 // ============================================
 // FETCH PRODUCTS FROM FIREBASE (Global)

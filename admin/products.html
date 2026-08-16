@@ -10,7 +10,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   <!-- Auth Protection -->
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/admin-auth.js"></script>
   <!-- Tailwind CSS + Custom Config -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -696,7 +696,7 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
   
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     // ===== PRODUCT MANAGEMENT - FULLY WORKING =====
     
@@ -1110,8 +1110,11 @@
     }
     
     function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
+      if (typeof adminLogout === 'function') {
+        adminLogout();
+      } else if (confirm('Are you sure you want to logout?')) {
+        const keys = ['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail'];
+        keys.forEach(k => localStorage.removeItem(k));
         window.location.href = 'login.html';
       }
     }

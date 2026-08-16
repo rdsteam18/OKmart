@@ -152,26 +152,30 @@
     
     orderItemsList.innerHTML = items || '<div style="text-align:center;padding:20px;color:#6b7280;">No items</div>';
     
-    // Calculate delivery charge using centralized constant
-    const baseCharge = window.BASE_DELIVERY_CHARGE || 39;
-    let delivery = baseCharge;
-    if (currentDeliveryType === 'scheduled') {
-      delivery = Math.round(baseCharge * 0.75); // Scheduled = 75% of quick charge
-    }
-    if (subtotal >= FREE_DELIVERY_THRESHOLD) {
-      delivery = 0;
+    // Calculate delivery charge dynamically
+    const settings = typeof window.getStoreSettings === 'function' ? window.getStoreSettings() : {};
+    const deliveryCalc = typeof window.calculateDelivery === 'function'
+      ? window.calculateDelivery(subtotal)
+      : { deliveryCharge: subtotal >= (window.FREE_DELIVERY_THRESHOLD || 199) ? 0 : 39, threshold: 199, remainingForFree: Math.max(0, 199 - subtotal), percentForFree: Math.min(100, (subtotal / 199) * 100) };
+      
+    let delivery = deliveryCalc.deliveryCharge;
+    if (currentDeliveryType === 'scheduled' && delivery > 0) {
+      delivery = Math.round(delivery * 0.75); // Scheduled discount
     }
     deliveryCharge = delivery;
     
-    const total = subtotal + deliveryCharge;
+    const handlingFee = settings.handlingFee || settings.packagingFee || 0;
+    const convenienceFee = settings.convenienceFee || 0;
+    const total = subtotal + deliveryCharge + handlingFee + convenienceFee;
     
     summarySubtotal.textContent = `₹${subtotal}`;
     summaryDelivery.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
     summaryTotal.textContent = `₹${total}`;
     
     // Update free delivery progress
-    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-    const percent = Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100);
+    const threshold = deliveryCalc.threshold || window.FREE_DELIVERY_THRESHOLD || 199;
+    const remaining = Math.max(0, threshold - subtotal);
+    const percent = Math.min(100, (subtotal / threshold) * 100);
     progressFill.style.width = `${percent}%`;
     if (remaining <= 0) {
       progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
@@ -303,22 +307,34 @@ ${itemsList}
       return;
     }
     
-    // Calculate totals
-    const subtotal = cart.reduce((sum, item) => {
-      const product = allProducts.find(p => p.id === item.id) || item;
-      return sum + (product.price * (item.quantity || 1));
-    }, 0);
+    const settings = typeof window.getStoreSettings === 'function' ? window.getStoreSettings() : {};
     
-    const baseCharge = window.BASE_DELIVERY_CHARGE || 39;
-    let delivery = baseCharge;
-    if (currentDeliveryType === 'scheduled') {
-      delivery = Math.round(baseCharge * 0.75);
+    // Store open check
+    if (settings.isStoreOpen === false) {
+      showToast(settings.storeClosedNotice || 'Store is currently closed. We cannot process orders at this time.', 'error');
+      return;
     }
-    if (subtotal >= FREE_DELIVERY_THRESHOLD) {
-      delivery = 0;
+    
+    // Min order check
+    const minOrder = Number(settings.minOrderAmount || 0);
+    if (minOrder > 0 && subtotal < minOrder) {
+      showToast(`Minimum order amount is ₹${minOrder}. Please add ₹${minOrder - subtotal} more items.`, 'error');
+      return;
+    }
+    
+    const deliveryCalc = typeof window.calculateDelivery === 'function'
+      ? window.calculateDelivery(subtotal)
+      : { deliveryCharge: subtotal >= (window.FREE_DELIVERY_THRESHOLD || 199) ? 0 : 39 };
+      
+    let delivery = deliveryCalc.deliveryCharge;
+    if (currentDeliveryType === 'scheduled' && delivery > 0) {
+      delivery = Math.round(delivery * 0.75);
     }
     deliveryCharge = delivery;
-    const total = subtotal + deliveryCharge;
+    
+    const handlingFee = settings.handlingFee || settings.packagingFee || 0;
+    const convenienceFee = settings.convenienceFee || 0;
+    const total = subtotal + deliveryCharge + handlingFee + convenienceFee;
     
     // Get delivery slot
     let deliverySlotValue = null;
@@ -440,10 +456,13 @@ ${itemsList}
   function init() {
     initEventListeners();
     loadData();
-    toggleDeliverySlot();
-    console.log('✅ Checkout page initialized');
+    if (typeof window.onStoreSettingsChange === 'function') {
+      window.onStoreSettingsChange(() => {
+        renderOrderSummary();
+      });
+    }
+    console.log('✅ Checkout page initialized with dynamic settings');
   }
   
   init();
 })();
-

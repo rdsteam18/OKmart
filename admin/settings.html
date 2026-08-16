@@ -9,6 +9,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
+  <!-- Auth Protection -->
+  <script src="../js/admin-auth.js"></script>
+  
   <style>
     * {
       margin: 0;
@@ -109,30 +112,17 @@
       position: relative;
     }
     
-    .sidebar-nav a::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background: rgba(46,204,113,.1);
-      transition: width .3s;
-    }
-    
-    .sidebar-nav a:hover::before {
-      width: 100%;
-    }
-    
     .sidebar-nav a:hover {
       color: white;
+      background: rgba(255,255,255,.05);
       padding-left: 28px;
     }
     
     .sidebar-nav a.active {
-      background: rgba(46,204,113,.15);
+      background: rgba(132,194,37,.15);
       color: var(--primary);
       border-left: 3px solid var(--primary);
+      font-weight: 600;
     }
     
     .sidebar-footer {
@@ -149,6 +139,7 @@
       border-radius: 10px;
       cursor: pointer;
       transition: var(--transition);
+      font-weight: 600;
     }
     
     .sidebar-footer button:hover {
@@ -156,34 +147,12 @@
       color: var(--danger);
     }
     
-    /* Mobile Header */
-    .mobile-header {
-      display: none;
-      padding: 12px 16px;
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .menu-toggle {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-    
     /* Main Content */
     .main-content {
       flex: 1;
       margin-left: 280px;
-      padding: 24px;
-      max-width: 1400px;
+      padding: 32px;
+      max-width: 1300px;
     }
     
     .page-header {
@@ -191,55 +160,53 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
     }
     
     .page-header h1 {
       font-size: 1.8rem;
       font-weight: 800;
-      background: linear-gradient(135deg, var(--text), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
     
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 24px;
-      background: var(--card);
-      padding: 6px;
-      border-radius: 60px;
-      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      overflow-x: auto;
     }
     
     .tab-btn {
-      flex: 1;
-      padding: 12px 20px;
+      padding: 10px 20px;
       border: none;
       background: none;
-      border-radius: 40px;
+      font-size: .95rem;
       font-weight: 600;
-      font-size: .9rem;
-      cursor: pointer;
-      transition: var(--transition);
       color: var(--muted);
+      cursor: pointer;
+      border-radius: 12px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(0,0,0,.03);
     }
     
     .tab-btn.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      box-shadow: var(--shadow-sm);
+      background: var(--primary-light);
+      color: var(--primary-dark);
     }
     
     .tab-content {
       display: none;
-      animation: fadeIn 0.3s ease;
     }
     
     .tab-content.active {
       display: block;
+      animation: fadeIn .3s ease;
     }
     
     @keyframes fadeIn {
@@ -247,46 +214,43 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Settings Card */
+    /* Settings Cards */
     .settings-card {
       background: var(--card);
       border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
       border: 1px solid var(--border);
-      overflow: hidden;
-      margin-bottom: 20px;
     }
     
     .card-header {
-      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       border-bottom: 1px solid var(--border);
-      background: linear-gradient(135deg, var(--bg), var(--card));
+      padding-bottom: 12px;
     }
     
     .card-header h2 {
-      font-size: 1rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     
     .card-header p {
-      font-size: .75rem;
+      font-size: .85rem;
       color: var(--muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
     
     .setting-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      transition: var(--transition);
-    }
-    
-    .setting-row:hover {
-      background: var(--bg);
+      padding: 14px 0;
+      border-bottom: 1px solid #f1f5f9;
+      gap: 16px;
     }
     
     .setting-row:last-child {
@@ -298,249 +262,223 @@
     }
     
     .setting-info strong {
-      font-size: .9rem;
       display: block;
-      margin-bottom: 4px;
+      font-size: .95rem;
+      color: var(--text);
     }
     
     .setting-info small {
-      font-size: .7rem;
+      font-size: .8rem;
       color: var(--muted);
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 280px;
+    }
+    
+    .input-group input, .input-group textarea, .input-group select {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: .9rem;
+      background: #f8fafc;
+      transition: var(--transition);
+    }
+    
+    .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(132,194,37,0.15);
+    }
+    
+    .save-setting-btn {
+      padding: 10px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    
+    .save-setting-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    .btn-save-all {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    
+    .btn-save-all:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16,185,129,0.4);
     }
     
     /* Toggle Switch */
     .toggle-switch {
       width: 52px;
       height: 28px;
-      background: #cbd5e1;
-      border-radius: 14px;
-      position: relative;
+      background: #e2e8f0;
+      border-radius: 30px;
+      padding: 2px;
       cursor: pointer;
-      transition: .3s;
+      transition: var(--transition);
+      position: relative;
       flex-shrink: 0;
+    }
+    
+    .toggle-switch::after {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: 0 2px 4px rgba(0,0,0,.15);
     }
     
     .toggle-switch.active {
       background: var(--primary);
     }
     
-    .toggle-switch::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border-radius: 50%;
-      transition: .3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
-    
     .toggle-switch.active::after {
-      left: 26px;
+      transform: translateX(24px);
     }
     
-    /* Input Group */
-    .input-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    
-    .input-group input {
-      width: 120px;
-      padding: 8px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: .85rem;
-    }
-    
-    .input-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    
-    .save-setting-btn {
-      padding: 6px 16px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 20px;
-      font-size: .7rem;
-      cursor: pointer;
-    }
-    
-    /* Color Picker */
-    .color-preview {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      border: 2px solid var(--border);
-      cursor: pointer;
-    }
-    
-    .color-input {
-      width: 80px;
-      padding: 6px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-    }
-    
-    /* Admin Accounts */
-    .admin-list {
-      padding: 0 20px;
-    }
-    
-    .admin-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .admin-info {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .admin-email {
-      font-weight: 600;
-      font-size: .85rem;
-    }
-    
-    .admin-role {
-      font-size: .7rem;
-      color: var(--muted);
-    }
-    
-    .delete-admin-btn {
-      background: #fee2e2;
-      color: var(--danger);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: .7rem;
-    }
-    
-    .add-admin-form {
-      padding: 20px;
-      background: var(--bg);
+    /* Simulator Box */
+    .simulator-box {
+      background: #f1f5f9;
       border-radius: 16px;
-      margin: 16px;
-      display: flex;
-      gap: 12px;
+      padding: 18px;
+      margin-top: 16px;
+      border: 1px dashed #cbd5e1;
     }
     
-    .add-admin-form input {
-      flex: 1;
-      padding: 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-    }
-    
-    /* Backup Section */
-    .backup-actions {
-      display: flex;
-      gap: 12px;
-      padding: 20px;
-      flex-wrap: wrap;
-    }
-    
-    .backup-btn {
-      flex: 1;
-      padding: 12px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
+    .simulator-title {
+      font-weight: 700;
+      font-size: .9rem;
+      margin-bottom: 8px;
+      color: #334155;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
+      gap: 6px;
     }
     
-    .backup-btn.danger {
-      background: #fee2e2;
-      color: var(--danger);
-      border-color: var(--danger);
+    .simulator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .sim-card {
+      background: white;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: .85rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .sim-card strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 4px;
     }
     
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--text);
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
       color: white;
-      padding: 12px 24px;
-      border-radius: 40px;
-      z-index: 1000;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      z-index: 9999;
+      box-shadow: 0 10px 25px rgba(0,0,0,.2);
+      transform: translateY(100px);
       opacity: 0;
-      transition: all .3s;
+      transition: all .3s cubic-bezier(0.4,0,0.2,1);
     }
     
     .toast.show {
+      transform: translateY(0);
       opacity: 1;
-      bottom: 50px;
     }
     
-    .toast.success {
-      background: var(--success);
+    .toast.success { background: #10b981; }
+    .toast.error { background: #ef4444; }
+    
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      z-index: 90;
+      align-items: center;
+      justify-content: space-between;
     }
     
-    .toast.error {
-      background: var(--danger);
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
     }
     
-    /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .sidebar {
         transform: translateX(-100%);
       }
-      
       .sidebar.open {
         transform: translateX(0);
       }
-      
       .main-content {
         margin-left: 0;
-        padding: 16px;
+        padding: 70px 16px 20px;
       }
-      
       .mobile-header {
         display: flex;
       }
-      
-      .tabs {
-        flex-direction: column;
-        border-radius: 20px;
-      }
-      
-      .tab-btn {
-        border-radius: 30px;
-      }
-      
       .setting-row {
         flex-direction: column;
-        gap: 12px;
         align-items: flex-start;
       }
-      
       .input-group {
         width: 100%;
       }
-      
-      .backup-actions {
-        flex-direction: column;
+      .simulator-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -567,14 +505,14 @@
       </nav>
       <div class="sidebar-footer">
         <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
+        <button onclick="window.open('../index.html','_blank')" style="margin-top:8px;">🏠 View Store</button>
       </div>
     </aside>
 
     <!-- Mobile Header -->
     <div class="mobile-header">
       <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span style="font-weight:700;">Settings</span>
+      <span style="font-weight:700;">Settings & Charges</span>
       <button class="menu-toggle" onclick="location.reload()">🔄</button>
     </div>
 
@@ -583,341 +521,313 @@
       
       <!-- Page Header -->
       <div class="page-header">
-        <h1>⚙️ Settings</h1>
+        <div>
+          <h1>⚙️ Store Settings & Live Charges</h1>
+          <p style="color:var(--muted); font-size:0.9rem; margin-top:4px;">Manage delivery charges, free delivery thresholds, taxes, notice banners, and store operations in real time.</p>
+        </div>
+        <button class="btn-save-all" onclick="saveAllStoreCharges()">
+          <span>⚡ Save All Charges & Rates</span>
+        </button>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab-btn active" data-tab="general">🏠 General</button>
+        <button class="tab-btn active" data-tab="charges">💰 Charges & Pricing</button>
+        <button class="tab-btn" data-tab="store-control">🏪 Store Operations</button>
+        <button class="tab-btn" data-tab="general">🏠 Store Profile</button>
         <button class="tab-btn" data-tab="appearance">🎨 Appearance</button>
         <button class="tab-btn" data-tab="admin">👑 Admin Accounts</button>
-        <button class="tab-btn" data-tab="backup">💾 Backup & Reset</button>
-        <button class="tab-btn" data-tab="notifications">🔔 Notifications</button>
+        <button class="tab-btn" data-tab="backup">💾 Backup & Export</button>
       </div>
 
-      <!-- General Settings Tab -->
-      <div class="tab-content active" id="tab-general">
-        
+      <!-- 1. CHARGES & PRICING TAB -->
+      <div class="tab-content active" id="tab-charges">
         <div class="settings-card">
           <div class="card-header">
-            <h2>🏪 Store Settings</h2>
-            <p>Configure your store basic information</p>
+            <div>
+              <h2>🚚 Delivery & Free Delivery Threshold</h2>
+              <p>These charges automatically apply across Cart, Checkout, Homepage, and Product pages.</p>
+            </div>
+            <span style="background:#e0f2fe;color:#0369a1;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">Live Synced</span>
           </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Store Name</strong>
-              <small>Name displayed on website</small>
-            </div>
-            <div class="input-group">
-              <input type="text" id="storeName" placeholder="OK Mart">
-              <button class="save-setting-btn" onclick="saveStoreName()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Store Phone</strong>
-              <small>Contact number for customers</small>
-            </div>
-            <div class="input-group">
-              <input type="tel" id="storePhone" placeholder="+919982239821">
-              <button class="save-setting-btn" onclick="saveStorePhone()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Store Email</strong>
-              <small>Support email address</small>
-            </div>
-            <div class="input-group">
-              <input type="email" id="storeEmail" placeholder="support@okmart.com">
-              <button class="save-setting-btn" onclick="saveStoreEmail()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Store Address</strong>
-              <small>Physical store address</small>
-            </div>
-            <div class="input-group">
-              <input type="text" id="storeAddress" placeholder="Store address">
-              <button class="save-setting-btn" onclick="saveStoreAddress()">Save</button>
-            </div>
-          </div>
-        </div>
 
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>💰 Tax & Fee Settings</h2>
-            <p>Configure tax rates and additional fees</p>
-          </div>
           <div class="setting-row">
             <div class="setting-info">
-              <strong>GST Rate (%)</strong>
-              <small>Goods and Services Tax</small>
+              <strong>Base Delivery Charge (₹)</strong>
+              <small>Default shipping fee applied to orders below free threshold</small>
             </div>
             <div class="input-group">
-              <input type="number" id="gstRate" step="0.1" placeholder="5">
-              <button class="save-setting-btn" onclick="saveGSTRate()">Save</button>
+              <input type="number" id="baseDeliveryCharge" min="0" placeholder="39" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('baseDeliveryCharge', 'Base delivery charge')">Save</button>
             </div>
           </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Service Charge (%)</strong>
-              <small>Additional service fee</small>
-            </div>
-            <div class="input-group">
-              <input type="number" id="serviceCharge" step="0.1" placeholder="0">
-              <button class="save-setting-btn" onclick="saveServiceCharge()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Convenience Fee (₹)</strong>
-              <small>Flat convenience fee per order</small>
-            </div>
-            <div class="input-group">
-              <input type="number" id="convenienceFee" placeholder="0">
-              <button class="save-setting-btn" onclick="saveConvenienceFee()">Save</button>
-            </div>
-          </div>
-        </div>
 
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>🚚 Delivery Settings</h2>
-            <p>Global delivery configuration</p>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Default Delivery Charge (₹)</strong>
-              <small>Applied when no pincode specific charge</small>
-            </div>
-            <div class="input-group">
-              <input type="number" id="defaultDeliveryCharge" placeholder="39">
-              <button class="save-setting-btn" onclick="saveDefaultDeliveryCharge()">Save</button>
-            </div>
-          </div>
           <div class="setting-row">
             <div class="setting-info">
               <strong>Free Delivery Threshold (₹)</strong>
-              <small>Orders above this get free delivery</small>
+              <small>Orders equal to or above this amount get FREE shipping</small>
             </div>
             <div class="input-group">
-              <input type="number" id="globalFreeThreshold" placeholder="499">
-              <button class="save-setting-btn" onclick="saveGlobalFreeThreshold()">Save</button>
+              <input type="number" id="freeDeliveryThreshold" min="0" placeholder="199" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('freeDeliveryThreshold', 'Free delivery threshold')">Save</button>
             </div>
           </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Max Delivery Distance (km)</strong>
-              <small>Maximum distance for delivery</small>
-            </div>
-            <div class="input-group">
-              <input type="number" id="maxDeliveryDistance" placeholder="10">
-              <button class="save-setting-btn" onclick="saveMaxDeliveryDistance()">Save</button>
-            </div>
-          </div>
-        </div>
 
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>🎁 Order Settings</h2>
-            <p>Configure order-related settings</p>
-          </div>
           <div class="setting-row">
             <div class="setting-info">
               <strong>Minimum Order Amount (₹)</strong>
-              <small>Minimum amount required to place order</small>
+              <small>Cart total required before customer can checkout (0 = no minimum)</small>
             </div>
             <div class="input-group">
-              <input type="number" id="minOrderAmount" placeholder="99">
-              <button class="save-setting-btn" onclick="saveMinOrderAmount()">Save</button>
+              <input type="number" id="minOrderAmount" min="0" placeholder="99" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('minOrderAmount', 'Minimum order amount')">Save</button>
             </div>
           </div>
+
           <div class="setting-row">
             <div class="setting-info">
-              <strong>Auto Cancel Time (minutes)</strong>
-              <small>Auto cancel unpaid orders after</small>
+              <strong>Quick Delivery Estimated Time (Minutes)</strong>
+              <small>Shown in header and delivery tags (e.g. 15 for 10-15 mins)</small>
             </div>
             <div class="input-group">
-              <input type="number" id="autoCancelTime" placeholder="30">
-              <button class="save-setting-btn" onclick="saveAutoCancelTime()">Save</button>
+              <input type="number" id="quickDeliveryTime" min="5" placeholder="15">
+              <button class="save-setting-btn" onclick="saveChargeField('quickDeliveryTime', 'Quick delivery time')">Save</button>
             </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Allow COD</strong>
-              <small>Enable/disable Cash on Delivery</small>
-            </div>
-            <div class="toggle-switch" id="allowCodToggle" onclick="toggleSetting('allowCod')"></div>
           </div>
         </div>
 
-      </div>
-
-      <!-- Appearance Settings Tab -->
-      <div class="tab-content" id="tab-appearance">
-        
         <div class="settings-card">
           <div class="card-header">
-            <h2>🎨 Theme Colors</h2>
+            <div>
+              <h2>📦 Additional Fees & Taxes</h2>
+              <p>Configure extra handling fees, convenience charges, or GST percentage.</p>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Handling / Packaging Fee (₹)</strong>
+              <small>Flat packaging charge added to customer bill (0 = disabled)</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="handlingFee" min="0" placeholder="0" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('handlingFee', 'Handling fee')">Save</button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Convenience Fee (₹)</strong>
+              <small>Flat platform convenience fee per order</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="convenienceFee" min="0" placeholder="0" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('convenienceFee', 'Convenience fee')">Save</button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>GST / Tax Rate (%)</strong>
+              <small>Goods and Services Tax percentage (e.g. 5 for 5%)</small>
+            </div>
+            <div class="input-group">
+              <input type="number" id="gstRate" min="0" step="0.1" placeholder="0" oninput="updateSimPreview()">
+              <button class="save-setting-btn" onclick="saveChargeField('gstRate', 'GST rate')">Save</button>
+            </div>
+          </div>
+
+          <!-- Simulator Box -->
+          <div class="simulator-box">
+            <div class="simulator-title">
+              <span>🛒 Live Customer Checkout Simulator</span>
+            </div>
+            <div class="simulator-grid" id="simGrid">
+              <div class="sim-card" id="simBelow">
+                <strong>Order of ₹100 (Below Threshold)</strong>
+                <span id="simBelowText">Delivery: ₹39 | Fees: ₹0 | Total: ₹139</span>
+              </div>
+              <div class="sim-card" id="simAbove" style="border-left: 4px solid #10b981;">
+                <strong>Order of ₹250 (Above Threshold)</strong>
+                <span id="simAboveText">Delivery: FREE 🎉 | Fees: ₹0 | Total: ₹250</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+            <button class="btn-save-all" onclick="saveAllStoreCharges()">
+              <span>⚡ Save All Charges to Entire Website</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. STORE OPERATIONS TAB -->
+      <div class="tab-content" id="tab-store-control">
+        <div class="settings-card">
+          <div class="card-header">
+            <div>
+              <h2>🏪 Store Status & Opening Hours</h2>
+              <p>Close store for nighttime or maintenance with instant notification to customers.</p>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Accepting Orders (Open / Closed)</strong>
+              <small>When closed, customers cannot place new orders and will see a polite notice</small>
+            </div>
+            <div class="toggle-switch" id="isStoreOpenToggle" onclick="toggleStoreOpen()"></div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Store Closed Message</strong>
+              <small>Custom message displayed when store is closed</small>
+            </div>
+            <div class="input-group" style="min-width:400px;">
+              <input type="text" id="storeClosedNotice" placeholder="We are currently closed for the night. Orders resume at 7:00 AM!">
+              <button class="save-setting-btn" onclick="saveChargeField('storeClosedNotice', 'Store closed message')">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <div>
+              <h2>📢 Website Top Announcement Bar</h2>
+              <p>Show a highlighted top notification bar on all pages (e.g. Sale, Discount Codes, Alerts).</p>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Enable Announcement Bar</strong>
+              <small>Displays a top banner at the very top of the website</small>
+            </div>
+            <div class="toggle-switch" id="announcementEnabledToggle" onclick="toggleAnnouncement()"></div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Announcement Message</strong>
+              <small>Text shown in the top notice bar</small>
+            </div>
+            <div class="input-group" style="min-width:400px;">
+              <input type="text" id="announcementText" placeholder="⚡ Fast 15-Minute Grocery Delivery across your area! Use code SAVE20 for ₹50 OFF">
+              <button class="save-setting-btn" onclick="saveChargeField('announcementText', 'Announcement message')">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="card-header">
+            <div>
+              <h2>💳 Payment Methods</h2>
+              <p>Enable or disable payment options on checkout.</p>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Allow Cash on Delivery (COD)</strong>
+              <small>Customers can pay cash upon delivery</small>
+            </div>
+            <div class="toggle-switch" id="allowCodToggle" onclick="toggleBooleanSetting('allowCod')"></div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <strong>Allow Online / UPI Payments</strong>
+              <small>Enable UPI QR / Online payment options</small>
+            </div>
+            <div class="toggle-switch" id="allowOnlineToggle" onclick="toggleBooleanSetting('allowOnline')"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. STORE PROFILE TAB -->
+      <div class="tab-content" id="tab-general">
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🏪 Store Profile & Contacts</h2>
+            <p>Configure contact information displayed on invoices and receipts</p>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info"><strong>Store Name</strong><small>Name displayed on header and receipts</small></div>
+            <div class="input-group"><input type="text" id="storeName" placeholder="OK Mart"><button class="save-setting-btn" onclick="saveChargeField('storeName', 'Store name')">Save</button></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info"><strong>Customer Support Phone</strong><small>Displayed for customer calls</small></div>
+            <div class="input-group"><input type="tel" id="storePhone" placeholder="+919982239821"><button class="save-setting-btn" onclick="saveChargeField('storePhone', 'Store phone')">Save</button></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info"><strong>Support Email</strong><small>Email address</small></div>
+            <div class="input-group"><input type="email" id="storeEmail" placeholder="support@okmart.com"><button class="save-setting-btn" onclick="saveChargeField('storeEmail', 'Store email')">Save</button></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info"><strong>Store Address</strong><small>Physical warehouse/store address</small></div>
+            <div class="input-group"><input type="text" id="storeAddress" placeholder="Store address"><button class="save-setting-btn" onclick="saveChargeField('storeAddress', 'Store address')">Save</button></div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-info"><strong>Admin WhatsApp Number</strong><small>Number that receives new order alerts</small></div>
+            <div class="input-group"><input type="text" id="adminWhatsapp" placeholder="919982239821"><button class="save-setting-btn" onclick="saveChargeField('adminWhatsapp', 'Admin WhatsApp')">Save</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. APPEARANCE TAB -->
+      <div class="tab-content" id="tab-appearance">
+        <div class="settings-card">
+          <div class="card-header">
+            <h2>🎨 Theme Colors & Branding</h2>
             <p>Customize your store's appearance</p>
           </div>
           <div class="setting-row">
-            <div class="setting-info">
-              <strong>Primary Color</strong>
-              <small>Main brand color</small>
-            </div>
-            <div class="input-group">
-              <input type="color" id="primaryColor" value="#84c225">
-              <button class="save-setting-btn" onclick="savePrimaryColor()">Apply</button>
-            </div>
+            <div class="setting-info"><strong>Primary Brand Color</strong><small>Main color used on buttons and highlights</small></div>
+            <div class="input-group"><input type="color" id="primaryColor" value="#84c225"><button class="save-setting-btn" onclick="saveChargeField('primaryColor', 'Primary color')">Apply</button></div>
           </div>
           <div class="setting-row">
-            <div class="setting-info">
-              <strong>Secondary Color</strong>
-              <small>Accent color</small>
-            </div>
-            <div class="input-group">
-              <input type="color" id="secondaryColor" value="#5f930e">
-              <button class="save-setting-btn" onclick="saveSecondaryColor()">Apply</button>
-            </div>
+            <div class="setting-info"><strong>Logo URL</strong><small>Image link for store logo</small></div>
+            <div class="input-group"><input type="url" id="logoUrl" placeholder="https://..."><button class="save-setting-btn" onclick="saveChargeField('logoUrl', 'Logo URL')">Save</button></div>
           </div>
         </div>
-
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>🖼️ Logo & Favicon</h2>
-            <p>Update your store logos</p>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Logo URL</strong>
-              <small>Store logo image link</small>
-            </div>
-            <div class="input-group">
-              <input type="url" id="logoUrl" placeholder="https://...">
-              <button class="save-setting-btn" onclick="saveLogoUrl()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Favicon URL</strong>
-              <small>Browser tab icon</small>
-            </div>
-            <div class="input-group">
-              <input type="url" id="faviconUrl" placeholder="https://...">
-              <button class="save-setting-btn" onclick="saveFaviconUrl()">Save</button>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- Admin Accounts Tab -->
+      <!-- 5. ADMIN ACCOUNTS TAB -->
       <div class="tab-content" id="tab-admin">
-        
         <div class="settings-card">
           <div class="card-header">
-            <h2>👑 Admin Accounts</h2>
-            <p>Manage administrator access</p>
+            <h2>👑 Admin Accounts & Sub-Admins</h2>
+            <p>Manage administrator access to dashboard</p>
           </div>
-          <div class="admin-list" id="adminList">
-            <div style="padding:20px;text-align:center;">Loading admins...</div>
+          <div id="adminList" style="margin-bottom:20px;">
+            <div style="padding:15px;text-align:center;color:var(--muted);">Loading admins...</div>
           </div>
-          <div class="add-admin-form">
-            <input type="email" id="newAdminEmail" placeholder="admin@example.com">
-            <input type="password" id="newAdminPassword" placeholder="Password">
-            <button class="save-setting-btn" onclick="addAdmin()">Add Admin</button>
+          <div class="card-header" style="border-top:1px solid var(--border); padding-top:16px;">
+            <h3>➕ Add New Admin</h3>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr auto; gap:12px; margin-top:12px;">
+            <input type="text" id="newAdminUser" placeholder="Username / Email" style="padding:10px 14px; border:1.5px solid var(--border); border-radius:12px;">
+            <input type="password" id="newAdminPass" placeholder="Password" style="padding:10px 14px; border:1.5px solid var(--border); border-radius:12px;">
+            <button class="save-setting-btn" onclick="addNewAdmin()">Add Admin</button>
           </div>
         </div>
-
       </div>
 
-      <!-- Backup & Reset Tab -->
+      <!-- 6. BACKUP & EXPORT TAB -->
       <div class="tab-content" id="tab-backup">
-        
         <div class="settings-card">
           <div class="card-header">
-            <h2>💾 Backup Data</h2>
-            <p>Export your store data</p>
+            <h2>💾 Data Export & Backups</h2>
+            <p>Download your store products, orders, and customer data</p>
           </div>
-          <div class="backup-actions">
-            <button class="backup-btn" onclick="exportOrders()">📋 Export Orders (CSV)</button>
-            <button class="backup-btn" onclick="exportProducts()">📦 Export Products (CSV)</button>
-            <button class="backup-btn" onclick="exportCustomers()">👥 Export Customers (CSV)</button>
-            <button class="backup-btn" onclick="exportAllData()">💾 Export All Data (JSON)</button>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>🔄 Reset Options</h2>
-            <p>⚠️ Warning: These actions cannot be undone</p>
-          </div>
-          <div class="backup-actions">
-            <button class="backup-btn danger" onclick="resetSettings()">Reset All Settings</button>
-            <button class="backup-btn danger" onclick="clearAllData()">Clear All Data</button>
+          <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            <button class="save-setting-btn" style="background:#3b82f6;" onclick="exportCSV('orders')">📋 Export Orders (CSV)</button>
+            <button class="save-setting-btn" style="background:#10b981;" onclick="exportCSV('products')">📦 Export Products (CSV)</button>
+            <button class="save-setting-btn" style="background:#8b5cf6;" onclick="exportCSV('customers')">👥 Export Customers (CSV)</button>
           </div>
         </div>
-
-      </div>
-
-      <!-- Notifications Tab -->
-      <div class="tab-content" id="tab-notifications">
-        
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>🔔 Push Notifications</h2>
-            <p>Configure notification settings</p>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Enable Push Notifications</strong>
-              <small>Send push notifications to customers</small>
-            </div>
-            <div class="toggle-switch" id="pushNotificationsToggle" onclick="toggleSetting('pushNotifications')"></div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Order Status Notifications</strong>
-              <small>Notify customers on order status change</small>
-            </div>
-            <div class="toggle-switch" id="orderStatusNotifyToggle" onclick="toggleSetting('orderStatusNotify')"></div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Promotional Notifications</strong>
-              <small>Send offers and deals</small>
-            </div>
-            <div class="toggle-switch" id="promoNotifyToggle" onclick="toggleSetting('promoNotify')"></div>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <div class="card-header">
-            <h2>📱 WhatsApp Settings</h2>
-            <p>Configure WhatsApp notification</p>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Admin WhatsApp Number</strong>
-              <small>Receive order notifications</small>
-            </div>
-            <div class="input-group">
-              <input type="tel" id="adminWhatsapp" placeholder="919982239821">
-              <button class="save-setting-btn" onclick="saveAdminWhatsapp()">Save</button>
-            </div>
-          </div>
-          <div class="setting-row">
-            <div class="setting-info">
-              <strong>Send Order Confirmation to Customer</strong>
-              <small>Auto WhatsApp on order placement</small>
-            </div>
-            <div class="toggle-switch" id="customerWhatsappToggle" onclick="toggleSetting('customerWhatsapp')"></div>
-          </div>
-        </div>
-
       </div>
 
     </main>
@@ -926,446 +836,336 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
-    // ===== ADVANCED SETTINGS SYSTEM =====
+    // ===== LIVE SETTINGS & CHARGES SYSTEM =====
     
     let appSettings = {};
     
-    // Load Settings from Firebase
-    async function loadSettings() {
-      try {
-        const doc = await db.collection('settings').doc('app').get();
-        if (doc.exists) {
-          appSettings = doc.data();
-        } else {
-          // Default settings
-          appSettings = {
-            storeName: 'OK Mart',
-            storePhone: '+919982239821',
-            storeEmail: 'support@okmart.com',
-            storeAddress: '',
-            primaryColor: '#84c225',
-            secondaryColor: '#5f930e',
-            logoUrl: '',
-            faviconUrl: '',
-            gstRate: 5,
-            serviceCharge: 0,
-            convenienceFee: 0,
-            defaultDeliveryCharge: 39,
-            globalFreeThreshold: 499,
-            maxDeliveryDistance: 10,
-            minOrderAmount: 99,
-            autoCancelTime: 30,
-            allowCod: true,
-            pushNotifications: true,
-            orderStatusNotify: true,
-            promoNotify: true,
-            adminWhatsapp: '919982239821',
-            customerWhatsapp: true
-          };
-          await db.collection('settings').doc('app').set(appSettings);
-        }
-        applySettingsToUI();
-        applyThemeColors();
-      } catch (error) {
-        console.error('Error loading settings:', error);
-      }
-    }
-    
-    // Apply settings to UI
-    function applySettingsToUI() {
-      document.getElementById('storeName').value = appSettings.storeName || '';
-      document.getElementById('storePhone').value = appSettings.storePhone || '';
-      document.getElementById('storeEmail').value = appSettings.storeEmail || '';
-      document.getElementById('storeAddress').value = appSettings.storeAddress || '';
-      document.getElementById('gstRate').value = appSettings.gstRate || 5;
-      document.getElementById('serviceCharge').value = appSettings.serviceCharge || 0;
-      document.getElementById('convenienceFee').value = appSettings.convenienceFee || 0;
-      document.getElementById('defaultDeliveryCharge').value = appSettings.defaultDeliveryCharge || 39;
-      document.getElementById('globalFreeThreshold').value = appSettings.globalFreeThreshold || 499;
-      document.getElementById('maxDeliveryDistance').value = appSettings.maxDeliveryDistance || 10;
-      document.getElementById('minOrderAmount').value = appSettings.minOrderAmount || 99;
-      document.getElementById('autoCancelTime').value = appSettings.autoCancelTime || 30;
-      document.getElementById('primaryColor').value = appSettings.primaryColor || '#84c225';
-      document.getElementById('secondaryColor').value = appSettings.secondaryColor || '#5f930e';
-      document.getElementById('logoUrl').value = appSettings.logoUrl || '';
-      document.getElementById('faviconUrl').value = appSettings.faviconUrl || '';
-      document.getElementById('adminWhatsapp').value = appSettings.adminWhatsapp || '919982239821';
-      
-      // Toggles
-      updateToggle('allowCodToggle', appSettings.allowCod);
-      updateToggle('pushNotificationsToggle', appSettings.pushNotifications);
-      updateToggle('orderStatusNotifyToggle', appSettings.orderStatusNotify);
-      updateToggle('promoNotifyToggle', appSettings.promoNotify);
-      updateToggle('customerWhatsappToggle', appSettings.customerWhatsapp);
-    }
-    
-    function updateToggle(elementId, value) {
-      const el = document.getElementById(elementId);
-      if (el) {
-        if (value) el.classList.add('active');
-        else el.classList.remove('active');
-      }
-    }
-    
-    function applyThemeColors() {
-      document.documentElement.style.setProperty('--primary', appSettings.primaryColor);
-      document.documentElement.style.setProperty('--primary-dark', appSettings.secondaryColor);
-      document.documentElement.style.setProperty('--primary-light', appSettings.primaryColor + '20');
-    }
-    
-    // Save Functions
-    async function saveStoreName() {
-      const value = document.getElementById('storeName').value;
-      await db.collection('settings').doc('app').update({ storeName: value });
-      appSettings.storeName = value;
-      showToast('Store name updated', 'success');
-    }
-    
-    async function saveStorePhone() {
-      const value = document.getElementById('storePhone').value;
-      await db.collection('settings').doc('app').update({ storePhone: value });
-      appSettings.storePhone = value;
-      showToast('Store phone updated', 'success');
-    }
-    
-    async function saveStoreEmail() {
-      const value = document.getElementById('storeEmail').value;
-      await db.collection('settings').doc('app').update({ storeEmail: value });
-      appSettings.storeEmail = value;
-      showToast('Store email updated', 'success');
-    }
-    
-    async function saveStoreAddress() {
-      const value = document.getElementById('storeAddress').value;
-      await db.collection('settings').doc('app').update({ storeAddress: value });
-      appSettings.storeAddress = value;
-      showToast('Store address updated', 'success');
-    }
-    
-    async function saveGSTRate() {
-      const value = parseFloat(document.getElementById('gstRate').value);
-      await db.collection('settings').doc('app').update({ gstRate: value });
-      appSettings.gstRate = value;
-      showToast('GST rate updated', 'success');
-    }
-    
-    async function saveServiceCharge() {
-      const value = parseFloat(document.getElementById('serviceCharge').value);
-      await db.collection('settings').doc('app').update({ serviceCharge: value });
-      appSettings.serviceCharge = value;
-      showToast('Service charge updated', 'success');
-    }
-    
-    async function saveConvenienceFee() {
-      const value = parseFloat(document.getElementById('convenienceFee').value);
-      await db.collection('settings').doc('app').update({ convenienceFee: value });
-      appSettings.convenienceFee = value;
-      showToast('Convenience fee updated', 'success');
-    }
-    
-    async function saveDefaultDeliveryCharge() {
-      const value = parseFloat(document.getElementById('defaultDeliveryCharge').value);
-      await db.collection('settings').doc('app').update({ defaultDeliveryCharge: value });
-      appSettings.defaultDeliveryCharge = value;
-      showToast('Default delivery charge updated', 'success');
-    }
-    
-    async function saveGlobalFreeThreshold() {
-      const value = parseFloat(document.getElementById('globalFreeThreshold').value);
-      await db.collection('settings').doc('app').update({ globalFreeThreshold: value });
-      appSettings.globalFreeThreshold = value;
-      showToast('Free delivery threshold updated', 'success');
-    }
-    
-    async function saveMaxDeliveryDistance() {
-      const value = parseFloat(document.getElementById('maxDeliveryDistance').value);
-      await db.collection('settings').doc('app').update({ maxDeliveryDistance: value });
-      appSettings.maxDeliveryDistance = value;
-      showToast('Max delivery distance updated', 'success');
-    }
-    
-    async function saveMinOrderAmount() {
-      const value = parseFloat(document.getElementById('minOrderAmount').value);
-      await db.collection('settings').doc('app').update({ minOrderAmount: value });
-      appSettings.minOrderAmount = value;
-      showToast('Minimum order amount updated', 'success');
-    }
-    
-    async function saveAutoCancelTime() {
-      const value = parseFloat(document.getElementById('autoCancelTime').value);
-      await db.collection('settings').doc('app').update({ autoCancelTime: value });
-      appSettings.autoCancelTime = value;
-      showToast('Auto cancel time updated', 'success');
-    }
-    
-    async function savePrimaryColor() {
-      const value = document.getElementById('primaryColor').value;
-      await db.collection('settings').doc('app').update({ primaryColor: value });
-      appSettings.primaryColor = value;
-      applyThemeColors();
-      showToast('Primary color updated', 'success');
-    }
-    
-    async function saveSecondaryColor() {
-      const value = document.getElementById('secondaryColor').value;
-      await db.collection('settings').doc('app').update({ secondaryColor: value });
-      appSettings.secondaryColor = value;
-      applyThemeColors();
-      showToast('Secondary color updated', 'success');
-    }
-    
-    async function saveLogoUrl() {
-      const value = document.getElementById('logoUrl').value;
-      await db.collection('settings').doc('app').update({ logoUrl: value });
-      appSettings.logoUrl = value;
-      showToast('Logo URL updated', 'success');
-    }
-    
-    async function saveFaviconUrl() {
-      const value = document.getElementById('faviconUrl').value;
-      await db.collection('settings').doc('app').update({ faviconUrl: value });
-      appSettings.faviconUrl = value;
-      showToast('Favicon URL updated', 'success');
-    }
-    
-    async function saveAdminWhatsapp() {
-      const value = document.getElementById('adminWhatsapp').value;
-      await db.collection('settings').doc('app').update({ adminWhatsapp: value });
-      appSettings.adminWhatsapp = value;
-      showToast('Admin WhatsApp number updated', 'success');
-    }
-    
-    window.toggleSetting = async function(setting) {
-      const newValue = !appSettings[setting];
-      await db.collection('settings').doc('app').update({ [setting]: newValue });
-      appSettings[setting] = newValue;
-      updateToggle(setting + 'Toggle', newValue);
-      showToast(`${setting} ${newValue ? 'enabled' : 'disabled'}`, 'success');
-    };
-    
-    // Tab Switching
+    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        const target = document.getElementById(`tab-${btn.dataset.tab}`);
+        if (target) target.classList.add('active');
       });
     });
     
-    // Export Functions
-    async function exportOrders() {
-      const snapshot = await db.collection('orders').get();
-      const orders = [];
-      snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
-      
-      const csv = convertToCSV(orders);
-      downloadFile(csv, 'orders_export.csv', 'text/csv');
-      showToast('Orders exported successfully', 'success');
-    }
-    
-    async function exportProducts() {
-      const snapshot = await db.collection('products').get();
-      const products = [];
-      snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
-      
-      const csv = convertToCSV(products);
-      downloadFile(csv, 'products_export.csv', 'text/csv');
-      showToast('Products exported successfully', 'success');
-    }
-    
-    async function exportCustomers() {
-      const snapshot = await db.collection('orders').get();
-      const customers = new Map();
-      snapshot.forEach(doc => {
-        const order = doc.data();
-        const phone = order.customerPhone || order.phone;
-        if (phone && !customers.has(phone)) {
-          customers.set(phone, {
-            name: order.customerName || order.name,
-            phone: phone,
-            email: order.email || '',
-            totalOrders: 1,
-            totalSpent: order.total || 0
-          });
-        } else if (phone) {
-          const c = customers.get(phone);
-          c.totalOrders++;
-          c.totalSpent += order.total || 0;
-        }
-      });
-      
-      const csv = convertToCSV(Array.from(customers.values()));
-      downloadFile(csv, 'customers_export.csv', 'text/csv');
-      showToast('Customers exported successfully', 'success');
-    }
-    
-    async function exportAllData() {
-      const collections = ['products', 'orders', 'offers', 'banners', 'pincodes'];
-      const allData = {};
-      
-      for (const col of collections) {
-        const snapshot = await db.collection(col).get();
-        allData[col] = [];
-        snapshot.forEach(doc => allData[col].push({ id: doc.id, ...doc.data() }));
-      }
-      
-      const dataStr = JSON.stringify(allData, null, 2);
-      downloadFile(dataStr, `okmart_backup_${new Date().toISOString().slice(0,19)}.json`, 'application/json');
-      showToast('All data exported successfully', 'success');
-    }
-    
-    function convertToCSV(data) {
-      if (!data.length) return '';
-      const headers = Object.keys(data[0]);
-      const csvRows = [headers.join(',')];
-      
-      for (const row of data) {
-        const values = headers.map(header => {
-          let val = row[header];
-          if (val === undefined) val = '';
-          if (typeof val === 'object') val = JSON.stringify(val);
-          return `"${String(val).replace(/"/g, '""')}"`;
-        });
-        csvRows.push(values.join(','));
-      }
-      
-      return csvRows.join('\n');
-    }
-    
-    function downloadFile(content, filename, type) {
-      const blob = new Blob([content], { type: type });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
-    
-    // Reset Functions
-    async function resetSettings() {
-      if (confirm('⚠️ Are you sure you want to reset all settings to default? This cannot be undone!')) {
-        const defaultSettings = {
+    // Load Settings from Firebase
+    async function loadSettings() {
+      try {
+        const [appDoc, deliveryDoc] = await Promise.all([
+          db.collection('settings').doc('app').get(),
+          db.collection('settings').doc('delivery').get()
+        ]);
+        
+        const appData = appDoc.exists ? appDoc.data() : {};
+        const deliveryData = deliveryDoc.exists ? deliveryDoc.data() : {};
+        
+        appSettings = {
           storeName: 'OK Mart',
           storePhone: '+919982239821',
           storeEmail: 'support@okmart.com',
           storeAddress: '',
-          primaryColor: '#84c225',
-          secondaryColor: '#5f930e',
-          gstRate: 5,
-          serviceCharge: 0,
-          convenienceFee: 0,
-          defaultDeliveryCharge: 39,
-          globalFreeThreshold: 499,
-          maxDeliveryDistance: 10,
+          baseDeliveryCharge: 39,
+          freeDeliveryThreshold: 199,
           minOrderAmount: 99,
-          autoCancelTime: 30,
+          handlingFee: 0,
+          convenienceFee: 0,
+          gstRate: 0,
+          quickDeliveryTime: 15,
+          isStoreOpen: true,
+          storeClosedNotice: 'We are currently closed for the night. Orders will resume at 7:00 AM!',
+          announcementEnabled: false,
+          announcementText: '⚡ Fast 15-Minute Grocery Delivery across your neighborhood!',
           allowCod: true,
-          pushNotifications: true,
-          orderStatusNotify: true,
-          promoNotify: true,
+          allowOnline: true,
           adminWhatsapp: '919982239821',
-          customerWhatsapp: true
+          primaryColor: '#84c225',
+          logoUrl: '',
+          ...appData,
+          ...deliveryData
         };
-        await db.collection('settings').doc('app').set(defaultSettings);
-        appSettings = defaultSettings;
-        applySettingsToUI();
-        applyThemeColors();
-        showToast('Settings reset to default', 'success');
+        
+        // Populate UI inputs
+        populateInputs();
+        updateSimPreview();
+        loadAdminsList();
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        showToast('Error loading store settings', 'error');
       }
     }
     
-    async function clearAllData() {
-      if (confirm('⚠️⚠️⚠️ DANGER: This will delete ALL products, orders, coupons, banners, and pincodes! This cannot be undone! ⚠️⚠️⚠️')) {
-        const collections = ['products', 'orders', 'offers', 'banners', 'pincodes'];
-        for (const col of collections) {
-          const snapshot = await db.collection(col).get();
-          for (const doc of snapshot.docs) {
-            await db.collection(col).doc(doc.id).delete();
-          }
+    function populateInputs() {
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val !== undefined && val !== null ? val : '';
+      };
+      
+      setVal('baseDeliveryCharge', appSettings.baseDeliveryCharge || appSettings.defaultDeliveryCharge || 39);
+      setVal('freeDeliveryThreshold', appSettings.freeDeliveryThreshold || appSettings.globalFreeThreshold || 199);
+      setVal('minOrderAmount', appSettings.minOrderAmount || 99);
+      setVal('handlingFee', appSettings.handlingFee || appSettings.packagingFee || 0);
+      setVal('convenienceFee', appSettings.convenienceFee || 0);
+      setVal('gstRate', appSettings.gstRate || 0);
+      setVal('quickDeliveryTime', appSettings.quickDeliveryTime || 15);
+      
+      setVal('storeClosedNotice', appSettings.storeClosedNotice || '');
+      setVal('announcementText', appSettings.announcementText || '');
+      setVal('storeName', appSettings.storeName || 'OK Mart');
+      setVal('storePhone', appSettings.storePhone || '');
+      setVal('storeEmail', appSettings.storeEmail || '');
+      setVal('storeAddress', appSettings.storeAddress || '');
+      setVal('adminWhatsapp', appSettings.adminWhatsapp || '');
+      setVal('primaryColor', appSettings.primaryColor || '#84c225');
+      setVal('logoUrl', appSettings.logoUrl || '');
+      
+      // Toggles
+      updateToggleUI('isStoreOpenToggle', appSettings.isStoreOpen !== false);
+      updateToggleUI('announcementEnabledToggle', appSettings.announcementEnabled === true);
+      updateToggleUI('allowCodToggle', appSettings.allowCod !== false);
+      updateToggleUI('allowOnlineToggle', appSettings.allowOnline !== false);
+    }
+    
+    function updateToggleUI(id, active) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.toggle('active', !!active);
+      }
+    }
+    
+    // Live Simulator Preview
+    window.updateSimPreview = function() {
+      const baseCharge = Number(document.getElementById('baseDeliveryCharge')?.value || 39);
+      const freeThreshold = Number(document.getElementById('freeDeliveryThreshold')?.value || 199);
+      const handlingFee = Number(document.getElementById('handlingFee')?.value || 0);
+      const convenienceFee = Number(document.getElementById('convenienceFee')?.value || 0);
+      const gstRate = Number(document.getElementById('gstRate')?.value || 0);
+      
+      const extraFees = handlingFee + convenienceFee;
+      
+      // Order 100
+      const order100Tax = gstRate > 0 ? Math.round((100 * gstRate) / 100) : 0;
+      const order100Delivery = 100 >= freeThreshold ? 0 : baseCharge;
+      const order100Total = 100 + order100Delivery + extraFees + order100Tax;
+      
+      // Order 250
+      const order250Tax = gstRate > 0 ? Math.round((250 * gstRate) / 100) : 0;
+      const order250Delivery = 250 >= freeThreshold ? 0 : baseCharge;
+      const order250Total = 250 + order250Delivery + extraFees + order250Tax;
+      
+      const elBelow = document.getElementById('simBelowText');
+      if (elBelow) {
+        elBelow.textContent = `Delivery: ₹${order100Delivery} | Extra Fees: ₹${extraFees} | Tax: ₹${order100Tax} | Total: ₹${order100Total}`;
+      }
+      
+      const elAbove = document.getElementById('simAboveText');
+      if (elAbove) {
+        elAbove.textContent = `Delivery: ${order250Delivery === 0 ? 'FREE 🎉' : '₹' + order250Delivery} | Extra Fees: ₹${extraFees} | Tax: ₹${order250Tax} | Total: ₹${order250Total}`;
+      }
+    };
+    
+    // Save single charge field
+    window.saveChargeField = async function(fieldId, label) {
+      const el = document.getElementById(fieldId);
+      if (!el) return;
+      
+      let val = el.value;
+      if (el.type === 'number') val = Number(val);
+      
+      try {
+        const updatePayload = { [fieldId]: val };
+        
+        // Save to settings/app
+        await db.collection('settings').doc('app').set(updatePayload, { merge: true });
+        
+        // Also sync to settings/delivery for delivery-specific fields
+        if (['baseDeliveryCharge', 'freeDeliveryThreshold', 'quickDeliveryTime'].includes(fieldId)) {
+          await db.collection('settings').doc('delivery').set(updatePayload, { merge: true });
         }
-        showToast('All data cleared', 'success');
+        
+        appSettings[fieldId] = val;
+        showToast(`✅ ${label} updated!`, 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Error saving setting', 'error');
       }
-    }
+    };
     
-    // Admin Accounts
-    async function loadAdmins() {
-      const snapshot = await db.collection('admins').get();
-      const adminList = document.getElementById('adminList');
-      if (snapshot.empty) {
-        adminList.innerHTML = '<div style="padding:20px;text-align:center;">No admin accounts</div>';
-        return;
-      }
+    // One-Click Save All Charges
+    window.saveAllStoreCharges = async function() {
+      const baseDeliveryCharge = Number(document.getElementById('baseDeliveryCharge')?.value || 39);
+      const freeDeliveryThreshold = Number(document.getElementById('freeDeliveryThreshold')?.value || 199);
+      const minOrderAmount = Number(document.getElementById('minOrderAmount')?.value || 99);
+      const quickDeliveryTime = Number(document.getElementById('quickDeliveryTime')?.value || 15);
+      const handlingFee = Number(document.getElementById('handlingFee')?.value || 0);
+      const convenienceFee = Number(document.getElementById('convenienceFee')?.value || 0);
+      const gstRate = Number(document.getElementById('gstRate')?.value || 0);
       
-      let html = '';
-      snapshot.forEach(doc => {
-        const admin = doc.data();
-        html += `
-          <div class="admin-item">
-            <div class="admin-info">
-              <span class="admin-email">${admin.email}</span>
-              <span class="admin-role">${admin.role || 'Admin'}</span>
+      const chargesData = {
+        baseDeliveryCharge,
+        defaultDeliveryCharge: baseDeliveryCharge,
+        freeDeliveryThreshold,
+        globalFreeThreshold: freeDeliveryThreshold,
+        minOrderAmount,
+        quickDeliveryTime,
+        handlingFee,
+        packagingFee: handlingFee,
+        convenienceFee,
+        gstRate,
+        updatedAt: new Date().toISOString()
+      };
+      
+      try {
+        await Promise.all([
+          db.collection('settings').doc('app').set(chargesData, { merge: true }),
+          db.collection('settings').doc('delivery').set(chargesData, { merge: true })
+        ]);
+        
+        appSettings = { ...appSettings, ...chargesData };
+        showToast('🎉 All charges updated & applied to entire store in real time!', 'success');
+      } catch (e) {
+        console.error(e);
+        showToast('Error saving all charges', 'error');
+      }
+    };
+    
+    // Toggles
+    window.toggleStoreOpen = async function() {
+      const nextVal = !(appSettings.isStoreOpen !== false);
+      try {
+        await db.collection('settings').doc('app').set({ isStoreOpen: nextVal }, { merge: true });
+        appSettings.isStoreOpen = nextVal;
+        updateToggleUI('isStoreOpenToggle', nextVal);
+        showToast(`Store is now ${nextVal ? 'OPEN' : 'CLOSED'}`, 'success');
+      } catch (e) { showToast('Error updating store status', 'error'); }
+    };
+    
+    window.toggleAnnouncement = async function() {
+      const nextVal = !(appSettings.announcementEnabled === true);
+      try {
+        await db.collection('settings').doc('app').set({ announcementEnabled: nextVal }, { merge: true });
+        appSettings.announcementEnabled = nextVal;
+        updateToggleUI('announcementEnabledToggle', nextVal);
+        showToast(`Announcement bar ${nextVal ? 'ENABLED' : 'DISABLED'}`, 'success');
+      } catch (e) { showToast('Error updating announcement', 'error'); }
+    };
+    
+    window.toggleBooleanSetting = async function(field) {
+      const nextVal = !(appSettings[field] !== false);
+      try {
+        await db.collection('settings').doc('app').set({ [field]: nextVal }, { merge: true });
+        appSettings[field] = nextVal;
+        updateToggleUI(`${field}Toggle`, nextVal);
+        showToast(`Setting ${nextVal ? 'Enabled' : 'Disabled'}`, 'success');
+      } catch (e) { showToast('Error saving setting', 'error'); }
+    };
+    
+    // Load Admin Accounts
+    async function loadAdminsList() {
+      const container = document.getElementById('adminList');
+      if (!container) return;
+      
+      try {
+        const snap = await db.collection('admins').get();
+        if (snap.empty) {
+          container.innerHTML = '<div style="padding:10px;color:var(--muted);">No admins in Firestore (Using default fallback)</div>';
+          return;
+        }
+        
+        let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+        snap.forEach(doc => {
+          const d = doc.data();
+          html += `
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:10px 16px;border-radius:12px;">
+              <div>
+                <strong>${d.username || d.email || 'Admin'}</strong> 
+                <span style="font-size:0.75rem;padding:2px 8px;border-radius:10px;background:#e0f2fe;color:#0284c7;margin-left:6px;">${d.role || 'admin'}</span>
+              </div>
+              <button onclick="deleteAdmin('${doc.id}')" style="background:#fee2e2;color:#ef4444;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.8rem;">Delete</button>
             </div>
-            ${admin.email !== localStorage.getItem('adminEmail') ? `<button class="delete-admin-btn" onclick="deleteAdmin('${doc.id}')">Remove</button>` : '<span style="font-size:.7rem;color:var(--muted);">You</span>'}
-          </div>
-        `;
-      });
-      adminList.innerHTML = html;
+          `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      } catch (e) {
+        container.innerHTML = '<div style="padding:10px;color:var(--muted);">Admin list unavailable</div>';
+      }
     }
     
-    async function addAdmin() {
-      const email = document.getElementById('newAdminEmail').value;
-      const password = document.getElementById('newAdminPassword').value;
-      
-      if (!email || !password) {
-        showToast('Please enter email and password', 'error');
+    window.addNewAdmin = async function() {
+      const user = document.getElementById('newAdminUser')?.value.trim();
+      const pass = document.getElementById('newAdminPass')?.value.trim();
+      if (!user || !pass) {
+        showToast('Please enter username/email and password', 'error');
         return;
       }
       
-      // In production, use Firebase Auth
-      await db.collection('admins').doc().set({
-        email: email,
-        password: btoa(password), // Simple encoding - use proper auth in production
-        role: 'admin',
-        createdAt: new Date().toISOString()
-      });
-      
-      document.getElementById('newAdminEmail').value = '';
-      document.getElementById('newAdminPassword').value = '';
-      loadAdmins();
-      showToast('Admin added successfully', 'success');
-    }
-    
-    async function deleteAdmin(id) {
-      if (confirm('Remove this admin?')) {
-        await db.collection('admins').doc(id).delete();
-        loadAdmins();
-        showToast('Admin removed', 'success');
+      try {
+        await db.collection('admins').add({
+          username: user,
+          email: user.includes('@') ? user : `${user}@okmart.com`,
+          password: pass,
+          role: 'admin',
+          active: true,
+          createdAt: new Date().toISOString()
+        });
+        showToast('Admin added successfully!', 'success');
+        document.getElementById('newAdminUser').value = '';
+        document.getElementById('newAdminPass').value = '';
+        loadAdminsList();
+      } catch (e) {
+        showToast('Error adding admin', 'error');
       }
-    }
+    };
     
-    function showToast(message, type) {
+    window.deleteAdmin = async function(id) {
+      if (confirm('Delete this admin account?')) {
+        try {
+          await db.collection('admins').doc(id).delete();
+          showToast('Admin deleted', 'success');
+          loadAdminsList();
+        } catch (e) { showToast('Error deleting admin', 'error'); }
+      }
+    };
+    
+    // CSV Export helper
+    window.exportCSV = async function(type) {
+      showToast(`Exporting ${type}...`, 'success');
+      try {
+        const snap = await db.collection(type).get();
+        if (snap.empty) { showToast(`No ${type} found to export`, 'error'); return; }
+        
+        const docs = [];
+        snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+        
+        const headers = Object.keys(docs[0]);
+        const rows = docs.map(d => headers.map(h => JSON.stringify(d[h] || '')).join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `okmart_${type}_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+      } catch (e) {
+        showToast('Export failed', 'error');
+      }
+    };
+    
+    function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
+      if (!toast) return;
       toast.textContent = message;
-      toast.className = `toast ${type}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
-        window.location.href = 'login.html';
-      }
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove('show'), 3500);
     }
     
     // Initialize
     loadSettings();
-    loadAdmins();
   </script>
 </body>
 </html>
-

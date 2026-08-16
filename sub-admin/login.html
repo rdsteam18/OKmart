@@ -8,23 +8,22 @@
   <meta name="theme-color" content="#6366f1">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .login-card{background:white;border-radius:24px;padding:40px 28px;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.08);text-align:center}
+    body{font-family:'Inter',sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-card{background:white;border-radius:24px;padding:40px 28px;max-width:400px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.25);text-align:center}
     .login-icon{font-size:3rem;margin-bottom:8px}
-    h1{font-size:1.5rem;font-weight:800;margin-bottom:4px}
-    p{color:#6b7280;font-size:.9rem;margin-bottom:28px}
-    .badge{display:inline-block;background:#eef2ff;color:#4f46e5;padding:4px 14px;border-radius:20px;font-size:.7rem;font-weight:700;margin-bottom:16px}
+    h1{font-size:1.5rem;font-weight:800;margin-bottom:4px;color:#1e293b}
+    p{color:#64748b;font-size:.9rem;margin-bottom:24px}
+    .badge{display:inline-block;background:#eef2ff;color:#4f46e5;padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:700;margin-bottom:16px}
     .form-group{margin-bottom:16px;text-align:left}
-    label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
-    input{width:100%;padding:14px 16px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:12px;font-size:.95rem}
-    input:focus{outline:none;border-color:#6366f1}
-    .login-btn{width:100%;padding:16px;background:#6366f1;color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer}
-    .login-btn:active{background:#4f46e5;transform:scale(.97)}
-    .login-btn:disabled{opacity:.6}
-    .error-msg{color:#ef4444;font-size:.85rem;margin-top:8px;display:none}
-    .info-box{margin-top:16px;padding:12px;background:#fef3c7;border-radius:10px;font-size:.75rem;color:#92400e;text-align:left}
-    .spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px;color:#334155}
+    input{width:100%;padding:14px 16px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;font-size:.95rem;transition:all .2s}
+    input:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,0.15)}
+    .login-btn{width:100%;padding:16px;background:#6366f1;color:white;border:none;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .login-btn:hover{background:#4f46e5}
+    .login-btn:active{transform:scale(.98)}
+    .login-btn:disabled{opacity:.6;cursor:not-allowed}
+    .error-msg{color:#ef4444;font-size:.85rem;margin-top:10px;display:none;background:#fee2e2;padding:10px;border-radius:8px}
+    .info-box{margin-top:20px;padding:12px;background:#fef3c7;border-radius:10px;font-size:.75rem;color:#92400e;text-align:left}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -35,74 +34,124 @@
     <div class="login-icon">🔧</div>
     <span class="badge">Sub Admin Access</span>
     <h1>Sub Admin Login</h1>
-    <p>Restricted category management</p>
+    <p>Restricted Category & Orders Management</p>
     <form id="loginForm">
-      <div class="form-group"><label>Username</label><input type="text" id="username" placeholder="friend" required></div>
-      <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="••••••••" required></div>
-      <p class="error-msg" id="errorMsg">Invalid credentials or not a sub-admin</p>
-      <button type="submit" class="login-btn" id="loginBtn"><span class="spinner" id="spinner"></span><span id="btnText">🔐 Login</span></button>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="friend" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <div class="error-msg" id="errorMsg">Invalid credentials or not a sub-admin</div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span id="btnText">🔐 Login to Sub-Admin</span>
+      </button>
     </form>
     <div class="info-box">
-      <strong>Demo:</strong> friend / okmart2024<br>
-      <small>Categories: electronics, household, personal</small>
+      <strong>Default Sub-Admin:</strong> <code>friend</code> / <code>okmart2024</code><br>
+      <small>Categories: electronics, household, personal, dairy</small>
     </div>
   </div>
 
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
-    // Check existing session
-    if(localStorage.getItem("isAdmin")==="true"&&localStorage.getItem("adminRole")==="sub"){
-      window.location.href='index.html';
+    // Check existing valid session
+    (function() {
+      const isAdmin = localStorage.getItem('okmart_isAdmin') === 'true' || localStorage.getItem('isAdmin') === 'true';
+      const role = localStorage.getItem('okmart_subAdmin_role') || localStorage.getItem('okmart_adminRole') || localStorage.getItem('adminRole');
+      const loginTime = parseInt(localStorage.getItem('okmart_subAdmin_loginTime') || localStorage.getItem('adminLoginTime') || '0');
+      const expiry = 12 * 60 * 60 * 1000;
+      
+      if (isAdmin && role === 'sub' && (Date.now() - loginTime) < expiry) {
+        window.location.href = 'index.html';
+      }
+    })();
+
+    function saveSubAdminSession(username, categories = ['electronics', 'household', 'personal', 'dairy']) {
+      const now = Date.now().toString();
+      localStorage.setItem("okmart_isAdmin", "true");
+      localStorage.setItem("okmart_isSubAdmin", "true");
+      localStorage.setItem("okmart_adminRole", "sub");
+      localStorage.setItem("okmart_subAdmin_role", "sub");
+      localStorage.setItem("okmart_admin_username", username);
+      localStorage.setItem("okmart_subAdmin_username", username);
+      localStorage.setItem("okmart_admin_categories", JSON.stringify(categories));
+      localStorage.setItem("okmart_subAdmin_categories", JSON.stringify(categories));
+      localStorage.setItem("okmart_admin_loginTime", now);
+      localStorage.setItem("okmart_subAdmin_loginTime", now);
+      
+      // Legacy compatibility
+      localStorage.setItem("isAdmin", "true");
+      localStorage.setItem("adminRole", "sub");
+      localStorage.setItem("adminUsername", username);
+      localStorage.setItem("allowedCategories", JSON.stringify(categories));
+      localStorage.setItem("adminLoginTime", now);
     }
 
-    document.getElementById('loginForm').addEventListener('submit',async function(e){
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const username=document.getElementById('username').value.trim();
-      const password=document.getElementById('password').value.trim();
-      const btn=document.getElementById('loginBtn');
-      const spinner=document.getElementById('spinner');
-      const btnText=document.getElementById('btnText');
-      const errorMsg=document.getElementById('errorMsg');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const btn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('btnText');
+      const errorMsg = document.getElementById('errorMsg');
       
-      btn.disabled=true;spinner.style.display='block';btnText.style.display='none';
-      errorMsg.style.display='none';
+      btn.disabled = true;
+      btnText.textContent = 'Verifying...';
+      errorMsg.style.display = 'none';
       
-      try{
-        const snap=await db.collection('admins')
-          .where('username','==',username)
-          .where('password','==',password)
-          .where('active','==',true)
-          .get();
-        
-        if(!snap.empty){
-          const data=snap.docs[0].data();
+      let loginSuccess = false;
+      let categories = ['electronics', 'household', 'personal', 'dairy'];
+      
+      // 1. Try Firebase Firestore
+      if (typeof db !== 'undefined' && db) {
+        try {
+          const snap = await db.collection('admins')
+            .where('username', '==', username)
+            .where('password', '==', password)
+            .where('active', '==', true)
+            .get();
           
-          if(data.role!=='sub'){
-            errorMsg.textContent='This login is for sub-admins only';
-            errorMsg.style.display='block';
-            btn.disabled=false;spinner.style.display='none';btnText.style.display='inline';
-            return;
+          if (!snap.empty) {
+            const data = snap.docs[0].data();
+            if (data.role === 'sub') {
+              loginSuccess = true;
+              categories = data.categories || categories;
+            } else {
+              errorMsg.textContent = 'This login is for sub-admins only. Please use the main Admin login.';
+              errorMsg.style.display = 'block';
+              btn.disabled = false;
+              btnText.textContent = '🔐 Login to Sub-Admin';
+              return;
+            }
           }
-          
-          // Save session
-          localStorage.setItem("isAdmin","true");
-          localStorage.setItem("adminRole","sub");
-          localStorage.setItem("adminUsername",username);
-          localStorage.setItem("allowedCategories",JSON.stringify(data.categories||[]));
-          localStorage.setItem("adminLoginTime",Date.now().toString());
-          
-          window.location.href='index.html';
-        }else{
-          errorMsg.style.display='block';
-          btn.disabled=false;spinner.style.display='none';btnText.style.display='inline';
+        } catch (err) {
+          console.warn('Firestore lookup failed, checking fallback:', err);
         }
-      }catch(err){
-        errorMsg.textContent='Connection error';
-        errorMsg.style.display='block';
-        btn.disabled=false;spinner.style.display='none';btnText.style.display='inline';
+      }
+      
+      // 2. Demo fallback
+      if (!loginSuccess) {
+        if (username.toLowerCase() === 'friend' && password === 'okmart2024') {
+          loginSuccess = true;
+        }
+      }
+      
+      if (loginSuccess) {
+        saveSubAdminSession(username, categories);
+        btnText.textContent = '✅ Success! Redirecting...';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 400);
+      } else {
+        errorMsg.textContent = 'Invalid sub-admin credentials. Please try again.';
+        errorMsg.style.display = 'block';
+        btn.disabled = false;
+        btnText.textContent = '🔐 Login to Sub-Admin';
       }
     });
   </script>
 </body>
 </html>
-

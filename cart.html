@@ -211,7 +211,7 @@
           <div class="delivery-info-card" id="deliveryInfoCard">
             <div class="delivery-info-icon">🚚</div>
             <div class="delivery-info-text">
-              <div class="delivery-info-title" id="deliveryInfoTitle">Free Delivery Above ₹499</div>
+              <div class="delivery-info-title" id="deliveryInfoTitle">Free Delivery Above ₹199</div>
               <div class="delivery-info-sub" id="deliveryInfoSub">Standard delivery charge: ₹39</div>
             </div>
           </div>
@@ -344,7 +344,7 @@
       } catch (error) {
         console.error('Error loading delivery settings:', error);
         window.deliverySettings = {
-          freeThreshold: 499,
+          freeThreshold: 199,
           baseCharge: 39,
           quickTime: 15
         };
@@ -393,7 +393,7 @@
       if (window.deliverySettings && window.getCart) {
         const cart = window.getCart();
         const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-        const freeThreshold = window.deliverySettings.freeThreshold || 499;
+        const freeThreshold = window.deliverySettings.freeThreshold || 199;
         const baseCharge = window.deliverySettings.baseCharge || 39;
         
         let delivery = baseCharge;
@@ -435,7 +435,7 @@
         window.updateOrderSummary = function() {
           const cart = window.getCart();
           const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-          const freeThreshold = window.deliverySettings.freeThreshold || 499;
+          const freeThreshold = window.deliverySettings.freeThreshold || 199;
           const baseCharge = window.deliverySettings.baseCharge || 39;
           
           let delivery = baseCharge;

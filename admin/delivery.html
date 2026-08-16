@@ -9,6 +9,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
+  <!-- Auth Protection -->
+  <script src="../js/admin-auth.js"></script>
+  
   <style>
     * {
       margin: 0;
@@ -839,8 +842,7 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="/js/firebase.js"></script>
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     // ===== DELIVERY MANAGEMENT SYSTEM =====
     
@@ -1074,7 +1076,10 @@
     
     async function toggleGlobalSetting(setting) {
       const newValue = !deliverySettings[setting];
-      await db.collection('settings').doc('delivery').update({ [setting]: newValue });
+      await Promise.all([
+        db.collection('settings').doc('delivery').set({ [setting]: newValue }, { merge: true }),
+        db.collection('settings').doc('app').set({ [setting]: newValue }, { merge: true })
+      ]);
       deliverySettings[setting] = newValue;
       updateSettingsUI();
       showToast(`${setting} ${newValue ? 'enabled' : 'disabled'}`, 'success');
@@ -1082,23 +1087,32 @@
     
     async function updateBaseDeliveryCharge() {
       const value = Number(document.getElementById('baseDeliveryCharge').value);
-      await db.collection('settings').doc('delivery').update({ baseDeliveryCharge: value });
+      await Promise.all([
+        db.collection('settings').doc('delivery').set({ baseDeliveryCharge: value }, { merge: true }),
+        db.collection('settings').doc('app').set({ defaultDeliveryCharge: value, baseDeliveryCharge: value }, { merge: true })
+      ]);
       deliverySettings.baseDeliveryCharge = value;
-      showToast('Base delivery charge updated', 'success');
+      showToast('Base delivery charge updated across website', 'success');
     }
     
     async function updateFreeDeliveryThreshold() {
       const value = Number(document.getElementById('freeDeliveryThreshold').value);
-      await db.collection('settings').doc('delivery').update({ freeDeliveryThreshold: value });
+      await Promise.all([
+        db.collection('settings').doc('delivery').set({ freeDeliveryThreshold: value }, { merge: true }),
+        db.collection('settings').doc('app').set({ globalFreeThreshold: value, freeDeliveryThreshold: value }, { merge: true })
+      ]);
       deliverySettings.freeDeliveryThreshold = value;
-      showToast('Free delivery threshold updated', 'success');
+      showToast('Free delivery threshold updated across website', 'success');
     }
     
     async function updateQuickDeliveryTime() {
       const value = Number(document.getElementById('quickDeliveryTime').value);
-      await db.collection('settings').doc('delivery').update({ quickDeliveryTime: value });
+      await Promise.all([
+        db.collection('settings').doc('delivery').set({ quickDeliveryTime: value }, { merge: true }),
+        db.collection('settings').doc('app').set({ quickDeliveryTime: value }, { merge: true })
+      ]);
       deliverySettings.quickDeliveryTime = value;
-      showToast('Quick delivery time updated', 'success');
+      showToast('Quick delivery time updated across website', 'success');
     }
     
     // Event Listeners
@@ -1116,8 +1130,11 @@
     }
     
     function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
+      if (typeof adminLogout === 'function') {
+        adminLogout();
+      } else if (confirm('Are you sure you want to logout?')) {
+        const keys = ['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail'];
+        keys.forEach(k => localStorage.removeItem(k));
         window.location.href = 'login.html';
       }
     }

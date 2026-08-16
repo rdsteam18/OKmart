@@ -373,40 +373,55 @@
 
   // ========== Update Order Summary ==========
   function updateOrderSummary() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-    const discount = calculateDiscount(subtotal);
-    const afterDiscount = subtotal - discount;
+    const rawDiscount = calculateDiscount(cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0));
+    const totals = typeof window.calculateOrderTotals === 'function'
+      ? window.calculateOrderTotals(cart, rawDiscount)
+      : {
+          subtotal: cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0),
+          discount: rawDiscount,
+          afterDiscount: cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount,
+          deliveryCharge: (cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount) >= (window.FREE_DELIVERY_THRESHOLD || 199) ? 0 : (window.BASE_DELIVERY_CHARGE || 39),
+          grandTotal: Math.max(0, (cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount) + ((cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount) >= (window.FREE_DELIVERY_THRESHOLD || 199) ? 0 : (window.BASE_DELIVERY_CHARGE || 39))),
+          remainingForFree: Math.max(0, (window.FREE_DELIVERY_THRESHOLD || 199) - (cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount)),
+          percentForFree: Math.min(100, ((cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0) - rawDiscount) / (window.FREE_DELIVERY_THRESHOLD || 199)) * 100)
+        };
     
-    // Delivery charge logic
-    let delivery = BASE_DELIVERY_CHARGE;
-    if (afterDiscount >= FREE_DELIVERY_THRESHOLD) {
-      delivery = 0;
-    }
+    // Update UI Elements
+    if (subtotalEl) subtotalEl.textContent = `₹${totals.subtotal}`;
     
-    const total = afterDiscount + delivery;
-    
-    // Update UI
-    subtotalEl.textContent = `₹${subtotal}`;
-    
-    if (discount > 0) {
-      discountRow.style.display = 'flex';
-      discountAmountEl.textContent = `-₹${discount}`;
+    if (totals.discount > 0) {
+      if (discountRow) discountRow.style.display = 'flex';
+      if (discountAmountEl) discountAmountEl.textContent = `-₹${totals.discount}`;
     } else {
-      discountRow.style.display = 'none';
+      if (discountRow) discountRow.style.display = 'none';
     }
     
-    deliveryChargeEl.textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
-    totalAmountEl.textContent = `₹${total}`;
+    if (deliveryChargeEl) {
+      deliveryChargeEl.textContent = totals.deliveryCharge === 0 ? 'FREE' : `₹${totals.deliveryCharge}`;
+    }
+    if (totalAmountEl) {
+      totalAmountEl.textContent = `₹${totals.grandTotal}`;
+    }
     
     // Update free delivery progress
-    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - afterDiscount);
-    const percent = Math.min(100, (afterDiscount / FREE_DELIVERY_THRESHOLD) * 100);
+    if (progressFill) {
+      progressFill.style.width = `${totals.percentForFree}%`;
+    }
+    if (progressLabel) {
+      if (totals.remainingForFree <= 0) {
+        progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
+      } else {
+        progressLabel.innerHTML = `Add ₹${totals.remainingForFree} more for FREE delivery 🎁`;
+      }
+    }
     
-    progressFill.style.width = `${percent}%`;
-    if (remaining <= 0) {
-      progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
-    } else {
-      progressLabel.innerHTML = `Add ₹${remaining} more for FREE delivery 🎁`;
+    // Minimum order indication on checkout button
+    if (checkoutBtn && totals.minOrderAmount > 0 && totals.subtotal > 0 && !totals.isMinOrderMet) {
+      checkoutBtn.innerHTML = `<span>Min Order ₹${totals.minOrderAmount} required (Add ₹${totals.minOrderAmount - totals.subtotal} more)</span>`;
+      checkoutBtn.style.opacity = '0.7';
+    } else if (checkoutBtn) {
+      checkoutBtn.innerHTML = '<span>Proceed to Checkout →</span>';
+      checkoutBtn.style.opacity = '1';
     }
   }
 
@@ -431,6 +446,22 @@
   function proceedToCheckout() {
     if (cart.length === 0) {
       showToast('Your cart is empty', 'error');
+      return;
+    }
+    
+    const settings = typeof window.getStoreSettings === 'function' ? window.getStoreSettings() : {};
+    
+    // Check if store is open
+    if (settings.isStoreOpen === false) {
+      showToast(settings.storeClosedNotice || 'Store is currently closed. We cannot accept orders right now.', 'error');
+      return;
+    }
+    
+    // Check minimum order amount
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    const minOrder = Number(settings.minOrderAmount || 0);
+    if (minOrder > 0 && subtotal < minOrder) {
+      showToast(`Minimum order amount is ₹${minOrder}. Please add ₹${minOrder - subtotal} more items.`, 'error');
       return;
     }
     
@@ -566,7 +597,12 @@
   function init() {
     initEventListeners();
     loadData();
-    console.log('✅ Cart page initialized');
+    if (typeof window.onStoreSettingsChange === 'function') {
+      window.onStoreSettingsChange(() => {
+        updateOrderSummary();
+      });
+    }
+    console.log('✅ Cart page initialized with dynamic settings');
   }
   
   init();

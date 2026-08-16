@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
   
   <!-- Auth Protection -->
-  <script src="/js/admin-auth.js"></script>
+  <script src="../js/admin-auth.js"></script>
   <style>
     * {
       margin: 0;
@@ -959,7 +959,7 @@
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <script src="/js/firebase.js"></script>
+  <script src="../js/firebase.js"></script>
   <script>
     // ===== FULLY RESPONSIVE ADMIN DASHBOARD =====
     
@@ -1002,6 +1002,7 @@
     let allPincodes = [];
     
     // Initialize
+    let initialOrdersLoaded = false;
     async function init() {
       updateDateTime();
       setInterval(updateDateTime, 1000);
@@ -1012,6 +1013,46 @@
       renderRecentOrders();
       renderStatusCards();
       renderPincodesList();
+      
+      // Real-time new order listener
+      if (typeof db !== 'undefined' && db) {
+        db.collection('orders').orderBy('orderDate', 'desc').limit(20).onSnapshot(snap => {
+          if (!initialOrdersLoaded) {
+            initialOrdersLoaded = true;
+            return;
+          }
+          
+          snap.docChanges().forEach(change => {
+            if (change.type === 'added') {
+              const newOrd = { id: change.doc.id, ...change.doc.data() };
+              playOrderChime();
+              showToast(`🔔 New Order received: #${newOrd.orderId || newOrd.id.slice(0,6)} (₹${newOrd.total})`, 'success');
+              loadData().then(() => {
+                renderStats();
+                renderRecentOrders();
+                renderStatusCards();
+              });
+            }
+          });
+        });
+      }
+    }
+    
+    function playOrderChime() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } catch (e) {}
     }
     
     function updateDateTime() {
@@ -1131,7 +1172,7 @@
     }
     
     function renderRecentOrders() {
-      const recent = allOrders.slice(0, 5);
+      const recent = allOrders.slice(0, 7);
       const tbody = document.getElementById('recentOrdersTable');
       
       if (recent.length === 0) {
@@ -1139,16 +1180,29 @@
         return;
       }
       
-      tbody.innerHTML = recent.map(order => `
-        <tr>
-          <td><strong>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</strong></td>
-          <td>${order.customerName || order.name || 'N/A'}</td>
-          <td>₹${order.total || 0}</td>
-          <td><span class="status-badge status-${order.status || 'received'}">${order.status || 'Received'}</span></td>
-          <td>${formatDate(order.orderDate)}</td>
-          <td><button class="action-btn" onclick="viewOrder('${order.id}')">View</button></td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = recent.map(order => {
+        const phone = order.phone || order.customerPhone || '';
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const waPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+        const waLink = waPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent(`Hello ${order.customerName || order.name || 'Customer'}, your OK Mart order #${order.orderId || order.id.slice(0, 8)} is received!`)}` : '#';
+        
+        return `
+          <tr>
+            <td><strong>#${order.orderId || order.id.slice(0, 8).toUpperCase()}</strong></td>
+            <td>
+              <div>${order.customerName || order.name || 'Customer'}</div>
+              <small style="color:var(--muted);">${phone || ''}</small>
+            </td>
+            <td><strong>₹${order.total || 0}</strong></td>
+            <td><span class="status-badge status-${order.status || 'received'}">${order.status || 'Received'}</span></td>
+            <td>${formatDate(order.orderDate)}</td>
+            <td style="display:flex;gap:6px;align-items:center;">
+              <button class="action-btn" onclick="viewOrder('${order.id}')">View</button>
+              ${waPhone ? `<a href="${waLink}" target="_blank" class="action-btn" style="background:#25D366;color:white;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;" title="WhatsApp Customer">💬</a>` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
     
     function renderStatusCards() {
@@ -1192,8 +1246,11 @@
     };
     
     window.logout = function() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.clear();
+      if (typeof adminLogout === 'function') {
+        adminLogout();
+      } else if (confirm('Are you sure you want to logout?')) {
+        const keys = ['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail'];
+        keys.forEach(k => localStorage.removeItem(k));
         window.location.href = 'login.html';
       }
     };

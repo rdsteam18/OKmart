@@ -412,15 +412,16 @@
   function updateFreeDeliveryProgress() {
     const cart = getCart();
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-    const percent = Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100);
-    
-    if (progressFill) progressFill.style.width = `${percent}%`;
+    const deliveryCalc = typeof window.calculateDelivery === 'function'
+      ? window.calculateDelivery(subtotal)
+      : { threshold: window.FREE_DELIVERY_THRESHOLD || 199, remainingForFree: Math.max(0, (window.FREE_DELIVERY_THRESHOLD || 199) - subtotal), percentForFree: Math.min(100, (subtotal / (window.FREE_DELIVERY_THRESHOLD || 199)) * 100) };
+      
+    if (progressFill) progressFill.style.width = `${deliveryCalc.percentForFree}%`;
     if (progressLabel) {
-      if (remaining <= 0) {
+      if (deliveryCalc.remainingForFree <= 0) {
         progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
       } else {
-        progressLabel.innerHTML = `Add ₹${remaining} more to get FREE delivery 🎁`;
+        progressLabel.innerHTML = `Add ₹${deliveryCalc.remainingForFree} more to get FREE delivery 🎁`;
       }
     }
   }
@@ -760,12 +761,14 @@
     updateCartUI();
     updateWishlistUI();
     
-    // Cart event listener
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'okmart_cart') updateCartUI();
-    });
+    // Listen for settings change
+    if (typeof window.onStoreSettingsChange === 'function') {
+      window.onStoreSettingsChange(() => {
+        updateFreeDeliveryProgress();
+      });
+    }
     
-    console.log('✅ Home page fully loaded with Firebase and Location System');
+    console.log('✅ Home page fully loaded with dynamic settings');
   }
   
   init();
