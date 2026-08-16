@@ -4,101 +4,370 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>All Categories | OK Mart</title>
-  <meta name="description" content="Browse all grocery categories on OK Mart - Fresh, Snacks, Dairy, Cooking Essentials, Personal Care, Household & more.">
-  <meta name="theme-color" content="#006b22">
+  <meta name="description" content="Browse all grocery and household categories on OK Mart. Fresh, Snacks, Dairy, Cooking Essentials & more.">
+  <meta name="theme-color" content="#f59e0b">
 
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/home.css">
-  <link rel="stylesheet" href="/css/category.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #111827;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .app-container {
+      max-width: 768px;
+      margin: 0 auto;
+      background: #ffffff;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* ========== HEADER (MATCHING SCREENSHOT) ========== */
+    .header-gradient-bar {
+      background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 60%, #fffbeb 100%);
+      padding: 12px 16px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .header-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .delivery-location-box {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .delivery-tag-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #78350f;
+    }
+
+    .delivery-address-heading {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      line-height: 1.2;
+    }
+
+    .delivery-subtext {
+      font-size: 0.76rem;
+      color: #451a03;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 2px;
+    }
+
+    .user-avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Search Bar in Header */
+    .search-input-pill {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 0 14px;
+      height: 44px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border: 1px solid #fde68a;
+      cursor: pointer;
+    }
+
+    .search-pill-icon {
+      font-size: 1.05rem;
+      color: #6b7280;
+      margin-right: 8px;
+    }
+
+    .search-pill-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 0.9rem;
+      color: #111827;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .search-pill-mic {
+      font-size: 1.1rem;
+      color: #111827;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ========== CATEGORY GROUPS (EXACT SCREENSHOT) ========== */
+    .category-group-section {
+      padding: 16px 14px 18px;
+      border-bottom: 7px solid #f3f4f6;
+    }
+
+    .category-group-section:last-child {
+      border-bottom: none;
+    }
+
+    .category-group-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    /* 4-Column Grid on Mobile, 6-8 on Tablets & Desktops */
+    .category-tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px 8px;
+    }
+
+    @media (min-width: 640px) {
+      .category-tiles-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 16px 12px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .category-tiles-grid {
+        grid-template-columns: repeat(8, 1fr);
+        gap: 18px 14px;
+      }
+    }
+
+    /* Category Tile Card */
+    .category-tile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .category-tile-card:active {
+      transform: scale(0.94);
+    }
+
+    .category-tile-img-box {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #fff8ef; /* Exact warm beige background from screenshot */
+      border: 1px solid #faeedd;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      margin-bottom: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+
+    .category-tile-card:hover .category-tile-img-box {
+      background: #fef3c7;
+      border-color: #fde68a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .category-tile-img-box img {
+      max-width: 88%;
+      max-height: 88%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+      transition: transform 0.2s ease;
+    }
+
+    .category-tile-card:hover .category-tile-img-box img {
+      transform: scale(1.08);
+    }
+
+    .category-tile-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 24px;
+      padding: 0 2px;
+    }
+
+    /* ========== BOTTOM NAVBAR ========== */
+    .bottom-navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 6px 4px 8px;
+      z-index: 100;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+      gap: 2px;
+      position: relative;
+      padding: 2px 8px;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item.active {
+      color: #e11d48; /* Red highlight pill from screenshot */
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: -2px;
+      right: 6px;
+      background: #006b22;
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 10px;
+      min-width: 14px;
+      text-align: center;
+    }
+  </style>
 </head>
-<body class="categories-page">
+
+<body>
   <div class="app-container">
 
-    <!-- Header (Green Quick-Commerce) -->
-    <header class="app-header">
-      <div class="header-top">
-        <div class="header-left">
-          <a href="/" style="color:#ffffff; font-size:1.2rem; font-weight:800; text-decoration:none; margin-right:4px;">←</a>
-          <div class="location-box">
-            <span class="location-label">📍 Delivery to</span>
-            <div class="location-btn">
-              <span class="location-text" id="catLocationText">Home / Jantanagar, Ahmedabad</span>
-              <span class="location-arrow">▾</span>
-            </div>
+    <!-- ========== HEADER (MATCHING SCREENSHOT) ========== -->
+    <header class="header-gradient-bar">
+      <div class="header-top-row">
+        <div class="delivery-location-box" onclick="location.href='/'">
+          <span class="delivery-tag-label">Delivery to</span>
+          <h1 class="delivery-address-heading">Home</h1>
+          <div class="delivery-subtext">
+            <span id="headerAddress">1611, Sunder Singh ki Chali Ramnagar Unkhedi...</span>
+            <span>▾</span>
           </div>
         </div>
-        <div class="header-actions">
-          <a href="/profile.html" class="header-icon-btn" aria-label="Account">
-            <span>👤</span>
-          </a>
-        </div>
+        <a href="/profile.html" class="user-avatar-btn" aria-label="Account">
+          <span>👤</span>
+        </a>
       </div>
 
       <!-- Search Bar -->
-      <div class="search-section">
-        <div class="search-bar" onclick="window.location.href='/search.html'">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" placeholder='Search for "Snacks", milk, fruits...' readonly>
-          <button class="mic-btn" aria-label="Voice Search">🎙️</button>
-        </div>
+      <div class="search-input-pill" onclick="location.href='/search.html'">
+        <span class="search-pill-icon">🔍</span>
+        <input type="text" class="search-pill-input" placeholder='Search for "Snacks"' readonly>
+        <button class="search-pill-mic" aria-label="Mic">🎙️</button>
       </div>
     </header>
 
-    <!-- Main Content: Category Directory Groups (Image 2) -->
-    <main class="categories-main">
+    <!-- ========== MAIN CATEGORIES (EXACT 11 GROUPS FROM SCREENSHOT) ========== -->
+    <main>
 
       <!-- 1. Fresh -->
       <section class="category-group-section">
         <h2 class="category-group-title">Fresh</h2>
-        <div class="category-group-grid">
-          <a href="/categories/vegetables.html" class="category-tile">
-            <div class="category-tile-image-box">
+        <div class="category-tiles-grid">
+          <a href="/categories/vegetables.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Fresh Vegetables">
             </div>
             <span class="category-tile-label">Fresh Vegetables</span>
           </a>
-          <a href="/categories/fruits.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/fruits.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Fresh Fruits">
             </div>
             <span class="category-tile-label">Fresh Fruits</span>
           </a>
-          <a href="/categories/bakery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/bakery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cakes, Rusk & More">
             </div>
             <span class="category-tile-label">Cakes, Rusk & More</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Batter & Chutney">
             </div>
             <span class="category-tile-label">Batter & Chutney</span>
           </a>
-          <a href="/categories/bakery.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Breads & Bakery">
+          <a href="/categories/bakery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bread & Bakery">
             </div>
             <span class="category-tile-label">Bread & Bakery</span>
           </a>
-          <a href="/categories/dairy.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Milk & Dairy">
+          <a href="/categories/dairy.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Milk & Milk Products">
             </div>
             <span class="category-tile-label">Milk & Milk Products</span>
           </a>
-          <a href="/categories/dairy.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cheese & Paneer">
+          <a href="/categories/dairy.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/821365/pexels-photo-821365.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cheese, Paneer & Tofu">
             </div>
             <span class="category-tile-label">Cheese, Paneer & Tofu</span>
           </a>
-          <a href="/categories/icecream.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/icecream.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ice Cream & Frozen">
             </div>
             <span class="category-tile-label">Ice Cream & Frozen</span>
@@ -109,69 +378,69 @@
       <!-- 2. Biscuits, Drinks & Packaged Foods -->
       <section class="category-group-section">
         <h2 class="category-group-title">Biscuits, Drinks & Packaged Foods</h2>
-        <div class="category-group-grid">
-          <a href="/categories/snacks.html" class="category-tile">
-            <div class="category-tile-image-box">
+        <div class="category-tiles-grid">
+          <a href="/categories/snacks.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/568805/pexels-photo-568805.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Chips & Namkeen">
             </div>
             <span class="category-tile-label">Chips & Namkeen</span>
           </a>
-          <a href="/categories/snacks.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/snacks.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Biscuits & Cookies">
             </div>
             <span class="category-tile-label">Biscuits & Cookies</span>
           </a>
-          <a href="/categories/snacks.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/snacks.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/65882/chocolate-dark-coffee-confiserie-65882.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Chocolates & Candies">
             </div>
             <span class="category-tile-label">Chocolates & Candies</span>
           </a>
-          <a href="/categories/bakery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/bakery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1030973/pexels-photo-1030973.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Indian Sweets">
             </div>
             <span class="category-tile-label">Indian Sweets</span>
           </a>
-          <a href="/categories/beverages.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/beverages.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Drinks & Juices">
             </div>
             <span class="category-tile-label">Drinks & Juices</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1340116/pexels-photo-1340116.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Breakfast Cereals">
             </div>
             <span class="category-tile-label">Breakfast Cereals</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Noodles, Pasta & Vermicelli">
             </div>
-            <span class="category-tile-label">Noodles & Pasta</span>
+            <span class="category-tile-label">Noodles, Pasta & Vermicelli</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ready To Cook & Eat">
             </div>
-            <span class="category-tile-label">Ready To Cook</span>
+            <span class="category-tile-label">Ready To Cook & Eat</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200" alt="Spreads & Sauces">
             </div>
-            <span class="category-tile-label">Spreads & Sauces</span>
+            <span class="category-tile-label">Spreads, Sauces & Ketchup</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/1435895/pexels-photo-1435895.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pickles & Chutneys">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/1435895/pexels-photo-1435895.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pickles & Chutney">
             </div>
-            <span class="category-tile-label">Pickles & Chutneys</span>
+            <span class="category-tile-label">Pickles, Chutney & Mix</span>
           </a>
-          <a href="/categories/beverages.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/beverages.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Tea & Coffee">
             </div>
             <span class="category-tile-label">Tea & Coffee</span>
@@ -182,60 +451,72 @@
       <!-- 3. Cooking Essentials -->
       <section class="category-group-section">
         <h2 class="category-group-title">Cooking Essentials</h2>
-        <div class="category-group-grid">
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+        <div class="category-tiles-grid">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/6287295/pexels-photo-6287295.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Atta, Flours & Sooji">
             </div>
             <span class="category-tile-label">Atta, Flours & Sooji</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4110255/pexels-photo-4110255.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dals & Pulses">
             </div>
             <span class="category-tile-label">Dals & Pulses</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Rice">
             </div>
             <span class="category-tile-label">Rice</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/4110256/pexels-photo-4110256.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Sabudana, Poha & Murmura">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4110256/pexels-photo-4110256.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Sabudana & Poha">
             </div>
-            <span class="category-tile-label">Sabudana & Poha</span>
+            <span class="category-tile-label">Sabudana, Poha & Murmura</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=200" alt="Edible Oils">
             </div>
             <span class="category-tile-label">Edible Oils</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/2802527/pexels-photo-2802527.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Masala & Spices">
             </div>
-            <span class="category-tile-label">Masala & Spices</span>
+            <span class="category-tile-label">Masala, Spices & Mukhwas</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4110257/pexels-photo-4110257.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Salt, Sugar & Jaggery">
             </div>
             <span class="category-tile-label">Salt, Sugar & Jaggery</span>
           </a>
-          <a href="/categories/dairy.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/6287295/pexels-photo-6287295.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Wheat & Soya">
+            </div>
+            <span class="category-tile-label">Wheat & Soya</span>
+          </a>
+          <a href="/categories/dairy.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Ghee">
             </div>
             <span class="category-tile-label">Ghee</span>
           </a>
-          <a href="/categories/grocery.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/1295572/pexels-photo-1295572.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dry Fruits & Nuts">
             </div>
             <span class="category-tile-label">Dry Fruits & Nuts</span>
+          </a>
+          <a href="/categories/grocery.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Millets & Organic">
+            </div>
+            <span class="category-tile-label">Millets & Organic</span>
           </a>
         </div>
       </section>
@@ -243,73 +524,355 @@
       <!-- 4. Personal Care -->
       <section class="category-group-section">
         <h2 class="category-group-title">Personal Care</h2>
-        <div class="category-group-grid">
-          <a href="/categories/personal-care.html" class="category-tile">
-            <div class="category-tile-image-box">
+        <div class="category-tiles-grid">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/3735657/pexels-photo-3735657.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Hair Care">
             </div>
             <span class="category-tile-label">Hair Care</span>
           </a>
-          <a href="/categories/personal-care.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4202325/pexels-photo-4202325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bath & Hand Wash">
             </div>
             <span class="category-tile-label">Bath & Hand Wash</span>
           </a>
-          <a href="/categories/personal-care.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Oral Care">
             </div>
             <span class="category-tile-label">Oral Care</span>
           </a>
-          <a href="/categories/personal-care.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Skin Care">
             </div>
             <span class="category-tile-label">Skin Care</span>
           </a>
-          <a href="/categories/personal-care.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3735657/pexels-photo-3735657.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Feminine Hygiene">
+            </div>
+            <span class="category-tile-label">Feminine Hygiene</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Men's Grooming">
+            </div>
+            <span class="category-tile-label">Men's Grooming</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Deo & Fragrances">
             </div>
-            <span class="category-tile-label">Deos & Fragrances</span>
+            <span class="category-tile-label">Deo & Fragrances</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Health & Wellness">
+            </div>
+            <span class="category-tile-label">Health & Wellness</span>
           </a>
         </div>
       </section>
 
-      <!-- 5. Home & Household -->
+      <!-- 5. Beauty -->
       <section class="category-group-section">
-        <h2 class="category-group-title">Home & Household</h2>
-        <div class="category-group-grid">
-          <a href="/categories/household.html" class="category-tile">
-            <div class="category-tile-image-box">
+        <h2 class="category-group-title">Beauty</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Face">
+            </div>
+            <span class="category-tile-label">Face</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3735657/pexels-photo-3735657.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Nails & Lips">
+            </div>
+            <span class="category-tile-label">Nails & Lips</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3865676/pexels-photo-3865676.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Eyes">
+            </div>
+            <span class="category-tile-label">Eyes</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4202325/pexels-photo-4202325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Beauty Accessories">
+            </div>
+            <span class="category-tile-label">Beauty Accessories</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 6. Mom & Baby Care -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Mom & Baby Care</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4202325/pexels-photo-4202325.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Diapers & Wipes">
+            </div>
+            <span class="category-tile-label">Diapers & Wipes</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3735657/pexels-photo-3735657.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bath, Hygiene & Grooming">
+            </div>
+            <span class="category-tile-label">Bath, Hygiene & Grooming</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Food & Feeding">
+            </div>
+            <span class="category-tile-label">Food & Feeding</span>
+          </a>
+          <a href="/categories/personal-care.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/3762879/pexels-photo-3762879.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bedding, Toys & Accessories">
+            </div>
+            <span class="category-tile-label">Bedding, Toys & Accessories</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 7. Home -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Home</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dishwash">
             </div>
             <span class="category-tile-label">Dishwash</span>
           </a>
-          <a href="/categories/household.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Detergents & Cleaners">
             </div>
             <span class="category-tile-label">Detergents & Cleaners</span>
           </a>
-          <a href="/categories/household.html" class="category-tile">
-            <div class="category-tile-image-box">
-              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cleaning Tools">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Fresheners & Repellents">
             </div>
-            <span class="category-tile-label">Cleaning Tools</span>
+            <span class="category-tile-label">Fresheners & Repellents</span>
           </a>
-          <a href="/categories/household.html" class="category-tile">
-            <div class="category-tile-image-box">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Home & Cleaning Tools">
+            </div>
+            <span class="category-tile-label">Home & Cleaning Tools</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
               <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pooja Needs">
             </div>
             <span class="category-tile-label">Pooja Needs</span>
           </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Basic Electricals">
+            </div>
+            <span class="category-tile-label">Basic Electricals</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Furnishing">
+            </div>
+            <span class="category-tile-label">Furnishing & Personal Wear</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Bags & Towel">
+            </div>
+            <span class="category-tile-label">Bags & Travel Luggage</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Furniture">
+            </div>
+            <span class="category-tile-label">Furniture</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Decor & Gifting">
+            </div>
+            <span class="category-tile-label">Decor & Gifting</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Games & Toys">
+            </div>
+            <span class="category-tile-label">Games, Toys & Activities</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Home Needs">
+            </div>
+            <span class="category-tile-label">Home Needs</span>
+          </a>
         </div>
       </section>
 
-      <!-- Dynamic Extra Categories from Firebase -->
-      <div id="dynamicCategoriesContainer"></div>
+      <!-- 8. Kitchenware -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Kitchenware</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Gas Stove">
+            </div>
+            <span class="category-tile-label">Gas Stove</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Pots & Pans">
+            </div>
+            <span class="category-tile-label">Pots & Pans</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cookware & Storage">
+            </div>
+            <span class="category-tile-label">Cookware & Storage</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Flask & Bottles">
+            </div>
+            <span class="category-tile-label">Flask, Bottle & Tiffin Boxes</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cutting & Chopping">
+            </div>
+            <span class="category-tile-label">Cutting & Chopping</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Kitchen Tools">
+            </div>
+            <span class="category-tile-label">Kitchen Tools</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 9. Tableware -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Tableware</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dining">
+            </div>
+            <span class="category-tile-label">Dining</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cups & Mugs">
+            </div>
+            <span class="category-tile-label">Cups, Mugs & Sipps</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Cutlery">
+            </div>
+            <span class="category-tile-label">Cutlery</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Barware">
+            </div>
+            <span class="category-tile-label">Barware</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 10. School, Office & Stationery -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">School, Office & Stationery</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Notebooks">
+            </div>
+            <span class="category-tile-label">Notebooks & Paper Products</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Writing Instruments">
+            </div>
+            <span class="category-tile-label">Writing Instruments & Supplies</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="School Supplies">
+            </div>
+            <span class="category-tile-label">School Supplies</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Office Supplies">
+            </div>
+            <span class="category-tile-label">Office Supplies</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Party Accessories">
+            </div>
+            <span class="category-tile-label">Party Accessories</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Art & Craft">
+            </div>
+            <span class="category-tile-label">Art, Craft & Hobby</span>
+          </a>
+          <a href="/categories/electronics.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Children Books">
+            </div>
+            <span class="category-tile-label">Children's Books</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 11. Disposables -->
+      <section class="category-group-section">
+        <h2 class="category-group-title">Disposables</h2>
+        <div class="category-tiles-grid">
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239031/pexels-photo-4239031.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Food Wrapping">
+            </div>
+            <span class="category-tile-label">Food Wrapping Essentials</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/5217960/pexels-photo-5217960.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Home Hygiene">
+            </div>
+            <span class="category-tile-label">Home Hygiene</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4239035/pexels-photo-4239035.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Plates & Cutlery">
+            </div>
+            <span class="category-tile-label">Plates & Cutlery</span>
+          </a>
+          <a href="/categories/household.html" class="category-tile-card">
+            <div class="category-tile-img-box">
+              <img src="https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Tissues & Napkins">
+            </div>
+            <span class="category-tile-label">Tissues & Napkins</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Dynamic Firebase Sync for newly added categories -->
+      <div id="dynamicFirebaseCategories"></div>
 
     </main>
 
@@ -334,7 +897,7 @@
       <a href="/cart.html" class="nav-item">
         <span class="nav-icon">🛒</span>
         <span>Cart</span>
-        <span class="nav-badge" id="catBottomCartCount">0</span>
+        <span class="nav-badge" id="catNavCartCount">0</span>
       </a>
       <a href="/profile.html" class="nav-item">
         <span class="nav-icon">👤</span>
@@ -351,26 +914,26 @@
   <script src="/js/common.js"></script>
 
   <script>
-    // Update cart badge
+    // Update live cart counter
     function updateCartCount() {
       try {
         const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
         const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
-        const el = document.getElementById('catBottomCartCount');
+        const el = document.getElementById('catNavCartCount');
         if (el) el.textContent = count;
       } catch(e) {}
     }
     updateCartCount();
 
-    // Restore saved location
+    // Restore saved address in header
     const savedArea = localStorage.getItem('okmart_selected_area');
     if (savedArea) {
-      const loc = document.getElementById('catLocationText');
-      if (loc) loc.textContent = savedArea;
+      const el = document.getElementById('headerAddress');
+      if (el) el.textContent = savedArea;
     }
 
     // Dynamic Firebase Category Sync
-    async function loadDynamicCategories() {
+    async function loadFirebaseCategories() {
       if (typeof db === 'undefined' || !db) return;
       try {
         const snap = await db.collection('categories').get();
@@ -380,15 +943,15 @@
         snap.forEach(d => extraCats.push({ id: d.id, ...d.data() }));
         if (extraCats.length === 0) return;
 
-        const container = document.getElementById('dynamicCategoriesContainer');
+        const container = document.getElementById('dynamicFirebaseCategories');
         if (container) {
           container.innerHTML = `
             <section class="category-group-section">
-              <h2 class="category-group-title">More Categories</h2>
-              <div class="category-group-grid">
+              <h2 class="category-group-title">More Custom Categories</h2>
+              <div class="category-tiles-grid">
                 ${extraCats.map(cat => `
-                  <a href="/categories/all.html?category=${cat.id}" class="category-tile">
-                    <div class="category-tile-image-box">
+                  <a href="/categories/all.html?category=${cat.id}" class="category-tile-card">
+                    <div class="category-tile-img-box">
                       <img src="${cat.image || 'https://via.placeholder.com/140?text=' + encodeURIComponent(cat.name)}" alt="${cat.name}">
                     </div>
                     <span class="category-tile-label">${cat.name}</span>
@@ -399,10 +962,10 @@
           `;
         }
       } catch (err) {
-        console.warn('Error loading dynamic categories:', err);
+        console.warn('Firebase categories warning:', err);
       }
     }
-    loadDynamicCategories();
+    loadFirebaseCategories();
   </script>
 </body>
 </html>
