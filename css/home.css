@@ -11,6 +11,26 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
+/* Wide desktop: use the screen real estate (fixes empty gutters) */
+@media (min-width: 1280px) {
+  .app-container {
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .app-container {
+    max-width: 1520px;
+  }
+}
+
+/* Consistent bottom nav: hide on desktop like .bottom-nav */
+@media (min-width: 768px) {
+  .bottom-navbar {
+    display: none !important;
+  }
+}
+
 /* ============================================
    HEADER (GREEN QUICK-COMMERCE THEME)
    ============================================ */
@@ -272,6 +292,9 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding-bottom: 2px;
+  /* breathing room so the last chip is never cut off at the edge */
+  padding-right: 12px;
+  scroll-padding-right: 12px;
 }
 
 .pills-scroll::-webkit-scrollbar {
@@ -305,8 +328,8 @@
    CATEGORY PRODUCTS SECTIONS & GRID (JIOMART CARD)
    ============================================ */
 .category-products-section {
-  padding: 12px 12px 16px;
-  border-bottom: 6px solid #f3f4f6;
+  padding: 10px 10px 14px;
+  border-bottom: 4px solid #f3f4f6;
   background: #ffffff;
   width: 100%;
 }
@@ -360,6 +383,20 @@
   .products-grid {
     grid-template-columns: repeat(6, 1fr);
     gap: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .products-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .products-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 14px;
   }
 }
 
@@ -568,6 +605,15 @@
 /* ============================================
    SHIMMERING SKELETON LOADER (IMAGE / CARD)
    ============================================ */
+.skeleton-banner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+  border-radius: 14px;
+}
+
 .skeleton-shimmer {
   background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
   background-size: 200% 100%;
@@ -610,6 +656,18 @@
   }
 }
 
+@media (min-width: 1280px) {
+  .skeleton-grid-placeholder {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+@media (min-width: 1600px) {
+  .skeleton-grid-placeholder {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
 .skeleton-card-box {
   background: #ffffff;
   border: 1px solid #f3f4f6;
@@ -624,6 +682,11 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 8px;
+}
+
+.skeleton-card-unit {
+  height: 10px;
+  width: 40%;
 }
 
 .skeleton-card-title {

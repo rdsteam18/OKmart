@@ -229,6 +229,48 @@
   padding-top: 2px;
 }
 
+/* Skeleton cards for horizontal shelf (matches shelf-product-card shape) */
+.shelf-skeleton-card {
+  min-width: 145px;
+  max-width: 145px;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.shelf-skeleton-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+}
+
+.shelf-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.shelf-skeleton-btn {
+  height: 28px;
+  border-radius: 6px;
+  margin-top: 2px;
+}
+
+.shelf-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shelfShimmer 1.5s infinite;
+}
+
+@keyframes shelfShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .shelf-horizontal-scroll::-webkit-scrollbar {
   display: none;
 }

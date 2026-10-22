@@ -86,11 +86,11 @@
       <div class="account-menu-group">
         <div class="menu-group-header">PAYMENT MODES</div>
         
-        <div class="menu-item-row" onclick="alert('OK Mart accepts Cash on Delivery (COD), UPI (GPay, PhonePe, Paytm), and QR Code payment at doorstep.')">
+        <button class="menu-item-row" id="openPaymentBtn" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;">
           <div class="menu-item-icon-box">👛</div>
           <div class="menu-item-title">Payment Options (UPI / COD)</div>
           <div class="menu-item-arrow">›</div>
-        </div>
+        </button>
       </div>
 
       <!-- Group 3: HELP & SUPPORT -->
@@ -125,11 +125,11 @@
       <div class="account-menu-group">
         <div class="menu-group-header">MORE INFORMATION</div>
         
-        <div class="menu-item-row" onclick="alert('OK Mart is your neighborhood 15-minute grocery delivery store providing fresh dairy, vegetables, snacks, and essentials.')">
+        <button class="menu-item-row" id="openAboutBtn" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;">
           <div class="menu-item-icon-box">⚙️</div>
           <div class="menu-item-title">About OK Mart</div>
           <div class="menu-item-arrow">›</div>
-        </div>
+        </button>
 
         <a href="/terms.html" class="menu-item-row">
           <div class="menu-item-icon-box">🏛️</div>
@@ -137,11 +137,11 @@
           <div class="menu-item-arrow">›</div>
         </a>
 
-        <a href="/terms.html" class="menu-item-row">
+        <button class="menu-item-row" id="openPrivacyBtn" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;">
           <div class="menu-item-icon-box">🛡️</div>
           <div class="menu-item-title">Privacy Policy</div>
           <div class="menu-item-arrow">›</div>
-        </a>
+        </button>
 
         <div class="menu-item-row" id="signOutBtn">
           <div class="menu-item-icon-box">🚪</div>
@@ -226,6 +226,62 @@
       </div>
     </div>
 
+    <!-- Payment Options Modal -->
+    <div class="modal-overlay" id="paymentModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800;">👛 Payment Options</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888; background:none; border:none; cursor:pointer;" data-close="paymentModal">✕</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:0.88rem; color:#374151;">
+          <div style="padding:12px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+            <div style="font-weight:800; color:#006b22; margin-bottom:2px;">💵 Cash on Delivery (COD)</div>
+            <div>Pay in cash when your order arrives at your doorstep.</div>
+          </div>
+          <div style="padding:12px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+            <div style="font-weight:800; color:#006b22; margin-bottom:2px;">📱 UPI</div>
+            <div>Pay via GPay, PhonePe, Paytm or any UPI app at delivery.</div>
+          </div>
+          <div style="padding:12px; background:#f0fdf4; border-radius:10px; border:1px solid #bbf7d0;">
+            <div style="font-weight:800; color:#006b22; margin-bottom:2px;">🔳 QR Code</div>
+            <div>Scan the QR code shown by our delivery partner and pay instantly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal-overlay" id="aboutModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800;">⚙️ About OK Mart</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888; background:none; border:none; cursor:pointer;" data-close="aboutModal">✕</button>
+        </div>
+        <div style="font-size:0.88rem; color:#374151; line-height:1.6;">
+          <p style="margin-bottom:10px;"><strong>OK Mart</strong> is your neighborhood 15-minute grocery delivery store in Ahmedabad.</p>
+          <p style="margin-bottom:10px;">We deliver fresh dairy, fruits, vegetables, snacks, beverages and daily essentials right to your doorstep — at honest local prices.</p>
+          <p>📍 Serving Jantanagar, Satellite, Prahlad Nagar & nearby areas.<br>🚚 Free delivery on orders above ₹199.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal-overlay" id="privacyModal">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:1.1rem; font-weight:800;">🛡️ Privacy Policy</h3>
+          <button style="font-size:1.2rem; font-weight:bold; color:#888; background:none; border:none; cursor:pointer;" data-close="privacyModal">✕</button>
+        </div>
+        <div style="font-size:0.85rem; color:#374151; line-height:1.65;">
+          <p style="margin-bottom:10px;"><strong>1. Information we collect:</strong> your name, phone number, delivery addresses and order history — only what is needed to deliver your groceries.</p>
+          <p style="margin-bottom:10px;"><strong>2. How we use it:</strong> to process orders, arrange delivery and provide customer support. We never sell your personal data.</p>
+          <p style="margin-bottom:10px;"><strong>3. Data storage:</strong> your details are stored securely and are accessible only to OK Mart staff handling your order.</p>
+          <p style="margin-bottom:10px;"><strong>4. Your control:</strong> you can update your profile details or saved addresses anytime from this Account page.</p>
+          <p>Questions? Reach us on WhatsApp at +91 9982239821.</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Scripts -->
@@ -245,13 +301,13 @@
         if (saved.name) {
           nameEl.textContent = saved.name;
         } else {
-          nameEl.textContent = 'Devdhar --';
+          nameEl.textContent = 'Guest User';
         }
 
         if (saved.phone) {
           phoneEl.textContent = '+91 ' + saved.phone;
         } else {
-          phoneEl.textContent = '+91 9982239821';
+          phoneEl.textContent = 'Tap "Enter details" to add your number';
         }
       } catch(e) {}
     }
@@ -265,8 +321,8 @@
     if (openEditBtn) {
       openEditBtn.onclick = () => {
         const saved = JSON.parse(localStorage.getItem('okmart_user') || '{}');
-        document.getElementById('editProfileNameInput').value = saved.name || 'Devdhar';
-        document.getElementById('editProfilePhoneInput').value = saved.phone || '9982239821';
+        document.getElementById('editProfileNameInput').value = saved.name || '';
+        document.getElementById('editProfilePhoneInput').value = saved.phone || '';
         document.getElementById('editProfileEmailInput').value = saved.email || '';
         editModal.classList.add('active');
       };
@@ -287,7 +343,7 @@
           return;
         }
 
-        const user = { name, phone: phone || '9982239821', email };
+        const user = { name, phone: phone || '', email };
         localStorage.setItem('okmart_user', JSON.stringify(user));
         loadUserProfile();
         editModal.classList.remove('active');
@@ -338,6 +394,31 @@
         }
       };
     }
+
+    // 3b. Info Modals (Payment / About / Privacy)
+    const infoModals = {
+      openPaymentBtn: 'paymentModal',
+      openAboutBtn: 'aboutModal',
+      openPrivacyBtn: 'privacyModal'
+    };
+    Object.keys(infoModals).forEach(btnId => {
+      const btn = document.getElementById(btnId);
+      const modal = document.getElementById(infoModals[btnId]);
+      if (btn && modal) {
+        btn.addEventListener('click', () => modal.classList.add('active'));
+      }
+    });
+    // Generic close buttons + tap-outside-to-close for all modals
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('active');
+      });
+    });
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById(btn.getAttribute('data-close'))?.classList.remove('active');
+      });
+    });
 
     // 4. Sign Out
     document.getElementById('signOutBtn')?.addEventListener('click', () => {

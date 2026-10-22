@@ -236,7 +236,11 @@
     }
 
     for (const catKey of activeCatKeys) {
-      const categoryProducts = productsByCategory[catKey].slice(0, 8);
+      // Denser grid: more products on larger screens (BigBasket-style density)
+      const isDesktop = window.innerWidth >= 1024;
+      const isTablet = window.innerWidth >= 640;
+      const maxProducts = isDesktop ? 12 : (isTablet ? 8 : 6);
+      const categoryProducts = productsByCategory[catKey].slice(0, maxProducts);
       if (categoryProducts.length === 0) continue;
 
       const meta = categories.find(c => c.id === catKey) || {
@@ -764,8 +768,10 @@
           ${Array(6).fill(0).map(() => `
             <div class="skeleton-card-box">
               <div class="skeleton-shimmer skeleton-card-img"></div>
-              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-unit"></div>
               <div class="skeleton-shimmer skeleton-card-price"></div>
+              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-title" style="width:55%"></div>
               <div class="skeleton-shimmer skeleton-card-btn"></div>
             </div>
           `).join('')}
@@ -777,8 +783,10 @@
           ${Array(6).fill(0).map(() => `
             <div class="skeleton-card-box">
               <div class="skeleton-shimmer skeleton-card-img"></div>
-              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-unit"></div>
               <div class="skeleton-shimmer skeleton-card-price"></div>
+              <div class="skeleton-shimmer skeleton-card-title"></div>
+              <div class="skeleton-shimmer skeleton-card-title" style="width:55%"></div>
               <div class="skeleton-shimmer skeleton-card-btn"></div>
             </div>
           `).join('')}
@@ -795,6 +803,9 @@
   
   // ========== INITIALIZE ==========
   async function init() {
+    // Instant UI from localStorage BEFORE slow Firebase loads (fixes badge delay)
+    updateCartUI();
+    updateWishlistUI();
     showSkeleton();
     initBackToTop();
     initSearch();
@@ -810,8 +821,6 @@
     renderTrending();
     renderCategorySections();
     loadRecentlyViewed();
-    updateCartUI();
-    updateWishlistUI();
     
     // Listen for settings change
     if (typeof window.onStoreSettingsChange === 'function') {

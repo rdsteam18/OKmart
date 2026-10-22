@@ -839,6 +839,28 @@ input:focus, textarea:focus, select:focus {
   padding: 0 16px;
 }
 
+@media (min-width: 1280px) {
+  .app-container,
+  .main-wrapper,
+  .home-main,
+  .cart-main-container,
+  .checkout-main-container,
+  .product-main-container {
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .app-container,
+  .main-wrapper,
+  .home-main,
+  .cart-main-container,
+  .checkout-main-container,
+  .product-main-container {
+    max-width: 1520px;
+  }
+}
+
 /* Mobile Safe Bottom Padding for Sticky Navigation */
 @media (max-width: 767px) {
   body {

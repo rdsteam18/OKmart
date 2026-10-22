@@ -207,7 +207,7 @@
       suggestionsList.innerHTML = matched.map(p => `
         <div class="suggestion-row-item" onclick="executeSearch('${escapeHtml(p.name)}')">
           <div class="suggestion-thumb-box">
-            <img src="${p.image}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/40'">
+            <img src="${p.image || 'https://via.placeholder.com/40?text=OK'}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/40?text=OK'">
           </div>
           <div class="suggestion-text-label">
             ${highlightMatch(p.name, query)}
@@ -388,7 +388,23 @@
     window._st = setTimeout(() => t.style.display = 'none', 2000);
   }
 
+  // Skeleton placeholders for shelves (shown instantly, replaced on load)
+  function showShelfSkeletons() {
+    const html = Array(5).fill(0).map(() => `
+      <div class="shelf-skeleton-card">
+        <div class="shelf-shimmer shelf-skeleton-img"></div>
+        <div class="shelf-shimmer shelf-skeleton-line" style="width:45%"></div>
+        <div class="shelf-shimmer shelf-skeleton-line" style="width:70%"></div>
+        <div class="shelf-shimmer shelf-skeleton-line" style="width:85%"></div>
+        <div class="shelf-shimmer shelf-skeleton-btn"></div>
+      </div>
+    `).join('');
+    if (quickPicksScroll) quickPicksScroll.innerHTML = html;
+    if (trendingScroll) trendingScroll.innerHTML = html;
+  }
+
   // Init
+  showShelfSkeletons();
   loadPastSearches();
   loadProducts();
 
