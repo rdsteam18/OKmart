@@ -41,7 +41,7 @@
         if (activeRetailer !== 'other' && r !== activeRetailer) return false;
       }
       if (q) {
-        var hay = ((d.title || '') + ' ' + (d.category || '') + ' ' + (d.retailer || '')).toLowerCase();
+        var hay = ((d.title || '') + ' ' + (d.category || '') + ' ' + (d.retailer || '') + ' ' + (d.description || '')).toLowerCase();
         if (hay.indexOf(q) === -1) return false;
       }
       return true;
@@ -54,11 +54,12 @@
 
     grid.innerHTML = list.map(function (d) {
       var off = offPercent(d.price, d.mrp);
-      return '<article class="deal-card">' +
+      return '<article class="deal-card" id="deal-' + esc(d.id) + '">' +
         '<img src="' + esc(d.image) + '" alt="' + esc(d.title) + '" loading="lazy" onerror="this.style.display=\'none\'">' +
         '<div class="deal-card-body">' +
           '<span class="deal-retailer">' + esc(d.retailer || 'Deal') + '</span>' +
           '<h3 class="deal-card-title">' + esc(d.title) + '</h3>' +
+          (d.description ? '<p class="deal-card-desc" style="font-size:13px;color:#555;margin:6px 0;">' + esc(d.description) + '</p>' : '') +
           '<div class="deal-price-row">' +
             '<span class="deal-price">₹' + Number(d.price).toLocaleString('en-IN') + '</span>' +
             (d.mrp ? '<span class="deal-mrp">₹' + Number(d.mrp).toLocaleString('en-IN') + '</span>' : '') +
@@ -80,6 +81,7 @@
         name: d.title,
         image: d.image,
         description: d.description || d.title,
+        category: d.category || undefined,
         brand: { '@type': 'Brand', name: d.retailer || 'OKmart Deals' },
         offers: {
           '@type': 'Offer',
