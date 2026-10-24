@@ -58,7 +58,7 @@
         '<img src="' + esc(d.image) + '" alt="' + esc(d.title) + '" loading="lazy" onerror="this.style.display=\'none\'">' +
         '<div class="deal-card-body">' +
           '<span class="deal-retailer">' + esc(d.retailer || 'Deal') + '</span>' +
-          '<h3 class="deal-card-title">' + esc(d.title) + '</h3>' +
+          '<h3 class="deal-card-title"><a href="/deal.html?id=' + esc(d.id) + '" style="color:inherit;text-decoration:none;">' + esc(d.title) + '</a></h3>' +
           (d.description ? '<p class="deal-card-desc" style="font-size:13px;color:#555;margin:6px 0;">' + esc(d.description) + '</p>' : '') +
           '<div class="deal-price-row">' +
             '<span class="deal-price">₹' + Number(d.price).toLocaleString('en-IN') + '</span>' +
