@@ -186,6 +186,14 @@ body {
 
 /* ===== RESPONSIVE ===== */
 @media (min-width: 500px) {
-  .app-container { max-width: 500px; }
+  .app-container { max-width: 720px; }
+}
+
+@media (min-width: 1024px) {
+  .app-container { max-width: 1100px; }
+}
+
+@media (min-width: 1400px) {
+  .app-container { max-width: 1300px; }
 }
 

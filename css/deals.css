@@ -1,0 +1,249 @@
+/* ===== OK MART — DAILY LOOT DEALS PAGE ===== */
+
+.deals-header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.deals-header .header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.deals-header .back-btn {
+  font-size: 1.3rem;
+  text-decoration: none;
+  color: #111827;
+}
+
+.deals-header .header-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.deals-main {
+  padding: 16px;
+  padding-bottom: 90px;
+}
+
+/* Price-change notice — always visible */
+.price-note {
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #92400e;
+  margin-bottom: 16px;
+}
+
+/* Search + filters */
+.deals-tools {
+  margin-bottom: 16px;
+}
+
+.deals-tools input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.deals-tools input:focus {
+  border-color: #84c225;
+}
+
+.retailer-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.retailer-chips .chip {
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  border-radius: 30px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+}
+
+.retailer-chips .chip.active {
+  background: #006d37;
+  border-color: #006d37;
+  color: #fff;
+}
+
+/* Deal cards */
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.deal-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.deal-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  background: #f9fafb;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.deal-card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.deal-card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111827;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.deal-retailer {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #006d37;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.deal-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.deal-price {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.deal-mrp {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.deal-off {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.deal-buy-btn {
+  margin-top: auto;
+  display: block;
+  text-align: center;
+  background: #ff9900;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 10px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.deal-buy-btn:hover {
+  background: #e68a00;
+}
+
+.deal-date {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.deals-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px 16px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  background: #fff;
+  border: 1px dashed #d1d5db;
+  border-radius: 16px;
+}
+
+.affiliate-note {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 20px 0;
+}
+
+.deals-faq {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 8px;
+}
+
+.deals-faq h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+.deals-faq h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 14px 0 4px;
+}
+
+.deals-faq p {
+  font-size: 0.82rem;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Responsive: match the site's widened desktop container */
+@media (min-width: 500px) {
+  .app-container { max-width: 720px; }
+  .deals-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .app-container { max-width: 1100px; }
+  .deals-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1400px) {
+  .app-container { max-width: 1300px; }
+}
