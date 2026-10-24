@@ -65,4 +65,10 @@
     <priority>0.4</priority>
   </url>
   
+  <!-- Daily Loot Deals Page -->
+  <url>
+    <loc>https://okmart.netlify.app/deals.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>

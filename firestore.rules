@@ -36,6 +36,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // 3b. Deals Collection (Daily loot deals — affiliate products)
+    // Read: Allowed for anyone (so guests can browse deals)
+    // Write: Admin only (via admin panel, same as products)
+    match /deals/{dealId} {
+      allow read: if true;
+      allow write: if false; // Only admin panel backend/admin user
+    }
+
     // 4. Settings Collection (delivery fees, thresholds)
     // Read: Allowed for anyone
     // Write: Admin only

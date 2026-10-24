@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+
+  <title>Daily Loot Deals — Amazon, Flipkart Best Prices | OK Mart</title>
+  <meta name="description" content="Daily loot deals from Amazon, Flipkart and more at the lowest prices. New deals added every day — old deals stay live. Check price before buying, prices may change.">
+  <meta name="theme-color" content="#84c225">
+  <link rel="canonical" href="https://okmart.netlify.app/deals.html">
+  <meta property="og:title" content="Daily Loot Deals | OK Mart">
+  <meta property="og:description" content="Amazon, Flipkart aur bhi platforms ke best price deals — roz naye offers, purane deals bhi live.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://okmart.netlify.app/deals.html">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/deals.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ========== HEADER ========== -->
+    <header class="deals-header">
+      <div class="header-inner">
+        <a href="/index.html" class="back-btn">←</a>
+        <h1 class="header-title">🔥 Daily Loot Deals</h1>
+        <span></span>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="deals-main">
+
+      <!-- Price-change notice (required, shown on every visit) -->
+      <div class="price-note">
+        ⚠️ <strong>Note: Prices badal sakte hain.</strong>
+        Yahan dikhaya gaya price deal milne ke time ka hai. Kharidne se pehle
+        Amazon / Flipkart par checkout ke time ka final price zaroor check karein —
+        wahi price aapko milega.
+      </div>
+
+      <!-- Search + retailer filter -->
+      <div class="deals-tools">
+        <input type="text" id="dealSearch" placeholder="🔍 Deal dhoondo — keyboard, chair, earbuds..." aria-label="Search deals">
+        <div class="retailer-chips" id="retailerChips">
+          <button class="chip active" data-retailer="all">All</button>
+          <button class="chip" data-retailer="Amazon">Amazon</button>
+          <button class="chip" data-retailer="Flipkart">Flipkart</button>
+          <button class="chip" data-retailer="other">Other</button>
+        </div>
+      </div>
+
+      <!-- Deals grid -->
+      <div class="deals-grid" id="dealsGrid">
+        <div class="loading-placeholder" style="padding:12px;">
+          <div style="width:100%;height:180px;border-radius:14px;background:linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 50%,#f3f4f6 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+        </div>
+      </div>
+
+      <!-- Affiliate disclosure -->
+      <p class="affiliate-note">
+        Disclosure: Is page ke kuch links affiliate links hain. In links se kharidne par
+        OKmart ko commission mil sakta hai — aapko koi extra charge nahi lagega.
+        Purane deals delete nahi kiye jaate, isliye koi deal dikhe to uska current
+        price retailer site par verify kar lein.
+      </p>
+
+      <!-- FAQ (helps search engines & AI assistants answer deal questions) -->
+      <section class="deals-faq">
+        <h2>Deals ke baare me aksar pooche jaane wale sawaal</h2>
+        <h3>OKmart loot deals kya hain?</h3>
+        <p>Roz Amazon, Flipkart aur doosre platforms se chune gaye best-price products yahan list hote hain — har deal ke saath photo, price aur direct kharidne ka link.</p>
+        <h3>Kya yahan dikhaya gaya price final hai?</h3>
+        <p>Nahi — price badal sakte hain. Deal ka price us time ka hai jab deal mili thi. Final price wahi hoga jo retailer site par checkout ke time dikhega.</p>
+        <h3>Purane deals kahan jaate hain?</h3>
+        <p>Kahin nahi — purane deals page par hi rehte hain, delete nahi kiye jaate. Lekin unka current price retailer site par check karna zaroori hai.</p>
+        <h3>Offer kaise claim karein?</h3>
+        <p>Deal card par "Buy Now" dabayein — aap retailer site (Amazon / Flipkart) par pahunch jayenge aur wahan se saste me kharid sakte hain.</p>
+      </section>
+
+    </main>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/deals.html" class="nav-item active">🔥<span>Deals</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
+
+  </div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/deals.js"></script>
+</body>
+</html>
