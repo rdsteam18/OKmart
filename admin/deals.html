@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Deals Management | OK Mart Admin</title>
+  <meta name="theme-color" content="#006d37">
+  <!-- Auth Protection -->
+  <script src="../js/admin-auth.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { 'primary': '#006d37', 'primary-container': '#84c225' } } }
+    };
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    .deal-admin-card { display:flex; gap:12px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px; }
+    .deal-admin-card img { width:80px; height:80px; object-fit:contain; background:#f9fafb; border-radius:8px; }
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:50; align-items:center; justify-content:center; }
+    .modal.active { display:flex; }
+    .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#111827; color:#fff; padding:12px 20px; border-radius:30px; display:none; z-index:100; }
+    .toast.show { display:block; }
+    .toast.success { background:#006d37; }
+    .toast.error { background:#ba1a1a; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
+      <h2 class="font-extrabold text-lg mb-4">OK Mart Admin</h2>
+      <nav class="space-y-1">
+        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100">📊 Dashboard</a>
+        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100">📋 Orders</a>
+        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100">📦 Products</a>
+        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100">🏷️ Offers</a>
+        <a href="deals.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold">🔥 Deals</a>
+        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100">🚚 Delivery</a>
+        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100">👥 Customers</a>
+        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100">⚙️ Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 p-4 md:p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-extrabold">🔥 Daily Loot Deals</h1>
+        <button id="addDealBtn" class="bg-primary text-white font-bold px-4 py-2 rounded-full">+ Add Deal</button>
+      </div>
+      <p class="text-sm text-gray-500 mb-4">
+        Yahan add kiya gaya deal turant <a href="../deals.html" target="_blank" class="text-green-700 underline">deals page</a> par dikhne lagega.
+        Purane deals kabhi delete mat karein — sirf Active band karein agar deal khatam ho jaye.
+        Price badal sakta hai, isliye MRP aur deal price dono sahi bharein.
+      </p>
+
+      <div class="flex gap-2 mb-4">
+        <input id="dealSearch" type="text" placeholder="🔍 Deal dhoondo..." class="flex-1 border rounded-full px-4 py-2">
+        <select id="retailerFilter" class="border rounded-full px-3 py-2">
+          <option value="all">All retailers</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Flipkart">Flipkart</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div id="dealsGrid" class="grid gap-3"><p class="text-gray-500">Loading deals...</p></div>
+    </main>
+  </div>
+
+  <!-- Add/Edit modal -->
+  <div id="dealModal" class="modal">
+    <div class="bg-white rounded-2xl p-5 w-full max-w-lg mx-3 max-h-[90vh] overflow-y-auto">
+      <h2 id="modalTitle" class="text-lg font-extrabold mb-3">Add Deal</h2>
+      <form id="dealForm" class="space-y-3">
+        <input type="hidden" id="dealId">
+        <input id="dealTitle" type="text" placeholder="Deal title (e.g. Geonix Cruiser K5 RGB Gaming Keyboard)" class="w-full border rounded-lg px-3 py-2" required>
+        <input id="dealImage" type="url" placeholder="Product image URL" class="w-full border rounded-lg px-3 py-2" required>
+        <div id="imagePreview" class="hidden"><img id="previewImg" src="" alt="" class="h-24 object-contain bg-gray-50 rounded"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="dealPrice" type="number" placeholder="Deal price ₹" class="border rounded-lg px-3 py-2" required>
+          <input id="dealMrp" type="number" placeholder="MRP ₹ (optional)" class="border rounded-lg px-3 py-2">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <select id="dealRetailer" class="border rounded-lg px-3 py-2">
+            <option>Amazon</option>
+            <option>Flipkart</option>
+            <option>Other</option>
+          </select>
+          <select id="dealSource" class="border rounded-lg px-3 py-2">
+            <option value="telegram">Telegram (Alibaba etc.)</option>
+            <option value="amazon">Amazon site</option>
+            <option value="flipkart">Flipkart site</option>
+            <option value="other">Other site</option>
+          </select>
+        </div>
+        <input id="dealLink" type="url" placeholder="Affiliate link (EarnKaro converted, e.g. bitli.in/...)" class="w-full border rounded-lg px-3 py-2" required>
+        <input id="dealCategory" type="text" placeholder="Category (e.g. keyboard, chair, earbuds)" class="w-full border rounded-lg px-3 py-2">
+        <textarea id="dealDesc" placeholder="Short description (optional)" class="w-full border rounded-lg px-3 py-2"></textarea>
+        <label class="flex items-center gap-2 text-sm"><input id="dealActive" type="checkbox" checked> Active (site par dikhega)</label>
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 bg-primary text-white font-bold py-2 rounded-full">Save Deal</button>
+          <button type="button" id="closeModal" class="px-4 py-2 border rounded-full">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete modal -->
+  <div id="deleteModal" class="modal">
+    <div class="bg-white rounded-2xl p-5 w-full max-w-sm mx-3 text-center">
+      <p id="deleteDealName" class="font-bold mb-4"></p>
+      <p class="text-sm text-gray-500 mb-4">Note: purane deals delete karne ki bajay Active band karna behtar hai.</p>
+      <div class="flex gap-2">
+        <button id="confirmDelete" class="flex-1 bg-red-600 text-white font-bold py-2 rounded-full">Delete</button>
+        <button id="cancelDelete" class="flex-1 border py-2 rounded-full">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="../js/firebase.js"></script>
+  <script>
+    // ===== OK MART - DEALS MANAGEMENT (mirrors products admin pattern) =====
+    (function () {
+      var db = window.db || firebase.firestore();
+      var grid = document.getElementById('dealsGrid');
+      var modal = document.getElementById('dealModal');
+      var deleteModal = document.getElementById('deleteModal');
+      var form = document.getElementById('dealForm');
+      var toast = document.getElementById('toast');
+      var editingId = null, deleteId = null, cache = [];
+
+      function showToast(msg, type) {
+        toast.textContent = msg;
+        toast.className = 'toast show ' + (type || 'info');
+        setTimeout(function () { toast.className = 'toast'; }, 3000);
+      }
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function openModal(d) {
+        editingId = d ? d.id : null;
+        document.getElementById('modalTitle').textContent = d ? 'Edit Deal' : 'Add Deal';
+        document.getElementById('dealId').value = d ? d.id : '';
+        document.getElementById('dealTitle').value = d ? d.title : '';
+        document.getElementById('dealImage').value = d ? d.image : '';
+        document.getElementById('dealPrice').value = d ? d.price : '';
+        document.getElementById('dealMrp').value = d ? d.mrp || '' : '';
+        document.getElementById('dealRetailer').value = d ? d.retailer : 'Amazon';
+        document.getElementById('dealSource').value = d ? d.source : 'telegram';
+        document.getElementById('dealLink').value = d ? d.affiliateLink : '';
+        document.getElementById('dealCategory').value = d ? d.category || '' : '';
+        document.getElementById('dealDesc').value = d ? d.description || '' : '';
+        document.getElementById('dealActive').checked = d ? d.active !== false : true;
+        modal.classList.add('active');
+      }
+      document.getElementById('addDealBtn').addEventListener('click', function () { openModal(null); });
+      document.getElementById('closeModal').addEventListener('click', function () { modal.classList.remove('active'); });
+      document.getElementById('dealImage').addEventListener('input', function (e) {
+        var url = e.target.value;
+        if (url) {
+          document.getElementById('previewImg').src = url;
+          document.getElementById('imagePreview').classList.remove('hidden');
+        } else {
+          document.getElementById('imagePreview').classList.add('hidden');
+        }
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var data = {
+          title: document.getElementById('dealTitle').value.trim(),
+          image: document.getElementById('dealImage').value.trim(),
+          price: Number(document.getElementById('dealPrice').value),
+          mrp: Number(document.getElementById('dealMrp').value) || 0,
+          retailer: document.getElementById('dealRetailer').value,
+          source: document.getElementById('dealSource').value,
+          affiliateLink: document.getElementById('dealLink').value.trim(),
+          category: document.getElementById('dealCategory').value.trim(),
+          description: document.getElementById('dealDesc').value.trim(),
+          active: document.getElementById('dealActive').checked,
+          updatedAt: new Date().toISOString()
+        };
+        var done = function () {
+          showToast(editingId ? 'Deal updated!' : 'Deal added!', 'success');
+          modal.classList.remove('active');
+          form.reset();
+        };
+        if (editingId) {
+          db.collection('deals').doc(editingId).update(data).then(done).catch(function () { showToast('Error saving deal', 'error'); });
+        } else {
+          data.createdAt = new Date().toISOString();
+          db.collection('deals').add(data).then(done).catch(function () { showToast('Error saving deal', 'error'); });
+        }
+      });
+
+      document.getElementById('cancelDelete').addEventListener('click', function () { deleteModal.classList.remove('active'); });
+      document.getElementById('confirmDelete').addEventListener('click', function () {
+        if (!deleteId) return;
+        db.collection('deals').doc(deleteId).delete().then(function () {
+          deleteModal.classList.remove('active');
+          showToast('Deal deleted', 'success');
+        });
+      });
+
+      function render() {
+        var q = (document.getElementById('dealSearch').value || '').toLowerCase();
+        var rf = document.getElementById('retailerFilter').value;
+        var list = cache.filter(function (d) {
+          if (rf !== 'all') {
+            var r = (d.retailer || '').toLowerCase();
+            if (rf === 'other' && (r === 'amazon' || r === 'flipkart')) return false;
+            if (rf !== 'other' && r !== rf.toLowerCase()) return false;
+          }
+          if (q && (d.title || '').toLowerCase().indexOf(q) === -1) return false;
+          return true;
+        });
+        grid.innerHTML = list.length ? list.map(function (d) {
+          return '<div class="deal-admin-card">' +
+            '<img src="' + esc(d.image) + '" alt="" onerror="this.src=\'https://via.placeholder.com/80\'">' +
+            '<div class="flex-1">' +
+              '<div class="font-bold text-sm">' + esc(d.title) + '</div>' +
+              '<div class="text-sm">₹' + d.price + (d.mrp ? ' <span class="line-through text-gray-400">₹' + d.mrp + '</span>' : '') + '</div>' +
+              '<div class="text-xs text-gray-500">' + esc(d.retailer) + ' · source: ' + esc(d.source || '-') + ' · ' + (d.active === false ? 'INACTIVE' : 'active') + '</div>' +
+              '<div class="flex gap-2 mt-2">' +
+                '<button class="text-xs bg-green-700 text-white px-3 py-1 rounded-full" onclick="window.editDeal(\'' + d.id + '\')">✏️ Edit</button>' +
+                '<button class="text-xs bg-gray-200 px-3 py-1 rounded-full" onclick="window.toggleDeal(\'' + d.id + '\',' + (d.active === false ? 'true' : 'false') + ')">' + (d.active === false ? 'Activate' : 'Deactivate') + '</button>' +
+                '<button class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full" onclick="window.deleteDeal(\'' + d.id + '\',\'' + esc(d.title).replace(/'/g, "\\'") + '\')">🗑️ Delete</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') : '<p class="text-gray-500">No deals found</p>';
+      }
+
+      db.collection('deals').orderBy('createdAt', 'desc').onSnapshot(function (snap) {
+        cache = [];
+        snap.forEach(function (doc) { cache.push(Object.assign({ id: doc.id }, doc.data())); });
+        render();
+      });
+
+      document.getElementById('dealSearch').addEventListener('input', render);
+      document.getElementById('retailerFilter').addEventListener('change', render);
+
+      window.editDeal = function (id) {
+        db.collection('deals').doc(id).get().then(function (doc) {
+          if (doc.exists) openModal(Object.assign({ id: doc.id }, doc.data()));
+        });
+      };
+      window.toggleDeal = function (id, val) {
+        db.collection('deals').doc(id).update({ active: val, updatedAt: new Date().toISOString() });
+      };
+      window.deleteDeal = function (id, name) {
+        deleteId = id;
+        document.getElementById('deleteDealName').textContent = 'Delete "' + name + '"?';
+        deleteModal.classList.add('active');
+      };
+    })();
+  </script>
+</body>
+</html>
