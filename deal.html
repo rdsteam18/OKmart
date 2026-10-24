@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+
+  <title>Deal | OK Mart</title>
+  <meta name="description" content="OKmart loot deal — best price, photo aur direct kharidne ka link. Price badal sakta hai, checkout par final price check karein.">
+  <meta name="theme-color" content="#84c225">
+  <link rel="canonical" href="https://okmart.netlify.app/deals.html">
+  <meta property="og:title" content="OKmart Loot Deal">
+  <meta property="og:description" content="Best price loot deal — photo, price aur direct link.">
+  <meta property="og:type" content="website">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/deals.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ========== HEADER ========== -->
+    <header class="deals-header">
+      <div class="header-inner">
+        <a href="/deals.html" class="back-btn">←</a>
+        <h1 class="header-title">🔥 Deal</h1>
+        <span></span>
+      </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="deals-main">
+
+      <!-- Price-change notice (required, shown on every visit) -->
+      <div class="price-note">
+        ⚠️ <strong>Note: Prices badal sakte hain.</strong>
+        Yahan dikhaya gaya price deal milne ke time ka hai. Kharidne se pehle
+        retailer site par checkout ke time ka final price zaroor check karein —
+        wahi price aapko milega.
+      </div>
+
+      <!-- Single deal detail (filled by js/deal.js from Firestore) -->
+      <div id="dealDetail">
+        <div class="loading-placeholder" style="padding:12px;">
+          <div style="width:100%;height:280px;border-radius:14px;background:linear-gradient(90deg,#f3f4f6 25%,#e5e7eb 50%,#f3f4f6 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+        </div>
+      </div>
+
+      <!-- Affiliate disclosure -->
+      <p class="affiliate-note">
+        Disclosure: Is page ke kuch links affiliate links hain. In links se kharidne par
+        OKmart ko commission mil sakta hai — aapko koi extra charge nahi lagega.
+      </p>
+
+    </main>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav">
+      <a href="/index.html" class="nav-item">🏠<span>Home</span></a>
+      <a href="/search.html" class="nav-item">🔍<span>Search</span></a>
+      <a href="/deals.html" class="nav-item active">🔥<span>Deals</span></a>
+      <a href="/offers.html" class="nav-item">🏷️<span>Offers</span></a>
+      <a href="/tracking.html" class="nav-item">📦<span>Track</span></a>
+      <a href="/cart.html" class="nav-item">🛒<span>Cart</span></a>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast-message" id="toastMessage"></div>
+
+  </div>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/deal.js"></script>
+</body>
+</html>

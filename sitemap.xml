@@ -71,4 +71,11 @@
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- Single Deal Detail Page (template; every product opens as /deal.html?id=... and is discovered by Google via links from deals.html) -->
+  <url>
+    <loc>https://okmart.netlify.app/deal.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
