@@ -280,33 +280,40 @@
     const wishlist = getWishlist();
     const isWishlisted = wishlist.includes(product.id);
     
+    // Quick-commerce card: unit chip + ADD overlap the image (bottom-left /
+    // bottom-right); price row carries bold price + struck MRP + green % off.
+    // Hooks kept: .product-card[data-product-id], viewProduct, toggleWishlist,
+    // addToCart (.add-btn class kept so the add animation lookup works),
+    // updateCartItemQty, .product-image-container, .product-name-title,
+    // .product-curr-price, .product-mrp-price.
     return `
       <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
-        ${discount > 0 ? `<span class="discount-tag">${discount}% off</span>` : ''}
         <button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)" aria-label="Wishlist">
           ${isWishlisted ? '❤️' : '🤍'}
         </button>
         <div class="product-image-container">
           <img src="${product.image}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK+Mart'">
+          ${inCartQty > 0 ? `
+            <div class="qty-stepper-btn qc-corner-stepper" onclick="event.stopPropagation()">
+              <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', -1)">−</button>
+              <span class="qty-step-value">${inCartQty}</span>
+              <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', 1)">+</button>
+            </div>
+          ` : `
+            <span class="product-unit-chip">${product.unit || '1 Unit'}</span>
+            <button class="product-add-btn add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+              ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+            </button>
+          `}
         </div>
-        <span class="product-unit-pill">${product.unit || '1 Unit'}</span>
+        ${inCartQty > 0 ? `<span class="product-unit-line">${product.unit || '1 Unit'}</span>` : ''}
         <div class="product-price-row">
           <span class="product-curr-price">₹${product.price}</span>
           ${product.mrp ? `<span class="product-mrp-price">₹${product.mrp}</span>` : ''}
+          ${discount > 0 ? `<span class="product-off-text">${discount}% off</span>` : ''}
         </div>
         <h4 class="product-name-title">${escapeHtml(product.name)}</h4>
-        <div class="product-quick-tag">⚡ Quick</div>
-        ${inCartQty > 0 ? `
-          <div class="qty-stepper-btn" onclick="event.stopPropagation()">
-            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', -1)">−</button>
-            <span class="qty-step-value">${inCartQty}</span>
-            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', 1)">+</button>
-          </div>
-        ` : `
-          <button class="product-add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-            ${isOutOfStock ? 'Out of Stock' : '+ ADD'}
-          </button>
-        `}
+        <div class="product-quick-tag">⚡ 15 mins</div>
       </div>
     `;
   }

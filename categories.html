@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/qc.css">
 
   <style>
     .categories-view-page {
@@ -174,86 +175,40 @@
       <h1 class="cat-dir-title">Shop by Category</h1>
     </header>
 
-    <!-- Main Categories Section (Loaded Dynamically from Firebase) -->
+    <!-- Search pill (same look as homepage / search page) -->
+    <div class="qc-search-wrap">
+      <div class="qc-search-pill" onclick="window.location.href='/search.html'">
+        <span class="search-pill-icon">🔍</span>
+        <input type="text" class="search-main-input" placeholder="Search in OKmart" readonly>
+        <button class="mic-search-icon-btn" aria-label="Voice Search">🎙️</button>
+      </div>
+    </div>
+
+    <!-- Grouped Category Sections (Loaded Dynamically from Firebase) -->
     <main style="padding-top: 6px;">
-      <section class="categories-card-section">
-        <h2 class="categories-sec-title">
-          <span>📂</span>
-          <span>All Store Categories</span>
-        </h2>
-        
-        <div class="categories-icon-grid" id="categoriesIconGrid">
-          <!-- Shimmering Skeleton while loading (8 tiles, matches name+count layout) -->
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-          <div class="category-icon-tile">
-            <div class="skeleton-bubble"></div>
-            <div style="width: 50px; height: 10px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-            <div style="width: 34px; height: 8px; margin-top:4px; background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation: skeletonShimmer 1.5s infinite; border-radius: 4px;"></div>
-          </div>
-        </div>
-      </section>
+      <div id="categoryGroupsContainer">
+        <div style="padding: 24px; text-align: center; color: #888;">Loading categories...</div>
+      </div>
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-navbar">
-      <a href="/" class="nav-item">
-        <span class="nav-icon">🏠</span>
+    <!-- Floating Bottom Navigation (Categories active) -->
+    <nav class="qc-bottom-nav">
+      <a href="/index.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5.5h5V20"/></svg></span>
         <span>Home</span>
       </a>
-      <a href="/categories.html" class="nav-item active">
-        <span class="nav-icon">📂</span>
+      <a href="/categories.html" class="qc-nav-item active">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>
         <span>Categories</span>
       </a>
-      <a href="/search.html" class="nav-item">
-        <span class="nav-icon">🔍</span>
-        <span>Search</span>
+      <a href="/buy-again.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/><path d="M17.5 4.5a3.2 3.2 0 1 1-2.4 1.1"/><path d="M17.6 2.6v1.9h-1.9"/></svg></span>
+        <span>Buy Again</span>
       </a>
-      <a href="/track-order.html" class="nav-item">
-        <span class="nav-icon">📦</span>
-        <span>Track</span>
-      </a>
-      <a href="/cart.html" class="nav-item">
-        <span class="nav-icon">🛒</span>
-        <span>Cart</span>
-        <span class="nav-badge" id="catBottomCartCount">0</span>
-      </a>
-      <a href="/profile.html" class="nav-item">
-        <span class="nav-icon">👤</span>
-        <span>Account</span>
+      <a href="/cart.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/></svg></span>
+        <span>Basket</span>
+        <span class="qc-nav-badge" id="bottomNavCartCount">0</span>
       </a>
     </nav>
 
@@ -264,6 +219,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/qc-nav.js"></script>
 
   <script>
     // Known Category Icon Mapping
@@ -283,73 +239,82 @@
       'energy-drinks': { name: 'Energy Drinks', icon: '⚡' }
     };
 
-    async function loadDatabaseCategories() {
-      const grid = document.getElementById('categoriesIconGrid');
-      if (!grid) return;
+    // Group headings (reference-style) mapped from real category IDs.
+    // Unknown future categories fall into "More categories".
+    const CATEGORY_GROUPS = [
+      { title: 'Grocery', ids: ['fruits', 'vegetables', 'grocery', 'dairy'] },
+      { title: 'Snacks & drinks', ids: ['snacks', 'beverages', 'bakery', 'icecream', 'energy-drinks'] },
+      { title: 'Home & personal', ids: ['household', 'personal-care', 'personal', 'electronics'] }
+    ];
 
+    function categoryTile(catId) {
+      const meta = CATEGORY_MAP[catId] || {
+        name: catId.charAt(0).toUpperCase() + catId.slice(1).replace('-', ' '),
+        icon: '🛍️'
+      };
+      // Same destination as before: the per-category page.
+      return `
+        <a href="/categories/${catId}.html" class="category-icon-tile">
+          <div class="category-icon-bubble"><span>${meta.icon}</span></div>
+          <span class="category-icon-name">${meta.name}</span>
+        </a>
+      `;
+    }
+
+    function renderGroupedCategories(activeCategories) {
+      const container = document.getElementById('categoryGroupsContainer');
+      if (!container) return;
+      const remaining = [...activeCategories];
+      let html = '';
+      for (const group of CATEGORY_GROUPS) {
+        const ids = group.ids.filter(id => remaining.includes(id));
+        ids.forEach(id => {
+          const i = remaining.indexOf(id);
+          if (i > -1) remaining.splice(i, 1);
+        });
+        if (ids.length === 0) continue;
+        html += `
+          <section class="qc-cat-group">
+            <h2 class="qc-cat-group-title">${group.title}</h2>
+            <div class="categories-icon-grid">
+              ${ids.map(categoryTile).join('')}
+            </div>
+          </section>
+        `;
+      }
+      if (remaining.length > 0) {
+        html += `
+          <section class="qc-cat-group">
+            <h2 class="qc-cat-group-title">More categories</h2>
+            <div class="categories-icon-grid">
+              ${remaining.map(categoryTile).join('')}
+            </div>
+          </section>
+        `;
+      }
+      container.innerHTML = html || '<div style="padding: 24px; text-align: center; color: #888;">No categories found</div>';
+    }
+
+    async function loadDatabaseCategories() {
       try {
         const snap = await db.collection('products').where('active', '==', true).get();
-        const catCounts = {};
-
+        const seen = new Set();
         snap.forEach(doc => {
-          const p = doc.data();
-          const cat = (p.category || 'grocery').toLowerCase();
-          catCounts[cat] = (catCounts[cat] || 0) + 1;
+          const cat = (doc.data().category || 'grocery').toLowerCase();
+          seen.add(cat);
         });
-
-        // Unique category IDs present in database
-        const activeCategories = Object.keys(catCounts);
-
+        let activeCategories = [...seen];
         if (activeCategories.length === 0) {
           // Fallback standard categories if database is empty
-          activeCategories.push('beverages', 'fruits', 'vegetables', 'dairy', 'grocery', 'snacks', 'household', 'personal-care', 'bakery');
+          activeCategories = ['beverages', 'fruits', 'vegetables', 'dairy', 'grocery', 'snacks', 'household', 'personal-care', 'bakery'];
         }
-
-        grid.innerHTML = activeCategories.map(catId => {
-          const meta = CATEGORY_MAP[catId] || { 
-            name: catId.charAt(0).toUpperCase() + catId.slice(1).replace('-', ' '), 
-            icon: '🛍️' 
-          };
-          const count = catCounts[catId] || 0;
-
-          return `
-            <a href="/categories/${catId}.html" class="category-icon-tile">
-              <div class="category-icon-bubble">
-                <span>${meta.icon}</span>
-              </div>
-              <span class="category-icon-name">${meta.name}</span>
-              ${count > 0 ? `<span class="category-item-count">${count} item${count === 1 ? '' : 's'}</span>` : ''}
-            </a>
-          `;
-        }).join('');
-
+        renderGroupedCategories(activeCategories);
       } catch (err) {
         console.warn('Error loading categories from Firestore:', err);
-        // Fallback
-        const fallback = ['beverages', 'fruits', 'vegetables', 'dairy', 'grocery', 'snacks', 'household', 'personal-care', 'bakery'];
-        grid.innerHTML = fallback.map(catId => {
-          const meta = CATEGORY_MAP[catId];
-          return `
-            <a href="/categories/${catId}.html" class="category-icon-tile">
-              <div class="category-icon-bubble"><span>${meta.icon}</span></div>
-              <span class="category-icon-name">${meta.name}</span>
-            </a>
-          `;
-        }).join('');
+        renderGroupedCategories(['beverages', 'fruits', 'vegetables', 'dairy', 'grocery', 'snacks', 'household', 'personal-care', 'bakery']);
       }
     }
 
-    // Update bottom nav cart count
-    function updateCartCount() {
-      try {
-        const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
-        const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
-        const el = document.getElementById('catBottomCartCount');
-        if (el) el.textContent = count;
-      } catch(e) {}
-    }
-
-    updateCartCount();
     loadDatabaseCategories();
   </script>
 </body>

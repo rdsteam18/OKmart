@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Buy Again | OK Mart</title>
+  <meta name="description" content="Reorder your past OK Mart purchases in one tap.">
+  <meta name="theme-color" content="#006b22">
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/qc.css">
+</head>
+<body class="buy-again-page">
+  <div class="app-container">
+
+    <!-- Search on top (same pill look as homepage / search page) -->
+    <header class="buy-again-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="if(history.length>1){history.back();}else{location.href='/';}" aria-label="Back" style="background:none; border:none; font-size:1.3rem; font-weight:800; color:#111827; cursor:pointer; padding:2px 4px;">←</button>
+        <div class="qc-search-pill" style="flex:1;">
+          <span class="search-pill-icon">🔍</span>
+          <input type="text" id="buyAgainSearchInput" class="search-main-input" placeholder="Search in OKmart" autocomplete="off">
+          <button class="mic-search-icon-btn" id="buyAgainMicBtn" aria-label="Voice Search">🎙️</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Past-order products (rendered from REAL localStorage orders only) -->
+      <section class="buy-again-section" id="buyAgainSection" style="display:none;">
+        <h2 class="buy-again-title">Buy Again</h2>
+        <div class="buy-again-grid" id="buyAgainGrid"></div>
+      </section>
+
+      <!-- Honest empty state (no past-order data on this device) -->
+      <div class="ba-empty" id="buyAgainEmpty" style="display:none;">
+        <div class="ba-empty-emoji">🛍️</div>
+        <p>Abhi koi past order nahi mila</p>
+        <p style="font-weight:400; font-size:0.82rem; margin-top:4px;">Pichle orders is device par save nahi hain. Neeche ke products se shuru karo.</p>
+      </div>
+
+      <!-- Popular products (shown when there is nothing to re-order) -->
+      <section class="buy-again-section" id="popularSection" style="display:none;">
+        <h2 class="buy-again-title">Popular products</h2>
+        <div class="buy-again-grid" id="popularGrid"></div>
+      </section>
+    </main>
+
+    <!-- Floating Bottom Navigation (Buy Again active) -->
+    <nav class="qc-bottom-nav">
+      <a href="/index.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5.5h5V20"/></svg></span>
+        <span>Home</span>
+      </a>
+      <a href="/categories.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>
+        <span>Categories</span>
+      </a>
+      <a href="/buy-again.html" class="qc-nav-item active">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/><path d="M17.5 4.5a3.2 3.2 0 1 1-2.4 1.1"/><path d="M17.6 2.6v1.9h-1.9"/></svg></span>
+        <span>Buy Again</span>
+      </a>
+      <a href="/cart.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/></svg></span>
+        <span>Basket</span>
+        <span class="qc-nav-badge" id="bottomNavCartCount">0</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/qc-nav.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      function esc(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+      function normName(s) {
+        return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      }
+      function discountOf(p) {
+        if (p.mrp && p.mrp > p.price) return Math.round(((p.mrp - p.price) / p.mrp) * 100);
+        return 0;
+      }
+
+      // "Bought … ago" ONLY from a real order date. Returns null when the
+      // date is missing/unparseable, so no strip is ever fabricated.
+      function boughtLabel(dateStr) {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return null;
+        const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+        if (days < 0) return null;
+        if (days === 0) return 'Bought today';
+        if (days === 1) return 'Bought yesterday';
+        if (days < 7) return 'Bought ' + days + ' days ago';
+        if (days < 30) {
+          const w = Math.floor(days / 7);
+          return 'Bought ' + w + (w === 1 ? ' week ago' : ' weeks ago');
+        }
+        if (days < 365) {
+          const m = Math.floor(days / 30);
+          return 'Bought ' + m + (m === 1 ? ' month ago' : ' months ago');
+        }
+        return 'Bought on ' + d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      }
+
+      // ---- Read REAL past orders from localStorage (same keys orders.js /
+      // success.js use). No order data is invented anywhere on this page.
+      function readOrders() {
+        const orders = [];
+        try {
+          const stored = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+          if (Array.isArray(stored)) orders.push(...stored);
+        } catch (e) {}
+        try {
+          const last = JSON.parse(localStorage.getItem('okmart_last_order') || 'null');
+          if (last && typeof last === 'object') orders.push(last);
+        } catch (e) {}
+        return orders.map(o => {
+          const items = o.items || o.cart || o.products || [];
+          let date = o.date || o.createdAt || o.orderedAt || null;
+          if (date && typeof date === 'object' && typeof date.toDate === 'function') {
+            try { date = date.toDate().toISOString(); } catch (e) { date = null; }
+          }
+          return { date: date, items: Array.isArray(items) ? items : [] };
+        }).filter(o => o.items.length > 0);
+      }
+
+      // ---- Live product catalogue (for current prices/images) ----
+      async function loadLiveProducts() {
+        const byId = new Map();
+        const byName = new Map();
+        try {
+          if (typeof db === 'undefined') return { byId, byName };
+          const snap = await db.collection('products').where('active', '==', true).get();
+          snap.forEach(doc => {
+            const p = doc.data();
+            p.id = doc.id;
+            byId.set(doc.id, p);
+            if (p.name) byName.set(normName(p.name), p);
+          });
+        } catch (e) {
+          console.warn('Buy Again: live catalogue unavailable, using order snapshots', e);
+        }
+        return { byId, byName };
+      }
+
+      let resolvedProducts = []; // { product, boughtDate } for ADD wiring
+
+      function cardHtml(entry) {
+        const p = entry.product;
+        const disc = discountOf(p);
+        const label = boughtLabel(entry.boughtDate);
+        return `
+          <div class="ba-card" onclick="location.href='/product.html?id=${esc(p.id)}'">
+            <div class="ba-img-wrap">
+              <img src="${esc(p.image || '')}" alt="${esc(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK+Mart'">
+              ${disc > 0 ? `<span class="ba-discount-badge">${disc}% Off</span>` : ''}
+              ${label ? `<span class="ba-bought-strip">${esc(label)}</span>` : ''}
+            </div>
+            <span class="ba-unit">${esc(p.unit || '1 Unit')}</span>
+            <h4 class="ba-name">${esc(p.name)}</h4>
+            <div class="ba-price-row">
+              <span class="ba-price">₹${p.price}</span>
+              ${p.mrp ? `<span class="ba-mrp">₹${p.mrp}</span>` : ''}
+            </div>
+            <button class="ba-add-btn" onclick="event.stopPropagation(); buyAgainAdd('${esc(p.id)}')">ADD</button>
+          </div>
+        `;
+      }
+
+      window.buyAgainAdd = function (productId) {
+        const entry = resolvedProducts.find(e => String(e.product.id) === String(productId));
+        const p = entry ? entry.product : null;
+        if (!p) return;
+        if (window.OKMart && typeof window.OKMart.addToCart === 'function') {
+          window.OKMart.addToCart(p, 1);
+        } else {
+          // Fallback: same cart shape common.js uses.
+          try {
+            const cart = JSON.parse(localStorage.getItem('okmart_cart') || '[]');
+            const ex = cart.find(i => i.id === p.id);
+            if (ex) ex.quantity += 1;
+            else cart.push({ id: p.id, name: p.name, price: p.price, mrp: p.mrp, image: p.image, unit: p.unit || '', quantity: 1 });
+            localStorage.setItem('okmart_cart', JSON.stringify(cart));
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+          } catch (e) {}
+        }
+      };
+
+      async function init() {
+        const orders = readOrders();
+        // Newest order first; undated orders go last (never get a strip).
+        orders.sort((a, b) => {
+          const da = a.date ? new Date(a.date).getTime() : 0;
+          const db2 = b.date ? new Date(b.date).getTime() : 0;
+          return (isNaN(db2) ? 0 : db2) - (isNaN(da) ? 0 : da);
+        });
+
+        const { byId, byName } = await loadLiveProducts();
+        const seen = new Set();
+        const entries = [];
+        for (const order of orders) {
+          for (const item of order.items) {
+            const itemId = item.id || item.productId || null;
+            // Prefer the live product (current price/image); fall back to the
+            // order snapshot only when it carries an id + name + price.
+            let p = (itemId && byId.get(itemId)) || (item.name && byName.get(normName(item.name))) || null;
+            if (!p && itemId && item.name && item.price != null) {
+              p = { id: itemId, name: item.name, price: item.price, mrp: item.mrp || null, image: item.image || '', unit: item.unit || '' };
+            }
+            if (!p || !p.id) continue; // no longer sold / unidentifiable: skip, never invent
+            const key = String(p.id);
+            if (seen.has(key)) continue;
+            seen.add(key);
+            entries.push({ product: p, boughtDate: order.date });
+            if (entries.length >= 20) break;
+          }
+          if (entries.length >= 20) break;
+        }
+
+        const section = document.getElementById('buyAgainSection');
+        const grid = document.getElementById('buyAgainGrid');
+        const empty = document.getElementById('buyAgainEmpty');
+        const popularSection = document.getElementById('popularSection');
+        const popularGrid = document.getElementById('popularGrid');
+
+        if (entries.length > 0) {
+          resolvedProducts = entries;
+          grid.innerHTML = entries.map(cardHtml).join('');
+          section.style.display = 'block';
+        } else {
+          empty.style.display = 'block';
+          // Still useful: highest-discount live products (no sales data
+          // exists on-device, so discount rank is the honest proxy here).
+          const live = [...byId.values()];
+          if (live.length > 0) {
+            live.sort((a, b) => discountOf(b) - discountOf(a));
+            const picks = live.slice(0, 8).map(p => ({ product: p, boughtDate: null }));
+            resolvedProducts = picks;
+            popularGrid.innerHTML = picks.map(cardHtml).join('');
+            popularSection.style.display = 'block';
+          }
+        }
+      }
+
+      // Search pill: real navigation into the existing search page (?q=).
+      const input = document.getElementById('buyAgainSearchInput');
+      if (input) {
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            const q = input.value.trim();
+            if (q) window.location.href = '/search.html?q=' + encodeURIComponent(q);
+          }
+        });
+      }
+      const mic = document.getElementById('buyAgainMicBtn');
+      if (mic && input) mic.addEventListener('click', () => input.focus());
+
+      init();
+    })();
+  </script>
+</body>
+</html>

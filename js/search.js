@@ -118,6 +118,10 @@
     const cartItem = cart.find(i => i.id === p.id);
     const inCartQty = cartItem ? cartItem.quantity : 0;
 
+    // Same quick-commerce card as the homepage: unit chip + ADD overlap the
+    // image; price row carries bold price + struck MRP + green % off.
+    // Hooks kept: .shelf-product-card, toggleWishlist, addProductToCart,
+    // updateSearchItemQty, .shelf-img-container, .shelf-title, price classes.
     return `
       <div class="shelf-product-card" onclick="location.href='/product.html?id=${p.id}'">
         <button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${p.id}', this)" aria-label="Wishlist">
@@ -125,26 +129,27 @@
         </button>
         <div class="shelf-img-container">
           <img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/140?text=OK+Mart'">
+          ${inCartQty > 0 ? `
+            <div class="qty-stepper-btn qc-corner-stepper" onclick="event.stopPropagation()">
+              <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', -1)">−</button>
+              <span class="qty-step-value">${inCartQty}</span>
+              <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', 1)">+</button>
+            </div>
+          ` : `
+            <span class="shelf-unit-chip">${p.unit || '1 Unit'}</span>
+            <button class="shelf-add-btn" onclick="event.stopPropagation(); addProductToCart('${p.id}')">
+              ADD
+            </button>
+          `}
         </div>
-        <span class="shelf-unit-tag">${p.unit || '1 Unit'}</span>
+        ${inCartQty > 0 ? `<span class="shelf-unit-line">${p.unit || '1 Unit'}</span>` : ''}
         <div class="shelf-price-row">
           <span class="shelf-price-curr">₹${p.price}</span>
           ${p.mrp ? `<span class="shelf-price-mrp">₹${p.mrp}</span>` : ''}
           ${disc > 0 ? `<span class="shelf-price-discount">${disc}% off</span>` : ''}
         </div>
         <h4 class="shelf-title">${escapeHtml(p.name)}</h4>
-        <div class="shelf-quick-tag">⚡ Quick</div>
-        ${inCartQty > 0 ? `
-          <div class="qty-stepper-btn" onclick="event.stopPropagation()">
-            <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', -1)">−</button>
-            <span class="qty-step-value">${inCartQty}</span>
-            <button class="qty-step-action" onclick="updateSearchItemQty('${p.id}', 1)">+</button>
-          </div>
-        ` : `
-          <button class="shelf-add-btn" onclick="event.stopPropagation(); addProductToCart('${p.id}')">
-            ADD
-          </button>
-        `}
+        <div class="shelf-quick-tag">⚡ 15 mins</div>
       </div>
     `;
   }

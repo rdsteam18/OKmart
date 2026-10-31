@@ -1,0 +1,587 @@
+/* ============================================================
+   OK MART — Quick-commerce restyle (Flipkart Minutes / Zepto-style
+   LAYOUT patterns only; OKmart branding, Ahmedabad location and
+   15-min delivery kept). Loaded AFTER common.css / home.css so
+   these rules win without touching the original files.
+   Mobile-first: all rules below assume ~390px width unless a
+   min-width media query says otherwise.
+   ============================================================ */
+
+/* ---------- 1. EDGE-TO-EDGE ON MOBILE (no side whitespace) ---------- */
+@media (max-width: 767px) {
+  /* common.css gives .app-container 16px side padding — remove it on
+     mobile so product sections can run full-bleed. Header/hero keep
+     their own inner padding, so they stay comfortably inset. */
+  .app-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Homepage product sections: ~8px outer padding, ~8px grid gap */
+  .category-products-section {
+    padding: 10px 8px 14px !important;
+  }
+  .products-grid {
+    gap: 8px !important;
+  }
+
+  /* Search results: same 8px rhythm */
+  .search-results-section {
+    padding: 12px 8px !important;
+  }
+  .search-results-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* Free-delivery progress strip: keep off the screen edges */
+  .delivery-progress-container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* Room for the floating pill nav */
+  body {
+    padding-bottom: 96px !important;
+  }
+}
+
+/* ---------- 2. SEARCH PILL (white rounded pill, soft shadow) ---------- */
+/* Homepage header search */
+.app-header .search-bar,
+/* Search page pill */
+.search-input-pill,
+/* Categories + Buy Again pages (same markup as search page) */
+.qc-search-pill {
+  background: #ffffff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10) !important;
+  border: 1px solid #f0f0f0 !important;
+  height: 46px !important;
+  padding: 0 6px 0 14px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-header .search-bar .search-icon,
+.search-input-pill .search-pill-icon,
+.qc-search-pill .search-pill-icon {
+  color: #9ca3af;
+  font-size: 1.05rem;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+.app-header .search-bar .search-input,
+.search-input-pill .search-main-input,
+.qc-search-pill .search-main-input {
+  font-size: 0.9rem;
+  color: #111827;
+}
+.app-header .search-bar .search-input::placeholder,
+.search-input-pill .search-main-input::placeholder,
+.qc-search-pill .search-main-input::placeholder {
+  color: #9ca3af;
+}
+.app-header .search-bar .mic-btn,
+.search-input-pill .mic-search-icon-btn,
+.qc-search-pill .mic-search-icon-btn {
+  color: #6b7280;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+.qc-search-wrap {
+  padding: 10px 12px 4px;
+  background: #ffffff;
+}
+.qc-search-wrap .qc-search-pill {
+  cursor: pointer;
+}
+.qc-search-wrap .qc-search-pill input {
+  cursor: pointer;
+}
+
+/* ---------- 3. PRODUCT CARDS (homepage + search shelves/results) ---------- */
+/* Shared card shell: tighter padding so the image reads bigger */
+.product-card,
+.shelf-product-card {
+  padding: 6px !important;
+  border-radius: 12px !important;
+  overflow: visible;
+}
+
+/* Image area: relative so chips/buttons can overlap it */
+.product-image-container,
+.shelf-img-container {
+  position: relative !important;
+  padding: 0 !important;
+  margin-bottom: 6px !important;
+  background: #f9fafb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.product-image-container img,
+.shelf-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Unit chip overlapping bottom-left of the image */
+.product-unit-chip,
+.shelf-unit-chip {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+  max-width: 58%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Unit as plain text (used when the qty stepper occupies the corner) */
+.product-unit-line,
+.shelf-unit-line {
+  font-size: 0.65rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+/* ADD button overlapping bottom-right of the image */
+.product-card .product-add-btn,
+.shelf-product-card .shelf-add-btn {
+  position: absolute !important;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+  width: auto !important;
+  min-width: 52px;
+  margin-top: 0 !important;
+  background: #ffffff !important;
+  border: 1.5px solid #006b22 !important;
+  color: #006b22 !important;
+  border-radius: 8px !important;
+  padding: 5px 10px !important;
+  font-size: 0.72rem !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14) !important;
+}
+.product-card .product-add-btn:active,
+.shelf-product-card .shelf-add-btn:active {
+  transform: scale(0.94);
+}
+.product-card .product-add-btn:disabled,
+.shelf-product-card .shelf-add-btn:disabled {
+  opacity: 0.6;
+}
+/* Out-of-stock label must fit on one line over the image */
+.product-card .product-add-btn:disabled {
+  min-width: 0;
+  white-space: nowrap;
+  font-size: 0.6rem !important;
+  padding: 5px 7px !important;
+}
+
+/* Qty stepper in the same corner once the item is in the cart */
+.product-card .qc-corner-stepper,
+.shelf-product-card .qc-corner-stepper {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+  width: auto !important;
+  min-width: 76px;
+  margin-top: 0 !important;
+  border-radius: 8px !important;
+  padding: 4px 4px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Price row: bold price + struck MRP + green % off, one line */
+.product-price-row,
+.shelf-price-row {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.product-curr-price,
+.shelf-price-curr {
+  font-size: 0.95rem !important;
+}
+.product-mrp-price,
+.shelf-price-mrp {
+  font-size: 0.7rem !important;
+}
+.product-off-text,
+.shelf-price-discount {
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  color: #15803d !important;
+}
+
+/* Name: 2-line clamp (already clamped; keep) */
+.product-name-title,
+.shelf-title {
+  font-size: 0.74rem !important;
+}
+
+/* Delivery line: OKmart's real 15-min promise */
+.product-quick-tag,
+.shelf-quick-tag {
+  color: #16a34a !important;
+}
+
+/* Homepage grid stays 3-col on mobile (reference grid), 8px gap */
+@media (max-width: 400px) {
+  .products-grid {
+    gap: 8px !important;
+  }
+}
+
+/* ---------- 4. HOMEPAGE CATEGORY PILLS → ICON + LABEL TILES ---------- */
+.quick-pills-section {
+  padding: 8px 12px 10px !important;
+}
+.pills-scroll {
+  gap: 14px !important;
+  padding-right: 12px;
+}
+.category-pill {
+  flex-direction: column !important;
+  gap: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 62px;
+}
+.category-pill .cat-pill-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: #fdf2f7;
+  border: 1px solid #fbcfe8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+.category-pill .cat-pill-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 68px;
+}
+.category-pill:hover, .category-pill.active {
+  background: transparent !important;
+}
+.category-pill:hover .cat-pill-icon {
+  background: #fce7f3;
+  border-color: #f9a8d4;
+}
+
+/* ---------- 5. CATEGORIES PAGE: grouped sections, pink tiles ---------- */
+.qc-cat-group {
+  background: #ffffff;
+  padding: 14px 12px 6px;
+  margin-bottom: 10px;
+}
+.qc-cat-group-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 14px 2px;
+}
+@media (max-width: 767px) {
+  .qc-cat-group {
+    padding: 14px 8px 6px;
+  }
+}
+/* Soft-pink rounded-square tile (emoji — no category photos exist in repo) */
+.category-icon-bubble {
+  width: 68px !important;
+  height: 68px !important;
+  border-radius: 20px !important;
+  background: #fdf2f7 !important;
+  border: 1.5px solid #fbcfe8 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+.category-icon-tile:hover .category-icon-bubble {
+  background: #fce7f3 !important;
+  border-color: #f9a8d4 !important;
+}
+
+/* ---------- 6. FLOATING BOTTOM NAV (4 items, pill bar) ---------- */
+.qc-bottom-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 6px;
+  z-index: 95;
+}
+.qc-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 6px 2px 5px;
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.qc-nav-item .qc-nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qc-nav-item .qc-nav-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.qc-nav-item.active {
+  color: #d81b60;
+  background: #fce4ec;
+}
+.qc-nav-badge {
+  position: absolute;
+  top: 0;
+  right: 50%;
+  transform: translateX(16px);
+  background: #e53935;
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 999px;
+  min-width: 17px;
+  text-align: center;
+  border: 1.5px solid #ffffff;
+  display: none;
+}
+.qc-nav-badge.show {
+  display: block;
+}
+/* Match existing behaviour: bottom nav is a mobile pattern */
+@media (min-width: 768px) {
+  .qc-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* ---------- 7. BUY AGAIN PAGE ---------- */
+.buy-again-page {
+  background: #f7f7f7;
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+.buy-again-header {
+  background: #ffffff;
+  padding: 12px 12px 6px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.buy-again-header .qc-search-pill {
+  width: 100%;
+}
+.buy-again-section {
+  padding: 14px 12px 4px;
+}
+@media (max-width: 767px) {
+  .buy-again-section {
+    padding: 14px 8px 4px;
+  }
+}
+.buy-again-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 12px 2px;
+}
+.buy-again-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+@media (min-width: 768px) {
+  .buy-again-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+}
+@media (max-width: 767px) {
+  .buy-again-grid {
+    gap: 8px;
+  }
+}
+/* Buy-again card: same shell as home/search cards, 2-col layout */
+.ba-card {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+}
+.ba-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f9fafb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ba-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+/* Green discount badge, top-left — only rendered when a real discount exists */
+.ba-discount-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 3;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+/* "Bought … ago" strip — rendered ONLY from a real past-order date */
+.ba-bought-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 3px 4px;
+}
+.ba-unit {
+  font-size: 0.65rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.ba-name {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 28px;
+  margin-bottom: 2px;
+}
+.ba-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.ba-price {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+}
+.ba-mrp {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+.ba-add-btn {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #006b22;
+  color: #006b22;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 5px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  margin-top: auto;
+  transition: all 0.15s ease;
+}
+.ba-add-btn:hover {
+  background: #006b22;
+  color: #ffffff;
+}
+.ba-empty {
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  color: #6b7280;
+  margin: 14px 12px 4px;
+}
+.ba-empty .ba-empty-emoji {
+  font-size: 2.4rem;
+  margin-bottom: 8px;
+}
+.ba-empty p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}

@@ -19,6 +19,7 @@
   <!-- App CSS -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/qc.css">
 </head>
 <body>
   <div class="app-container">
@@ -51,7 +52,7 @@
       <div class="search-section">
         <div class="search-bar" onclick="window.location.href='/search.html'">
           <span class="search-icon">🔍</span>
-          <input type="text" class="search-input" id="homeSearchInput" placeholder='Search for "Snacks", milk, fruits...' readonly>
+          <input type="text" class="search-input" id="homeSearchInput" placeholder="Search in OKmart" readonly>
           <button class="mic-btn" aria-label="Voice Search">🎙️</button>
         </div>
       </div>
@@ -88,16 +89,16 @@
       <!-- ========== 2. HORIZONTAL QUICK CATEGORY PILLS ========== -->
       <section class="quick-pills-section">
         <div class="pills-scroll" id="categoryPillsScroll">
-          <a href="/categories/beverages.html" class="category-pill">🥤 Cold Drinks</a>
-          <a href="/categories/fruits.html" class="category-pill">🍎 Fruits</a>
-          <a href="/categories/vegetables.html" class="category-pill">🥬 Vegetables</a>
-          <a href="/categories/dairy.html" class="category-pill">🥛 Dairy & Breakfast</a>
-          <a href="/categories/grocery.html" class="category-pill">🌾 Atta & Dal</a>
-          <a href="/categories/snacks.html" class="category-pill">🍿 Munchies</a>
-          <a href="/categories/household.html" class="category-pill">🧹 Cleaning</a>
-          <a href="/categories/personal-care.html" class="category-pill">🧴 Personal Care</a>
-          <a href="/categories/bakery.html" class="category-pill">🍞 Bakery</a>
-          <a href="/categories.html" class="category-pill" style="background:#f0fdf4; color:#006b22; font-weight:700;">📂 All Categories →</a>
+          <a href="/categories/beverages.html" class="category-pill"><span class="cat-pill-icon">🥤</span><span class="cat-pill-label">Cold Drinks</span></a>
+          <a href="/categories/fruits.html" class="category-pill"><span class="cat-pill-icon">🍎</span><span class="cat-pill-label">Fruits</span></a>
+          <a href="/categories/vegetables.html" class="category-pill"><span class="cat-pill-icon">🥬</span><span class="cat-pill-label">Vegetables</span></a>
+          <a href="/categories/dairy.html" class="category-pill"><span class="cat-pill-icon">🥛</span><span class="cat-pill-label">Dairy &amp; Breakfast</span></a>
+          <a href="/categories/grocery.html" class="category-pill"><span class="cat-pill-icon">🌾</span><span class="cat-pill-label">Atta &amp; Dal</span></a>
+          <a href="/categories/snacks.html" class="category-pill"><span class="cat-pill-icon">🍿</span><span class="cat-pill-label">Munchies</span></a>
+          <a href="/categories/household.html" class="category-pill"><span class="cat-pill-icon">🧹</span><span class="cat-pill-label">Cleaning</span></a>
+          <a href="/categories/personal-care.html" class="category-pill"><span class="cat-pill-icon">🧴</span><span class="cat-pill-label">Personal Care</span></a>
+          <a href="/categories/bakery.html" class="category-pill"><span class="cat-pill-icon">🍞</span><span class="cat-pill-label">Bakery</span></a>
+          <a href="/categories.html" class="category-pill"><span class="cat-pill-icon">📂</span><span class="cat-pill-label">All Categories</span></a>
         </div>
       </section>
 
@@ -122,32 +123,24 @@
 
     </main>
 
-    <!-- ========== FIXED BOTTOM NAVIGATION ========== -->
-    <nav class="bottom-navbar">
-      <a href="/" class="nav-item active">
-        <span class="nav-icon">🏠</span>
+    <!-- ========== FLOATING BOTTOM NAVIGATION (Home active) ========== -->
+    <nav class="qc-bottom-nav">
+      <a href="/index.html" class="qc-nav-item active">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5.5h5V20"/></svg></span>
         <span>Home</span>
       </a>
-      <a href="/categories.html" class="nav-item">
-        <span class="nav-icon">📂</span>
+      <a href="/categories.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>
         <span>Categories</span>
       </a>
-      <a href="/search.html" class="nav-item">
-        <span class="nav-icon">🔍</span>
-        <span>Search</span>
+      <a href="/buy-again.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/><path d="M17.5 4.5a3.2 3.2 0 1 1-2.4 1.1"/><path d="M17.6 2.6v1.9h-1.9"/></svg></span>
+        <span>Buy Again</span>
       </a>
-      <a href="/track-order.html" class="nav-item">
-        <span class="nav-icon">📦</span>
-        <span>Track</span>
-      </a>
-      <a href="/cart.html" class="nav-item">
-        <span class="nav-icon">🛒</span>
-        <span>Cart</span>
-        <span class="nav-badge" id="bottomNavCartCount">0</span>
-      </a>
-      <a href="/profile.html" class="nav-item">
-        <span class="nav-icon">👤</span>
-        <span>Account</span>
+      <a href="/cart.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/></svg></span>
+        <span>Basket</span>
+        <span class="qc-nav-badge" id="bottomNavCartCount">0</span>
       </a>
     </nav>
 
@@ -203,6 +196,7 @@
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
+  <script src="/js/qc-nav.js"></script>
   <script src="/js/fcm-token.js"></script>
 </body>
 </html>
