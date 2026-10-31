@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Festive Banner | OK Mart Admin</title>
+  <meta name="theme-color" content="#006d37">
+  <script src="../js/admin-auth.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { 'primary': '#006d37', 'primary-container': '#84c225' } } } };
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase.js"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="flex">
+    <aside class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
+      <h2 class="font-extrabold text-lg mb-4">OK Mart Admin</h2>
+      <nav class="space-y-1">
+        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100">📊 Dashboard</a>
+        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100">📋 Orders</a>
+        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100">📦 Products</a>
+        <a href="categories.html" class="block px-3 py-2 rounded hover:bg-gray-100">🗂️ Categories</a>
+        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100">🏷️ Offers</a>
+        <a href="deals.html" class="block px-3 py-2 rounded hover:bg-gray-100">🔥 Deals</a>
+        <a href="festive.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold">🎉 Festive Banner</a>
+        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100">🚚 Delivery</a>
+        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100">👥 Customers</a>
+        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100">⚙️ Settings</a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-6 max-w-2xl">
+      <h1 class="text-2xl font-extrabold mb-2">🎉 Festive Banner</h1>
+      <p class="text-sm text-gray-500 mb-6">
+        Homepage ka festive banner date se apne aap badalta hai (Hindu festivals only —
+        Diwali, Uttarayan, Shivaratri, Holi, Navratri). Yahan sirf <b>text / offer / CTA</b> badlo —
+        background animation aur rang us din ke theme ke hisab se waise hi rahenge.
+        Khali chhodne par us din ka default text dikhega.
+      </p>
+
+      <div class="bg-white border rounded-2xl p-4 space-y-4">
+        <label class="block">
+          <span class="text-sm font-bold">Banner headline</span>
+          <input id="fHeadline" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. Ghee &amp; Sweets: Flat 20% Off">
+        </label>
+        <label class="block">
+          <span class="text-sm font-bold">Subtext</span>
+          <input id="fSubtext" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. Diwali ki mithaas, 15 minute me ghar tak">
+        </label>
+        <label class="block">
+          <span class="text-sm font-bold">Offer chip (chhota text)</span>
+          <input id="fOffer" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. Diwali Loot Coupon: DIWALI50">
+        </label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block">
+            <span class="text-sm font-bold">CTA button text</span>
+            <input id="fCtaText" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Order Now 🛒">
+          </label>
+          <label class="block">
+            <span class="text-sm font-bold">CTA link</span>
+            <input id="fCtaLink" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="/categories.html ya /deals.html">
+          </label>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-bold">
+          <input id="fActive" type="checkbox" checked class="w-4 h-4"> Banner homepage par dikhao
+        </label>
+        <div class="flex gap-2">
+          <button id="fSave" class="bg-primary text-white font-bold px-5 py-2 rounded-full">Save</button>
+          <button id="fClear" class="border font-bold px-5 py-2 rounded-full">Default par wapas</button>
+        </div>
+        <p id="fMsg" class="text-sm text-gray-500"></p>
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mt-4 text-sm text-amber-900">
+        <b>Note:</b> Save karte hi homepage banner turant update ho jayega (agle page load par).
+        Banner band karne ke liye checkbox hatakar Save karo. Schedule: Diwali 5–9 Nov 2026,
+        Uttarayan 11–15 Jan 2027, Shivaratri 3–7 Mar 2027, Holi 19–23 Mar 2027, Navratri 7–15 Apr 2027.
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var db = firebase.firestore();
+      var docRef = db.collection('settings').doc('festive');
+      var msg = document.getElementById('fMsg');
+      function setMsg(t, ok) { msg.textContent = t; msg.style.color = ok ? '#006d37' : '#ba1a1a'; }
+      docRef.get().then(function (d) {
+        if (!d.exists) return;
+        var o = d.data() || {};
+        document.getElementById('fHeadline').value = o.headline || '';
+        document.getElementById('fSubtext').value = o.subtext || '';
+        document.getElementById('fOffer').value = o.offer || '';
+        document.getElementById('fCtaText').value = o.ctaText || '';
+        document.getElementById('fCtaLink').value = o.ctaLink || '';
+        document.getElementById('fActive').checked = o.active !== false;
+      }).catch(function (e) { setMsg('Load nahi ho paya: ' + e.message, false); });
+      document.getElementById('fSave').addEventListener('click', function () {
+        var data = {
+          headline: document.getElementById('fHeadline').value.trim(),
+          subtext: document.getElementById('fSubtext').value.trim(),
+          offer: document.getElementById('fOffer').value.trim(),
+          ctaText: document.getElementById('fCtaText').value.trim(),
+          ctaLink: document.getElementById('fCtaLink').value.trim(),
+          active: document.getElementById('fActive').checked,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        docRef.set(data, { merge: true })
+          .then(function () { setMsg('✓ Save ho gaya — homepage banner update ho jayega.', true); })
+          .catch(function (e) { setMsg('Save fail: ' + e.message, false); });
+      });
+      document.getElementById('fClear').addEventListener('click', function () {
+        docRef.set({ headline: '', subtext: '', offer: '', ctaText: '', ctaLink: '', active: true }, { merge: true })
+          .then(function () {
+            ['fHeadline', 'fSubtext', 'fOffer', 'fCtaText', 'fCtaLink'].forEach(function (id) { document.getElementById(id).value = ''; });
+            document.getElementById('fActive').checked = true;
+            setMsg('✓ Default theme par wapas aa gaya.', true);
+          })
+          .catch(function (e) { setMsg('Clear fail: ' + e.message, false); });
+      });
+    })();
+  </script>
+</body>
+</html>

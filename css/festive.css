@@ -1,0 +1,43 @@
+/* OKMart festive banner — vibrant, lightweight, mobile-first */
+#festiveBanner { margin: 10px 12px 0; }
+#festiveBanner:empty { display: none; }
+.festive-banner {
+  position: relative; overflow: hidden; border-radius: 16px;
+  padding: 18px 16px; color: #fff;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18); isolation: isolate;
+}
+.festive-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.festive-content { position: relative; z-index: 1; flex: 1; min-width: 0; }
+.festive-tag {
+  display: inline-block; color: #1f2937; font-size: .7rem; font-weight: 800;
+  padding: 3px 10px; border-radius: 999px; letter-spacing: .02em; margin-bottom: 8px;
+}
+.festive-title { margin: 0 0 6px; font-size: 1.35rem; line-height: 1.2; font-weight: 900; text-shadow: 0 1px 8px rgba(0,0,0,.25); }
+.festive-sub { margin: 0 0 10px; font-size: .88rem; line-height: 1.45; opacity: .95; }
+.festive-offer {
+  display: inline-block; background: rgba(0,0,0,.28); border: 1px dashed rgba(255,255,255,.7);
+  font-size: .78rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px;
+}
+.festive-ctas { display: flex; gap: 8px; flex-wrap: wrap; }
+.festive-cta-primary {
+  background: #fff; color: #111827; font-weight: 800; font-size: .85rem;
+  padding: 9px 16px; border-radius: 999px; text-decoration: none;
+  box-shadow: 0 3px 10px rgba(0,0,0,.25);
+}
+.festive-cta-ghost {
+  border: 1.5px solid rgba(255,255,255,.85); color: #fff; font-weight: 800; font-size: .85rem;
+  padding: 9px 16px; border-radius: 999px; text-decoration: none;
+}
+.festive-art { position: relative; z-index: 1; flex-shrink: 0; animation: festiveFloat 3.2s ease-in-out infinite; }
+@keyframes festiveFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+@media (max-width: 480px) {
+  .festive-title { font-size: 1.15rem; }
+  .festive-art svg { width: 76px; height: auto; }
+}
+/* Referral strip on homepage */
+#referralStrip {
+  display: none; margin: 10px 12px 0; background: #ecfdf5; border: 1.5px dashed #059669;
+  color: #065f46; font-weight: 700; font-size: .85rem; text-align: center;
+  padding: 10px 12px; border-radius: 12px;
+}

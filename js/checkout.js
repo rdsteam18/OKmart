@@ -11,6 +11,9 @@
   const summarySubtotal = document.getElementById('summarySubtotal');
   const summaryDelivery = document.getElementById('summaryDelivery');
   const summaryTotal = document.getElementById('summaryTotal');
+  const summaryReferralRow = document.getElementById('summaryReferralRow');
+  const summaryReferralLabel = document.getElementById('summaryReferralLabel');
+  const summaryReferral = document.getElementById('summaryReferral');
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   const successModal = document.getElementById('successModal');
   const trackOrderBtn = document.getElementById('trackOrderBtn');
@@ -166,11 +169,22 @@
     
     const handlingFee = settings.handlingFee || settings.packagingFee || 0;
     const convenienceFee = settings.convenienceFee || 0;
-    const total = subtotal + deliveryCharge + handlingFee + convenienceFee;
+    const refDisc = (typeof window.okmartReferralDiscount === 'function') ? window.okmartReferralDiscount() : { amount: 0, type: null, code: null, docId: null };
+    const refCapped = Math.min(refDisc.amount || 0, subtotal + deliveryCharge + handlingFee + convenienceFee);
+    const total = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
     
     summarySubtotal.textContent = `₹${subtotal}`;
     summaryDelivery.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
     summaryTotal.textContent = `₹${total}`;
+    if (summaryReferralRow) {
+      if (refCapped > 0) {
+        summaryReferralRow.style.display = 'flex';
+        summaryReferralLabel.textContent = refDisc.type === 'reward' ? 'Referral reward' : 'Referral discount';
+        summaryReferral.textContent = '−₹' + refCapped;
+      } else {
+        summaryReferralRow.style.display = 'none';
+      }
+    }
     
     // Update free delivery progress
     const threshold = deliveryCalc.threshold || window.FREE_DELIVERY_THRESHOLD || 199;
@@ -334,7 +348,9 @@ ${itemsList}
     
     const handlingFee = settings.handlingFee || settings.packagingFee || 0;
     const convenienceFee = settings.convenienceFee || 0;
-    const total = subtotal + deliveryCharge + handlingFee + convenienceFee;
+    const refDisc = (typeof window.okmartReferralDiscount === 'function') ? window.okmartReferralDiscount() : { amount: 0, type: null, code: null, docId: null };
+    const refCapped = Math.min(refDisc.amount || 0, subtotal + deliveryCharge + handlingFee + convenienceFee);
+    const total = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
     
     // Get delivery slot
     let deliverySlotValue = null;
@@ -367,6 +383,9 @@ ${itemsList}
       subtotal: subtotal,
       deliveryCharge: deliveryCharge,
       total: total,
+      referralDiscount: refCapped,
+      referralCode: refDisc.code || null,
+      referralType: refDisc.type || null,
       status: 'received'
     };
     
@@ -390,6 +409,7 @@ ${itemsList}
       // Clear cart
       localStorage.removeItem('okmart_cart');
       localStorage.removeItem('okmart_applied_coupon');
+      if (typeof window.okmartReferralFinalize === 'function') window.okmartReferralFinalize(refDisc, orderId, userAddress.phone);
       
       // Show success modal
       trackOrderBtn.onclick = () => {

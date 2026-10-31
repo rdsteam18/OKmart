@@ -4,7 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>OK Mart - 15 Min Delivery | Fresh Grocery</title>
-  <meta name="description" content="Order fresh groceries online - milk, bread, fruits, vegetables, snacks, cold drinks. Fast 15 minute delivery in your neighborhood.">
+  <meta name="description" content="Order fresh groceries in Ahmedabad — milk, vegetables, fruits, snacks & daily essentials delivered in 15 minutes in Jantanagar, Satellite, Prahlad Nagar. Daily Loot Deals on top brands.">
+  <link rel="canonical" href="https://okmart.netlify.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OK Mart">
+  <meta property="og:title" content="OK Mart - 15 Min Grocery Delivery in Ahmedabad">
+  <meta property="og:description" content="Fresh groceries delivered in 15 minutes in Ahmedabad — Jantanagar, Satellite, Prahlad Nagar. Daily Loot Deals on top brands.">
+  <meta property="og:url" content="https://okmart.netlify.app/">
+  <meta property="og:image" content="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OK Mart - 15 Min Grocery Delivery in Ahmedabad">
+  <meta name="twitter:description" content="Fresh groceries delivered in 15 minutes in Ahmedabad. Daily Loot Deals on top brands.">
+  <meta name="twitter:image" content="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+    {"@type":"Organization","@id":"https://okmart.netlify.app/#org","name":"OK Mart","url":"https://okmart.netlify.app/","logo":"https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX","sameAs":["https://www.instagram.com/okmart_official"],"contactPoint":{"@type":"ContactPoint","telephone":"+91-99822-39821","contactType":"customer service","areaServed":"IN"}},
+    {"@type":"GroceryStore","@id":"https://okmart.netlify.app/#store","name":"OK Mart","url":"https://okmart.netlify.app/","telephone":"+91-99822-39821","priceRange":"₹","address":{"@type":"PostalAddress","addressLocality":"Ahmedabad","addressRegion":"Gujarat","addressCountry":"IN"},"areaServed":["Jantanagar","Satellite","Prahlad Nagar","Ahmedabad"],"sameAs":["https://www.instagram.com/okmart_official"]},
+    {"@type":"WebSite","url":"https://okmart.netlify.app/","name":"OK Mart","potentialAction":{"@type":"SearchAction","target":"https://okmart.netlify.app/search.html?q={search_term_string}","query-input":"required name=search_term_string"}}
+  ]}
+  </script>
   <meta name="theme-color" content="#006b22">
 
   <!-- Manifest & Favicon -->
@@ -20,6 +39,7 @@
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/qc.css">
+  <link rel="stylesheet" href="/css/festive.css">
 </head>
 <body>
   <div class="app-container">
@@ -60,6 +80,10 @@
 
     <!-- ========== MAIN CONTENT ========== -->
     <main class="main-content" style="padding-bottom: 90px;">
+
+      <!-- Festive banner (Hindu festivals, date-driven) + referral strip -->
+      <section id="festiveBanner" aria-label="Festive offers"></section>
+      <div id="referralStrip" role="note"></div>
 
       <!-- ========== 1. TOP HERO BANNER CAROUSEL (IMAGE 1) ========== -->
       <section class="hero-banner-section">
@@ -220,6 +244,16 @@
   <script src="/js/common.js"></script>
   <script src="/js/home.js"></script>
   <script src="/js/qc-nav.js"></script>
+  <script src="/js/festive.js"></script>
+  <script src="/js/referral.js"></script>
   <script src="/js/fcm-token.js"></script>
+<footer style="text-align:center;padding:18px 12px 96px;color:#6b7280;font-size:.82rem;">
+    <a href="/faq.html" style="color:#006d37;font-weight:700;text-decoration:none;margin:0 8px;">FAQ</a> ·
+    <a href="/deals.html" style="color:#006d37;font-weight:700;text-decoration:none;margin:0 8px;">Daily Loot Deals</a> ·
+    <a href="/categories.html" style="color:#006d37;font-weight:700;text-decoration:none;margin:0 8px;">Categories</a> ·
+    <a href="/track-order.html" style="color:#006d37;font-weight:700;text-decoration:none;margin:0 8px;">Track Order</a> ·
+    <a href="/profile.html" style="color:#006d37;font-weight:700;text-decoration:none;margin:0 8px;">Refer &amp; Earn ₹20</a>
+    <div style="margin-top:8px;">OK Mart — 15 minute grocery delivery, Ahmedabad</div>
+  </footer>
 </body>
 </html>

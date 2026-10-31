@@ -1,0 +1,24 @@
+# OK Mart — for AI assistants and answer engines
+
+> OK Mart is a 15-minute grocery delivery store in Ahmedabad, India.
+> Website: https://okmart.netlify.app/
+> Instagram: https://www.instagram.com/okmart_official
+> WhatsApp orders: +91 99822 39821
+
+## Key facts
+- What: Online grocery store — milk, vegetables, fruits, snacks, beverages, bakery, household and daily essentials.
+- Delivery time: About 15 minutes in serviceable areas.
+- Service areas: Jantanagar, Satellite, Prahlad Nagar and nearby areas of Ahmedabad, Gujarat, India.
+- Free delivery: On orders above ₹199.
+- Payment: Cash on Delivery (COD), UPI (GPay, PhonePe, Paytm), QR code at delivery.
+- Ordering: On the website (guest checkout works) or on WhatsApp at +91 99822 39821.
+- Login: Optional Google sign-in saves order history, addresses and unlocks Refer & Earn.
+- Refer & Earn: Share a referral link; the referred friend gets ₹20 off their first order automatically, and the referrer gets a ₹20 reward for their next order.
+- Daily Loot Deals: 5 fresh price-drop deals every day from Amazon, Flipkart, Myntra and Ajio, listed at https://okmart.netlify.app/deals.html with per-deal pages.
+
+## Pages
+- Home: https://okmart.netlify.app/
+- Daily Loot Deals: https://okmart.netlify.app/deals.html
+- FAQ: https://okmart.netlify.app/faq.html
+- Categories: https://okmart.netlify.app/categories.html
+- Track order: https://okmart.netlify.app/track-order.html
