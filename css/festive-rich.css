@@ -2,7 +2,7 @@
    Used for every festival day AND every common day (rotating common themes),
    so the homepage top is never a plain banner. Theme colours come from the
    day's festive.js entry; cards/must-haves are real OKmart catalog items. */
-#festiveBanner { margin: 0; }
+#festiveBanner { margin: 0 -16px; } /* breakout: cancels .app-container 16px side padding so the banner is truly edge-to-edge on phones */
 #festiveBanner .fr-wrap { margin: 0; }
 .fr-bg {
   position: relative; overflow: hidden; color: #fff;
