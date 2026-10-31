@@ -26,6 +26,7 @@
     bakery:      { title: 'Bakery & Fresh',     icon: '🥐', desc: 'Fresh bread, cakes, eggs & biscuits' },
     personal:    { title: 'Personal Care',      icon: '🧴', desc: 'Bath, body, oral care & grooming' },
     household:   { title: 'Household',          icon: '🧹', desc: 'Cleaning, kitchen & home essentials' },
+    toys:        { title: 'Toys',               icon: '🧸', desc: 'Toys, puzzles & games for all ages' },
     offers:      { title: 'Special Offers',     icon: '🏷️', desc: 'Best deals and discounts' }
   };
 
