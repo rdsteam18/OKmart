@@ -1,9 +1,11 @@
-// ===== OKMART FESTIVE BANNER ENGINE =====
-// Hindu festivals ONLY (per mandate). Date-driven: the theme changes
-// automatically on every page load — no cron or rebuild needed.
+// ===== OKMART FESTIVE SECTION ENGINE =====
+// Hindu festivals + jayantis ONLY (per mandate). Date-driven: the section
+// changes automatically on every page load — no cron or rebuild needed.
+// EVERY day renders a rich background section (hero + cards + strip +
+// must-haves): festival sections start 7 days before the main day;
+// common days rotate 7 common themes, so every day is fresh.
 // Admin override: Firestore doc settings/festive can replace the headline /
-// subtext / offer / CTA of the current day, or hide the banner (active:false).
-// Fallback: if no override and no festival today -> clean brand banner.
+// subtext / offer / CTA of the current day, or hide the section (active:false).
 (function () {
   'use strict';
 
@@ -48,9 +50,142 @@
     return out;
   }
 
+  // ---------- countdown helper: N-day lead + main + optional phase-out ----------
+  function countdown(mainKey, o) {
+    var parts = mainKey.split('-').map(Number);
+    var main = new Date(parts[0], parts[1] - 1, parts[2]);
+    var out = [];
+    var lead = (o.leadCount == null ? 7 : o.leadCount);
+    for (var n = lead; n >= 1; n--) {
+      var d = new Date(main.getFullYear(), main.getMonth(), main.getDate() - n);
+      out.push(day(localKey(d), o.name + ' • Countdown',
+        o.name + ' — bas ' + n + ' din baaki',
+        o.leadSub, o.offer, o.gradient, o.accent, o.anim));
+    }
+    out.push(day(mainKey, o.name, o.mainTitle, o.mainSub, o.offer, o.gradient, o.accent, o.anim));
+    if (o.phaseout) {
+      var p = new Date(main.getFullYear(), main.getMonth(), main.getDate() + 1);
+      out.push(day(localKey(p), o.name + ' • Aakhri Mauka', o.name + ' offers jaari hain',
+        o.phaseoutSub || 'Festive offers — aaj aakhri din, 15 minute me delivery.',
+        o.offer, o.gradient, o.accent, o.anim));
+    }
+    return out;
+  }
+
+  function dayOfYear(d) {
+    var start = new Date(d.getFullYear(), 0, 0);
+    return Math.floor((d - start) / 86400000);
+  }
+
+  // ---------- shared rich-section data (real catalog, verified 2026-10-31) ----------
+  var FR_CARDS = [
+    { t1: 'Desi', t2: 'Essentials', href: '/categories/grocery.html', offer: 'STARTING FROM ₹18',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1136-1280,pr-true,f-auto,q-40,dpr-2/cms/product_variant/7e697dab-8c88-45ec-9525-48eb8af55883/Mapro-Mixed-Fruit-Jam-Tub.jpeg' },
+    { t1: 'Dairy &', t2: 'Fresh', href: '/categories/dairy.html', offer: 'STARTING FROM ₹9',
+      img: 'https://blogger.googleusercontent.com/img/a/AVvXsEgSisSLO9xv6Pd6jlm025DKbPkWu7HX0ukqEGACObFkw58HEaykgqWHRfHfr2X3TkjM-mChg0L3hw2xWltmsh66mGkenMLMp7GfWGhXdgCY3YpT8dKvVmj_8E2jVOeUNVvFAvUqV4T5ayyP4V04tyY2ZabnFb9Zp-9dbXDtcOnab6BJ3uVlwOyi_Gmf' },
+    { t1: 'Snacks &', t2: 'Namkeen', href: '/categories/snacks.html', offer: 'STARTING FROM ₹14',
+      img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png' },
+    { t1: 'Cold Drinks', t2: '& Juices', href: '/categories/beverages.html', offer: 'STARTING FROM ₹33',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' }
+  ];
+  // Rotating must-haves pool: 6 consecutive items from dayOfYear offset, so the
+  // row is fresh every day. All prices/ids/images verified from live Firestore.
+  var FR_POOL = [
+    { name: 'Cadbury Dairy Milk Chocolate Bar', price: 19, mrp: 20, id: 'jqucrf7S94kZmorAgsPt',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
+    { name: 'Cadbury Oreo Chocolate Biscuits', price: 10, mrp: 0, id: 'bWjasUxubo5kG2AP9Lq8',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/0164562b-e446-4530-9707-0253fada85b1/Cadbury-Oreo-Chocolate-Flavour-Creme-Sandwich-Biscuits.jpeg' },
+    { name: 'Maggi 2-Minute Masala Noodles', price: 14, mrp: 15, id: '2AC2f9RN1w3I2tPg6AMo',
+      img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png' },
+    { name: 'Kwality Wall\'s Cornetto Double Chocolate', price: 34, mrp: 35, id: 'f1isTNkHKseAgatN24SE',
+      img: 'https://www.bbassets.com/media/uploads/p/l/40062731_7-kwality-walls-cornetto-double-chocolate-frozen-dessert.jpg' },
+    { name: 'Thums Up Soft Drink 1.25L', price: 65, mrp: 70, id: '0d7LO0t1AqBDARTSWNNc',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' },
+    { name: 'Frooti Mango Fruit Juice 600ml', price: 33, mrp: 35, id: 'p9bZKSB321udK7g3HRHc',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-2500-2500,pr-true,f-auto,q-40,dpr-2/cms/product_variant/a4d6db79-d36f-4930-8de1-e9e9f5b4b846/Frooti-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' },
+    { name: 'Mapro Mixed Fruit Jam Tub', price: 18, mrp: 20, id: 'dmKEZBUumJItSzm9HKAg',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1136-1280,pr-true,f-auto,q-40,dpr-2/cms/product_variant/7e697dab-8c88-45ec-9525-48eb8af55883/Mapro-Mixed-Fruit-Jam-Tub.jpeg' },
+    { name: 'Amul Meetha Dahi', price: 9, mrp: 10, id: '9NJPRReyC7NRApMgP3fJ',
+      img: 'https://blogger.googleusercontent.com/img/a/AVvXsEgSisSLO9xv6Pd6jlm025DKbPkWu7HX0ukqEGACObFkw58HEaykgqWHRfHfr2X3TkjM-mChg0L3hw2xWltmsh66mGkenMLMp7GfWGhXdgCY3YpT8dKvVmj_8E2jVOeUNVvFAvUqV4T5ayyP4V04tyY2ZabnFb9Zp-9dbXDtcOnab6BJ3uVlwOyi_Gmf' },
+    { name: 'Parle Krackjack Sweet and Salty Biscuits', price: 35, mrp: 40, id: '3hqCyUqzLb1Ag8ewdo1G',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1000-1000,pr-true,f-auto,q-40,dpr-2/cms/product_variant/2740d3da-f849-4fdb-a111-0fdd3ccba88c/Parle-Krackjack-Sweet-and-Salty-Biscuits.jpeg' },
+    { name: 'Parle Monaco Classic Salty Biscuits', price: 30, mrp: 35, id: 'eEhbLRaRqfKj6kt7NCA0',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/21ffbc7d-1660-4349-8bc6-2407f680c6b0/Parle-Monaco-Classic-Salty-Biscuits.jpeg' },
+    { name: 'Yippee Magic Masala Noodles| 4 in 1', price: 55, mrp: 60, id: 'f4RiACBZMBgqNHFyfAPn',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1500-1500,pr-true,f-auto,q-40,dpr-2/cms/product_variant/efd17bcb-ecf7-4ae7-bc2b-9538ce12caa1/Yippee-Magic-Masala-Noodles-4-in-1.jpeg' },
+    { name: 'Maaza Mango Fruit Juice 600ml', price: 33, mrp: 35, id: 'oIWpNTESJxsYweLlriIb',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/d5072a7f-924a-46e0-83ed-684612504e2b/Maaza-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' },
+    { name: 'Amul Vanilla Ice Cream Sandwich', price: 30, mrp: 30, id: '5mYOADwcNYFgw1NkHRp7',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-2400-2400,pr-true,f-auto,q-40,dpr-2/cms/product_variant/af6085b6-acbe-4000-878c-ec8296cb33d1/Amul-Vanilla-Ice-Cream-Sandwich.jpeg' },
+    { name: 'Vadilal Fun-Ta-Stick | Ice Cream', price: 39, mrp: 40, id: 'ckElRsDtKUzGw03pSq5p',
+      img: 'https://cdn1.jiomartjcp.com/v2/catalog-cloud/jiomar/t.resize(w:300)/images/othe/egurhk/.j/pg/49430357315.jpg.3dee8094f6.jpg' },
+    { name: 'Hocco Bix Chocolate Chips Ice Cream Cake Sandwich', price: 69, mrp: 70, id: 'iIF40aNf0UVDmE3fapRA',
+      img: 'https://www.bbassets.com/media/uploads/p/l/40339921_1-hocco-bix-chocolate-chips-ice-cream-cake-sandwich.jpg' },
+    { name: 'Frooti Mango Fruit Juice 1.2L', price: 65, mrp: 70, id: 'd33BiC1n535SUl299M6k',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/7d519109-be1f-4afc-9fd9-59b123236ac1/Frooti-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' },
+    { name: 'Maaza Mango Fruit Juice 1.2L', price: 65, mrp: 70, id: 'k7kWtLHDriaTbtC8ijUf',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/491f3c9f-bd4a-43e5-8452-0db0810599cd/Maaza-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' }
+  ];
+
+  // ---------- common days: 7 rotating themes, one per day (har roj ek naya) ----------
+  var COMMON_THEMES = [
+    day('', 'OK Mart • Fresh & Fast', 'Fresh grocery, 15 minute me 🛒',
+      'Milk, sabzi, snacks aur daily essentials — Jantanagar, Satellite, Prahlad Nagar me superfast delivery.',
+      'Daily Loot Deals — roz naye offers', ['#006d37', '#84c225'], '#d9f99d', 'dots'),
+    day('', 'OK Mart • Loot Deals Day', 'Aaj ke Loot Deals ⚡',
+      'Roz naye deals, best prices — aaj ka deal haath se na jaane do.',
+      'Up to 80% OFF tak ke deals', ['#7c2d12', '#f59e0b'], '#fbbf24', 'sparkles'),
+    day('', 'OK Mart • Snacks Time', 'Snacks Time! 🍿',
+      'Chips, biscuits, chocolates aur namkeen — shaam ki bhookh ka solution, 15 minute me.',
+      'Snacks starting ₹10', ['#4c0519', '#f472b6'], '#fbcfe8', 'petals'),
+    day('', 'OK Mart • Dairy Fresh', 'Dairy & Fresh 🥛',
+      'Doodh, dahi, paneer aur ice cream — fresh, har roz.',
+      'Dairy starting ₹9', ['#0c4a6e', '#38bdf8'], '#bae6fd', 'dots'),
+    day('', 'OK Mart • Kitchen Stock-up', 'Kitchen Stock-up 🛒',
+      'Atta, dal, chawal, masale aur oil — mahine bhar ka saaman ek order me.',
+      'Grocery starting ₹18', ['#78350f', '#facc15'], '#fde047', 'diyas'),
+    day('', 'OK Mart • Thanda & Taza', 'Thanda & Taza 🥤',
+      'Cold drinks, juices aur shakes — 15 minute me, chilled.',
+      'Drinks starting ₹33', ['#134e4a', '#2dd4bf'], '#99f6e4', 'dots'),
+    day('', 'OK Mart • Weekend Treat', 'Weekend Treat 🎉',
+      'Family ke liye kuch special — sweets, snacks aur desserts, sab kuch ek jagah.',
+      'Treats starting ₹10', ['#3b0764', '#a855f7'], '#d8b4fe', 'sparkles')
+  ];
+
+  function commonThemeFor(d) {
+    var t = COMMON_THEMES[dayOfYear(d) % COMMON_THEMES.length];
+    return day(localKey(d), t.tag, t.title, t.subtitle, t.offer, t.gradient, t.accent, t.anim);
+  }
+
+  function tagText(hex) {
+    var h = String(hex || '').replace('#', '');
+    if (h.length !== 6) return '#111827';
+    var r = parseInt(h.substr(0, 2), 16), g = parseInt(h.substr(2, 2), 16), b = parseInt(h.substr(4, 2), 16);
+    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum > 0.6 ? '#111827' : '#ffffff';
+  }
+
   // ---------- festival calendar ----------
+  // ---------- festival calendar ----------
+  // Rule (2026-10-31): every festival runs a rich background section starting
+  // 7 days before its main day. 2027 dates per published panchang lists (local
+  // panchang may shift a lunar date by ±1 day — correct on notice). Ram Navami
+  // (15 Apr) and Dussehra (9 Oct) have no separate countdown because their
+  // preceding week is Navratri itself. Array order = priority on overlaps.
   var FESTIVALS = [
     { id: 'diwali-2026', name: 'Diwali', days: [
+      day('2026-11-01', 'Diwali • Countdown', 'Diwali — bas 7 din baaki! 🪔',
+        'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+      day('2026-11-02', 'Diwali • Countdown', 'Diwali — bas 6 din baaki! 🪔',
+        'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+      day('2026-11-03', 'Diwali • Countdown', 'Diwali — bas 5 din baaki! 🪔',
+        'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+      day('2026-11-04', 'Diwali • Countdown', 'Diwali — bas 4 din baaki! 🪔',
+        'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
       day('2026-11-05', 'Diwali • Countdown', 'Diwali aa rahi hai — bas 3 din baaki! 🪔',
         'Ghar sajane ka saaman, dry fruits, sweets aur diye — sab kuch 15 minute me.',
         'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
@@ -71,6 +206,18 @@
         'Sweets & gifts par deals', ['#831843', '#f472b6'], '#fbcfe8', 'sparkles')
     ]},
     { id: 'uttarayan-2027', name: 'Uttarayan', days: [
+      day('2027-01-07', 'Uttarayan • Countdown', 'Uttarayan — bas 7 din baaki! 🪁',
+        'Uttarayan ki taiyari — patang, manja aur til-gud, sab kuch 15 minute me.',
+        'Kite-flying essentials', ['#0c4a6e', '#fb923c'], '#fdba74', 'kites'),
+      day('2027-01-08', 'Uttarayan • Countdown', 'Uttarayan — bas 6 din baaki! 🪁',
+        'Uttarayan ki taiyari — patang, manja aur til-gud, sab kuch 15 minute me.',
+        'Kite-flying essentials', ['#0c4a6e', '#fb923c'], '#fdba74', 'kites'),
+      day('2027-01-09', 'Uttarayan • Countdown', 'Uttarayan — bas 5 din baaki! 🪁',
+        'Uttarayan ki taiyari — patang, manja aur til-gud, sab kuch 15 minute me.',
+        'Kite-flying essentials', ['#0c4a6e', '#fb923c'], '#fdba74', 'kites'),
+      day('2027-01-10', 'Uttarayan • Countdown', 'Uttarayan — bas 4 din baaki! 🪁',
+        'Uttarayan ki taiyari — patang, manja aur til-gud, sab kuch 15 minute me.',
+        'Kite-flying essentials', ['#0c4a6e', '#fb923c'], '#fdba74', 'kites'),
       day('2027-01-11', 'Uttarayan • Countdown', 'Uttarayan — bas 3 din baaki! 🪁',
         'Patang, manja aur til-gud ki taiyari shuru — sab kuch 15 minute me.',
         'Kite-flying essentials', ['#0c4a6e', '#fb923c'], '#fdba74', 'kites'),
@@ -88,6 +235,18 @@
         'Festive offers — aaj aakhri din', ['#0c4a6e', '#fbbf24'], '#fde68a', 'kites')
     ]},
     { id: 'shivaratri-2027', name: 'Maha Shivaratri', days: [
+      day('2027-02-27', 'Shivaratri • Countdown', 'Maha Shivaratri — bas 7 din baaki 🔱',
+        'Maha Shivaratri ki taiyari — doodh, dahi, phal aur puja saaman.',
+        'Vrat essentials', ['#1e1b4b', '#6366f1'], '#a5b4fc', 'moon'),
+      day('2027-02-28', 'Shivaratri • Countdown', 'Maha Shivaratri — bas 6 din baaki 🔱',
+        'Maha Shivaratri ki taiyari — doodh, dahi, phal aur puja saaman.',
+        'Vrat essentials', ['#1e1b4b', '#6366f1'], '#a5b4fc', 'moon'),
+      day('2027-03-01', 'Shivaratri • Countdown', 'Maha Shivaratri — bas 5 din baaki 🔱',
+        'Maha Shivaratri ki taiyari — doodh, dahi, phal aur puja saaman.',
+        'Vrat essentials', ['#1e1b4b', '#6366f1'], '#a5b4fc', 'moon'),
+      day('2027-03-02', 'Shivaratri • Countdown', 'Maha Shivaratri — bas 4 din baaki 🔱',
+        'Maha Shivaratri ki taiyari — doodh, dahi, phal aur puja saaman.',
+        'Vrat essentials', ['#1e1b4b', '#6366f1'], '#a5b4fc', 'moon'),
       day('2027-03-03', 'Shivaratri • Countdown', 'Maha Shivaratri — bas 3 din baaki 🔱',
         'Vrat ki taiyari shuru — doodh, dahi, phal aur puja saaman.',
         'Vrat essentials', ['#1e1b4b', '#6366f1'], '#a5b4fc', 'moon'),
@@ -105,6 +264,18 @@
         'Festive offers — aaj aakhri din', ['#1e1b4b', '#818cf8'], '#c7d2fe', 'moon')
     ]},
     { id: 'holi-2027', name: 'Holi', days: [
+      day('2027-03-15', 'Holi • Countdown', 'Holi — bas 7 din baaki! 🎨',
+        'Holi ki taiyari — rang, gulal, gujiya aur thandai, sab kuch 15 minute me.',
+        'Holi colours & snacks', ['#831843', '#f472b6'], '#fbcfe8', 'petals'),
+      day('2027-03-16', 'Holi • Countdown', 'Holi — bas 6 din baaki! 🎨',
+        'Holi ki taiyari — rang, gulal, gujiya aur thandai, sab kuch 15 minute me.',
+        'Holi colours & snacks', ['#831843', '#f472b6'], '#fbcfe8', 'petals'),
+      day('2027-03-17', 'Holi • Countdown', 'Holi — bas 5 din baaki! 🎨',
+        'Holi ki taiyari — rang, gulal, gujiya aur thandai, sab kuch 15 minute me.',
+        'Holi colours & snacks', ['#831843', '#f472b6'], '#fbcfe8', 'petals'),
+      day('2027-03-18', 'Holi • Countdown', 'Holi — bas 4 din baaki! 🎨',
+        'Holi ki taiyari — rang, gulal, gujiya aur thandai, sab kuch 15 minute me.',
+        'Holi colours & snacks', ['#831843', '#f472b6'], '#fbcfe8', 'petals'),
       day('2027-03-19', 'Holi • Countdown', 'Holi — bas 3 din baaki! 🎨',
         'Rang, gulal aur gujiya ki taiyari — sab kuch 15 minute me.',
         'Holi colours & snacks', ['#831843', '#f472b6'], '#fbcfe8', 'petals'),
@@ -121,12 +292,161 @@
         'Rang khelna abhi baaki — snacks aur thandai abhi bhi 15 minute me.',
         'Festive offers — aaj aakhri din', ['#9d174d', '#f472b6'], '#fbcfe8', 'petals')
     ]},
-    { id: 'navratri-2027', name: 'Chaitra Navratri', days: navratriDays('2027-04-07') }
+    { id: 'ram-navami-2027', name: 'Ram Navami', days: [
+      day('2027-04-15', 'Ram Navami', 'Ram Navami 🙏',
+        'Prabhu Shri Ram ka janmotsav — puja saaman aur meetha, 15 minute me.',
+        'Ram Navami specials', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas')
+    ]},
+    { id: 'navratri-2027', name: 'Chaitra Navratri', days: [
+      day('2027-03-31', 'Navratri • Countdown', 'Chaitra Navratri — bas 7 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-01', 'Navratri • Countdown', 'Chaitra Navratri — bas 6 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-02', 'Navratri • Countdown', 'Chaitra Navratri — bas 5 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-03', 'Navratri • Countdown', 'Chaitra Navratri — bas 4 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-04', 'Navratri • Countdown', 'Chaitra Navratri — bas 3 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-05', 'Navratri • Countdown', 'Chaitra Navratri — bas 2 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-04-06', 'Navratri • Countdown', 'Chaitra Navratri — bas 1 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas')
+    ].concat(navratriDays('2027-04-07')) },
+    { id: 'hanuman-2027', name: 'Hanuman Jayanti', days: countdown('2027-04-20', {
+      name: 'Hanuman Jayanti', leadCount: 4,
+      leadSub: 'Hanuman Jayanti ki taiyari — puja saaman, meetha aur phool.',
+      mainTitle: 'Hanuman Jayanti 🙏',
+      mainSub: 'Bajrangbali ka janmotsav — puja saaman aur meetha, 15 minute me.',
+      offer: 'Hanuman Jayanti specials',
+      gradient: ['#7c2d12', '#f97316'], accent: '#fdba74', anim: 'diyas',
+      phaseout: true, phaseoutSub: 'Prasad aur puja saaman abhi bhi 15 minute me.' }) },
+    { id: 'rath-2027', name: 'Rath Yatra', days: countdown('2027-07-05', {
+      name: 'Rath Yatra',
+      leadSub: 'Rath Yatra ki taiyari — prasad aur festive saaman.',
+      mainTitle: 'Rath Yatra 🛕',
+      mainSub: 'Jagannath ji ki yatra — prasad aur festive saaman, 15 minute me.',
+      offer: 'Festive specials',
+      gradient: ['#7c2d12', '#f59e0b'], accent: '#fbbf24', anim: 'diyas',
+      phaseout: true }) },
+    { id: 'raksha-2027', name: 'Raksha Bandhan', days: countdown('2027-08-17', {
+      name: 'Raksha Bandhan',
+      leadSub: 'Rakhi, gifts aur meetha — behen-bhai ke pyaar ki taiyari.',
+      mainTitle: 'Happy Raksha Bandhan! 🪢',
+      mainSub: 'Rakhi, meetha aur gifts — bhai-behen ke pyaar ka din, 15 minute me.',
+      offer: 'Rakhis, sweets & gifts',
+      gradient: ['#831843', '#f472b6'], accent: '#fbcfe8', anim: 'sparkles',
+      phaseout: false }) },
+    { id: 'janmashtami-2027', name: 'Janmashtami', days: countdown('2027-08-25', {
+      name: 'Janmashtami',
+      leadSub: 'Janmashtami ki taiyari — doodh, dahi, makhan aur meetha.',
+      mainTitle: 'Shri Krishna Janmashtami 🦚',
+      mainSub: 'Makhan, meetha aur puja saaman — Nand ke anand bhayo, 15 minute me.',
+      offer: 'Janmashtami specials',
+      gradient: ['#1e1b4b', '#7c3aed'], accent: '#c4b5fd', anim: 'moon',
+      phaseout: true }) },
+    { id: 'ganesh-2027', name: 'Ganesh Chaturthi', days: countdown('2027-09-04', {
+      name: 'Ganesh Chaturthi',
+      leadSub: 'Ganpati Bappa ki taiyari — modak, puja saaman aur phool.',
+      mainTitle: 'Ganpati Bappa Morya! 🙏',
+      mainSub: 'Modak, puja saaman aur meetha — Bappa ka swagat, 15 minute me.',
+      offer: 'Modak & puja specials',
+      gradient: ['#7c2d12', '#f97316'], accent: '#fdba74', anim: 'diyas',
+      phaseout: false }).concat([
+      day('2027-09-05', 'Ganesh Utsav • Day 2', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-06', 'Ganesh Utsav • Day 3', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-07', 'Ganesh Utsav • Day 4', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-08', 'Ganesh Utsav • Day 5', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-09', 'Ganesh Utsav • Day 6', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-10', 'Ganesh Utsav • Day 7', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-11', 'Ganesh Utsav • Day 8', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-12', 'Ganesh Utsav • Day 9', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-13', 'Ganesh Utsav • Day 10', 'Ganpati Utsav jaari 🙏',
+        'Modak aur prasad — Bappa ke darshan, 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas'),
+      day('2027-09-14', 'Ganesh Utsav • Visarjan', 'Ganpati Bappa Morya, agle baras tu jaldi aa 🙏',
+        'Visarjan ke baad bhi prasad aur meetha — 15 minute me.',
+        'Utsav specials', ['#7c2d12', '#f97316'], '#fdba74', 'diyas')
+    ]) },
+    { id: 'sharad-navratri-2027', name: 'Sharad Navratri', days: [
+      day('2027-09-23', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 7 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-24', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 6 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-25', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 5 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-26', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 4 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-27', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 3 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-28', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 2 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas'),
+      day('2027-09-29', 'Sharad Navratri • Countdown', 'Sharad Navratri — bas 1 din baaki 🙏',
+        'Navratri ki taiyari — vrat ka saaman, phal aur falhaar, 15 minute me.',
+        'Navratri specials — falhaar & vrat essentials', ['#3b0764', '#a855f7'], '#d8b4fe', 'diyas')
+    ].concat(navratriDays('2027-09-30')) },
+    { id: 'dussehra-2027', name: 'Dussehra', days: [
+      day('2027-10-09', 'Dussehra • Vijayadashami', 'Shubh Dussehra! 🏹',
+        'Burai par achhai ki jeet — meetha aur festive saaman, 15 minute me.',
+        'Dussehra specials', ['#7c2d12', '#ef4444'], '#fca5a5', 'sparkles'),
+      day('2027-10-10', 'Dussehra • Aakhri Mauka', 'Dussehra offers jaari hain 🏹',
+        'Meetha aur festive saaman abhi bhi 15 minute me.',
+        'Festive offers — aaj aakhri din', ['#7c2d12', '#ef4444'], '#fca5a5', 'sparkles')
+    ]},
+    { id: 'karva-2027', name: 'Karva Chauth', days: countdown('2027-10-18', {
+      name: 'Karva Chauth',
+      leadSub: 'Karva Chauth ki taiyari — sargi, meetha aur puja saaman.',
+      mainTitle: 'Karva Chauth 🌙',
+      mainSub: 'Sargi, meetha aur puja saaman — 15 minute me.',
+      offer: 'Sargi & sweets',
+      gradient: ['#831843', '#f472b6'], accent: '#fbcfe8', anim: 'moon',
+      phaseout: true }) },
+    { id: 'diwali-2027', name: 'Diwali', days: countdown('2027-10-29', {
+      name: 'Diwali',
+      leadSub: 'Diwali ki taiyari — diye, lights, sweets aur dry fruits.',
+      mainTitle: '🪔 Shubh Deepavali!',
+      mainSub: 'Lakshmi Puja ki shubhkamnayein — dry fruits, sweets, ghee aur diye, 15 minute me.',
+      offer: 'Diwali Loot Deals — aaj ke best prices',
+      gradient: ['#4c0519', '#f59e0b'], accent: '#fbbf24', anim: 'sparkles',
+      phaseout: true }) },
+    { id: 'chhath-2027', name: 'Chhath Puja', days: countdown('2027-11-04', {
+      name: 'Chhath Puja',
+      leadSub: 'Chhath ki taiyari — thekua, phal aur puja saaman.',
+      mainTitle: 'Chhath Puja 🌅',
+      mainSub: 'Thekua, phal aur puja saaman — Chhathi Maiya ka prasad, 15 minute me.',
+      offer: 'Chhath specials',
+      gradient: ['#7c2d12', '#f59e0b'], accent: '#fbbf24', anim: 'diyas',
+      phaseout: true }) }
   ];
-
-  var DEFAULT_THEME = day('', 'OK Mart', 'Fresh grocery, 15 minute me 🛒',
-    'Milk, sabzi, snacks aur daily essentials — Jantanagar, Satellite, Prahlad Nagar me superfast delivery.',
-    'Daily Loot Deals — roz naye offers', ['#006d37', '#84c225'], '#d9f99d', 'dots');
 
   // ---------- Sardar Patel Jayanti takeover (2026-10-31, single day) ----------
   // Style reference: the screenshot layout (background section + hero + cards +
@@ -172,7 +492,7 @@
         if (days[j].date === today) return { festival: FESTIVALS[i], theme: days[j] };
       }
     }
-    return { festival: null, theme: DEFAULT_THEME };
+    return { festival: null, theme: commonThemeFor(new Date()) };
   }
 
   // ---------- decorative SVG art per animation ----------
@@ -270,30 +590,56 @@
     });
   }
 
-  // ---------- render ----------
-  function renderBanner(theme, festivalName) {
+  // ---------- rich section render (background + hero + cards + strip + must-haves) ----------
+  function renderRich(theme, festivalName) {
     var slot = document.getElementById('festiveBanner');
     if (!slot) return;
+    var isFestival = !!festivalName;
     var primary = theme.cta || { text: 'Order Now 🛒', href: '/categories.html' };
+    var cards = FR_CARDS.map(function (c) {
+      return '<a class="fr-card" href="' + esc(c.href) + '">' +
+        '<span class="fr-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
+        '<img class="fr-card-img" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '<span class="fr-card-offer">' + esc(c.offer) + '</span></a>';
+    }).join('');
+    var today = new Date();
+    var start = dayOfYear(today) % FR_POOL.length;
+    var prods = '';
+    for (var i = 0; i < 6; i++) {
+      var p = FR_POOL[(start + i) % FR_POOL.length];
+      var mrp = (p.mrp && p.mrp > p.price) ? '<s>₹' + p.mrp + '</s>' : '';
+      prods += '<a class="fr-prod" href="/product.html?id=' + esc(p.id) + '">' +
+        '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '<span class="fr-prod-name">' + esc(p.name) + '</span>' +
+        '<span class="fr-prod-price">₹' + p.price + ' ' + mrp + '</span></a>';
+    }
+    var mustTitle = isFestival ? (festivalName + ' Must-Haves') : 'Aaj ke Must-Haves';
     slot.innerHTML =
-      '<div class="festive-banner" style="background:linear-gradient(135deg,' +
-      theme.gradient[0] + ',' + theme.gradient[1] + ')">' +
-      '<canvas class="festive-canvas" aria-hidden="true"></canvas>' +
-      '<div class="festive-content">' +
-      '<span class="festive-tag" style="background:' + theme.accent + '">' + esc(theme.tag) + '</span>' +
-      '<h2 class="festive-title">' + esc(theme.title) + '</h2>' +
-      '<p class="festive-sub">' + esc(theme.subtitle) + '</p>' +
-      (theme.offer ? '<span class="festive-offer">' + esc(theme.offer) + '</span>' : '') +
-      '<div class="festive-ctas">' +
-      '<a class="festive-cta-primary" href="' + esc(primary.href) + '">' + esc(primary.text) + '</a>' +
-      '<a class="festive-cta-ghost" href="/deals.html">Grab Loot Deal ⚡</a>' +
+      '<section class="fr-wrap">' +
+      '<div class="fr-bg" style="background:linear-gradient(135deg,' + theme.gradient[0] + ',' + theme.gradient[1] + ')">' +
+      '<canvas class="fr-canvas" aria-hidden="true"></canvas>' +
+      '<div class="fr-art">' + (ART[theme.anim] || ART.dots) + '</div>' +
+      '<div class="fr-hero">' +
+      '<span class="fr-tag" style="background:' + theme.accent + ';color:' + tagText(theme.accent) + '">' + esc(theme.tag) + '</span>' +
+      '<h2 class="fr-title">' + esc(theme.title) + '</h2>' +
+      '<p class="fr-sub">' + esc(theme.subtitle) + '</p>' +
+      (theme.offer ? '<span class="fr-offer">' + esc(theme.offer) + '</span>' : '') +
+      '<div class="fr-ctas">' +
+      '<a class="fr-cta-primary" href="' + esc(primary.href) + '">' + esc(primary.text) + '</a>' +
+      '<a class="fr-cta-ghost" href="/deals.html">Grab Loot Deal ⚡</a>' +
       '</div></div>' +
-      '<div class="festive-art">' + (ART[theme.anim] || ART.dots) + '</div>' +
-      '</div>';
-    startCanvas(slot.querySelector('.festive-canvas'), theme.anim);
-    var label = festivalName ? (festivalName + ' • ' + theme.date + ' — ' + theme.tag)
-      : ('Default brand theme');
-    console.log('[OKMart Festive] Active Theme: ' + label + ' | Animation: ' + theme.anim);
+      '<div class="fr-cards">' + cards + '</div>' +
+      '<a class="fr-strip" href="/deals.html">' +
+      '<span class="fr-strip-flag">⚡</span>' +
+      '<span class="fr-strip-text"><b>Aaj ke Loot Deals</b>' +
+      '<small>' + (isFestival ? esc(festivalName) + ' specials • ' : '') + 'Roz naye offers • 15 minute me</small></span>' +
+      '<span class="fr-strip-arrow">›</span></a>' +
+      '</div>' +
+      '<div class="fr-must"><h3>' + esc(mustTitle) + '</h3>' +
+      '<div class="fr-prods">' + prods + '</div></div>' +
+      '</section>';
+    startCanvas(slot.querySelector('.fr-canvas'), theme.anim);
+    console.log('[OKMart Festive] Active Theme: ' + (isFestival ? (festivalName + ' • ' + theme.date + ' — ' + theme.tag) : ('Common • ' + theme.date + ' — ' + theme.tag)) + ' | Rich section');
   }
 
   // ---------- Patel Jayanti takeover renderer (tricolor background section) ----------
@@ -351,7 +697,7 @@
 
   function render(theme, festivalName) {
     if (theme.takeover) { renderPatelTakeover(theme, festivalName); return; }
-    renderBanner(theme, festivalName);
+    renderRich(theme, festivalName);
   }
 
   // ---------- admin override (Firestore settings/festive) ----------
