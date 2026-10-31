@@ -517,3 +517,95 @@ console.log('Firebase fully loaded');
 console.log('Firestore:', db ? 'Available' : 'Not available');
 console.log('Messaging:', messaging ? 'Available' : 'Not available');
 
+
+/* ============================================================
+   OKMART NO-ZOOM — pinch / double-tap / gesture / shortcut zoom
+   is disabled site-wide. Identical copies live in js/firebase.js,
+   js/common.js and js/qc-nav.js (keep in sync). The guard makes
+   double-loading harmless. Map pinching inside #mapPicker is
+   intentionally left working so the location map stays usable.
+   ============================================================ */
+(function () {
+  if (window.__okmartNoZoom) return;
+  window.__okmartNoZoom = true;
+  var VIEWPORT = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+  function enforceViewport() {
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'viewport');
+      document.head.appendChild(meta);
+    }
+    if (meta.getAttribute('content') !== VIEWPORT) meta.setAttribute('content', VIEWPORT);
+  }
+  function inMap(e) {
+    return e.target && e.target.closest && e.target.closest('#mapPicker, .leaflet-container');
+  }
+  enforceViewport();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enforceViewport);
+  }
+  var style = document.createElement('style');
+  style.textContent = 'html,body{touch-action:pan-x pan-y;}';
+  document.head.appendChild(style);
+  document.addEventListener('gesturestart', function (e) { if (!inMap(e)) e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function (e) { if (!inMap(e)) e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function (e) { if (!inMap(e)) e.preventDefault(); }, { passive: false });
+  document.addEventListener('dblclick', function (e) { if (!inMap(e)) e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchmove', function (e) {
+    if (e.touches && e.touches.length > 1 && !inMap(e)) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) e.preventDefault();
+  });
+})();
+
+// ============================================
+// GOOGLE SIGN-IN (customers) — auth SDK loads on demand
+// Resolves window.okmartAuthReady with the auth instance (or null
+// if the SDK could not load). Keeps localStorage 'okmart_user' in
+// sync so orders history + profile code keep working. Order
+// history also works logged-out via the checkout-address phone.
+// ============================================
+window.okmartAuthReady = new Promise((resolve) => {
+  function initAuth() {
+    try {
+      if (!firebase.auth) { resolve(null); return; }
+      const auth = firebase.auth();
+      window.okmartAuth = auth;
+      auth.onAuthStateChanged((user) => {
+        try {
+          if (user) {
+            let prev = {};
+            try { prev = JSON.parse(localStorage.getItem('okmart_user') || 'null') || {}; } catch (e) {}
+            localStorage.setItem('okmart_user', JSON.stringify({
+              uid: user.uid,
+              name: user.displayName || prev.name || '',
+              email: user.email || prev.email || '',
+              photo: user.photoURL || prev.photo || '',
+              phone: prev.phone || ''
+            }));
+          } else {
+            localStorage.removeItem('okmart_user');
+          }
+        } catch (e) { console.warn('Auth state sync failed:', e.message); }
+      });
+      resolve(auth);
+    } catch (err) {
+      console.warn('Auth init failed:', err.message);
+      resolve(null);
+    }
+  }
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    initAuth();
+  } else {
+    const s = document.createElement('script');
+    s.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js';
+    s.onload = initAuth;
+    s.onerror = () => { console.warn('Auth SDK failed to load'); resolve(null); };
+    document.head.appendChild(s);
+  }
+});

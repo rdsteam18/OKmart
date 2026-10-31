@@ -376,6 +376,13 @@ ${itemsList}
     try {
       // Save to Firebase
       const docId = await saveOrderToFirebase(orderData);
+
+      // Also keep a local copy so Order History works even when logged out
+      try {
+        const prev = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+        prev.unshift({ ...orderData, id: docId, date: new Date().toISOString() });
+        localStorage.setItem('okmart_orders', JSON.stringify(prev.slice(0, 50)));
+      } catch (e) { console.warn('Local order history save failed:', e.message); }
       
       // Send WhatsApp notification to admin
       await sendWhatsAppNotification(orderData, docId);

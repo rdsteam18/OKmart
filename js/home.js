@@ -524,29 +524,44 @@
     const useCurrentLocationBtn = document.getElementById('useCurrentLocationBtn');
     const checkPincodeBtn = document.getElementById('checkPincodeBtn');
     const pincodeInput = document.getElementById('pincodeInput');
-    
+
     if (!locationBtn) return;
-    
+
     locationBtn.addEventListener('click', () => {
       if (locationModal) locationModal.classList.add('active');
     });
-    
+
     if (closeModal) {
       closeModal.addEventListener('click', () => {
         locationModal.classList.remove('active');
       });
     }
-    
+
     if (useCurrentLocationBtn) {
       useCurrentLocationBtn.addEventListener('click', detectLocation);
     }
-    
+
     if (checkPincodeBtn && pincodeInput) {
       checkPincodeBtn.addEventListener('click', () => {
-        checkPincode(pincodeInput.value.trim());
+        checkPincode(pincodeInput.value.trim(), true);
       });
     }
-    
+
+    const manualSaveBtn = document.getElementById('manualSaveBtn');
+    if (manualSaveBtn) {
+      manualSaveBtn.addEventListener('click', saveManualAddress);
+    }
+
+    const mapToggleBtn = document.getElementById('mapToggleBtn');
+    if (mapToggleBtn) {
+      mapToggleBtn.addEventListener('click', toggleMapPicker);
+    }
+
+    const mapConfirmBtn = document.getElementById('mapConfirmBtn');
+    if (mapConfirmBtn) {
+      mapConfirmBtn.addEventListener('click', confirmMapPin);
+    }
+
     // Close on outside click
     if (locationModal) {
       locationModal.addEventListener('click', (e) => {
@@ -555,41 +570,66 @@
         }
       });
     }
-    
+
     // Load saved location
     loadSavedLocation();
   }
-  
+
+  // Accurate GPS fetch: fresh high-accuracy fix first, fast
+  // network-based fix as fallback so fetching still succeeds.
   function detectLocation() {
     if (!navigator.geolocation) {
       showToast('Geolocation not supported', 'error');
       return;
     }
-    
+
     showToast('Detecting location...', 'info');
-    
+
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-          const data = await response.json();
-          const area = data.address?.suburb || data.address?.neighbourhood || 'Your Area';
-          const city = data.address?.city || data.address?.town || 'Your City';
-          setLocation(area, city, '');
-        } catch (err) {
-          setLocation('Your Location', '', '');
-        }
-      },
+      handleDetectedPosition,
       () => {
-        showToast('Unable to detect location', 'error');
-      }
+        navigator.geolocation.getCurrentPosition(
+          handleDetectedPosition,
+          () => {
+            showToast('Unable to detect location. Please enter it manually or pick it on the map.', 'error');
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   }
-  
-  async function checkPincode(pincode) {
+
+  async function handleDetectedPosition(position) {
+    const { latitude, longitude, accuracy } = position.coords;
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+      const data = await response.json();
+      const area = data.address?.suburb || data.address?.neighbourhood || data.address?.residential || 'Your Area';
+      const city = data.address?.city || data.address?.town || data.address?.state_district || 'Your City';
+      const pincode = data.address?.postcode || '';
+      setLocation(area, city, pincode, { lat: latitude, lon: longitude, accuracy: Math.round(accuracy), source: 'gps' });
+    } catch (err) {
+      setLocation('Your Location', '', '', { lat: latitude, lon: longitude, accuracy: Math.round(accuracy), source: 'gps' });
+    }
+  }
+
+  // Best-effort Firebase save: never blocks the UI if it fails.
+  function saveLocationToFirebase(doc) {
+    try {
+      if (typeof db === 'undefined' || !db) return;
+      db.collection('locations').add({
+        ...doc,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch((err) => console.warn('Location save failed:', err.message));
+    } catch (err) {
+      console.warn('Location save failed:', err.message);
+    }
+  }
+
+  async function checkPincode(pincode, fromUserClick = false) {
     const messageDiv = document.getElementById('pincodeMessage');
-    
+
     if (!pincode || pincode.length !== 6) {
       if (messageDiv) {
         messageDiv.innerHTML = 'Please enter a valid 6-digit pincode';
@@ -597,19 +637,19 @@
       }
       return;
     }
-    
+
     showToast('Checking pincode...', 'info');
-    
+
     try {
       const doc = await db.collection('pincodes').doc(pincode).get();
-      
+
       if (doc.exists && doc.data().active !== false) {
         isLocationServiceable = true;
         if (messageDiv) {
           messageDiv.innerHTML = `✅ Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
           messageDiv.className = 'pincode-message success';
         }
-        setLocationByPincode(pincode);
+        setLocationByPincode(pincode, fromUserClick);
       } else {
         isLocationServiceable = false;
         if (messageDiv) {
@@ -625,40 +665,64 @@
       }
     }
   }
-  
-  function setLocation(area, city, pincode) {
+
+  function setLocation(area, city, pincode, extra = {}) {
     const locationString = `${area}, ${city}`;
     localStorage.setItem('okmart_location', locationString);
     if (pincode) localStorage.setItem('okmart_pincode', pincode);
-    
+    currentLocation = {
+      area, city, pincode: pincode || '',
+      lat: extra.lat || null, lon: extra.lon || null,
+      accuracy: extra.accuracy || null, source: extra.source || 'nearby'
+    };
+
     const locationText = document.getElementById('locationText');
     if (locationText) locationText.textContent = locationString.substring(0, 20);
-    
+
     const locationModal = document.getElementById('locationModal');
     if (locationModal) locationModal.classList.remove('active');
-    
+
     showToast(`📍 Location set to ${locationString}`, 'success');
-    
-    // Check delivery availability
-    if (pincode) checkPincode(pincode);
+
+    saveLocationToFirebase({
+      address: locationString,
+      area, city, pincode: pincode || '',
+      lat: extra.lat || null, lon: extra.lon || null,
+      accuracy: extra.accuracy || null,
+      source: extra.source || 'nearby',
+      ...(extra.details || {})
+    });
+
+    // Delivery-availability check (nearby picks only — GPS/manual
+    // picks keep their area display instead of being overwritten).
+    if (pincode && extra.source !== 'gps' && extra.source !== 'manual') checkPincode(pincode);
   }
-  
-  function setLocationByPincode(pincode) {
+
+  function setLocationByPincode(pincode, saveToFirebase = false) {
     localStorage.setItem('okmart_pincode', pincode);
     const locationText = document.getElementById('locationText');
     if (locationText) locationText.textContent = `📍 Pincode: ${pincode}`;
-    
+
     const locationModal = document.getElementById('locationModal');
     if (locationModal) locationModal.classList.remove('active');
-    
+
     showToast(`📍 Pincode set to ${pincode}`, 'success');
+
+    if (saveToFirebase) {
+      saveLocationToFirebase({
+        address: `Pincode: ${pincode}`,
+        area: '', city: '', pincode,
+        lat: null, lon: null, accuracy: null,
+        source: 'pincode'
+      });
+    }
   }
-  
+
   function loadSavedLocation() {
     const savedLocation = localStorage.getItem('okmart_location');
     const savedPincode = localStorage.getItem('okmart_pincode');
     const locationText = document.getElementById('locationText');
-    
+
     if (savedLocation && locationText) {
       locationText.textContent = savedLocation.substring(0, 20);
     } else if (savedPincode && locationText) {
@@ -666,7 +730,7 @@
       checkPincode(savedPincode);
     }
   }
-  
+
   function initNearbyLocations() {
     document.querySelectorAll('.nearby-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -677,7 +741,129 @@
       });
     });
   }
-  
+
+  // ========== MANUAL ADDRESS ==========
+  function saveManualAddress() {
+    const val = (id) => (document.getElementById(id)?.value || '').trim();
+    const name = val('manualName');
+    const phone = val('manualPhone');
+    const addressLine = val('manualAddress');
+    const landmark = val('manualLandmark');
+    const city = val('manualCity');
+    const pincode = val('manualPincode');
+
+    if (!addressLine) { showToast('Please enter House / Flat / Street / Area', 'error'); return; }
+    if (!city) { showToast('Please enter City', 'error'); return; }
+    if (!/^\d{6}$/.test(pincode)) { showToast('Please enter a valid 6-digit pincode', 'error'); return; }
+    if (phone && !/^\d{10}$/.test(phone)) { showToast('Please enter a valid 10-digit phone number', 'error'); return; }
+
+    // If name + phone are given, this becomes the checkout delivery
+    // address too, so the user never retypes it at checkout.
+    if (name && phone) {
+      const checkoutAddr = { name, phone, address: addressLine, city, pincode, landmark };
+      localStorage.setItem('okmart_user_address', JSON.stringify(checkoutAddr));
+      try {
+        const list = JSON.parse(localStorage.getItem('okmart_user_addresses') || '[]');
+        const exists = list.some(a => a.address === addressLine && a.pincode === pincode);
+        if (!exists) {
+          list.push({ id: Date.now().toString(), ...checkoutAddr, isDefault: list.length === 0 });
+          localStorage.setItem('okmart_user_addresses', JSON.stringify(list));
+        }
+      } catch (e) { console.warn('Address list save failed:', e.message); }
+    }
+
+    setLocation(addressLine, city, pincode, {
+      lat: mapPin ? mapPin.lat : null,
+      lon: mapPin ? mapPin.lon : null,
+      source: 'manual',
+      details: { fullAddress: addressLine, landmark, name, phone }
+    });
+  }
+
+  // ========== MAP PIN PICKER (Leaflet + OpenStreetMap, free) ==========
+  let mapPicker = null;
+  let mapMarker = null;
+  let mapPin = null;
+
+  function toggleMapPicker() {
+    const wrap = document.getElementById('mapPickerWrap');
+    if (!wrap) return;
+    const opening = wrap.style.display !== 'block';
+    wrap.style.display = opening ? 'block' : 'none';
+    if (opening) initMapPicker();
+  }
+
+  function initMapPicker() {
+    if (mapPicker) {
+      setTimeout(() => mapPicker.invalidateSize(), 100);
+      return;
+    }
+    if (typeof L === 'undefined') {
+      showToast('Map could not load. Please enter the address manually.', 'error');
+      return;
+    }
+    const el = document.getElementById('mapPicker');
+    if (!el) return;
+    mapPicker = L.map('mapPicker').setView([23.0225, 72.5714], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(mapPicker);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => mapPicker.setView([pos.coords.latitude, pos.coords.longitude], 16),
+        () => {},
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
+    }
+    mapPicker.on('click', (e) => placeMapPin(e.latlng.lat, e.latlng.lng));
+    setTimeout(() => mapPicker.invalidateSize(), 100);
+  }
+
+  function placeMapPin(lat, lon) {
+    mapPin = { lat, lon };
+    if (!mapMarker) {
+      mapMarker = L.marker([lat, lon], { draggable: true }).addTo(mapPicker);
+      mapMarker.on('dragend', () => {
+        const p = mapMarker.getLatLng();
+        mapPin = { lat: p.lat, lon: p.lng };
+        updateMapPinHint();
+      });
+    } else {
+      mapMarker.setLatLng([lat, lon]);
+    }
+    updateMapPinHint();
+  }
+
+  function updateMapPinHint() {
+    const hint = document.getElementById('mapPinHint');
+    if (hint && mapPin) {
+      hint.textContent = `📍 Pin: ${mapPin.lat.toFixed(5)}, ${mapPin.lon.toFixed(5)} — Confirm dabao, address apne aap bhar jayega`;
+    }
+  }
+
+  async function confirmMapPin() {
+    if (!mapPin) {
+      showToast('Please tap on the map to drop a pin first', 'error');
+      return;
+    }
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${mapPin.lat}&lon=${mapPin.lon}`);
+      const data = await response.json();
+      const a = data.address || {};
+      const setVal = (id, v) => {
+        const el = document.getElementById(id);
+        if (el && v) el.value = v;
+      };
+      setVal('manualCity', a.city || a.town || a.state_district || 'Ahmedabad');
+      setVal('manualPincode', a.postcode || '');
+      setVal('manualAddress', [a.house_number, a.road, a.suburb || a.neighbourhood].filter(Boolean).join(', '));
+      showToast('Pin se address bhar gaya hai — House/Flat aur naam-phone check karke Save karo', 'success');
+    } catch (err) {
+      showToast('Could not read address from pin. Please type it manually.', 'error');
+    }
+  }
+
   // ========== SEARCH FUNCTIONALITY ==========
   let searchDebounceTimer = null;
 

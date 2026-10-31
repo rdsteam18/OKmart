@@ -181,6 +181,29 @@
             🏪 Prahlad Nagar, Ahmedabad (380015)
           </div>
         </div>
+
+        <div style="font-size:0.78rem; font-weight:700; color:#6b7280; text-transform:uppercase; margin:14px 0 6px;">Enter Address Manually</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+          <input type="text" id="manualName" placeholder="Full name (optional)" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          <input type="tel" id="manualPhone" placeholder="10-digit phone (optional)" maxlength="10" inputmode="numeric" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          <input type="text" id="manualAddress" placeholder="House / Flat / Street / Area *" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          <input type="text" id="manualLandmark" placeholder="Landmark (optional)" style="width:100%; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="manualCity" placeholder="City *" style="flex:1; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+            <input type="text" id="manualPincode" placeholder="Pincode *" maxlength="6" inputmode="numeric" style="flex:1; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:0.9rem;">
+          </div>
+          <button id="manualSaveBtn" style="width:100%; background:#006b22; color:#fff; font-weight:700; border:none; padding:12px; border-radius:10px;">Save Address</button>
+        </div>
+
+        <button id="mapToggleBtn" style="width:100%; background:#f0fdf4; border:1px solid #86efac; color:#006b22; font-weight:700; padding:12px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <span>🗺️</span>
+          <span>Select Exact Location on Map</span>
+        </button>
+        <div id="mapPickerWrap" style="display:none; margin-top:10px;">
+          <div id="mapPicker" style="height:260px; width:100%; border-radius:10px; z-index:1;"></div>
+          <div id="mapPinHint" style="font-size:0.8rem; color:#6b7280; margin-top:6px;">Map par tap karo — pin lagao, phir Confirm dabao</div>
+          <button id="mapConfirmBtn" style="width:100%; background:#006b22; color:#fff; font-weight:700; border:none; padding:10px; border-radius:8px; margin-top:8px;">Confirm Pin Location</button>
+        </div>
       </div>
     </div>
 

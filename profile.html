@@ -40,6 +40,25 @@
         </div>
       </section>
 
+      <!-- Google Sign-In (customers) -->
+      <section class="account-user-card" id="googleAuthBox">
+        <div id="googleLoggedOut">
+          <button id="googleLoginBtn" style="width:100%; background:#fff; border:1.5px solid #dadce0; color:#3c4043; font-weight:700; padding:12px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span style="font-size:1.1rem;">G</span>
+            <span>Continue with Google</span>
+          </button>
+          <div style="font-size:0.8rem; color:#6b7280; margin-top:8px;">Login karke apni order history aur saved addresses pa sakte ho.</div>
+        </div>
+        <div id="googleLoggedIn" style="display:none; align-items:center; gap:12px;">
+          <img id="googleUserPhoto" src="" alt="" style="width:44px; height:44px; border-radius:50%; display:none;">
+          <div style="flex:1;">
+            <div id="googleUserName" style="font-weight:800;"></div>
+            <div id="googleUserEmail" style="font-size:0.85rem; color:#6b7280;"></div>
+          </div>
+          <button id="googleLogoutBtn" style="background:#f3f4f6; border:1px solid #e5e7eb; color:#111827; font-weight:700; padding:8px 14px; border-radius:8px; cursor:pointer;">Sign out</button>
+        </div>
+      </section>
+
       <!-- 4 Quick Action Cards (Image 5) -->
       <section class="quick-action-cards-grid">
         <a href="/orders.html" class="action-card-tile">
@@ -438,5 +457,6 @@
       </a>
     </nav>
     <script src="/js/qc-nav.js"></script>
+    <script src="/js/auth-ui.js"></script>
 </body>
 </html>

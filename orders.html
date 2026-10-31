@@ -49,21 +49,40 @@
     async function loadAndRenderOrders() {
       let orders = [];
       
-      // ✅ Try Firebase first
+      // ✅ Try Firebase first — phones from login AND checkout address,
+      // so history works with or without login.
       try {
-        const userJson = localStorage.getItem('okmart_user');
-        const user = userJson ? JSON.parse(userJson) : null;
-        
-        if (user && user.phone && typeof db !== 'undefined') {
-          const phone = user.phone.replace('+91','').replace(/\s/g,'');
-          const snapshot = await db.collection('orders')
-            .where('phone', '==', phone)
-            .orderBy('createdAt', 'desc')
-            .limit(30)
-            .get();
-          
-          if (!snapshot.empty) {
+        const phones = [];
+        const addPhone = (p) => {
+          if (!p) return;
+          let digits = String(p).replace(/[^0-9]/g, '');
+          if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+          if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+          if (!/^\d{10}$/.test(digits)) return;
+          if (!phones.includes(digits)) phones.push(digits);
+          const withCode = '+91' + digits;
+          if (!phones.includes(withCode)) phones.push(withCode);
+        };
+        try {
+          const user = JSON.parse(localStorage.getItem('okmart_user') || 'null');
+          if (user) addPhone(user.phone);
+        } catch (e) {}
+        try {
+          const addr = JSON.parse(localStorage.getItem('okmart_user_address') || 'null');
+          if (addr) addPhone(addr.phone);
+        } catch (e) {}
+
+        if (phones.length > 0 && typeof db !== 'undefined') {
+          const seen = new Set();
+          for (const phone of phones) {
+            const snapshot = await db.collection('orders')
+              .where('phone', '==', phone)
+              .orderBy('createdAt', 'desc')
+              .limit(30)
+              .get();
             snapshot.forEach(doc => {
+              if (seen.has(doc.id)) return;
+              seen.add(doc.id);
               const data = doc.data();
               orders.push({
                 ...data,
@@ -74,11 +93,12 @@
               });
             });
           }
+          orders.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
       } catch(e) {
         console.warn('Firebase orders error:', e.message);
       }
-      
+
       // Fallback to localStorage
       if (orders.length === 0) {
         orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
