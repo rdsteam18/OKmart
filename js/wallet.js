@@ -140,7 +140,7 @@
     var user = currentUser();
     if (!user) {
       box.innerHTML =
-        '<h3 style="margin:0 0 6px;font-size:1rem;">💰 Wallet</h3>' +
+        '<h3 style="margin:0 0 6px;font-size:1rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Wallet</h3>' +
         '<p style="margin:0 0 10px;color:#4b5563;font-size:.88rem;">Refer karke ₹' + REWARD +
         ' kamao — wallet me jama hoga, checkout par use kar sakoge.</p>' +
         '<button id="walletLoginBtn" style="background:#006d37;color:#fff;border:0;font-weight:700;' +
@@ -153,7 +153,7 @@
       return;
     }
     box.innerHTML =
-      '<h3 style="margin:0 0 6px;font-size:1rem;">💰 Wallet</h3>' +
+      '<h3 style="margin:0 0 6px;font-size:1rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg> Wallet</h3>' +
       '<div style="font-size:1.6rem;font-weight:900;" id="walletBalanceBig">₹…</div>' +
       '<p style="margin:2px 0 10px;color:#4b5563;font-size:.85rem;">Referral reward ka balance — checkout par claim karo.</p>' +
       '<div id="walletTxns" style="font-size:.85rem;color:#4b5563;">History load ho rahi hai…</div>';

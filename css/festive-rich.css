@@ -2,6 +2,7 @@
    Used for every festival day AND every common day (rotating common themes),
    so the homepage top is never a plain banner. Theme colours come from the
    day's festive.js entry; cards/must-haves are real OKmart catalog items. */
+#festiveBanner { margin: 0; }
 #festiveBanner .fr-wrap { margin: 0; }
 .fr-bg {
   position: relative; overflow: hidden; color: #fff;
@@ -38,7 +39,7 @@
 }
 .fr-cards {
   position: relative; z-index: 1; display: flex; gap: 10px; overflow-x: auto;
-  padding: 18px 2px 6px; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 14px 0 6px; scroll-snap-type: x mandatory; scrollbar-width: none;
 }
 .fr-cards::-webkit-scrollbar { display: none; }
 .fr-card {
@@ -59,6 +60,8 @@
   background: linear-gradient(90deg, #b91c1c, #dc2626); box-shadow: 0 6px 14px rgba(0,0,0,.3);
 }
 .fr-strip-flag { font-size: 1.4rem; flex-shrink: 0; }
+.fr-strip-flag svg { width: 22px; height: 22px; display: block; }
+.fr-cta-primary svg, .fr-cta-ghost svg { vertical-align: -2px; }
 .fr-strip-text { flex: 1; min-width: 0; }
 .fr-strip-text b { display: block; font-size: .9rem; }
 .fr-strip-text small { font-size: .74rem; opacity: .92; }

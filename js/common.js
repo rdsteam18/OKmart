@@ -903,20 +903,41 @@ window.formatCurrency = window.OKMart.formatCurrency;
 
 
 
-// Register Service Worker
+// Register Service Worker — with AUTOMATIC updates (no manual refresh).
+// A new deploy installs in the background (sw.js calls skipWaiting); once
+// it takes over, the page reloads itself to the new version.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         console.log('✅ Service Worker registered:', registration.scope);
-        
-        // Check for updates
+        // Keep checking for a new version: every minute + whenever the
+        // tab becomes visible again (covers "site update ho gaya par
+        // user ko purana dikhta hai").
+        setInterval(() => { registration.update().catch(() => {}); }, 60000);
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) registration.update().catch(() => {});
+        });
+        // Auto-reload the moment the new worker takes control — except
+        // on checkout/cart, where a reload could lose an in-progress
+        // order (those pages pick the update up on next navigation).
+        var isOrderFlow = /checkout\.html|cart\.html/.test(window.location.pathname);
+        var reloading = false;
+        function autoReload() {
+          if (reloading || isOrderFlow) return;
+          reloading = true;
+          window.location.reload();
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', autoReload);
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           console.log('🔄 New Service Worker installing...');
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              if (window.OKMart && window.OKMart.showToast) {
+              // New version ready: controllerchange fires right after
+              // (skipWaiting) and autoReload() handles the refresh. On
+              // order pages, fall back to the manual toast.
+              if (isOrderFlow && window.OKMart && window.OKMart.showToast) {
                 window.OKMart.showToast('New version available! Refresh to update.', 'info');
               }
             }

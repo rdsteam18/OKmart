@@ -77,6 +77,21 @@
     return Math.floor((d - start) / 86400000);
   }
 
+  // ---------- small helpers: shuffle (fresh banner every visit) + emoji strip ----------
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  // Strip emoji from banner text (icons are proper SVGs now, not emojis).
+  function stripEmoji(s) {
+    return String(s == null ? '' : s).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+  }
+  var CART_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
+  var BOLT_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>';
+
   // ---------- shared rich-section data (real catalog, verified 2026-10-31) ----------
   var FR_CARDS = [
     { t1: 'Desi', t2: 'Essentials', href: '/categories/grocery.html', offer: 'STARTING FROM ₹18',
@@ -88,8 +103,8 @@
     { t1: 'Cold Drinks', t2: '& Juices', href: '/categories/beverages.html', offer: 'STARTING FROM ₹33',
       img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' }
   ];
-  // Rotating must-haves pool: 6 consecutive items from dayOfYear offset, so the
-  // row is fresh every day. All prices/ids/images verified from live Firestore.
+  // Must-haves pool: shuffled on every visit, so the row changes each load.
+  // All prices/ids/images verified from live Firestore.
   var FR_POOL = [
     { name: 'Cadbury Dairy Milk Chocolate Bar', price: 19, mrp: 20, id: 'jqucrf7S94kZmorAgsPt',
       img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
@@ -498,12 +513,12 @@
   // ---------- decorative SVG art per animation ----------
   var ART = {
     diyas: '<svg viewBox="0 0 120 90" width="110" height="84"><ellipse cx="60" cy="68" rx="46" ry="12" fill="#b45309"/><path d="M20 62 Q60 88 100 62 Q60 74 20 62" fill="#92400e"/><ellipse cx="60" cy="52" rx="10" ry="16" fill="#fbbf24"/><ellipse cx="60" cy="56" rx="5" ry="9" fill="#f97316"/></svg>',
-    sparkles: '<svg viewBox="0 0 120 90" width="110" height="84"><text x="60" y="62" font-size="62" text-anchor="middle">🪔</text></svg>',
+    sparkles: '<svg viewBox="0 0 120 90" width="110" height="84"><path d="M60 14c6 10 11 17 11 26a11 11 0 0 1-22 0c0-9 5-16 11-26Z" fill="#fbbf24"/><path d="M60 30c3 5 6 9 6 13a6 6 0 0 1-12 0c0-4 3-8 6-13Z" fill="#f97316"/><path d="M28 56h64" stroke="#ea580c" stroke-width="4" stroke-linecap="round"/><path d="M34 56 Q60 80 86 56" fill="none" stroke="#ea580c" stroke-width="4" stroke-linejoin="round"/><path d="M52 78h16" stroke="#ea580c" stroke-width="4" stroke-linecap="round"/></svg>',
     petals: '<svg viewBox="0 0 120 90" width="110" height="84"><circle cx="40" cy="45" r="16" fill="#f472b6"/><circle cx="75" cy="35" r="13" fill="#facc15"/><circle cx="70" cy="62" r="14" fill="#38bdf8"/></svg>',
     kites: '<svg viewBox="0 0 120 90" width="110" height="84"><polygon points="60,8 88,42 60,76 32,42" fill="#f59e0b" stroke="#b45309" stroke-width="2"/><polyline points="60,76 52,88 66,84" fill="none" stroke="#7c2d12" stroke-width="2"/></svg>',
     moon: '<svg viewBox="0 0 120 90" width="110" height="84"><path d="M78 12 A42 42 0 1 0 78 78 A34 34 0 1 1 78 12" fill="#fde68a"/></svg>',
     bonfire: '<svg viewBox="0 0 120 90" width="110" height="84"><ellipse cx="60" cy="52" rx="14" ry="22" fill="#f97316"/><ellipse cx="60" cy="60" rx="8" ry="12" fill="#facc15"/><rect x="30" y="68" width="60" height="6" rx="3" fill="#78350f"/></svg>',
-    dots: '<svg viewBox="0 0 120 90" width="110" height="84"><circle cx="60" cy="45" r="26" fill="#84c225"/><text x="60" y="56" font-size="30" text-anchor="middle">🛒</text></svg>'
+    dots: '<svg viewBox="0 0 120 90" width="110" height="84"><circle cx="60" cy="45" r="26" fill="#84c225"/><g transform="translate(45,30) scale(1.25)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></g></svg>'
   };
 
   function esc(s) {
@@ -548,7 +563,7 @@
     }
     function reset() {
       parts = [];
-      var n = Math.min(38, Math.max(14, Math.floor(W / 28)));
+      var n = Math.min(26, Math.max(12, Math.floor(W / 34)));
       for (var i = 0; i < n; i++) parts.push(spawn(true));
     }
     resize(); reset();
@@ -595,18 +610,18 @@
     var slot = document.getElementById('festiveBanner');
     if (!slot) return;
     var isFestival = !!festivalName;
-    var primary = theme.cta || { text: 'Order Now 🛒', href: '/categories.html' };
-    var cards = FR_CARDS.map(function (c) {
+    var primary = theme.cta || { text: 'Order Now', href: '/categories.html' };
+    var cards = shuffle(FR_CARDS.slice()).map(function (c) {
       return '<a class="fr-card" href="' + esc(c.href) + '">' +
         '<span class="fr-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
         '<img class="fr-card-img" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
         '<span class="fr-card-offer">' + esc(c.offer) + '</span></a>';
     }).join('');
-    var today = new Date();
-    var start = dayOfYear(today) % FR_POOL.length;
+    // Shuffled every visit: banner products keep changing (was: 6 consecutive by day).
     var prods = '';
+    var pool = shuffle(FR_POOL.slice());
     for (var i = 0; i < 6; i++) {
-      var p = FR_POOL[(start + i) % FR_POOL.length];
+      var p = pool[i % pool.length];
       var mrp = (p.mrp && p.mrp > p.price) ? '<s>₹' + p.mrp + '</s>' : '';
       prods += '<a class="fr-prod" href="/product.html?id=' + esc(p.id) + '">' +
         '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
@@ -620,17 +635,17 @@
       '<canvas class="fr-canvas" aria-hidden="true"></canvas>' +
       '<div class="fr-art">' + (ART[theme.anim] || ART.dots) + '</div>' +
       '<div class="fr-hero">' +
-      '<span class="fr-tag" style="background:' + theme.accent + ';color:' + tagText(theme.accent) + '">' + esc(theme.tag) + '</span>' +
-      '<h2 class="fr-title">' + esc(theme.title) + '</h2>' +
-      '<p class="fr-sub">' + esc(theme.subtitle) + '</p>' +
-      (theme.offer ? '<span class="fr-offer">' + esc(theme.offer) + '</span>' : '') +
+      '<span class="fr-tag" style="background:' + theme.accent + ';color:' + tagText(theme.accent) + '">' + esc(stripEmoji(theme.tag)) + '</span>' +
+      '<h2 class="fr-title">' + esc(stripEmoji(theme.title)) + '</h2>' +
+      '<p class="fr-sub">' + esc(stripEmoji(theme.subtitle)) + '</p>' +
+      (theme.offer ? '<span class="fr-offer">' + esc(stripEmoji(theme.offer)) + '</span>' : '') +
       '<div class="fr-ctas">' +
-      '<a class="fr-cta-primary" href="' + esc(primary.href) + '">' + esc(primary.text) + '</a>' +
-      '<a class="fr-cta-ghost" href="/deals.html">Grab Loot Deal ⚡</a>' +
+      '<a class="fr-cta-primary" href="' + esc(primary.href) + '">' + esc(stripEmoji(primary.text)) + ' ' + CART_SVG + '</a>' +
+      '<a class="fr-cta-ghost" href="/deals.html">Grab Loot Deal ' + BOLT_SVG + '</a>' +
       '</div></div>' +
       '<div class="fr-cards">' + cards + '</div>' +
       '<a class="fr-strip" href="/deals.html">' +
-      '<span class="fr-strip-flag">⚡</span>' +
+      '<span class="fr-strip-flag">' + BOLT_SVG + '</span>' +
       '<span class="fr-strip-text"><b>Aaj ke Loot Deals</b>' +
       '<small>' + (isFestival ? esc(festivalName) + ' specials • ' : '') + 'Roz naye offers • 15 minute me</small></span>' +
       '<span class="fr-strip-arrow">›</span></a>' +
@@ -719,7 +734,7 @@
           if (o.subtext) theme.subtitle = o.subtext;
           if (o.offer) theme.offer = o.offer;
           if (o.ctaText || o.ctaLink) {
-            theme.cta = { text: o.ctaText || 'Order Now 🛒', href: o.ctaLink || '/categories.html' };
+            theme.cta = { text: o.ctaText || 'Order Now', href: o.ctaLink || '/categories.html' };
           }
           render(theme, found.festival && found.festival.name);
         })

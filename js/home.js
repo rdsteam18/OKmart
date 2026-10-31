@@ -146,16 +146,16 @@
   
   // ========== RENDER CATEGORY GRID ==========
   const categories = [
-    { id: 'beverages',     name: 'Cold Drinks & Juices', emoji: '🥤' },
-    { id: 'fruits',        name: 'Fresh Fruits',        emoji: '🍎' },
-    { id: 'vegetables',    name: 'Fresh Vegetables',    emoji: '🥬' },
-    { id: 'dairy',         name: 'Dairy & Breakfast',   emoji: '🥛' },
-    { id: 'grocery',       name: 'Atta & Cooking Essentials', emoji: '🌾' },
-    { id: 'snacks',        name: 'Munchies & Snacks',   emoji: '🍿' },
-    { id: 'household',     name: 'Cleaning & Household', emoji: '🧹' },
-    { id: 'energy-drinks', name: 'Energy Drinks',       emoji: '⚡' },
-    { id: 'personal-care', name: 'Personal Care',       emoji: '🧴' },
-    { id: 'bakery',        name: 'Bakery & Breads',     emoji: '🍞' }
+    { id: 'beverages',     name: 'Cold Drinks & Juices', icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14l-1 18H6L5 3Z"/><path d="M9 10h6"/></svg>' },
+    { id: 'fruits',        name: 'Fresh Fruits',        icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 5c0-2 2-3 4-3 0 2-2 3-4 3Z"/></svg>' },
+    { id: 'vegetables',    name: 'Fresh Vegetables',    icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 9 12 5 20 4c-1 8-6 15-15 15Z"/><path d="M5 19c3-5 7-9 12-11"/></svg>' },
+    { id: 'dairy',         name: 'Dairy & Breakfast',   icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v4l2 3v13a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V9l2-3V2Z"/><path d="M9 14h6"/></svg>' },
+    { id: 'grocery',       name: 'Atta & Cooking Essentials', icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8"/><path d="M12 8c-3-1-5-3-5-6 3 0 5 2 5 6Zm0 0c3-1 5-3 5-6-3 0-5 2-5 6Z"/><path d="M12 13c-2-1-4-2-4-4 2 0 4 1 4 4Zm0 0c2-1 4-2 4-4-2 0-4 1-4 4Z"/></svg>' },
+    { id: 'snacks',        name: 'Munchies & Snacks',   icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#374151" stroke="none"/><circle cx="15" cy="11" r="1" fill="#374151" stroke="none"/><circle cx="10" cy="15" r="1" fill="#374151" stroke="none"/><circle cx="15" cy="16" r="1" fill="#374151" stroke="none"/></svg>' },
+    { id: 'household',     name: 'Cleaning & Household', icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10h8v12H9z"/><path d="M11 10V7h6"/><path d="M13 7V4"/><path d="M7 13l-3-1"/><path d="M7 17l-3 1"/></svg>' },
+    { id: 'energy-drinks', name: 'Energy Drinks',       icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="#374151"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>' },
+    { id: 'personal-care', name: 'Personal Care',       icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="11" width="7" height="11" rx="2"/><path d="M12 11V7"/><path d="M9 7h6"/></svg>' },
+    { id: 'bakery',        name: 'Bakery & Breads',     icon: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a8 8 0 0 1 16 0v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6Z"/><path d="M8 11c1 1 2 1 3 0s2-1 3 0"/></svg>' }
   ];
   
   function renderCategoryGrid() {
@@ -164,7 +164,7 @@
     
     grid.innerHTML = categories.map(cat => `
       <a href="/categories/${cat.id}.html" class="category-item">
-        <span class="category-icon">${cat.emoji}</span>
+        <span class="category-icon">${cat.icon}</span>
         <span class="category-name">${cat.name}</span>
       </a>
     `).join('');
@@ -227,7 +227,7 @@
     if (activeCatKeys.length === 0) {
       container.innerHTML = `
         <div style="padding: 40px 20px; text-align: center; color: #6b7280;">
-          <div style="font-size: 2.5rem; margin-bottom: 8px;">🛍️</div>
+          <div style="margin-bottom: 8px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/></svg></div>
           <h3 style="font-size: 1.05rem; font-weight: 700; color: #111827; margin-bottom: 4px;">No products available</h3>
           <p style="font-size: 0.85rem;">Check back soon for fresh stock!</p>
         </div>
@@ -245,14 +245,13 @@
 
       const meta = categories.find(c => c.id === catKey) || {
         id: catKey,
-        name: catKey.charAt(0).toUpperCase() + catKey.slice(1).replace('-', ' '),
-        emoji: '🛍️'
+        name: catKey.charAt(0).toUpperCase() + catKey.slice(1).replace('-', ' ')
       };
       
       const sectionHtml = `
         <section class="category-products-section" id="sec-${meta.id}">
           <div class="category-section-header">
-            <h3 class="category-section-title">${meta.emoji} ${meta.name}</h3>
+            <h3 class="category-section-title">${meta.name}</h3>
           </div>
           <div class="products-grid">
             ${categoryProducts.map(product => createProductCard(product)).join('')}
@@ -289,7 +288,7 @@
     return `
       <div class="product-card" data-product-id="${product.id}" onclick="viewProduct('${product.id}')">
         <button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist('${product.id}', this)" aria-label="Wishlist">
-          ${isWishlisted ? '❤️' : '🤍'}
+          ${isWishlisted ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}
         </button>
         <div class="product-image-container">
           <img src="${product.image}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK+Mart'">
@@ -313,7 +312,7 @@
           ${discount > 0 ? `<span class="product-off-text">${discount}% off</span>` : ''}
         </div>
         <h4 class="product-name-title">${escapeHtml(product.name)}</h4>
-        <div class="product-quick-tag">⚡ 15 mins</div>
+        <div class="product-quick-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg> 15 mins</div>
       </div>
     `;
   }
@@ -465,9 +464,9 @@
     if (progressFill) progressFill.style.width = `${deliveryCalc.percentForFree}%`;
     if (progressLabel) {
       if (deliveryCalc.remainingForFree <= 0) {
-        progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
+        progressLabel.innerHTML = 'Free delivery unlocked!';
       } else {
-        progressLabel.innerHTML = `Add ₹${deliveryCalc.remainingForFree} more to get FREE delivery 🎁`;
+        progressLabel.innerHTML = `Add ₹${deliveryCalc.remainingForFree} more to get FREE delivery`;
       }
     }
   }
@@ -489,11 +488,11 @@
     if (index > -1) {
       wishlist.splice(index, 1);
       showToast('Removed from wishlist', 'info');
-      if (btnElement) btnElement.textContent = '🤍';
+      if (btnElement) btnElement.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
     } else {
       wishlist.push(productId);
       showToast('Added to wishlist', 'success');
-      if (btnElement) btnElement.textContent = '❤️';
+      if (btnElement) btnElement.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
     }
     
     saveWishlist(wishlist);
@@ -508,9 +507,9 @@
       if (productCard) {
         const productId = productCard.dataset.productId;
         if (productId && wishlist.includes(productId)) {
-          btn.textContent = '❤️';
+          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
         } else {
-          btn.textContent = '🤍';
+          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
         }
       }
     });
@@ -646,14 +645,14 @@
       if (doc.exists && doc.data().active !== false) {
         isLocationServiceable = true;
         if (messageDiv) {
-          messageDiv.innerHTML = `✅ Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
+          messageDiv.innerHTML = `Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
           messageDiv.className = 'pincode-message success';
         }
         setLocationByPincode(pincode, fromUserClick);
       } else {
         isLocationServiceable = false;
         if (messageDiv) {
-          messageDiv.innerHTML = '❌ Delivery not available in this pincode yet. We are expanding soon!';
+          messageDiv.innerHTML = 'Delivery not available in this pincode yet. We are expanding soon!';
           messageDiv.className = 'pincode-message error';
         }
       }
@@ -682,7 +681,7 @@
     const locationModal = document.getElementById('locationModal');
     if (locationModal) locationModal.classList.remove('active');
 
-    showToast(`📍 Location set to ${locationString}`, 'success');
+    showToast(`Location set to ${locationString}`, 'success');
 
     saveLocationToFirebase({
       address: locationString,
@@ -701,12 +700,12 @@
   function setLocationByPincode(pincode, saveToFirebase = false) {
     localStorage.setItem('okmart_pincode', pincode);
     const locationText = document.getElementById('locationText');
-    if (locationText) locationText.textContent = `📍 Pincode: ${pincode}`;
+    if (locationText) locationText.textContent = `Pincode: ${pincode}`;
 
     const locationModal = document.getElementById('locationModal');
     if (locationModal) locationModal.classList.remove('active');
 
-    showToast(`📍 Pincode set to ${pincode}`, 'success');
+    showToast(`Pincode set to ${pincode}`, 'success');
 
     if (saveToFirebase) {
       saveLocationToFirebase({
@@ -726,7 +725,7 @@
     if (savedLocation && locationText) {
       locationText.textContent = savedLocation.substring(0, 20);
     } else if (savedPincode && locationText) {
-      locationText.textContent = `📍 Pincode: ${savedPincode}`;
+      locationText.textContent = `Pincode: ${savedPincode}`;
       checkPincode(savedPincode);
     }
   }
@@ -838,7 +837,7 @@
   function updateMapPinHint() {
     const hint = document.getElementById('mapPinHint');
     if (hint && mapPin) {
-      hint.textContent = `📍 Pin: ${mapPin.lat.toFixed(5)}, ${mapPin.lon.toFixed(5)} — Confirm dabao, address apne aap bhar jayega`;
+      hint.textContent = `Pin: ${mapPin.lat.toFixed(5)}, ${mapPin.lon.toFixed(5)} — Confirm dabao, address apne aap bhar jayega`;
     }
   }
 

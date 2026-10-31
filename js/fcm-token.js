@@ -127,7 +127,7 @@
     promptDiv.innerHTML = `
       <div style="position:fixed; bottom:80px; left:16px; right:16px; background:white; border-radius:20px; padding:16px; box-shadow:0 8px 32px rgba(0,0,0,0.2); z-index:10000; border:1px solid #e5e7eb; animation:slideUp 0.3s ease;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <span style="font-size:28px;">🔔</span>
+          <span style="display:inline-flex;color:#111827;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
           <div style="flex:1;">
             <strong style="font-size:14px;">Get Order Updates</strong>
             <p style="font-size:12px; color:#6b7280; margin:0;">Enable notifications to receive order updates and offers</p>
