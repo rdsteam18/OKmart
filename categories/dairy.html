@@ -18,6 +18,7 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
+  <link rel="stylesheet" href="/css/category-listing.css">
   <link rel="stylesheet" href="/css/qc.css">
   
   <!-- Fonts -->
@@ -50,12 +51,21 @@
       </div>
     </header>
 
+    <!-- ========== SEARCH PILL ========== -->
+    <div class="qc-search-wrap qc-search-wrap--pink">
+      <form class="qc-search-pill pink" action="/search.html" method="get" role="search">
+        <span class="search-pill-icon">🔍</span>
+        <input type="text" class="search-main-input" name="q" placeholder="Search for &quot;Dairy &amp; Eggs&quot;" autocomplete="off">
+        <span class="search-pill-divider" aria-hidden="true"></span>
+        <button type="button" class="mic-search-icon-btn" aria-label="Voice Search">🎙️</button>
+      </form>
+    </div>
+
     <!-- ========== CATEGORY HERO ========== -->
     <div class="category-hero">
       <div class="hero-content">
         <span class="hero-icon">🥛</span>
         <div class="hero-text">
-          <h2>Dairy & Eggs</h2>
           <p>Fresh milk, butter, paneer, cheese & eggs delivered daily</p>
         </div>
       </div>
@@ -66,14 +76,16 @@
       <div class="filter-info">
         <span class="product-count" id="productCount">0 products</span>
       </div>
-      <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
-        <span>📊</span> <span id="sortLabel">Popular</span>
-      </button>
-      <div class="sort-dropdown" id="sortDropdown">
-        <div class="sort-option active" data-sort="popular">🔥 Popular First</div>
-        <div class="sort-option" data-sort="price-low">💰 Price: Low to High</div>
-        <div class="sort-option" data-sort="price-high">💎 Price: High to Low</div>
-        <div class="sort-option" data-sort="discount">🏷️ Best Discount</div>
+      <div class="sort-wrapper">
+        <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+          <span>📊</span> <span id="sortLabel">Popular</span>
+        </button>
+        <div class="sort-dropdown" id="sortDropdown">
+          <div class="sort-option active" data-sort="popular">🔥 Popular First</div>
+          <div class="sort-option" data-sort="price-low">💰 Price: Low to High</div>
+          <div class="sort-option" data-sort="price-high">💎 Price: High to Low</div>
+          <div class="sort-option" data-sort="discount">🏷️ Best Discount</div>
+        </div>
       </div>
     </div>
 

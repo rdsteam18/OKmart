@@ -42,12 +42,14 @@
 
     <main class="explore-main">
       
-      <!-- ========== SEARCH BAR ========== -->
-      <div class="search-bar-section">
-        <div class="search-bar-lg" onclick="location.href='/search.html'">
-          <span class="search-icon">🔍</span>
-          <span class="search-placeholder">Search anything...</span>
-        </div>
+      <!-- ========== SEARCH PILL ========== -->
+      <div class="qc-search-wrap qc-search-wrap--pink">
+        <form class="qc-search-pill pink" action="/search.html" method="get" role="search">
+          <span class="search-pill-icon">🔍</span>
+          <input type="text" class="search-main-input" name="q" placeholder="Search anything..." autocomplete="off">
+          <span class="search-pill-divider" aria-hidden="true"></span>
+          <button type="button" class="mic-search-icon-btn" aria-label="Voice Search">🎙️</button>
+        </form>
       </div>
 
       <!-- ========== QUICK FILTER CHIPS ========== -->

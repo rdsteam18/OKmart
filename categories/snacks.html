@@ -12,7 +12,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
   
+  <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/category.css">
+  <link rel="stylesheet" href="/css/category-listing.css">
   <link rel="stylesheet" href="/css/qc.css">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -41,13 +43,22 @@
       </div>
     </header>
 
+    <!-- ========== SEARCH PILL ========== -->
+    <div class="qc-search-wrap qc-search-wrap--pink">
+      <form class="qc-search-pill pink" action="/search.html" method="get" role="search">
+        <span class="search-pill-icon">🔍</span>
+        <input type="text" class="search-main-input" name="q" placeholder="Search for &quot;Snacks &amp; Munchies&quot;" autocomplete="off">
+        <span class="search-pill-divider" aria-hidden="true"></span>
+        <button type="button" class="mic-search-icon-btn" aria-label="Voice Search">🎙️</button>
+      </form>
+    </div>
+
     <!-- ========== SNACKS HERO ========== -->
     <div class="category-hero snacks-hero">
       <div class="hero-bg-emoji">🍿🍪🍫🍟</div>
       <div class="hero-content">
         <span class="hero-icon">🍿</span>
         <div>
-          <h2>Snacks & Munchies</h2>
           <p>Chips, biscuits, namkeen, chocolates & more</p>
         </div>
       </div>

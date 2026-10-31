@@ -585,3 +585,43 @@
   font-weight: 600;
   color: #374151;
 }
+
+/* ===== Pink search pill (category pages; same markup as .qc-search-pill) ===== */
+.qc-search-wrap--pink {
+  background: transparent;
+  padding: 10px 12px 4px;
+}
+form.qc-search-pill {
+  margin: 0;
+  width: 100%;
+}
+form.qc-search-pill input {
+  cursor: text;
+}
+.qc-search-pill.pink {
+  background: #fce7f3 !important;
+  border-color: #fbcfe8 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
+}
+.qc-search-pill.pink .search-pill-icon {
+  color: #111827;
+}
+.qc-search-pill.pink .search-main-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: #111827;
+}
+.qc-search-pill.pink .search-main-input::placeholder {
+  color: #4b5563;
+}
+.qc-search-pill.pink .mic-search-icon-btn {
+  color: #111827;
+}
+.search-pill-divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 9px 2px;
+  background: #f9a8d4;
+  flex-shrink: 0;
+}
