@@ -9,6 +9,7 @@
   padding: 16px 12px 30px;
 }
 .fr-canvas { position: absolute; inset: 0; z-index: 0; }
+.fr-gif-overlay { position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.45)); }
 .fr-art { position: relative; z-index: 1; text-align: center; line-height: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 .fr-hero { position: relative; z-index: 1; text-align: center; padding-top: 8px; }
 .fr-tag {

@@ -18,9 +18,9 @@
   }
 
   // ---------- day builder ----------
-  function day(date, tag, title, subtitle, offer, gradient, accent, anim, cta) {
+  function day(date, tag, title, subtitle, offer, gradient, accent, anim, cta, bgGif) {
     return { date: date, tag: tag, title: title, subtitle: subtitle, offer: offer || '',
-      gradient: gradient, accent: accent, anim: anim, cta: cta || null };
+      gradient: gradient, accent: accent, anim: anim, cta: cta || null, bgGif: bgGif || null };
   }
 
   // ---------- Navratri (9 days, traditional colour order) ----------
@@ -191,34 +191,34 @@
     { id: 'diwali-2026', name: 'Diwali', days: [
       day('2026-11-01', 'Diwali • Countdown', 'Diwali — bas 7 din baaki! 🪔',
         'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
-        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-02', 'Diwali • Countdown', 'Diwali — bas 6 din baaki! 🪔',
         'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
-        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-03', 'Diwali • Countdown', 'Diwali — bas 5 din baaki! 🪔',
         'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
-        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-04', 'Diwali • Countdown', 'Diwali — bas 4 din baaki! 🪔',
         'Diwali ki taiyari — diye, lights, sweets aur dry fruits, sab kuch 15 minute me.',
-        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-05', 'Diwali • Countdown', 'Diwali aa rahi hai — bas 3 din baaki! 🪔',
         'Ghar sajane ka saaman, dry fruits, sweets aur diye — sab kuch 15 minute me.',
-        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas'),
+        'Festive sweets & munchies par best prices', ['#7c2d12', '#f59e0b'], '#fbbf24', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-06', 'Dhanteras • Shubh Din', 'Shubh Dhanteras! ✨',
         'Sona, dry fruits, ghee aur puja saaman — shagun ki shopping, 15 minute me.',
-        'Ghee & dry fruits par festive deals', ['#78350f', '#facc15'], '#fde047', 'diyas'),
+        'Ghee & dry fruits par festive deals', ['#78350f', '#facc15'], '#fde047', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-07', 'Choti Diwali', 'Choti Diwali ki roshni 🪔',
         'Diye, lights aur meetha — kal ki badi Diwali ki taiyari aaj hi.',
-        'Sweets & munchies delivered in 15 mins', ['#9a3412', '#fb923c'], '#fdba74', 'sparkles'),
+        'Sweets & munchies delivered in 15 mins', ['#9a3412', '#fb923c'], '#fdba74', 'sparkles', null, '/assets/diwali-bg.gif'),
       day('2026-11-08', 'Diwali • Shubh Deepavali', '🪔 Shubh Deepavali!',
         'Lakshmi Puja ki shubhkamnayein — dry fruits, kaju katli, ghee aur diye, 15 minute me ghar tak.',
-        'Diwali Loot Deals — aaj ke best prices', ['#4c0519', '#f59e0b'], '#fbbf24', 'sparkles'),
+        'Diwali Loot Deals — aaj ke best prices', ['#4c0519', '#f59e0b'], '#fbbf24', 'sparkles', null, '/assets/diwali-bg.gif'),
       day('2026-11-09', 'Diwali • Aakhri Mauka', 'Diwali offers jaari hain ✨',
         'Mehman-nawazi abhi baaki hai — sweets aur snacks abhi bhi 15 minute me.',
-        'Festive offers — aaj aakhri din', ['#7c2d12', '#fbbf24'], '#fde68a', 'diyas'),
+        'Festive offers — aaj aakhri din', ['#7c2d12', '#fbbf24'], '#fde68a', 'diyas', null, '/assets/diwali-bg.gif'),
       day('2026-11-11', 'Bhai Dooj', 'Bhai Dooj ki mithaas 🍬',
         'Bhai-behen ke pyaar ka din — meetha aur gifts, 15 minute me.',
-        'Sweets & gifts par deals', ['#831843', '#f472b6'], '#fbcfe8', 'sparkles')
+        'Sweets & gifts par deals', ['#831843', '#f472b6'], '#fbcfe8', 'sparkles', null, '/assets/diwali-bg.gif')
     ]},
     { id: 'uttarayan-2027', name: 'Uttarayan', days: [
       day('2027-01-07', 'Uttarayan • Countdown', 'Uttarayan — bas 7 din baaki! 🪁',
@@ -631,8 +631,8 @@
     var mustTitle = isFestival ? (festivalName + ' Must-Haves') : 'Aaj ke Must-Haves';
     slot.innerHTML =
       '<section class="fr-wrap">' +
-      '<div class="fr-bg" style="background:linear-gradient(135deg,' + theme.gradient[0] + ',' + theme.gradient[1] + ')">' +
-      '<canvas class="fr-canvas" aria-hidden="true"></canvas>' +
+      '<div class="fr-bg" style="' + (theme.bgGif ? ('background-color:' + theme.gradient[0] + ';background-image:url(' + theme.bgGif + ');background-size:cover;background-position:center') : ('background:linear-gradient(135deg,' + theme.gradient[0] + ',' + theme.gradient[1] + ')')) + '">' +
+      (theme.bgGif ? '<div class="fr-gif-overlay" aria-hidden="true"></div>' : '<canvas class="fr-canvas" aria-hidden="true"></canvas>') +
       '<div class="fr-art">' + (ART[theme.anim] || ART.dots) + '</div>' +
       '<div class="fr-hero">' +
       '<span class="fr-tag" style="background:' + theme.accent + ';color:' + tagText(theme.accent) + '">' + esc(stripEmoji(theme.tag)) + '</span>' +
@@ -653,7 +653,7 @@
       '<div class="fr-must"><h3>' + esc(mustTitle) + '</h3>' +
       '<div class="fr-prods">' + prods + '</div></div>' +
       '</section>';
-    startCanvas(slot.querySelector('.fr-canvas'), theme.anim);
+    if (!theme.bgGif) startCanvas(slot.querySelector('.fr-canvas'), theme.anim);
     console.log('[OKMart Festive] Active Theme: ' + (isFestival ? (festivalName + ' • ' + theme.date + ' — ' + theme.tag) : ('Common • ' + theme.date + ' — ' + theme.tag)) + ' | Rich section');
   }
 
