@@ -1,4 +1,8 @@
 // ===== OK Mart - FCM Service Worker =====
+// NOTE (2026-10-31): this file is NOT registered anywhere. The active worker
+// is /sw.js (registered by js/common.js) and it now handles FCM itself, so
+// this file stays only as a reference/backup. Do NOT register it — same-scope
+// registration would replace /sw.js and break app-shell caching.
 
 // Give this service worker access to Firebase Messaging
 importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');

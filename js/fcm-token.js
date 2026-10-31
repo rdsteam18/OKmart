@@ -26,6 +26,13 @@
     return userId;
   }
 
+  // Bind the push subscription to the ACTIVE service worker (/sw.js, the one
+  // js/common.js registers). Without this, FCM would auto-register
+  // firebase-messaging-sw.js and REPLACE /sw.js, breaking app-shell caching.
+  async function getSWRegistration() {
+    try { return await navigator.serviceWorker.ready; } catch (e) { return undefined; }
+  }
+
   async function saveTokenToFirestore(token, userId) {
     try {
       if (!window.db) {
@@ -88,7 +95,7 @@
       if (permission === 'granted') {
         console.log('Notification permission granted');
         
-        const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: await getSWRegistration() });
         
         if (token) {
           console.log('FCM Token generated:', token.substring(0, 20) + '...');
@@ -204,7 +211,7 @@
             if (messaging && typeof messaging.onTokenRefresh === 'function') {
               messaging.onTokenRefresh(async () => {
                 console.log('Token refreshed');
-                const newToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+                const newToken = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: await getSWRegistration() });
                 if (newToken) {
                   const userId = getUserId();
                   await saveTokenToFirestore(newToken, userId);
