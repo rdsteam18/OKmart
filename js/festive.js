@@ -128,6 +128,43 @@
     'Milk, sabzi, snacks aur daily essentials — Jantanagar, Satellite, Prahlad Nagar me superfast delivery.',
     'Daily Loot Deals — roz naye offers', ['#006d37', '#84c225'], '#d9f99d', 'dots');
 
+  // ---------- Halloween takeover (2026) — screenshot-style rich section ----------
+  // Real OKmart catalog data, verified from live Firestore 2026-10-31.
+  var HW_CARDS = [
+    { t1: 'Candies', t2: '& Treats', href: '/search.html?q=chocolate', offer: 'STARTING FROM ₹10',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
+    { t1: 'Party', t2: 'Snacks', href: '/categories/snacks.html', offer: 'STARTING FROM ₹14',
+      img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png' },
+    { t1: 'Ice Creams', t2: '& Treats', href: '/search.html?q=ice%20cream', offer: 'STARTING FROM ₹30',
+      img: 'https://www.bbassets.com/media/uploads/p/l/40062731_7-kwality-walls-cornetto-double-chocolate-frozen-dessert.jpg' },
+    { t1: 'Party', t2: 'Drinks', href: '/categories/beverages.html', offer: 'STARTING FROM ₹33',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' }
+  ];
+  var HW_MUST = [
+    { name: 'Cadbury Dairy Milk Chocolate Bar', price: 19, mrp: 20, id: 'jqucrf7S94kZmorAgsPt',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
+    { name: 'Cadbury Oreo Chocolate Biscuits', price: 10, mrp: 0, id: 'bWjasUxubo5kG2AP9Lq8',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/0164562b-e446-4530-9707-0253fada85b1/Cadbury-Oreo-Chocolate-Flavour-Creme-Sandwich-Biscuits.jpeg' },
+    { name: 'Maggi 2-Minute Masala Noodles', price: 14, mrp: 15, id: '2AC2f9RN1w3I2tPg6AMo',
+      img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png' },
+    { name: 'Kwality Wall\'s Cornetto Double Chocolate', price: 34, mrp: 35, id: 'f1isTNkHKseAgatN24SE',
+      img: 'https://www.bbassets.com/media/uploads/p/l/40062731_7-kwality-walls-cornetto-double-chocolate-frozen-dessert.jpg' },
+    { name: 'Thums Up Soft Drink 1.25L', price: 65, mrp: 70, id: '0d7LO0t1AqBDARTSWNNc',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' },
+    { name: 'Frooti Mango Fruit Juice 600ml', price: 33, mrp: 35, id: 'p9bZKSB321udK7g3HRHc',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-2500-2500,pr-true,f-auto,q-40,dpr-2/cms/product_variant/a4d6db79-d36f-4930-8de1-e9e9f5b4b846/Frooti-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' }
+  ];
+  var HW_DAYS = [
+    day('2026-10-31', 'Halloween • Party Day', 'HALLOWEEN',
+      'Party snacks, chocolates, drinks & more — deals page par 70% tak OFF.',
+      'Up to 70% off', ['#3b0a12', '#1e0a2e'], '#fbbf24', 'dots'),
+    day('2026-11-01', 'Halloween • Last Chance', 'HALLOWEEN',
+      'Aakhri din — party deals khatam hone se pehle order karo.',
+      'Up to 70% off', ['#3b0a12', '#1e0a2e'], '#fbbf24', 'dots')
+  ];
+  HW_DAYS.forEach(function (d) { d.takeover = true; });
+  FESTIVALS.unshift({ id: 'halloween-2026', name: 'Halloween', days: HW_DAYS });
+
   function findToday() {
     var today = localKey(new Date());
     for (var i = 0; i < FESTIVALS.length; i++) {
@@ -235,7 +272,7 @@
   }
 
   // ---------- render ----------
-  function render(theme, festivalName) {
+  function renderBanner(theme, festivalName) {
     var slot = document.getElementById('festiveBanner');
     if (!slot) return;
     var primary = theme.cta || { text: 'Order Now 🛒', href: '/categories.html' };
@@ -258,6 +295,61 @@
     var label = festivalName ? (festivalName + ' • ' + theme.date + ' — ' + theme.tag)
       : ('Default brand theme');
     console.log('[OKMart Festive] Active Theme: ' + label + ' | Animation: ' + theme.anim);
+  }
+
+  // ---------- Halloween takeover renderer (dark background section) ----------
+  function renderTakeover(theme, festivalName) {
+    var slot = document.getElementById('festiveBanner');
+    if (!slot) return;
+    var cards = HW_CARDS.map(function (c) {
+      return '<a class="hw-card" href="' + esc(c.href) + '">' +
+        '<span class="hw-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
+        '<img class="hw-card-img" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '<span class="hw-card-offer">' + esc(c.offer) + '</span></a>';
+    }).join('');
+    var prods = HW_MUST.map(function (p) {
+      var mrp = (p.mrp && p.mrp > p.price) ? '<s>₹' + p.mrp + '</s>' : '';
+      return '<a class="hw-prod" href="/product.html?id=' + esc(p.id) + '">' +
+        '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '<span class="hw-prod-name">' + esc(p.name) + '</span>' +
+        '<span class="hw-prod-price">₹' + p.price + ' ' + mrp + '</span></a>';
+    }).join('');
+    slot.innerHTML =
+      '<section class="hw-wrap">' +
+      '<div class="hw-dark">' +
+      '<div class="hw-moon" aria-hidden="true"></div>' +
+      '<div class="hw-glow" aria-hidden="true"></div>' +
+      '<span class="hw-star" style="top:18px;left:12%"></span>' +
+      '<span class="hw-star" style="top:60px;left:82%"></span>' +
+      '<span class="hw-star" style="top:120px;left:8%"></span>' +
+      '<span class="hw-star" style="top:40px;left:60%"></span>' +
+      '<span class="hw-bat" aria-hidden="true">🦇</span>' +
+      '<span class="hw-bat hw-bat2" aria-hidden="true">🦇</span>' +
+      '<span class="hw-pumpkin" aria-hidden="true">🎃</span>' +
+      '<span class="hw-pumpkin hw-pumpkin2" aria-hidden="true">🎃</span>' +
+      '<div class="hw-hero">' +
+      '<div class="hw-off">' + esc(theme.offer || 'Up to 70% off') + '</div>' +
+      '<h2 class="hw-title">' + esc(theme.title || 'HALLOWEEN') + '</h2>' +
+      '<div class="hw-party">P A R T Y</div>' +
+      '<p class="hw-sub">' + esc(theme.subtitle || '') + '</p>' +
+      '<a class="hw-cta" href="/deals.html">Shop Party Deals →</a>' +
+      '</div>' +
+      '<div class="hw-cards">' + cards + '</div>' +
+      '<a class="hw-peek" href="/peekaboo.html">' +
+      '<span class="hw-peek-logo">PEEK<br>A BOO 👻</span>' +
+      '<span class="hw-peek-text"><b>Play, Find &amp; Win Peekaboo!</b>' +
+      '<small>Find the products hidden in a dark room</small></span>' +
+      '<span class="hw-peek-arrow">›</span></a>' +
+      '</div>' +
+      '<div class="hw-must"><h3>Halloween Must-Haves</h3>' +
+      '<div class="hw-prods">' + prods + '</div></div>' +
+      '</section>';
+    console.log('[OKMart Festive] Active Theme: ' + (festivalName || 'Halloween') + ' • ' + theme.date + ' — ' + theme.tag + ' | Takeover');
+  }
+
+  function render(theme, festivalName) {
+    if (theme.takeover) { renderTakeover(theme, festivalName); return; }
+    renderBanner(theme, festivalName);
   }
 
   // ---------- admin override (Firestore settings/festive) ----------

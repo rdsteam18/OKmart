@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Peekaboo — Play, Find &amp; Win | OK Mart</title>
+  <meta name="description" content="Peekaboo game: andheri tiles me chhupi treats dhoondo aur jeeto! OK Mart Halloween Party.">
+  <meta name="theme-color" content="#150826">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #150826; color: #fff; min-height: 100vh; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 20px 16px 40px; text-align: center; }
+    .logo { font-weight: 900; color: #facc15; font-size: 1.6rem; line-height: 1.05; text-shadow: 0 3px 0 rgba(0,0,0,.4); }
+    h1 { font-size: 1.3rem; margin: 10px 0 4px; }
+    .sub { color: rgba(255,255,255,.85); font-size: .9rem; margin: 0 0 4px; line-height: 1.5; }
+    .score { font-weight: 800; margin: 14px 0; font-size: .95rem; }
+    .score b { color: #facc15; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; }
+    .tile {
+      aspect-ratio: 1; border: 2px solid #4c1d95; background: #2a1445; border-radius: 14px;
+      font-size: 2rem; cursor: pointer; color: #fff; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 2px; padding: 4px; transition: transform .1s;
+    }
+    .tile:active { transform: scale(.94); }
+    .tile:disabled { cursor: default; opacity: 1; }
+    .tile.found { background: #14532d; border-color: #22c55e; }
+    .tile.miss { background: #1e1b4b; border-color: #312e81; }
+    .tile img { width: 64px; height: 64px; object-fit: contain; }
+    .tile .tname { font-size: .62rem; line-height: 1.2; color: #dcfce7; }
+    .tile .boo { font-size: 1.6rem; }
+    .win {
+      display: none; margin-top: 18px; background: linear-gradient(135deg, #14532d, #15803d);
+      border-radius: 16px; padding: 18px 14px;
+    }
+    .win.show { display: block; }
+    .win h2 { margin: 0 0 6px; font-size: 1.25rem; }
+    .win p { margin: 0 0 12px; color: #dcfce7; font-size: .9rem; }
+    .btn {
+      display: inline-block; background: #fff; color: #111827; font-weight: 800; font-size: .9rem;
+      padding: 10px 18px; border-radius: 999px; text-decoration: none; border: 0; cursor: pointer; margin: 3px;
+    }
+    .btn.ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.6); }
+    .back { display: inline-block; margin-top: 20px; color: #c4b5fd; font-weight: 700; text-decoration: none; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">PEEK<br>A BOO 👻</div>
+    <h1>Play, Find &amp; Win!</h1>
+    <p class="sub">12 andheri tiles me <b>3 treats</b> chhupi hain.<br>Tile par tap karo aur teeno dhoondo!</p>
+    <div class="score">Found: <b id="foundCount">0 / 3</b> &nbsp;•&nbsp; Tries: <b id="tryCount">0</b></div>
+    <div class="grid" id="grid"></div>
+    <div class="win" id="winBox">
+      <h2>🎉 You found all 3 treats!</h2>
+      <p>Party ki taiyari poori — ab aaj ke best deals par nazar daalo.</p>
+      <a class="btn" href="/deals.html">Aaj ke Loot Deals dekho →</a>
+      <button class="btn ghost" id="againBtn">Phir khelo</button>
+    </div>
+    <a class="back" href="/">← Wapas homepage par jao</a>
+  </div>
+
+  <script>
+    (function () {
+      // Real OKmart treats (live catalog images/names/prices).
+      var TREATS = [
+        { name: 'Cadbury Dairy Milk', price: 19, img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg', id: 'jqucrf7S94kZmorAgsPt' },
+        { name: 'Cadbury Oreo', price: 10, img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/0164562b-e446-4530-9707-0253fada85b1/Cadbury-Oreo-Chocolate-Flavour-Creme-Sandwich-Biscuits.jpeg', id: 'bWjasUxubo5kG2AP9Lq8' },
+        { name: 'Maggi Noodles', price: 14, img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png', id: '2AC2f9RN1w3I2tPg6AMo' },
+        { name: 'Cornetto Chocolate', price: 34, img: 'https://www.bbassets.com/media/uploads/p/l/40062731_7-kwality-walls-cornetto-double-chocolate-frozen-dessert.jpg', id: 'f1isTNkHKseAgatN24SE' },
+        { name: 'Thums Up 1.25L', price: 65, img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg', id: '0d7LO0t1AqBDARTSWNNc' },
+        { name: 'Frooti Mango 600ml', price: 33, img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-2500-2500,pr-true,f-auto,q-40,dpr-2/cms/product_variant/a4d6db79-d36f-4930-8de1-e9e9f5b4b846/Frooti-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg', id: 'p9bZKSB321udK7g3HRHc' }
+      ];
+      var grid = document.getElementById('grid');
+      var foundEl = document.getElementById('foundCount');
+      var tryEl = document.getElementById('tryCount');
+      var winBox = document.getElementById('winBox');
+      var found = 0, tries = 0, hidden = {};
+
+      function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        return a;
+      }
+
+      function build() {
+        found = 0; tries = 0; hidden = {};
+        foundEl.textContent = '0 / 3'; tryEl.textContent = '0';
+        winBox.classList.remove('show');
+        grid.innerHTML = '';
+        var picks = shuffle(TREATS.slice()).slice(0, 3);
+        var slots = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]).slice(0, 3);
+        slots.forEach(function (s, i) { hidden[s] = picks[i]; });
+        for (var k = 0; k < 12; k++) {
+          (function (idx) {
+            var b = document.createElement('button');
+            b.className = 'tile';
+            b.innerHTML = '<span>🚪</span>';
+            b.setAttribute('aria-label', 'Tile ' + (idx + 1));
+            b.addEventListener('click', function () {
+              if (b.disabled) return;
+              b.disabled = true; tries++; tryEl.textContent = tries;
+              var t = hidden[idx];
+              if (t) {
+                found++; foundEl.textContent = found + ' / 3';
+                b.classList.add('found');
+                b.innerHTML = '<img src="' + t.img + '" alt="">' +
+                  '<span class="tname">' + t.name + ' • ₹' + t.price + '</span>';
+                setTimeout(function () {
+                  if (confirm(t.name + ' mil gaya! 🎉 Product page kholo?')) {
+                    window.location.href = '/product.html?id=' + t.id;
+                  }
+                }, 350);
+                if (found === 3) winBox.classList.add('show');
+              } else {
+                b.classList.add('miss');
+                b.innerHTML = '<span class="boo">👻</span><span class="tname">Khali hai!</span>';
+              }
+            });
+            grid.appendChild(b);
+          })(k);
+        }
+      }
+
+      document.getElementById('againBtn').addEventListener('click', build);
+      build();
+    })();
+  </script>
+</body>
+</html>
