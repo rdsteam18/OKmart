@@ -128,19 +128,21 @@
     'Milk, sabzi, snacks aur daily essentials — Jantanagar, Satellite, Prahlad Nagar me superfast delivery.',
     'Daily Loot Deals — roz naye offers', ['#006d37', '#84c225'], '#d9f99d', 'dots');
 
-  // ---------- Halloween takeover (2026) — screenshot-style rich section ----------
+  // ---------- Sardar Patel Jayanti takeover (2026-10-31, single day) ----------
+  // Style reference: the screenshot layout (background section + hero + cards +
+  // strip + must-haves row). Content is Patel Jayanti ONLY.
   // Real OKmart catalog data, verified from live Firestore 2026-10-31.
-  var HW_CARDS = [
-    { t1: 'Candies', t2: '& Treats', href: '/search.html?q=chocolate', offer: 'STARTING FROM ₹10',
-      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
-    { t1: 'Party', t2: 'Snacks', href: '/categories/snacks.html', offer: 'STARTING FROM ₹14',
+  var PJ_CARDS = [
+    { t1: 'Desi', t2: 'Essentials', href: '/categories/grocery.html', offer: 'STARTING FROM ₹18',
+      img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1136-1280,pr-true,f-auto,q-40,dpr-2/cms/product_variant/7e697dab-8c88-45ec-9525-48eb8af55883/Mapro-Mixed-Fruit-Jam-Tub.jpeg' },
+    { t1: 'Dairy &', t2: 'Fresh', href: '/categories/dairy.html', offer: 'STARTING FROM ₹9',
+      img: 'https://blogger.googleusercontent.com/img/a/AVvXsEgSisSLO9xv6Pd6jlm025DKbPkWu7HX0ukqEGACObFkw58HEaykgqWHRfHfr2X3TkjM-mChg0L3hw2xWltmsh66mGkenMLMp7GfWGhXdgCY3YpT8dKvVmj_8E2jVOeUNVvFAvUqV4T5ayyP4V04tyY2ZabnFb9Zp-9dbXDtcOnab6BJ3uVlwOyi_Gmf' },
+    { t1: 'Snacks &', t2: 'Namkeen', href: '/categories/snacks.html', offer: 'STARTING FROM ₹14',
       img: 'https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_600/NI_CATALOG/IMAGES/CIW/2026/4/13/05fcf9fd-d140-4197-8ede-8c9601ea13a7_81_1.png' },
-    { t1: 'Ice Creams', t2: '& Treats', href: '/search.html?q=ice%20cream', offer: 'STARTING FROM ₹30',
-      img: 'https://www.bbassets.com/media/uploads/p/l/40062731_7-kwality-walls-cornetto-double-chocolate-frozen-dessert.jpg' },
-    { t1: 'Party', t2: 'Drinks', href: '/categories/beverages.html', offer: 'STARTING FROM ₹33',
+    { t1: 'Cold Drinks', t2: '& Juices', href: '/categories/beverages.html', offer: 'STARTING FROM ₹33',
       img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1200-1200,pr-true,f-auto,q-40,dpr-2/cms/product_variant/c413f283-6b31-48ec-9bdd-b7efbe9a69d5/Thums-Up-Soft-Drink-Carbonated-Beverage.jpeg' }
   ];
-  var HW_MUST = [
+  var PJ_MUST = [
     { name: 'Cadbury Dairy Milk Chocolate Bar', price: 19, mrp: 20, id: 'jqucrf7S94kZmorAgsPt',
       img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-1100-1100,pr-true,f-auto,q-40,dpr-2/cms/product_variant/22fc81bf-16dd-47ec-bad9-d6a24e113a02/Cadbury-Dairy-Milk-Chocolate-Bar-Smooth-Rich-Milk.jpeg' },
     { name: 'Cadbury Oreo Chocolate Biscuits', price: 10, mrp: 0, id: 'bWjasUxubo5kG2AP9Lq8',
@@ -154,16 +156,13 @@
     { name: 'Frooti Mango Fruit Juice 600ml', price: 33, mrp: 35, id: 'p9bZKSB321udK7g3HRHc',
       img: 'https://cdn.zeptonow.com/production/ik-seo/tr:w-470,ar-2500-2500,pr-true,f-auto,q-40,dpr-2/cms/product_variant/a4d6db79-d36f-4930-8de1-e9e9f5b4b846/Frooti-Mango-Fruit-Juice-Ready-to-Drink-Beverage.jpeg' }
   ];
-  var HW_DAYS = [
-    day('2026-10-31', 'Halloween • Party Day', 'HALLOWEEN',
-      'Party snacks, chocolates, drinks & more — deals page par 70% tak OFF.',
-      'Up to 70% off', ['#3b0a12', '#1e0a2e'], '#fbbf24', 'dots'),
-    day('2026-11-01', 'Halloween • Last Chance', 'HALLOWEEN',
-      'Aakhri din — party deals khatam hone se pehle order karo.',
-      'Up to 70% off', ['#3b0a12', '#1e0a2e'], '#fbbf24', 'dots')
+  var PJ_DAYS = [
+    day('2026-10-31', 'Rashtriya Ekta Diwas', 'SARDAR',
+      'Bharat ke Loh Purush ki 151st jayanti — ekta ka sandesh, har ghar tak.',
+      'Ek Bharat, Shreshtha Bharat', ['#ff9933', '#138808'], '#1e3a8a', 'dots')
   ];
-  HW_DAYS.forEach(function (d) { d.takeover = true; });
-  FESTIVALS.unshift({ id: 'halloween-2026', name: 'Halloween', days: HW_DAYS });
+  PJ_DAYS.forEach(function (d) { d.takeover = true; });
+  FESTIVALS.unshift({ id: 'patel-jayanti-2026', name: 'Sardar Patel Jayanti', days: PJ_DAYS });
 
   function findToday() {
     var today = localKey(new Date());
@@ -297,58 +296,61 @@
     console.log('[OKMart Festive] Active Theme: ' + label + ' | Animation: ' + theme.anim);
   }
 
-  // ---------- Halloween takeover renderer (dark background section) ----------
-  function renderTakeover(theme, festivalName) {
+  // ---------- Patel Jayanti takeover renderer (tricolor background section) ----------
+  function pjChakra(size, color, opacity) {
+    var spokes = '';
+    for (var i = 0; i < 24; i++) {
+      spokes += '<line x1="50" y1="4" x2="50" y2="96" transform="rotate(' + (i * 15) + ' 50 50)"/>';
+    }
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" opacity="' + opacity + '" aria-hidden="true">' +
+      '<circle cx="50" cy="50" r="46" fill="none" stroke="' + color + '" stroke-width="3"/>' +
+      '<g stroke="' + color + '" stroke-width="2">' + spokes + '</g>' +
+      '<circle cx="50" cy="50" r="8" fill="' + color + '"/></svg>';
+  }
+  function renderPatelTakeover(theme, festivalName) {
     var slot = document.getElementById('festiveBanner');
     if (!slot) return;
-    var cards = HW_CARDS.map(function (c) {
-      return '<a class="hw-card" href="' + esc(c.href) + '">' +
-        '<span class="hw-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
-        '<img class="hw-card-img" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
-        '<span class="hw-card-offer">' + esc(c.offer) + '</span></a>';
+    var cards = PJ_CARDS.map(function (c) {
+      return '<a class="pj-card" href="' + esc(c.href) + '">' +
+        '<span class="pj-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
+        '<img class="pj-card-img" src="' + esc(c.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '<span class="pj-card-offer">' + esc(c.offer) + '</span></a>';
     }).join('');
-    var prods = HW_MUST.map(function (p) {
+    var prods = PJ_MUST.map(function (p) {
       var mrp = (p.mrp && p.mrp > p.price) ? '<s>₹' + p.mrp + '</s>' : '';
-      return '<a class="hw-prod" href="/product.html?id=' + esc(p.id) + '">' +
+      return '<a class="pj-prod" href="/product.html?id=' + esc(p.id) + '">' +
         '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
-        '<span class="hw-prod-name">' + esc(p.name) + '</span>' +
-        '<span class="hw-prod-price">₹' + p.price + ' ' + mrp + '</span></a>';
+        '<span class="pj-prod-name">' + esc(p.name) + '</span>' +
+        '<span class="pj-prod-price">₹' + p.price + ' ' + mrp + '</span></a>';
     }).join('');
     slot.innerHTML =
-      '<section class="hw-wrap">' +
-      '<div class="hw-dark">' +
-      '<div class="hw-moon" aria-hidden="true"></div>' +
-      '<div class="hw-glow" aria-hidden="true"></div>' +
-      '<span class="hw-star" style="top:18px;left:12%"></span>' +
-      '<span class="hw-star" style="top:60px;left:82%"></span>' +
-      '<span class="hw-star" style="top:120px;left:8%"></span>' +
-      '<span class="hw-star" style="top:40px;left:60%"></span>' +
-      '<span class="hw-bat" aria-hidden="true">🦇</span>' +
-      '<span class="hw-bat hw-bat2" aria-hidden="true">🦇</span>' +
-      '<span class="hw-pumpkin" aria-hidden="true">🎃</span>' +
-      '<span class="hw-pumpkin hw-pumpkin2" aria-hidden="true">🎃</span>' +
-      '<div class="hw-hero">' +
-      '<div class="hw-off">' + esc(theme.offer || 'Up to 70% off') + '</div>' +
-      '<h2 class="hw-title">' + esc(theme.title || 'HALLOWEEN') + '</h2>' +
-      '<div class="hw-party">P A R T Y</div>' +
-      '<p class="hw-sub">' + esc(theme.subtitle || '') + '</p>' +
-      '<a class="hw-cta" href="/deals.html">Shop Party Deals →</a>' +
+      '<section class="pj-wrap">' +
+      '<div class="pj-bg">' +
+      '<div class="pj-chakra-bg">' + pjChakra(320, '#1e3a8a', '0.10') + '</div>' +
+      '<div class="pj-chakra">' + pjChakra(54, '#1e3a8a', '1') + '</div>' +
+      '<div class="pj-hero">' +
+      '<div class="pj-kicker">🇮🇳 Rashtriya Ekta Diwas • 31 October</div>' +
+      '<h2 class="pj-title">' + esc(theme.title || 'SARDAR') + '</h2>' +
+      '<div class="pj-name">VALLABHBHAI PATEL</div>' +
+      '<div class="pj-jayanti">J A Y A N T I</div>' +
+      '<p class="pj-sub">' + esc(theme.subtitle || '') + '</p>' +
+      '<a class="pj-cta" href="/deals.html">Shop Ekta Deals →</a>' +
       '</div>' +
-      '<div class="hw-cards">' + cards + '</div>' +
-      '<a class="hw-peek" href="/peekaboo.html">' +
-      '<span class="hw-peek-logo">PEEK<br>A BOO 👻</span>' +
-      '<span class="hw-peek-text"><b>Play, Find &amp; Win Peekaboo!</b>' +
-      '<small>Find the products hidden in a dark room</small></span>' +
-      '<span class="hw-peek-arrow">›</span></a>' +
+      '<div class="pj-cards">' + cards + '</div>' +
+      '<a class="pj-strip" href="/deals.html">' +
+      '<span class="pj-strip-flag">🇮🇳</span>' +
+      '<span class="pj-strip-text"><b>' + esc(theme.offer || 'Ek Bharat, Shreshtha Bharat') + '</b>' +
+      '<small>Rashtriya Ekta Diwas • Aaj ke loot deals</small></span>' +
+      '<span class="pj-strip-arrow">›</span></a>' +
       '</div>' +
-      '<div class="hw-must"><h3>Halloween Must-Haves</h3>' +
-      '<div class="hw-prods">' + prods + '</div></div>' +
+      '<div class="pj-must"><h3>Aaj ke Must-Haves</h3>' +
+      '<div class="pj-prods">' + prods + '</div></div>' +
       '</section>';
-    console.log('[OKMart Festive] Active Theme: ' + (festivalName || 'Halloween') + ' • ' + theme.date + ' — ' + theme.tag + ' | Takeover');
+    console.log('[OKMart Festive] Active Theme: ' + (festivalName || 'Sardar Patel Jayanti') + ' • ' + theme.date + ' — ' + theme.tag + ' | Takeover');
   }
 
   function render(theme, festivalName) {
-    if (theme.takeover) { renderTakeover(theme, festivalName); return; }
+    if (theme.takeover) { renderPatelTakeover(theme, festivalName); return; }
     renderBanner(theme, festivalName);
   }
 
