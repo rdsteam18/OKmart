@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Category Images | OK Mart Admin</title>
+  <meta name="theme-color" content="#006d37">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX">
+  <!-- Auth Protection -->
+  <script src="../js/admin-auth.js"></script>
+  <!-- Tailwind CSS + Custom Config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#006d37',
+            'primary-container': '#84c225',
+            'on-primary': '#ffffff',
+            'surface': '#faf8ff',
+            'surface-dim': '#d6d9eb',
+            'surface-bright': '#faf8ff',
+            'surface-container': '#eaedff',
+            'surface-container-low': '#f2f3ff',
+            'surface-container-high': '#e5e7fa',
+            'surface-container-highest': '#dfe2f4',
+            'surface-container-lowest': '#ffffff',
+            'on-surface': '#171b28',
+            'on-surface-variant': '#3d4a3e',
+            'outline': '#6c7b6d',
+            'outline-variant': '#bbcbbb',
+            'inverse-surface': '#2c303e',
+            'inverse-on-surface': '#eef0ff',
+            'inverse-primary': '#4ae183',
+            'error': '#ba1a1a',
+            'error-container': '#ffdad6',
+            'status-delivered-bg': '#d1fae5',
+            'status-delivered-text': '#065f46',
+            'status-preparing-bg': '#fef3c7',
+            'status-preparing-text': '#d97706'
+          },
+          fontFamily: {
+            'page-title': ['Inter', 'sans-serif'],
+            'stat-number': ['Inter', 'sans-serif'],
+            'table-header': ['Inter', 'sans-serif'],
+            'table-cell': ['Inter', 'sans-serif'],
+            'button': ['Inter', 'sans-serif'],
+            'body-sm': ['Inter', 'sans-serif']
+          },
+          fontSize: {
+            'page-title': ['24px', { lineHeight: '32px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'stat-number': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '800' }],
+            'table-header': ['12px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
+            'table-cell': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+            'button': ['13px', { lineHeight: '16px', fontWeight: '500' }],
+            'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }]
+          },
+          borderRadius: {
+            'DEFAULT': '0.25rem',
+            'lg': '0.5rem',
+            'xl': '0.75rem',
+            '2xl': '1rem',
+            'full': '9999px'
+          },
+          spacing: {
+            'sidebar-width': '260px',
+            'gutter': '1.5rem',
+            'stack-sm': '0.5rem',
+            'stack-md': '1rem',
+            'stack-lg': '1.5rem'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <style>
+    @keyframes fadeInSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .animate-page-entry {
+      animation: fadeInSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .bento-card {
+      background: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .bento-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #e5e7fa;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #006d37;
+      border-radius: 10px;
+    }
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #171b28;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 13px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateX(100px);
+      transition: all 0.3s;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .toast.success {
+      background: #10b981;
+    }
+    .toast.error {
+      background: #ef4444;
+    }
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #006d37;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    /* Mobile Sidebar */
+    .mobile-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: #f2f3ff;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 200;
+      overflow-y: auto;
+    }
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+      display: none;
+    }
+    /* Category preview bubble (matches the customer categories page tile) */
+    .cat-preview-bubble {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: #fdf2f8;
+      border: 1.5px solid #fbcfe8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cat-preview-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Mobile Sidebar -->
+  <div class="mobile-sidebar" id="mobileSidebar">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-2xl">storefront</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-extrabold text-primary">OK Mart</h1>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="index.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span class="text-button">Dashboard</span>
+      </a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        <span class="text-button">Orders</span>
+      </a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">inventory_2</span>
+        <span class="text-button">Products</span>
+      </a>
+      <a href="categories.html" class="sidebar-active flex items-center px-4 py-3 gap-3 bg-primary/5 border-l-4 border-primary text-primary font-bold">
+        <span class="material-symbols-outlined text-xl">category</span>
+        <span class="text-button">Categories</span>
+      </a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">group</span>
+        <span class="text-button">Customers</span>
+      </a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_offer</span>
+        <span class="text-button">Offers</span>
+      </a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_shipping</span>
+        <span class="text-button">Delivery</span>
+      </a>
+      <a href="reports.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">analytics</span>
+        <span class="text-button">Reports</span>
+      </a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">settings</span>
+        <span class="text-button">Settings</span>
+      </a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant">
+      <a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()">
+        <span class="material-symbols-outlined text-xl text-error">logout</span>
+        <span class="text-button">Logout</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex flex-col h-screen fixed left-0 top-0 w-[260px] bg-surface-container-lowest border-r border-outline-variant z-50">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+        <span class="material-symbols-outlined text-2xl">storefront</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-extrabold text-primary">OK Mart</h1>
+        <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Admin Console</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <a href="index.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">dashboard</span>
+        <span class="text-button">Dashboard</span>
+      </a>
+      <a href="orders.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        <span class="text-button">Orders</span>
+      </a>
+      <a href="products.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">inventory_2</span>
+        <span class="text-button">Products</span>
+      </a>
+      <a href="categories.html" class="sidebar-active flex items-center px-4 py-3 gap-3 bg-primary/5 border-l-4 border-primary text-primary font-bold">
+        <span class="material-symbols-outlined text-xl">category</span>
+        <span class="text-button">Categories</span>
+      </a>
+      <a href="customers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">group</span>
+        <span class="text-button">Customers</span>
+      </a>
+      <a href="offers.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_offer</span>
+        <span class="text-button">Offers</span>
+      </a>
+      <a href="delivery.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">local_shipping</span>
+        <span class="text-button">Delivery</span>
+      </a>
+      <a href="reports.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">analytics</span>
+        <span class="text-button">Reports</span>
+      </a>
+      <a href="settings.html" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg">
+        <span class="material-symbols-outlined text-xl">settings</span>
+        <span class="text-button">Settings</span>
+      </a>
+    </nav>
+    <div class="px-4 py-6 border-t border-outline-variant">
+      <a href="#" class="text-on-surface-variant flex items-center px-4 py-3 gap-3 hover:bg-surface-container transition-all rounded-lg" onclick="logout()">
+        <span class="material-symbols-outlined text-xl text-error">logout</span>
+        <span class="text-button">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="lg:ml-[260px] flex flex-col min-h-screen">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 flex justify-between items-center w-full px-6 h-16 bg-white border-b border-outline-variant shadow-sm">
+      <div class="flex items-center gap-4 flex-1">
+        <button class="lg:hidden text-on-surface" id="mobileMenuBtn">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="text-lg font-extrabold text-on-surface">Category Images</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="text-right hidden sm:block">
+            <p class="text-[13px] font-bold text-on-surface">Admin User</p>
+            <p class="text-[11px] text-on-surface-variant">Store Manager</p>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">A</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <section class="p-6 space-y-6">
+
+      <!-- Page Header -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-page-title text-on-surface">Category Images</h2>
+          <p class="text-on-surface-variant text-body-sm">Set a photo for each category — just like product images, paste an image link. The photo shows on the customer categories page; empty means the emoji tile stays.</p>
+        </div>
+        <a href="../categories.html" target="_blank" class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-button text-button flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+          <span class="material-symbols-outlined">open_in_new</span>
+          View Categories Page
+        </a>
+      </div>
+
+      <!-- How it works -->
+      <div class="bento-card p-4 text-sm text-on-surface-variant">
+        <p class="font-bold text-on-surface mb-1">How it works</p>
+        <p>1. Paste an image link (URL only — no upload) in a category's field. &nbsp;2. The preview updates as you type. &nbsp;3. Press <strong>Save</strong> — it is stored in Firestore collection <code>categories</code> (document id = category id). &nbsp;4. To remove a photo, clear the field and press <strong>Save</strong> again — the tile falls back to its emoji.</p>
+        <p id="loadWarning" class="hidden mt-2 text-error font-semibold"></p>
+      </div>
+
+      <!-- Category Cards -->
+      <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <p class="text-center py-10 text-on-surface-variant col-span-full">Loading categories...</p>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="../js/firebase.js"></script>
+  <script>
+    // ===== CATEGORY IMAGE MANAGEMENT =====
+    // Same pattern as products.html: localStorage admin session (admin-auth.js),
+    // window.db from ../js/firebase.js, inline logic, URL-only images.
+
+    // Known Category Mapping (same names/icons as the customer categories page)
+    const CATEGORY_MAP = {
+      'dairy': { name: 'Dairy & Breakfast', icon: '🥛' },
+      'fruits': { name: 'Fresh Fruits', icon: '🍎' },
+      'vegetables': { name: 'Fresh Vegetables', icon: '🥬' },
+      'snacks': { name: 'Munchies & Snacks', icon: '🍿' },
+      'beverages': { name: 'Cold Drinks & Juices', icon: '🥤' },
+      'grocery': { name: 'Atta, Dal & Grocery', icon: '🌾' },
+      'personal-care': { name: 'Personal Care', icon: '🧴' },
+      'personal': { name: 'Personal Care', icon: '🧴' },
+      'household': { name: 'Cleaning & Household', icon: '🧹' },
+      'bakery': { name: 'Bakery & Bread', icon: '🍞' },
+      'icecream': { name: 'Ice Cream & Frozen', icon: '🍦' },
+      'electronics': { name: 'Electronics & Mobile', icon: '📱' },
+      'energy-drinks': { name: 'Energy Drinks', icon: '⚡' }
+    };
+
+    const categoriesGrid = document.getElementById('categoriesGrid');
+    const toast = document.getElementById('toast');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    let categoryList = [];   // [{ id, name, icon }]
+    let savedImages = {};   // id -> image URL from Firestore 'categories'
+
+    // Sidebar Functions
+    function openSidebar() { mobileSidebar.classList.add('open'); sidebarOverlay.style.display = 'block'; }
+    function closeSidebar() { mobileSidebar.classList.remove('open'); sidebarOverlay.style.display = 'none'; }
+    mobileMenuBtn?.addEventListener('click', openSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    function showToast(message, type) {
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    function showLoading(show) {
+      loadingOverlay.style.display = show ? 'flex' : 'none';
+    }
+
+    function logout() {
+      if (typeof adminLogout === 'function') {
+        adminLogout();
+      } else if (confirm('Are you sure you want to logout?')) {
+        const keys = ['okmart_isAdmin','okmart_admin_username','okmart_admin_loginTime','okmart_admin_role','adminLoggedIn','adminEmail'];
+        keys.forEach(k => localStorage.removeItem(k));
+        window.location.href = 'login.html';
+      }
+    }
+
+    function prettyName(catId) {
+      return catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
+    }
+
+    // Live preview for one card: photo if the typed URL loads, else the emoji.
+    function updatePreview(card, url) {
+      const bubble = card.querySelector('.cat-preview-bubble');
+      const trimmed = (url || '').trim();
+      if (!trimmed) {
+        bubble.innerHTML = `<span>${card.dataset.icon}</span>`;
+        return;
+      }
+      const img = document.createElement('img');
+      img.src = trimmed;
+      img.alt = '';
+      img.onerror = () => { bubble.innerHTML = `<span>${card.dataset.icon}</span>`; };
+      bubble.innerHTML = '';
+      bubble.appendChild(img);
+    }
+
+    function setCardStatus(card, message, isError) {
+      const el = card.querySelector('.cat-status');
+      el.textContent = message;
+      el.className = 'cat-status text-xs mt-2 ' + (isError ? 'text-error font-semibold' : 'text-status-delivered-text font-semibold');
+    }
+
+    function renderCategories() {
+      if (categoryList.length === 0) {
+        categoriesGrid.innerHTML = '<p class="text-center py-10 text-on-surface-variant col-span-full">No categories found</p>';
+        return;
+      }
+      categoriesGrid.innerHTML = categoryList.map(cat => {
+        const saved = savedImages[cat.id] || '';
+        const preview = saved
+          ? `<img src="${escapeHtml(saved)}" alt="" onerror="var c=this.closest('.bento-card');var s=document.createElement('span');s.textContent=c.dataset.icon;this.replaceWith(s);">`
+          : `<span>${cat.icon}</span>`;
+        return `
+          <div class="bento-card p-5" data-cat-id="${escapeHtml(cat.id)}" data-icon="${cat.icon}">
+            <div class="flex items-start gap-4">
+              <div class="cat-preview-bubble">${preview}</div>
+              <div class="min-w-0">
+                <p class="font-bold text-on-surface">${escapeHtml(cat.name)}</p>
+                <p class="text-xs text-on-surface-variant break-all">id: ${escapeHtml(cat.id)}</p>
+                <p class="text-xs ${saved ? 'text-status-delivered-text font-semibold' : 'text-on-surface-variant'}">${saved ? 'Photo saved' : 'No photo — emoji tile shows'}</p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <label class="block text-sm font-semibold mb-1">Image URL</label>
+              <input type="url" class="cat-image-input w-full px-4 py-2 border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Paste image link (https://...)" value="${escapeHtml(saved)}">
+              <p class="cat-status text-xs mt-2 text-on-surface-variant"></p>
+            </div>
+            <div class="flex gap-3 mt-3">
+              <button class="cat-save-btn flex-1 bg-primary text-white py-2.5 rounded-xl font-semibold">Save</button>
+              <button class="cat-clear-btn px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-semibold">Clear</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      categoriesGrid.querySelectorAll('.bento-card').forEach(card => {
+        const id = card.dataset.catId;
+        const input = card.querySelector('.cat-image-input');
+        input.addEventListener('input', () => updatePreview(card, input.value));
+        card.querySelector('.cat-save-btn').addEventListener('click', () => saveCategory(card, id, input.value));
+        card.querySelector('.cat-clear-btn').addEventListener('click', () => {
+          input.value = '';
+          updatePreview(card, '');
+          setCardStatus(card, 'Cleared — press Save to remove the photo.', false);
+        });
+      });
+    }
+
+    // Save one category image. Empty URL removes the image (emoji fallback).
+    async function saveCategory(card, catId, rawUrl) {
+      const url = (rawUrl || '').trim();
+      const cat = categoryList.find(c => c.id === catId);
+      const btn = card.querySelector('.cat-save-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const data = {
+          name: cat ? cat.name : prettyName(catId),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (url) {
+          data.image = url;
+        } else {
+          data.image = firebase.firestore.FieldValue.delete();
+        }
+        await db.collection('categories').doc(catId).set(data, { merge: true });
+        if (url) savedImages[catId] = url;
+        else delete savedImages[catId];
+        setCardStatus(card, url ? 'Saved! Photo will show on the categories page.' : 'Photo removed — emoji tile shows again.', false);
+        showToast(url ? 'Category photo saved' : 'Category photo removed', 'success');
+      } catch (error) {
+        console.error('Error saving category image:', error);
+        // Surface the real error verbatim — never hide a permission failure.
+        setCardStatus(card, 'Error: ' + error.message, true);
+        showToast('Error: ' + error.message, 'error');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Save';
+    }
+
+    // Load: known categories + any extra distinct categories from live products,
+    // then previously saved images from the 'categories' collection.
+    async function loadCategories() {
+      showLoading(true);
+      try {
+        const snap = await db.collection('products').where('active', '==', true).get();
+        const seen = new Set();
+        snap.forEach(doc => {
+          const cat = (doc.data().category || 'grocery').toLowerCase();
+          seen.add(cat);
+        });
+        const list = [];
+        Object.keys(CATEGORY_MAP).forEach(id => {
+          list.push({ id, name: CATEGORY_MAP[id].name, icon: CATEGORY_MAP[id].icon });
+          seen.delete(id);
+        });
+        [...seen].sort().forEach(id => {
+          list.push({ id, name: prettyName(id), icon: '🛍️' });
+        });
+        categoryList = list;
+      } catch (error) {
+        console.error('Error loading product categories:', error);
+        categoryList = Object.keys(CATEGORY_MAP).map(id => ({ id, name: CATEGORY_MAP[id].name, icon: CATEGORY_MAP[id].icon }));
+        document.getElementById('loadWarning').textContent = 'Could not load live product categories (' + error.message + ') — showing known categories.';
+        document.getElementById('loadWarning').classList.remove('hidden');
+      }
+      try {
+        const savedSnap = await db.collection('categories').get();
+        savedImages = {};
+        savedSnap.forEach(doc => {
+          const img = (doc.data().image || '').trim();
+          if (img) savedImages[doc.id] = img;
+        });
+      } catch (error) {
+        console.error('Error loading saved category images:', error);
+        savedImages = {};
+        document.getElementById('loadWarning').textContent = 'Could not load saved category images (' + error.message + ') — fields start empty; saving still works if rules allow it.';
+        document.getElementById('loadWarning').classList.remove('hidden');
+      }
+      renderCategories();
+      showLoading(false);
+    }
+
+    // Initialize
+    loadCategories();
+
+    console.log('✅ Category Image Management Page Loaded');
+  </script>
+</body>
+</html>
