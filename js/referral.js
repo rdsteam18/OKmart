@@ -128,24 +128,45 @@
     if (!fdb) { statusEl.textContent = 'Reward status abhi check nahi ho paya — baad me phir dekhein.'; return; }
     fdb.collection('referrals').where('referrerCode', '==', code).get()
       .then(function (snap) {
-        var pending = null, redeemed = 0, total = 0;
+        var pendingList = [], redeemed = 0, walletCredited = 0, total = 0;
         snap.forEach(function (d) {
           total++;
           var v = d.data() || {};
-          if (v.referrerReward === 'pending' && !pending) pending = d.id;
+          if (v.referrerReward === 'pending') pendingList.push(d.id);
           if (v.referrerReward === 'redeemed') redeemed++;
+          if (v.referrerReward === 'wallet-credited') walletCredited++;
         });
-        if (pending) {
-          statusEl.innerHTML = '🎉 ' + total + ' friend(s) ne order kiya! ' +
-            'Aapka ₹' + REWARD + ' reward taiyaar hai — ' +
-            '<button id="referApplyBtn" style="background:#006d37;color:#fff;border:0;font-weight:700;' +
-            'padding:6px 12px;border-radius:6px;cursor:pointer;">Next order par apply karo</button>';
-          var applyBtn = box.querySelector('#referApplyBtn');
-          if (applyBtn) applyBtn.addEventListener('click', function () {
-            safeSet('okmart_reward_doc', pending);
-            safeRemove('okmart_reward_used');
-            statusEl.textContent = '✓ Reward armed! Aapke agle order par ₹' + REWARD + ' OFF apne aap lagega.';
-          });
+        if (pendingList.length) {
+          // Wallet is the new home for referral rewards: auto-credit pending
+          // rewards into the wallet (atomic per doc, so no double-credit).
+          if (window.okmartWallet && typeof window.okmartWallet.sweepPendingRewards === 'function') {
+            statusEl.textContent = '🎉 ' + total + ' friend(s) ne order kiya! ₹' +
+              (REWARD * pendingList.length) + ' wallet me add ho raha hai…';
+            window.okmartWallet.sweepPendingRewards(code).then(function (res) {
+              if (res && res.count > 0) {
+                statusEl.textContent = '✓ ₹' + res.credited + ' tumhare wallet me add ho gaya! Checkout par use kar sakoge.';
+              } else {
+                statusEl.textContent = '🎉 ' + total + ' friend(s) ne order kiya! Reward wallet me jald update hoga.';
+              }
+            }).catch(function () {
+              statusEl.textContent = '🎉 ' + total + ' friend(s) ne order kiya! Reward wallet me jald update hoga.';
+            });
+          } else {
+            // Fallback (wallet.js failed to load): old Apply path.
+            var pending = pendingList[0];
+            statusEl.innerHTML = '🎉 ' + total + ' friend(s) ne order kiya! ' +
+              'Aapka ₹' + REWARD + ' reward taiyaar hai — ' +
+              '<button id="referApplyBtn" style="background:#006d37;color:#fff;border:0;font-weight:700;' +
+              'padding:6px 12px;border-radius:6px;cursor:pointer;">Next order par apply karo</button>';
+            var applyBtn = box.querySelector('#referApplyBtn');
+            if (applyBtn) applyBtn.addEventListener('click', function () {
+              safeSet('okmart_reward_doc', pending);
+              safeRemove('okmart_reward_used');
+              statusEl.textContent = '✓ Reward armed! Aapke agle order par ₹' + REWARD + ' OFF apne aap lagega.';
+            });
+          }
+        } else if (walletCredited > 0) {
+          statusEl.textContent = '✓ ' + walletCredited + ' referral reward wallet me mil chuka hai. Naye referrals par naya reward milega.';
         } else if (redeemed > 0) {
           statusEl.textContent = '✓ ' + redeemed + ' referral reward use ho chuka hai. Naye referrals par naya reward milega.';
         } else if (total > 0) {

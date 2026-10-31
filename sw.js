@@ -37,7 +37,7 @@ try {
   });
 } catch (e) { /* FCM unavailable in SW; raw push handler below still works */ }
 
-const CACHE_NAME = 'okmart-v1.0.13';
+const CACHE_NAME = 'okmart-v1.0.14';
 const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX';
 
 const urlsToCache = [
@@ -56,6 +56,7 @@ const urlsToCache = [
   '/css/product.css',
   '/js/common.js',
   '/js/fcm-token.js',
+  '/js/wallet.js',
   '/js/firebase.js',
   '/js/home.js',
   '/manifest.json',

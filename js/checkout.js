@@ -14,6 +14,11 @@
   const summaryReferralRow = document.getElementById('summaryReferralRow');
   const summaryReferralLabel = document.getElementById('summaryReferralLabel');
   const summaryReferral = document.getElementById('summaryReferral');
+  const summaryWalletRow = document.getElementById('summaryWalletRow');
+  const summaryWallet = document.getElementById('summaryWallet');
+  const walletApplyRow = document.getElementById('walletApplyRow');
+  const walletApplyCheck = document.getElementById('walletApplyCheck');
+  const walletApplyLabel = document.getElementById('walletApplyLabel');
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   const successModal = document.getElementById('successModal');
   const trackOrderBtn = document.getElementById('trackOrderBtn');
@@ -30,6 +35,9 @@
   let currentDeliveryType = 'quick';
   let currentPaymentMethod = 'cod';
   let deliveryCharge = window.BASE_DELIVERY_CHARGE || 39;
+  let walletBalance = 0;
+  let walletUse = false;
+  let walletCapped = 0;
   // ✅ common.js का centralized threshold use करें
   const FREE_DELIVERY_THRESHOLD = window.FREE_DELIVERY_THRESHOLD || 199;
   const ADMIN_WHATSAPP = '919982239821';
@@ -53,6 +61,18 @@
       // Render address section
       renderAddressSection();
       
+      // Wallet balance (logged-in users only; best-effort, never blocks)
+      try {
+        const wUser = JSON.parse(localStorage.getItem('okmart_user') || 'null');
+        if (wUser && wUser.uid && window.okmartWallet) {
+          walletBalance = await window.okmartWallet.getBalance();
+          if (walletBalance > 0 && walletApplyRow) walletApplyRow.style.display = 'flex';
+          if (walletApplyCheck) walletApplyCheck.addEventListener('change', function () {
+            walletUse = walletApplyCheck.checked;
+            renderOrderSummary();
+          });
+        }
+      } catch (e) {}
       // Render order summary
       renderOrderSummary();
       
@@ -171,7 +191,9 @@
     const convenienceFee = settings.convenienceFee || 0;
     const refDisc = (typeof window.okmartReferralDiscount === 'function') ? window.okmartReferralDiscount() : { amount: 0, type: null, code: null, docId: null };
     const refCapped = Math.min(refDisc.amount || 0, subtotal + deliveryCharge + handlingFee + convenienceFee);
-    const total = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
+    const walletBase = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
+    walletCapped = (walletUse && walletBalance > 0) ? Math.min(walletBalance, walletBase) : 0;
+    const total = walletBase - walletCapped;
     
     summarySubtotal.textContent = `₹${subtotal}`;
     summaryDelivery.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
@@ -184,6 +206,19 @@
       } else {
         summaryReferralRow.style.display = 'none';
       }
+    }
+    if (summaryWalletRow) {
+      if (walletCapped > 0) {
+        summaryWalletRow.style.display = 'flex';
+        summaryWallet.textContent = ' \u2212\u20B9' + walletCapped;
+      } else {
+        summaryWalletRow.style.display = 'none';
+      }
+    }
+    if (walletApplyLabel) {
+      walletApplyLabel.textContent = walletBalance > 0
+        ? ('Wallet balance: \u20B9' + walletBalance + (walletCapped > 0 ? (' \u2014 \u20B9' + walletCapped + ' use hoga') : ' \u2014 checkout par use karo'))
+        : 'Wallet balance use karo';
     }
     
     // Update free delivery progress
@@ -350,7 +385,9 @@ ${itemsList}
     const convenienceFee = settings.convenienceFee || 0;
     const refDisc = (typeof window.okmartReferralDiscount === 'function') ? window.okmartReferralDiscount() : { amount: 0, type: null, code: null, docId: null };
     const refCapped = Math.min(refDisc.amount || 0, subtotal + deliveryCharge + handlingFee + convenienceFee);
-    const total = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
+    const walletBase = subtotal + deliveryCharge + handlingFee + convenienceFee - refCapped;
+    walletCapped = (walletUse && walletBalance > 0) ? Math.min(walletBalance, walletBase) : 0;
+    const total = walletBase - walletCapped;
     
     // Get delivery slot
     let deliverySlotValue = null;
@@ -386,6 +423,7 @@ ${itemsList}
       referralDiscount: refCapped,
       referralCode: refDisc.code || null,
       referralType: refDisc.type || null,
+      walletDiscount: walletCapped,
       status: 'received'
     };
     
@@ -410,6 +448,9 @@ ${itemsList}
       localStorage.removeItem('okmart_cart');
       localStorage.removeItem('okmart_applied_coupon');
       if (typeof window.okmartReferralFinalize === 'function') window.okmartReferralFinalize(refDisc, orderId, userAddress.phone);
+      if (walletCapped > 0 && window.okmartWallet && typeof window.okmartWallet.debit === 'function') {
+        try { await window.okmartWallet.debit(walletCapped, orderId); } catch (e) {}
+      }
       
       // Show success modal
       trackOrderBtn.onclick = () => {

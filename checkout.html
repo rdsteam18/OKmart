@@ -158,6 +158,16 @@
               <span id="summaryReferralLabel">Referral discount</span>
               <span id="summaryReferral">−₹0</span>
             </div>
+            <div class="summary-row" id="summaryWalletRow" style="display:none;color:#006d37;">
+              <span>Wallet discount</span>
+              <span id="summaryWallet">−₹0</span>
+            </div>
+            <div class="summary-row" id="walletApplyRow" style="display:none;">
+              <label style="display:flex;gap:8px;align-items:center;cursor:pointer;font-size:.9rem;">
+                <input type="checkbox" id="walletApplyCheck" style="width:18px;height:18px;accent-color:#006d37;">
+                <span id="walletApplyLabel">Wallet balance use karo</span>
+              </label>
+            </div>
             <div class="summary-row total-row">
               <span>Total Amount</span>
               <span id="summaryTotal">₹0</span>
@@ -200,6 +210,7 @@
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
   <script src="/js/referral.js"></script>
+  <script src="/js/wallet.js"></script>
   <script src="/js/checkout.js"></script>
     <!-- ========== FLOATING BOTTOM NAVIGATION ========== -->
     <nav class="qc-bottom-nav">
