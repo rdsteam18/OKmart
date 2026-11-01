@@ -185,15 +185,17 @@
         const img = (doc.data().image || '').trim();
         if (img) map[doc.id] = img;
       });
+      var SLUG_ALIASES = { 'personal-care': 'personal' }; // pill href slug -> Firestore doc id
       row.querySelectorAll('.category-pill').forEach(pill => {
         const m = (pill.getAttribute('href') || '').match(/^\/categories\/([^\/]+)\.html$/);
-        if (!m || !map[m[1]]) return;
+        const docId = m ? (SLUG_ALIASES[m[1]] || m[1]) : null;
+        if (!m || !map[docId]) return;
         const icon = pill.querySelector('.cat-pill-icon');
         if (!icon || icon.querySelector('img.cat-pill-photo')) return;
         const orig = icon.innerHTML;
         const imgEl = document.createElement('img');
         imgEl.className = 'cat-pill-photo';
-        imgEl.src = map[m[1]];
+        imgEl.src = map[docId];
         imgEl.alt = '';
         imgEl.loading = 'lazy';
         imgEl.onerror = function () { icon.innerHTML = orig; };
