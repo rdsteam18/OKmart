@@ -417,8 +417,12 @@
   }
 
   // ========== Clear Cart ==========
-  function clearCart() {
-    if (confirm('Are you sure you want to clear your entire cart?')) {
+  async function clearCart() {
+    // Branded OKmart modal (native confirm as fallback if okmodal.js is absent).
+    const ok = window.OKModal
+      ? await window.OKModal.confirm('Are you sure you want to clear your entire cart?', { title: 'Clear Cart', confirmText: 'Clear All', cancelText: 'Keep Items' })
+      : confirm('Are you sure you want to clear your entire cart?');
+    if (ok) {
       cart = [];
       saveCart();
       appliedCoupon = null;

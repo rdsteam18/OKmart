@@ -206,7 +206,7 @@
     if (addBtn) {
       addBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        addToCart(product);
+        addToCart(product, addBtn);
         this.textContent = '✓ ADDED';
         this.classList.add('added');
         var self = this;
@@ -243,7 +243,7 @@
     updateCartUI();
   }
   
-  function addToCart(product) {
+  function addToCart(product, btn) {
     var cart = getCart();
     var existing = cart.find(function(i) { return i.id === product.id; });
     
@@ -262,6 +262,7 @@
     }
     
     saveCart(cart);
+    if (window.okmartAddFeedback) window.okmartAddFeedback(btn || null, product.image, { morph: false });
     showToast('🍦 ' + product.name + ' added!', 'success');
   }
   

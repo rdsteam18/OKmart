@@ -170,6 +170,41 @@
     `).join('');
   }
   
+  // ========== HOMEPAGE PILL PHOTOS (Firestore 'categories' images) ==========
+  // Same image URLs the categories page tiles use (doc id = category id,
+  // field 'image', saved from the admin panel). Best-effort: any failure
+  // leaves the SVG icons exactly as before, and a dead image link swaps
+  // back to its SVG automatically via onerror.
+  async function loadCategoryPillPhotos() {
+    const row = document.getElementById('categoryPillsScroll');
+    if (!row || typeof db === 'undefined' || !db.collection) return;
+    try {
+      const snap = await db.collection('categories').get();
+      const map = {};
+      snap.forEach(doc => {
+        const img = (doc.data().image || '').trim();
+        if (img) map[doc.id] = img;
+      });
+      row.querySelectorAll('.category-pill').forEach(pill => {
+        const m = (pill.getAttribute('href') || '').match(/^\/categories\/([^\/]+)\.html$/);
+        if (!m || !map[m[1]]) return;
+        const icon = pill.querySelector('.cat-pill-icon');
+        if (!icon || icon.querySelector('img.cat-pill-photo')) return;
+        const orig = icon.innerHTML;
+        const imgEl = document.createElement('img');
+        imgEl.className = 'cat-pill-photo';
+        imgEl.src = map[m[1]];
+        imgEl.alt = '';
+        imgEl.loading = 'lazy';
+        imgEl.onerror = function () { icon.innerHTML = orig; };
+        icon.innerHTML = '';
+        icon.appendChild(imgEl);
+      });
+    } catch (err) {
+      // Keep the SVG icons.
+    }
+  }
+
   // ========== RENDER NEW ARRIVALS ==========
   function renderNewArrivals() {
     const newProducts = [...allProducts]
@@ -407,12 +442,10 @@
     saveCart(cart);
     showToast(`${product.name} added to cart!`, 'success');
     
-    // Animate button
+    // Add feedback: button morph + fly-to-basket + badge bump (cart unchanged).
+    // The helper lives in js/add-feedback.js and never throws into cart logic.
     const btn = document.querySelector(`.product-card[data-product-id="${productId}"] .add-btn`);
-    if (btn) {
-      btn.style.transform = 'scale(0.95)';
-      setTimeout(() => { btn.style.transform = ''; }, 200);
-    }
+    if (window.okmartAddFeedback) window.okmartAddFeedback(btn, product.image);
   };
 
   window.updateCartItemQty = function(productId, delta) {
@@ -1009,6 +1042,7 @@
     await loadBanners();
     
     renderCategoryGrid();
+    loadCategoryPillPhotos();
     renderNewArrivals();
     renderTrending();
     renderCategorySections();

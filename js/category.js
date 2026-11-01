@@ -440,11 +440,12 @@
       }
     });
 
-    // Add to cart
+    // Add to cart (button passed through for the shared add feedback)
     if (!outOfStock) {
-      card.querySelector('.add-btn').addEventListener('click', e => {
+      const addBtn = card.querySelector('.add-btn');
+      addBtn.addEventListener('click', e => {
         e.stopPropagation();
-        addToCart(product);
+        addToCart(product, addBtn);
       });
     }
 
@@ -475,7 +476,7 @@
     updateCartUI();
   }
 
-  function addToCart(product) {
+  function addToCart(product, btn) {
     const cart = getCart();
     const existing = cart.find(item => item.id === product.id);
 
@@ -494,6 +495,7 @@
     }
 
     saveCart(cart);
+    if (window.okmartAddFeedback) window.okmartAddFeedback(btn || null, product.image);
     showToast(`${product.name} added!`, 'success');
   }
 

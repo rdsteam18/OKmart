@@ -1050,3 +1050,62 @@ input:focus, textarea:focus, select:focus {
   background: var(--primary-dark);
 }
 
+
+/* ============================================
+   ADD-TO-CART FEEDBACK (shared helper js/add-feedback.js)
+   ============================================ */
+.ok-add-success {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  transform: scale(1.06);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.ok-fly-item {
+  position: fixed;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  z-index: 10001;
+  pointer-events: none;
+  background: #16a34a;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================
+   TAP / LONG-PRESS: no blue highlight or selection on UI chrome
+   - Kills the Android blue tap overlay (-webkit-tap-highlight-color)
+     and the long-press callout/selection on buttons, cards, pills,
+     nav, images and banners.
+   - Form fields stay fully editable/selectable.
+   - Keyboard focus stays visible via :focus-visible (mouse/tap focus
+     shows no ring, keyboard tab focus does).
+   ============================================ */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+a, button,
+.product-card, .shelf-product-card,
+.category-pill, .category-item, .category-icon-tile,
+.qc-bottom-nav, .qc-nav-item,
+.fr-bg, .fr-wrap,
+img, .product-image-container,
+.pills-scroll, .category-icon-bubble {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: auto;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

@@ -12,6 +12,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/okmodal.css">
   <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/profile.css">
   <link rel="stylesheet" href="/css/qc.css">
@@ -293,6 +294,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/okmodal.js"></script>
 
   <script>
     // 1. Load User Profile from localStorage
@@ -343,7 +345,8 @@
         const email = document.getElementById('editProfileEmailInput').value.trim();
 
         if (!name) {
-          alert('Please enter your name');
+          if (window.OKModal) window.OKModal.alert('Please enter your name');
+          else alert('Please enter your name');
           return;
         }
 
@@ -351,7 +354,8 @@
         localStorage.setItem('okmart_user', JSON.stringify(user));
         loadUserProfile();
         editModal.classList.remove('active');
-        alert('Profile details saved successfully!');
+        if (window.OKModal) window.OKModal.alert('Profile details saved successfully!');
+        else alert('Profile details saved successfully!');
       };
     }
 
@@ -425,10 +429,14 @@
     });
 
     // 4. Sign Out
-    document.getElementById('signOutBtn')?.addEventListener('click', () => {
-      if (confirm('Are you sure you want to sign out?')) {
+    document.getElementById('signOutBtn')?.addEventListener('click', async () => {
+      const ok = window.OKModal
+        ? await window.OKModal.confirm('Are you sure you want to sign out?', { title: 'Sign Out', confirmText: 'Sign Out', cancelText: 'Stay' })
+        : confirm('Are you sure you want to sign out?');
+      if (ok) {
         localStorage.removeItem('okmart_user');
-        alert('You have been signed out.');
+        if (window.OKModal) await window.OKModal.alert('You have been signed out.');
+        else alert('You have been signed out.');
         location.href = '/';
       }
     });

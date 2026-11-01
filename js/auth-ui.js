@@ -32,14 +32,16 @@
       try {
         var auth = await window.okmartAuthReady;
         if (!auth) {
-          alert('Login service could not load. Please check your connection and try again.');
+          if (window.OKModal) window.OKModal.alert('Login service could not load. Please check your connection and try again.');
+          else alert('Login service could not load. Please check your connection and try again.');
           return;
         }
         var provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithPopup(provider);
       } catch (e) {
         console.warn('Google sign-in failed:', e.message);
-        alert('Google sign-in failed: ' + (e.message || 'Please try again.'));
+        if (window.OKModal) window.OKModal.alert('Google sign-in failed: ' + (e.message || 'Please try again.'));
+        else alert('Google sign-in failed: ' + (e.message || 'Please try again.'));
       }
     });
 

@@ -22,6 +22,7 @@
     .track-link{color:#5f930e;font-weight:600;text-decoration:none;margin-top:8px;display:inline-block}
   </style>
   <link rel="stylesheet" href="/css/qc.css">
+  <link rel="stylesheet" href="/css/okmodal.css">
 </head>
 <body>
   <div class="success-card">
@@ -37,6 +38,7 @@
     </div>
   </div>
 
+  <script src="/js/okmodal.js"></script>
   <script>
     const params = new URLSearchParams(location.search);
     const orderId = params.get('order');
@@ -45,7 +47,11 @@
     document.getElementById('repeatOrder').addEventListener('click', (e) => {
       e.preventDefault();
       const orders = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
-      if (orders.length === 0) return alert('No previous order found');
+      if (orders.length === 0) {
+        if (window.OKModal) window.OKModal.alert('No previous order found');
+        else alert('No previous order found');
+        return;
+      }
       const last = orders[orders.length - 1];
       const cart = last.items.map(i => ({ ...i, quantity: i.quantity }));
       localStorage.setItem('okmart_cart', JSON.stringify(cart));

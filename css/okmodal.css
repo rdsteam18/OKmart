@@ -1,0 +1,67 @@
+/* ===== OKmart branded modal (replaces native confirm()/alert()) ===== */
+.okmodal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.45);
+}
+.okmodal-overlay[hidden] { display: none; }
+body.okmodal-open { overflow: hidden; }
+.okmodal-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: okmodal-pop 0.22s ease-out;
+}
+@keyframes okmodal-pop {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.okmodal-bar {
+  height: 5px;
+  background: linear-gradient(90deg, #16a34a, #84c225);
+}
+.okmodal-title {
+  padding: 18px 20px 2px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+}
+.okmodal-msg {
+  padding: 6px 20px 18px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #374151;
+  white-space: pre-line;
+}
+.okmodal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 0 16px 16px;
+}
+.okmodal-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 22px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.okmodal-btn.okmodal-cancel {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+.okmodal-btn.okmodal-ok {
+  background: #16a34a;
+  color: #ffffff;
+}

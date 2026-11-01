@@ -116,9 +116,10 @@
       <button class="add-btn">ADD</button>
     `;
     
-    card.querySelector('.add-btn').addEventListener('click', (e) => {
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      addToCart(product);
+      addToCart(product, addBtn);
     });
     
     return card;
@@ -177,7 +178,7 @@
   
   // ---------- CART FUNCTIONS ----------
   
-  function addToCart(product) {
+  function addToCart(product, btn) {
     const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
     const existing = cart.find(item => item.id === product.id);
     
@@ -197,6 +198,7 @@
     
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
     updateCartBadge();
+    if (window.okmartAddFeedback) window.okmartAddFeedback(btn || null, product.image);
     showToast(`${product.name} added to cart!`, 'success');
   }
   
@@ -222,10 +224,13 @@
     }
   }
   
-  function clearAllWishlist() {
+  async function clearAllWishlist() {
     if (wishlist.length === 0) return;
-    
-    if (confirm('Are you sure you want to clear your wishlist?')) {
+
+    const ok = window.OKModal
+      ? await window.OKModal.confirm('Are you sure you want to clear your wishlist?', { title: 'Clear Wishlist', confirmText: 'Clear All', cancelText: 'Keep' })
+      : confirm('Are you sure you want to clear your wishlist?');
+    if (ok) {
       saveWishlist([]);
       renderWishlist();
       showToast('Wishlist cleared', 'info');

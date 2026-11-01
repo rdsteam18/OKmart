@@ -296,6 +296,20 @@
   border-color: #f9a8d4;
 }
 
+/* Homepage pill photo (Firestore 'categories' image, set by js/home.js).
+   The SVG icon stays as fallback when a category has no image or the
+   image fails to load. */
+.pills-scroll .category-pill .cat-pill-icon {
+  overflow: hidden;
+}
+.pills-scroll .category-pill .cat-pill-icon img.cat-pill-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 18px;
+}
+
 /* ---------- 5. CATEGORIES PAGE: grouped sections, pink tiles ---------- */
 .qc-cat-group {
   background: #ffffff;

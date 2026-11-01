@@ -77,6 +77,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="/js/firebase.js"></script>
   <script src="/js/common.js"></script>
+  <script src="/js/add-feedback.js"></script>
   <script src="/js/qc-nav.js"></script>
   <script>
     (function () {
@@ -177,12 +178,12 @@
               <span class="ba-price">₹${p.price}</span>
               ${p.mrp ? `<span class="ba-mrp">₹${p.mrp}</span>` : ''}
             </div>
-            <button class="ba-add-btn" onclick="event.stopPropagation(); buyAgainAdd('${esc(p.id)}')">ADD</button>
+            <button class="ba-add-btn" onclick="event.stopPropagation(); buyAgainAdd('${esc(p.id)}', this)">ADD</button>
           </div>
         `;
       }
 
-      window.buyAgainAdd = function (productId) {
+      window.buyAgainAdd = function (productId, btn) {
         const entry = resolvedProducts.find(e => String(e.product.id) === String(productId));
         const p = entry ? entry.product : null;
         if (!p) return;
@@ -199,6 +200,8 @@
             window.dispatchEvent(new CustomEvent('cartUpdated'));
           } catch (e) {}
         }
+        // Add feedback: button morph + fly-to-basket + badge bump (cart unchanged)
+        if (window.okmartAddFeedback) window.okmartAddFeedback(btn || null, p.image);
       };
 
       async function init() {

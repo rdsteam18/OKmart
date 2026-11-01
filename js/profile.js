@@ -407,8 +407,11 @@
     showToast(editingAddressId ? 'Address updated!' : 'Address added!', 'success');
   }
 
-  function deleteAddress(id) {
-    if (confirm('Are you sure you want to delete this address?')) {
+  async function deleteAddress(id) {
+    const ok = window.OKModal
+      ? await window.OKModal.confirm('Are you sure you want to delete this address?', { title: 'Delete Address', confirmText: 'Delete', cancelText: 'Keep' })
+      : confirm('Are you sure you want to delete this address?');
+    if (ok) {
       addresses = addresses.filter(a => a.id !== id);
       // If no default address exists, set first as default
       if (addresses.filter(a => a.isDefault).length === 0 && addresses.length > 0) {
@@ -605,8 +608,11 @@
     showToast('Item removed from saved', 'success');
   };
 
-  function clearAllSavedItems() {
-    if (confirm('Are you sure you want to clear all saved items?')) {
+  async function clearAllSavedItems() {
+    const ok = window.OKModal
+      ? await window.OKModal.confirm('Are you sure you want to clear all saved items?', { title: 'Clear Saved Items', confirmText: 'Clear All', cancelText: 'Keep' })
+      : confirm('Are you sure you want to clear all saved items?');
+    if (ok) {
       savedItems = [];
       saveSavedItems();
       renderSavedItems();
@@ -647,8 +653,11 @@
   }
 
   // ========== Logout ==========
-  function logout() {
-    if (confirm('Are you sure you want to logout?')) {
+  async function logout() {
+    const ok = window.OKModal
+      ? await window.OKModal.confirm('Are you sure you want to logout?', { title: 'Sign Out', confirmText: 'Sign Out', cancelText: 'Stay' })
+      : confirm('Are you sure you want to logout?');
+    if (ok) {
       // Clear all user data from localStorage
       localStorage.removeItem('okmart_user');
       localStorage.removeItem('okmart_user_details');

@@ -113,7 +113,7 @@ function createProductCard(product,isGrid=false){
   if(isGrid)c.style.flex='unset';
   c.innerHTML=`<img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://placehold.co/200/eee/999?text=🛒'">${product.popular?'<span class="product-badge">🔥</span>':''}<button class="wishlist-heart">${isInWishlist(product.id)?'❤️':'🤍'}</button><button class="share-mini">📤</button><h3 class="product-name">${product.name}</h3><span class="product-unit">${product.unit||''}</span><div class="price-row"><span class="current-price">₹${product.price}</span>${product.mrp&&product.mrp>product.price?`<span class="mrp-price">₹${product.mrp}</span>`:''}${d>0?`<span class="discount-badge">${d}% OFF</span>`:''}</div><button class="add-btn">ADD</button>`;
   c.addEventListener('click',e=>{if(!e.target.closest('button')){addToRecent(product.id);location.href=`/product.html?id=${product.id}`;}});
-  c.querySelector('.add-btn').addEventListener('click',e=>{e.stopPropagation();addToCart(product);});
+  var _ab = c.querySelector('.add-btn'); _ab.addEventListener('click',e=>{e.stopPropagation();addToCart(product,_ab);});
   c.querySelector('.wishlist-heart').addEventListener('click',e=>{e.stopPropagation();toggleWishlist(product,e.target);});
   c.querySelector('.share-mini').addEventListener('click',e=>{e.stopPropagation();shareProduct(product);});
   return c;
@@ -130,7 +130,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.sort-wrapper')){doc
 // ========== CART ==========
 function getCart(){return JSON.parse(localStorage.getItem(CART_KEY)||'[]');}
 function saveCart(c){localStorage.setItem(CART_KEY,JSON.stringify(c));updateCartUI();}
-function addToCart(p){const c=getCart();const x=c.find(i=>i.id===p.id);if(x)x.quantity++;else c.push({id:p.id,name:p.name,price:p.price,mrp:p.mrp,image:p.image,unit:p.unit,quantity:1});saveCart(c);showToast(`${p.name} added!`,'success');}
+function addToCart(p,btn){const c=getCart();const x=c.find(i=>i.id===p.id);if(x)x.quantity++;else c.push({id:p.id,name:p.name,price:p.price,mrp:p.mrp,image:p.image,unit:p.unit,quantity:1});saveCart(c);if(window.okmartAddFeedback)window.okmartAddFeedback(btn||null,p.image);showToast(`${p.name} added!`,'success');}
 function updateCartUI(){const c=getCart();const t=c.reduce((s,i)=>s+i.quantity,0),st=c.reduce((s,i)=>s+(i.price*i.quantity),0);document.getElementById('cartBadge').textContent=t;const b=document.getElementById('floatingCartBar');if(t>0){b.classList.add('visible');document.getElementById('barCartCount').textContent=`${t} item${t!==1?'s':''}`;document.getElementById('barCartTotal').textContent='₹'+st;}else b.classList.remove('visible');}
 
 function getWishlist(){return JSON.parse(localStorage.getItem(WISHLIST_KEY)||'[]');}

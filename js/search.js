@@ -137,7 +137,7 @@
             </div>
           ` : `
             <span class="shelf-unit-chip">${p.unit || '1 Unit'}</span>
-            <button class="shelf-add-btn" onclick="event.stopPropagation(); addProductToCart('${p.id}')">
+            <button class="shelf-add-btn" onclick="event.stopPropagation(); addProductToCart('${p.id}', this)">
               ADD
             </button>
           `}
@@ -303,7 +303,7 @@
   }
 
   // 7. Cart & Wishlist Handlers
-  window.addProductToCart = function(id) {
+  window.addProductToCart = function(id, btn) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
 
@@ -324,6 +324,9 @@
     }
     localStorage.setItem('okmart_cart', JSON.stringify(cart));
     updateCartUI();
+    // Feedback BEFORE refreshCards() re-renders the card: the button morph
+    // may be replaced, but the fly-to-basket + badge bump survive (body-level).
+    if (window.okmartAddFeedback) window.okmartAddFeedback(btn || null, product.image);
     refreshCards();
     showToast(`${product.name} added to cart!`);
   };

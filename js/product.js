@@ -259,9 +259,8 @@
     showMiniPopup();
     showToast(`${currentProduct.name} added to cart!`, 'success');
     
-    // Animate button
-    addToCartBtn.style.transform = 'scale(0.96)';
-    setTimeout(() => { addToCartBtn.style.transform = ''; }, 200);
+    // Add feedback: button morph + fly-to-basket + badge bump (cart unchanged)
+    if (window.okmartAddFeedback) window.okmartAddFeedback(addToCartBtn, currentProduct.image);
   }
 
   // ========== Buy Now ==========
