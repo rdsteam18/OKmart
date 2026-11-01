@@ -68,6 +68,7 @@
       }
     };
     if (d.category) product.category = d.category;
+    if (d.retailer) product.offers.seller = { '@type': 'Organization', name: d.retailer };
     var script = document.createElement('script');
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify(product);
@@ -81,12 +82,19 @@
       (d.mrp ? ' (MRP ₹' + Number(d.mrp).toLocaleString('en-IN') + ')' : '') +
       '. Price badal sakta hai.';
 
+    var dealUrl = 'https://okmart.netlify.app/deal.html?id=' + encodeURIComponent(d.id);
     document.title = d.title + ' | OK Mart';
     setMeta('name', 'description', desc);
     setMeta('property', 'og:title', d.title);
     setMeta('property', 'og:description', desc);
     setMeta('property', 'og:image', d.image || '');
-    setCanonical('https://okmart.netlify.app/deal.html?id=' + encodeURIComponent(d.id));
+    setMeta('property', 'og:url', dealUrl);
+    setMeta('property', 'og:type', 'product');
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', d.title);
+    setMeta('name', 'twitter:description', desc);
+    setMeta('name', 'twitter:image', d.image || '');
+    setCanonical(dealUrl);
     injectSchema(d);
 
     box.innerHTML =

@@ -73,6 +73,7 @@
       
       // Render product
       renderProduct();
+      updateProductSeo();
       renderGallery();
       renderRelatedProducts();
       renderRecentlyViewed();
@@ -145,6 +146,87 @@
     if (currentProduct.brand) features.unshift(`✓ Brand: ${currentProduct.brand}`);
     
     productFeatures.innerHTML = features.map(f => `<div class="feature-item">${f}</div>`).join('');
+  }
+
+  // ========== Dynamic SEO (per-product meta + Product JSON-LD) ==========
+  // Runs ONLY on the real loaded product data. The static fallback meta in
+  // <head> stays for the loading / no-product state. No specs invented.
+  function setSeoMeta(attr, key, content) {
+    var sel = 'meta[' + attr + '="' + key + '"]';
+    var tag = document.querySelector(sel);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attr, key);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+  }
+
+  function setSeoCanonical(url) {
+    var link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
+  }
+
+  function updateProductSeo() {
+    var p = currentProduct;
+    if (!p) return;
+    var price = Number(p.price) || 0;
+    var mrp = Number(p.mrp) || price;
+    var img = (p.images && p.images.length ? p.images[0] : p.image) || '';
+    var canonical = 'https://okmart.netlify.app/product.html?id=' + encodeURIComponent(p.id);
+    var title = p.name + ' at \u20B9' + price + ' | OK Mart';
+    var parts = [p.name];
+    if (p.unit) parts.push(p.unit);
+    if (p.category) parts.push(p.category);
+    if (p.brand) parts.push('by ' + p.brand);
+    var desc = parts.join(' \u2014 ') + ' at \u20B9' + price +
+      (mrp > price ? ' (MRP \u20B9' + mrp + ')' : '') +
+      ' on OK Mart, Ahmedabad. 15-minute grocery delivery.';
+    if (desc.length > 160) desc = desc.slice(0, 157) + '...';
+    document.title = title;
+    setSeoMeta('name', 'description', desc);
+    setSeoMeta('property', 'og:title', title);
+    setSeoMeta('property', 'og:description', desc);
+    if (img) {
+      setSeoMeta('property', 'og:image', img);
+      setSeoMeta('name', 'twitter:image', img);
+    }
+    setSeoMeta('property', 'og:url', canonical);
+    setSeoMeta('property', 'og:type', 'product');
+    setSeoMeta('name', 'twitter:card', 'summary_large_image');
+    setSeoMeta('name', 'twitter:title', title);
+    setSeoMeta('name', 'twitter:description', desc);
+    setSeoCanonical(canonical);
+    var schema = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: p.name,
+      description: p.description ||
+        ('Fresh ' + p.name + ' delivered to your doorstep. Premium quality product at best price.'),
+      offers: {
+        '@type': 'Offer',
+        url: canonical,
+        priceCurrency: 'INR',
+        price: price,
+        availability: (Number(p.stock) || 0) > 0
+          ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+      }
+    };
+    if (img) schema.image = img;
+    if (p.brand) schema.brand = { '@type': 'Brand', name: p.brand };
+    if (p.category) schema.category = p.category;
+    var old = document.getElementById('product-jsonld');
+    if (old) old.remove();
+    var script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'product-jsonld';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
   }
 
   // ========== Render Image Gallery ==========

@@ -22,3 +22,10 @@
 - FAQ: https://okmart.netlify.app/faq.html
 - Categories: https://okmart.netlify.app/categories.html
 - Track order: https://okmart.netlify.app/track-order.html
+
+## Deals, categories & ordering
+- Daily Loot Deals (5 fresh deals a day): https://okmart.netlify.app/deals.html — every deal has its own page with title, price, MRP, photo and retailer link.
+- All categories: https://okmart.netlify.app/categories.html — bakery, beverages, dairy, electronics, fruits, grocery, household, personal care, snacks, toys, vegetables.
+- Product pages: every product has its own page (product.html?id=<product-id>) with name, price, MRP, photo and stock status.
+- Prices and availability on the site are live and can change; the price shown on a product page is the current price. Deal prices are the price at the time the deal was found — always check the final price on the retailer site at checkout.
+- Ordering: add items to cart on the website and check out, or order on WhatsApp at +91 99822 39821.
