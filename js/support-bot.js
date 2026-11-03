@@ -40,7 +40,7 @@
     '#okmSupportForm{display:flex;gap:8px;padding:10px;border-top:1px solid #e5e7eb;background:#fff}',
     '#okmSupportInput{flex:1;border:1px solid #d1d5db;border-radius:999px;padding:10px 14px;font-size:.9rem;outline:none}',
     '#okmSupportSend{background:#15803d;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer}',
-    '@media (max-width:768px){#okmSupportBtn{bottom:88px}#okmSupportPanel{bottom:152px}}'
+    '@media (max-width:768px){#okmSupportBtn{bottom:140px}#okmSupportPanel{bottom:196px}}'
   ].join('\n');
   var style = document.createElement('style');
   style.textContent = css;
