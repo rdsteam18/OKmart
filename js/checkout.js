@@ -201,6 +201,10 @@
     const summaryHandling = document.getElementById('summaryHandling');
     if (summaryHandlingRow) summaryHandlingRow.style.display = handlingFee > 0 ? 'flex' : 'none';
     if (summaryHandling) summaryHandling.textContent = `₹${handlingFee}`;
+    const summaryConvenienceRow = document.getElementById('summaryConvenienceRow');
+    const summaryConvenience = document.getElementById('summaryConvenience');
+    if (summaryConvenienceRow) summaryConvenienceRow.style.display = convenienceFee > 0 ? 'flex' : 'none';
+    if (summaryConvenience) summaryConvenience.textContent = `₹${convenienceFee}`;
     summaryTotal.textContent = `₹${total}`;
     if (summaryReferralRow) {
       if (refCapped > 0) {

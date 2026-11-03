@@ -396,6 +396,16 @@
     const hf = totals.handlingFee || 0;
     if (handlingRow) handlingRow.style.display = hf > 0 ? 'flex' : 'none';
     if (handlingFeeEl) handlingFeeEl.textContent = `₹${hf}`;
+    const convenienceRow = document.getElementById('convenienceRow');
+    const convenienceFeeEl = document.getElementById('convenienceFee');
+    const cf = totals.convenienceFee || 0;
+    if (convenienceRow) convenienceRow.style.display = cf > 0 ? 'flex' : 'none';
+    if (convenienceFeeEl) convenienceFeeEl.textContent = `₹${cf}`;
+    const gstRow = document.getElementById('gstRow');
+    const gstAmountEl = document.getElementById('gstAmount');
+    const tx = totals.taxAmount || 0;
+    if (gstRow) gstRow.style.display = tx > 0 ? 'flex' : 'none';
+    if (gstAmountEl) gstAmountEl.textContent = `₹${tx}`;
     if (totalAmountEl) {
       totalAmountEl.textContent = `₹${totals.grandTotal}`;
     }
