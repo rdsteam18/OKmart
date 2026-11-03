@@ -409,6 +409,10 @@
     if (totalAmountEl) {
       totalAmountEl.textContent = `₹${totals.grandTotal}`;
     }
+    const stickyBar = document.getElementById('stickyCheckoutBar');
+    const stickyTotal = document.getElementById('stickyTotal');
+    if (stickyTotal) stickyTotal.textContent = `₹${totals.grandTotal}`;
+    if (stickyBar) stickyBar.style.display = (cart.length > 0) ? 'flex' : 'none';
     
     // Update free delivery progress
     if (progressFill) {
@@ -573,6 +577,8 @@
     if (applyCouponBtn) applyCouponBtn.addEventListener('click', applyCoupon);
     if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
     if (checkoutBtn) checkoutBtn.addEventListener('click', proceedToCheckout);
+    const stickyCheckoutBtn = document.getElementById('stickyCheckoutBtn');
+    if (stickyCheckoutBtn) stickyCheckoutBtn.addEventListener('click', function () { if (checkoutBtn) checkoutBtn.click(); });
     if (viewSavedBtn) viewSavedBtn.addEventListener('click', () => {
       window.location.href = '/saved-items.html';
     });
