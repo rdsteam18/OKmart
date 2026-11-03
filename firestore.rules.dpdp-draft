@@ -1,0 +1,84 @@
+/*
+ * DRAFT ONLY — DO NOT DEPLOY WITHOUT TESTING.
+ *
+ * Purpose: tighten OKmart's Firestore rules toward DPDP Act "reasonable
+ * security safeguards". Today the deployed ruleset is permissive (public
+ * reads/writes in practice), which is the site's biggest DPDP gap: names,
+ * phones, addresses and order history are personal data.
+ *
+ * WHY THIS IS ONLY A DRAFT:
+ * 1. The admin panel authenticates via localStorage, NOT Firebase Auth,
+ *    so rules cannot tell "admin" apart from "any visitor". If these rules
+ *    are deployed as-is, the admin panel's reads/writes (products, deals,
+ *    pincodes, settings, dataRequests) will BREAK. A real fix needs either
+ *    Firebase Auth for admin, or a Cloud Function / backend for admin writes.
+ * 2. Guest checkout flows (orders by phone, wallet/referral lookups) were
+ *    built on permissive access; each flow must be re-tested against these
+ *    rules in a staging project before any production deploy.
+ * 3. dataRequests (erasure requests) are intentionally creatable by anyone
+ *    (a logged-out user must be able to ask for deletion) but readable by
+ *    NOBODY via these rules — the owner must read them from the Firebase
+ *    console, not from the admin panel, until admin auth exists.
+ *
+ * DEPLOYMENT (owner step): Firebase console (project okmart-e6219, Google
+ * account devdharsingh9@gmail.com) -> Firestore Database -> Rules -> paste
+ * -> test in the Rules Playground -> Publish. Never deploy from this file
+ * blind.
+ *
+ * Until deployment, the live site mitigates via: plain-language privacy
+ * notice (privacy.html + Profile modal), consent lines at sign-in and
+ * checkout, and a deletion-request flow (Profile -> Privacy Policy).
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public catalogue data the storefront must read to render.
+    match /products/{doc}    { allow read: if true;  allow write: if false; }
+    match /deals/{doc}       { allow read: if true;  allow write: if false; }
+    match /categories/{doc}  { allow read: if true;  allow write: if false; }
+    match /settings/{doc}    { allow read: if true;  allow write: if false; }
+    match /pincodes/{doc}    { allow read: if true;  allow write: if false; }
+
+    // Per-user data: only the signed-in owner (Google Sign-In uid == doc id).
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /locations/{doc} {
+      // Saved addresses are keyed by user in the app; tighten the keying
+      // to userId before deploying (today's docs are not uid-keyed).
+      allow read, write: if request.auth != null;
+    }
+    match /wallets/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // credits are applied by the app's sweep, not clients
+    }
+    match /walletTxns/{doc} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+    match /orders/{doc} {
+      // Order history by phone: MUST be re-keyed to uid before deploying,
+      // otherwise guests cannot see their own orders and anyone could read
+      // others' orders by guessing ids.
+      allow read, write: if request.auth != null;
+    }
+
+    // Push tokens: a device may only register its own token.
+    match /fcmTokens/{doc} {
+      allow create: if true; // token registration must work pre-login
+      allow read, update, delete: if false;
+    }
+
+    // DPDP erasure / access requests: anyone may file one, nobody may
+    // list them from the app (owner reads them in the Firebase console).
+    match /dataRequests/{doc} {
+      allow create: if request.resource.data.type in ['erasure', 'access', 'correction']
+                    && request.resource.data.status == 'pending';
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

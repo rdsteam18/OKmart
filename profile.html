@@ -48,7 +48,7 @@
             <span style="font-size:1.1rem;">G</span>
             <span>Continue with Google</span>
           </button>
-          <div style="font-size:0.8rem; color:#6b7280; margin-top:8px;">Login karke apni order history aur saved addresses pa sakte ho.</div>
+          <div style="font-size:0.8rem; color:#6b7280; margin-top:8px;">Login karke apni order history aur saved addresses pa sakte ho. Continue with Google par click karke aap hamari <a href="/privacy.html" style="color:#006d37; font-weight:700;">Privacy Policy</a> se sahmat hain.</div>
         </div>
         <div id="googleLoggedIn" style="display:none; align-items:center; gap:12px;">
           <img id="googleUserPhoto" src="" alt="" style="width:44px; height:44px; border-radius:50%; display:none;">
@@ -278,11 +278,15 @@
           <button style="font-size:1.2rem; font-weight:bold; color:#888; background:none; border:none; cursor:pointer;" data-close="privacyModal">✕</button>
         </div>
         <div style="font-size:0.85rem; color:#374151; line-height:1.65;">
-          <p style="margin-bottom:10px;"><strong>1. Information we collect:</strong> your name, phone number, delivery addresses and order history — only what is needed to deliver your groceries.</p>
-          <p style="margin-bottom:10px;"><strong>2. How we use it:</strong> to process orders, arrange delivery and provide customer support. We never sell your personal data.</p>
-          <p style="margin-bottom:10px;"><strong>3. Data storage:</strong> your details are stored securely and are accessible only to OK Mart staff handling your order.</p>
-          <p style="margin-bottom:10px;"><strong>4. Your control:</strong> you can update your profile details or saved addresses anytime from this Account page.</p>
-          <p>Questions? Reach us on WhatsApp at +91 9982239821.</p>
+          <p style="margin-bottom:10px;"><strong>1. Data we collect:</strong> your name, phone number, email (only if you give it, or via Google Sign-In), delivery addresses and location (only when you pick or confirm it), order history, referral and wallet records, and a notification token (only if you tap Enable). We never collect card details on this site.</p>
+          <p style="margin-bottom:10px;"><strong>2. Why we use it:</strong> only to process and deliver your orders, arrange support, apply referral and wallet credits, and send order updates. We never sell your personal data.</p>
+          <p style="margin-bottom:10px;"><strong>3. Who sees it:</strong> only our team fulfilling your order (orders go to our WhatsApp order channel) and Google Firebase, which hosts this site. Nobody else — no advertisers, no data brokers.</p>
+          <p style="margin-bottom:10px;"><strong>4. Your consent:</strong> signing in or ordering means you agree to the uses above. You can withdraw consent anytime — contact us or use the deletion request below.</p>
+          <p style="margin-bottom:10px;"><strong>5. How long we keep it:</strong> while your account is active. On a verified deletion request, we delete your personal details and saved addresses.</p>
+          <p style="margin-bottom:10px;"><strong>6. Your rights:</strong> see, correct (from this Account page) or delete your data, and raise a grievance with us first, then with the Data Protection Board of India. Full policy: <a href="/privacy.html" style="color:#006d37; font-weight:700;">okmart.netlify.app/privacy.html</a></p>
+          <p style="margin-bottom:12px;"><strong>7. Children:</strong> OK Mart is for adults (18+). Under-18 users need a parent or guardian's consent. We do not track children or show them targeted ads.</p>
+          <button id="requestDataDeletionBtn" style="width:100%; background:#fef2f2; border:1.5px solid #fecaca; color:#b91c1c; font-weight:700; padding:12px; border-radius:8px; cursor:pointer;">Request Data Deletion</button>
+          <p style="font-size:0.8rem; color:#6b7280; margin-top:8px;">Request milne par hum WhatsApp par confirm karke aapka personal data delete kar denge. Questions? WhatsApp: +91 9982239821.</p>
         </div>
       </div>
     </div>
@@ -478,5 +482,39 @@
     <script src="/js/auth-ui.js"></script>
     <script src="/js/referral.js"></script>
     <script src="/js/wallet.js"></script>
+    <script>
+      // DPDP: data deletion request (best-effort write; owner verifies via WhatsApp, then deletes)
+      (function () {
+        var btn = document.getElementById('requestDataDeletionBtn');
+        if (!btn) return;
+        btn.addEventListener('click', async function () {
+          btn.disabled = true;
+          btn.textContent = 'Sending request...';
+          try {
+            var saved = {};
+            try { saved = JSON.parse(localStorage.getItem('okmart_user') || '{}'); } catch (e) {}
+            var db = window.db || (window.firebase && firebase.firestore());
+            if (!db) throw new Error('no-db');
+            await db.collection('dataRequests').add({
+              type: 'erasure',
+              name: saved.name || '',
+              phone: saved.phone || '',
+              email: saved.email || '',
+              status: 'pending',
+              requestedAt: new Date().toISOString(),
+              source: 'profile-privacy-modal'
+            });
+            btn.textContent = 'Request sent';
+            if (window.OKModal) await window.OKModal.alert('Request mil gaya! Hum WhatsApp par confirm karke aapka personal data delete kar denge.');
+            else alert('Request mil gaya! Hum WhatsApp par confirm karke aapka personal data delete kar denge.');
+          } catch (e) {
+            btn.disabled = false;
+            btn.textContent = 'Request Data Deletion';
+            if (window.OKModal) await window.OKModal.alert('Request save nahi ho paya. Please WhatsApp par +91 9982239821 par "delete my data" likh kar bhej dein.');
+            else alert('Request save nahi ho paya. Please WhatsApp par +91 9982239821 par "delete my data" likh kar bhej dein.');
+          }
+        });
+      })();
+    </script>
 </body>
 </html>
