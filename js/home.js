@@ -187,7 +187,9 @@
       });
       var SLUG_ALIASES = { 'personal-care': 'personal' }; // pill href slug -> Firestore doc id
       row.querySelectorAll('.category-pill').forEach(pill => {
-        const m = (pill.getAttribute('href') || '').match(/^\/categories\/([^\/]+)\.html$/);
+        // Netlify serves pretty URLs, so live hrefs are '/categories/<slug>'
+        // (no .html) — accept the extension as optional, plus trailing slash.
+        const m = (pill.getAttribute('href') || '').match(/^\/categories\/([^\/]+?)(?:\.html)?\/?$/);
         const docId = m ? (SLUG_ALIASES[m[1]] || m[1]) : null;
         if (!m || !map[docId]) return;
         const icon = pill.querySelector('.cat-pill-icon');

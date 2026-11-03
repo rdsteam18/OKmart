@@ -401,7 +401,7 @@
     }
     if (progressLabel) {
       if (totals.remainingForFree <= 0) {
-        progressLabel.innerHTML = '🎉 Free delivery unlocked! 🎉';
+        progressLabel.innerHTML = 'Free delivery unlocked!';
       } else {
         progressLabel.innerHTML = `Add ₹${totals.remainingForFree} more for FREE delivery 🎁`;
       }
