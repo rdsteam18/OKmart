@@ -304,6 +304,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/admin-shell.css">
 </head>
 <body class="bg-[#f8fafc] text-[#171b28] font-body-sm">
   
@@ -313,143 +314,16 @@
   </div>
   
   <!-- Sidebar Overlay (Mobile) -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-  
   <!-- Mobile Sidebar -->
-  <div class="mobile-sidebar" id="mobileSidebar">
-    <div class="p-6 flex flex-col gap-1">
-      <span class="text-[24px] font-extrabold tracking-tight text-[#006d37]">OK Mart Admin</span>
-      <span class="text-[#3d4a3e] opacity-70 text-xs">Management Portal</span>
-    </div>
-    <nav class="mt-4 flex flex-col px-2 gap-1">
-      <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="font-medium">Dashboard</span>
-      </a>
-      <a href="orders.html" class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#006d37] bg-[#84c225]/10 text-[#006d37] font-bold rounded-r-lg">
-        <span class="material-symbols-outlined">shopping_cart</span>
-        <span class="font-bold">Orders</span>
-      </a>
-      <a href="products.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">inventory_2</span>
-        <span class="font-medium">Products</span>
-      </a>
-      <a href="categories.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">category</span>
-        <span class="font-medium">Categories</span>
-      </a>
-      <a href="offers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">local_offer</span>
-        <span class="font-medium">Offers</span>
-      </a>
-      <a href="deals.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">local_fire_department</span>
-        <span class="font-medium">Deals</span>
-      </a>
-      <a href="festive.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">celebration</span>
-        <span class="font-medium">Festive Banner</span>
-      </a>
-      <a href="delivery.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">delivery_dining</span>
-        <span class="font-medium">Delivery</span>
-      </a>
-      <a href="customers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">group</span>
-        <span class="font-medium">Customers</span>
-      </a>
-      <a href="manual-order.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">add_shopping_cart</span>
-        <span class="font-medium">Manual Order</span>
-      </a>
-      <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">settings</span>
-        <span class="font-medium">Settings</span>
-      </a>
-</nav>
-    <div class="mt-auto p-4 border-t border-[#bbcbbb]">
-      <div class="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm">
-        <div class="w-10 h-10 rounded-full bg-[#84c225] flex items-center justify-center text-white font-bold text-lg">A</div>
-        <div class="flex flex-col">
-          <span class="text-sm font-bold">Admin User</span>
-          <span class="text-xs text-[#3d4a3e]">Store Manager</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  
   
   <!-- Desktop Sidebar -->
-  <aside class="fixed left-0 top-0 h-full w-[260px] hidden lg:flex flex-col bg-[#f2f3ff] shadow-sm border-r border-[#bbcbbb] z-50">
-    <div class="p-6 flex flex-col gap-1">
-      <span class="text-[24px] font-extrabold tracking-tight text-[#006d37]">OK Mart Admin</span>
-      <span class="text-[#3d4a3e] opacity-70 text-xs">Management Portal</span>
-    </div>
-    <nav class="mt-4 flex flex-col px-2 gap-1">
-      <a href="index.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="font-medium">Dashboard</span>
-      </a>
-      <a href="orders.html" class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#006d37] bg-[#84c225]/10 text-[#006d37] font-bold rounded-r-lg">
-        <span class="material-symbols-outlined">shopping_cart</span>
-        <span class="font-bold">Orders</span>
-      </a>
-      <a href="products.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">inventory_2</span>
-        <span class="font-medium">Products</span>
-      </a>
-      <a href="categories.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">category</span>
-        <span class="font-medium">Categories</span>
-      </a>
-      <a href="offers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">local_offer</span>
-        <span class="font-medium">Offers</span>
-      </a>
-      <a href="deals.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">local_fire_department</span>
-        <span class="font-medium">Deals</span>
-      </a>
-      <a href="festive.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">celebration</span>
-        <span class="font-medium">Festive Banner</span>
-      </a>
-      <a href="delivery.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">delivery_dining</span>
-        <span class="font-medium">Delivery</span>
-      </a>
-      <a href="customers.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">group</span>
-        <span class="font-medium">Customers</span>
-      </a>
-      <a href="manual-order.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">add_shopping_cart</span>
-        <span class="font-medium">Manual Order</span>
-      </a>
-      <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-[#3d4a3e] hover:text-[#006d37] transition-colors hover:bg-[#e5e7fa] rounded-lg">
-        <span class="material-symbols-outlined">settings</span>
-        <span class="font-medium">Settings</span>
-      </a>
-</nav>
-    <div class="mt-auto p-4 border-t border-[#bbcbbb]">
-      <div class="flex items-center gap-3 p-2 bg-white rounded-xl shadow-sm">
-        <div class="w-10 h-10 rounded-full bg-[#84c225] flex items-center justify-center text-white font-bold text-lg">A</div>
-        <div class="flex flex-col flex-1">
-          <span class="text-sm font-bold">Admin User</span>
-          <span class="text-xs text-[#3d4a3e]">Store Manager</span>
-        </div>
-        <button onclick="adminLogout()" class="p-1.5 hover:bg-red-50 text-red-500 rounded-lg" title="Logout">
-          <span class="material-symbols-outlined text-lg">logout</span>
-        </button>
-      </div>
-    </div>
-  </aside>
+  
   
   <!-- Top Header -->
   <header class="flex justify-between items-center h-16 px-6 sticky top-0 z-40 lg:ml-[260px] bg-white shadow-sm">
     <div class="flex items-center gap-4">
-      <button class="lg:hidden text-[#171b28]" id="mobileMenuBtn">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
+      
       <div class="hidden md:flex gap-6 items-center">
         <span class="text-[#3d4a3e] text-sm">Admin / <span class="text-[#006d37] font-semibold">Orders</span></span>
       </div>
@@ -463,7 +337,34 @@
   </header>
   
   <!-- Main Content -->
-  <main class="lg:ml-[260px] p-6 min-h-[calc(100vh-64px)] animate-page-entry">
+  <aside id="adminSidebar" class="admin-shell-sidebar">
+  <div class="admin-shell-brand">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="admin-shell-logo">
+    <span class="admin-shell-logo-text">OK Mart</span>
+    <span class="admin-shell-badge">Admin</span>
+    <button class="admin-shell-close" id="adminShellCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+  <nav class="admin-shell-nav">
+    <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+    <a href="orders.html" class="active"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
+    <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
+    <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
+    <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
+    <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
+    <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
+    <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
+    <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
+    <a href="manual-order.html"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
+    <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
+  </nav>
+  <div class="admin-shell-footer">
+    <button onclick="logout()"><span class="material-symbols-outlined">logout</span> Logout</button>
+    <button onclick="window.open('/','_blank')"><span class="material-symbols-outlined">storefront</span> View Store</button>
+  </div>
+</aside>
+<div id="adminShellBackdrop" class="admin-shell-backdrop"></div>
+<div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
+<main class="lg:ml-[260px] p-6 min-h-[calc(100vh-64px)] animate-page-entry">
     
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -624,9 +525,6 @@
     const deleteModal = document.getElementById('deleteModal');
     const toast = document.getElementById('toast');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileSidebar = document.getElementById('mobileSidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
     
     // State
     let allOrders = [];
@@ -636,18 +534,10 @@
     let deleteOrderId = null;
     
     // Sidebar Toggle
-    function openSidebar() {
-      mobileSidebar.classList.add('open');
-      sidebarOverlay.style.display = 'block';
-    }
     
-    function closeSidebar() {
-      mobileSidebar.classList.remove('open');
-      sidebarOverlay.style.display = 'none';
-    }
     
-    mobileMenuBtn?.addEventListener('click', openSidebar);
-    sidebarOverlay?.addEventListener('click', closeSidebar);
+    
+    
     
     // Load Orders from Firebase
     async function loadOrders() {
@@ -745,7 +635,7 @@
                 <button class="view-order-btn px-2.5 py-1 text-xs font-bold text-[#006d37] border border-[#006d37]/20 rounded-lg hover:bg-[#006d37] hover:text-white transition-all" data-id="${order.id}">View</button>
                 <a href="invoice.html?id=${order.id}" target="_blank" class="px-2.5 py-1 text-xs font-bold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-center" title="Print Invoice">🖨️</a>
                 ${waPhone ? `<a href="${waUrl}" target="_blank" class="px-2.5 py-1 text-xs font-bold text-white bg-[#25D366] rounded-lg hover:opacity-90 transition-all text-center" title="WhatsApp Customer">💬</a>` : ''}
-                <button class="delete-order-btn px-2.5 py-1 text-xs font-bold text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-all" data-id="${order.id}">🗑️</button>
+                <button class="delete-order-btn px-2.5 py-1 text-xs font-bold text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-all" data-id="${order.id}"><span class="material-symbols-outlined" style="font-size:14px">delete</span></button>
               </div>
             </td>
           </tr>
@@ -1027,6 +917,7 @@
     
     console.log('✅ Order Management Page Loaded');
   </script>
+  <script src="js/admin-shell.js"></script>
 </body>
 </html>
 

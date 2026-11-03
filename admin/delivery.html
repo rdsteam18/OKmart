@@ -184,7 +184,7 @@
     /* Main Content */
     .main-content {
       flex: 1;
-      margin-left: 280px;
+      margin-left: 260px;
       padding: 24px;
       max-width: 1400px;
     }
@@ -644,6 +644,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/admin-shell.css">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -654,45 +655,45 @@
   <div class="admin-layout">
     
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
-        <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
-        <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
-        <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
-        <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
-        <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
-        <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
-        <a href="delivery.html" class="active"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
-        <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
-        <a href="manual-order.html"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
-        <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
-</nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('/','_blank')" style="margin-top:8px;">🏠 View Store</button>
-      </div>
-    </aside>
+    
 
     <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button>
-      <span style="font-weight:700;">Delivery Management</span>
-      <button class="menu-toggle" onclick="location.reload()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span></button>
-    </div>
+    
 
     <!-- Main Content -->
-    <main class="main-content">
+    <aside id="adminSidebar" class="admin-shell-sidebar">
+  <div class="admin-shell-brand">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="admin-shell-logo">
+    <span class="admin-shell-logo-text">OK Mart</span>
+    <span class="admin-shell-badge">Admin</span>
+    <button class="admin-shell-close" id="adminShellCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+  <nav class="admin-shell-nav">
+    <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+    <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
+    <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
+    <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
+    <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
+    <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
+    <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
+    <a href="delivery.html" class="active"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
+    <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
+    <a href="manual-order.html"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
+    <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
+  </nav>
+  <div class="admin-shell-footer">
+    <button onclick="logout()"><span class="material-symbols-outlined">logout</span> Logout</button>
+    <button onclick="window.open('/','_blank')"><span class="material-symbols-outlined">storefront</span> View Store</button>
+  </div>
+</aside>
+<div id="adminShellBackdrop" class="admin-shell-backdrop"></div>
+<div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
+<main class="main-content">
       
       <!-- Page Header -->
       <div class="page-header">
         <h1>🚚 Delivery Management</h1>
-        <button class="add-btn" onclick="openPincodeModal()">➕ Add Pincode</button>
+        <button class="add-btn" onclick="openPincodeModal()"><span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">add</span> Add Pincode</button>
       </div>
 
       <!-- Stats -->
@@ -717,7 +718,7 @@
 
       <!-- Control Bar -->
       <div class="control-bar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by pincode, city, area...">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by pincode, city, area...">
         <select id="deliveryTypeFilter" class="filter-select">
           <option value="all">All Delivery Types</option>
           <option value="quick">Quick Delivery Only</option>
@@ -763,7 +764,7 @@
           </div>
           <div class="setting-row">
             <div class="setting-info">
-              <strong>⚡ Quick Delivery Time</strong>
+              <strong><span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">bolt</span> Quick Delivery Time</strong>
               <small>Estimated delivery time in minutes</small>
             </div>
             <div><input type="number" id="quickDeliveryTime" style="width:80px;padding:8px;border-radius:8px;border:1px solid var(--border);" value="15" onchange="updateQuickDeliveryTime()"></div>
@@ -799,9 +800,9 @@
           <div class="form-group">
             <label>Delivery Type *</label>
             <select id="deliveryType">
-              <option value="quick">⚡ Quick Delivery (10-15 mins)</option>
-              <option value="scheduled">📅 Scheduled Delivery (2-4 hours)</option>
-              <option value="both">🚀 Both Available</option>
+              <option value="quick">Quick Delivery (10-15 mins)</option>
+              <option value="scheduled">Scheduled Delivery (1-5 days)</option>
+              <option value="both">Both Available</option>
             </select>
           </div>
           <div class="form-row">
@@ -816,7 +817,7 @@
           </div>
           <div class="form-check">
             <input type="checkbox" id="isActive" checked>
-            <label>✅ Active (serviceable area)</label>
+            <label>Active (serviceable area)</label>
           </div>
         </form>
       </div>
@@ -919,7 +920,7 @@
       
       grid.innerHTML = filtered.map(p => {
         const isActive = p.active !== false;
-        const deliveryTypeDisplay = p.deliveryType === 'quick' ? '⚡ Quick (10-15 mins)' : (p.deliveryType === 'scheduled' ? '📅 Scheduled (1-5 days)' : '🚀 Both Available');
+        const deliveryTypeDisplay = p.deliveryType === 'quick' ? 'Quick (10-15 mins)' : (p.deliveryType === 'scheduled' ? 'Scheduled (1-5 days)' : 'Both Available');
         const deliveryTypeClass = p.deliveryType === 'quick' ? 'delivery-quick' : (p.deliveryType === 'scheduled' ? 'delivery-scheduled' : 'delivery-both');
         
         return `
@@ -944,8 +945,8 @@
               </div>
             </div>
             <div class="pincode-footer">
-              <button class="action-btn edit-btn" onclick="editPincode('${p.id}')">✏️ Edit</button>
-              <button class="action-btn delete-btn" onclick="openDeleteModal('${p.id}')">🗑️ Delete</button>
+              <button class="action-btn edit-btn" onclick="editPincode('${p.id}')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:-3px">edit</span> Edit</button>
+              <button class="action-btn delete-btn" onclick="openDeleteModal('${p.id}')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:-3px">delete</span> Delete</button>
             </div>
           </div>
         `;
@@ -1150,6 +1151,7 @@
     loadData();
   </script>
 <style>.sidebar-nav .material-symbols-outlined{font-size:20px;vertical-align:-4px;margin-right:6px}.sidebar-nav a{display:flex;align-items:center;gap:8px}</style>
+  <script src="js/admin-shell.js"></script>
 </body>
 </html>
 

@@ -150,7 +150,7 @@
     /* Main Content */
     .main-content {
       flex: 1;
-      margin-left: 280px;
+      margin-left: 260px;
       padding: 32px;
       max-width: 1300px;
     }
@@ -479,6 +479,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/admin-shell.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -489,40 +490,40 @@
   <div class="admin-layout">
     
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="sidebar-logo-img">
-        <span class="sidebar-logo-text">OK Mart</span>
-        <span class="sidebar-badge">Admin</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
-        <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
-        <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
-        <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
-        <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
-        <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
-        <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
-        <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
-        <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
-        <a href="manual-order.html"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
-        <a href="settings.html" class="active"><span class="material-symbols-outlined">settings</span> Settings</a>
-</nav>
-      <div class="sidebar-footer">
-        <button onclick="logout()">🚪 Logout</button>
-        <button onclick="window.open('../index.html','_blank')" style="margin-top:8px;">🏠 View Store</button>
-      </div>
-    </aside>
+    
 
     <!-- Mobile Header -->
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button>
-      <span style="font-weight:700;">Settings & Charges</span>
-      <button class="menu-toggle" onclick="location.reload()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span></button>
-    </div>
+    
 
     <!-- Main Content -->
-    <main class="main-content">
+    <aside id="adminSidebar" class="admin-shell-sidebar">
+  <div class="admin-shell-brand">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="admin-shell-logo">
+    <span class="admin-shell-logo-text">OK Mart</span>
+    <span class="admin-shell-badge">Admin</span>
+    <button class="admin-shell-close" id="adminShellCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+  <nav class="admin-shell-nav">
+    <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+    <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
+    <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
+    <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
+    <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
+    <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
+    <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
+    <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
+    <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
+    <a href="manual-order.html"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
+    <a href="settings.html" class="active"><span class="material-symbols-outlined">settings</span> Settings</a>
+  </nav>
+  <div class="admin-shell-footer">
+    <button onclick="logout()"><span class="material-symbols-outlined">logout</span> Logout</button>
+    <button onclick="window.open('/','_blank')"><span class="material-symbols-outlined">storefront</span> View Store</button>
+  </div>
+</aside>
+<div id="adminShellBackdrop" class="admin-shell-backdrop"></div>
+<div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
+<main class="main-content">
       
       <!-- Page Header -->
       <div class="page-header">
@@ -542,7 +543,7 @@
         <button class="tab-btn" data-tab="general">🏠 Store Profile</button>
         <button class="tab-btn" data-tab="appearance">🎨 Appearance</button>
         <button class="tab-btn" data-tab="admin">👑 Admin Accounts</button>
-        <button class="tab-btn" data-tab="backup">💾 Backup & Export</button>
+        <button class="tab-btn" data-tab="backup"><span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">save</span> Backup &amp; Export</button>
       </div>
 
       <!-- 1. CHARGES & PRICING TAB -->
@@ -719,7 +720,7 @@
               <small>Text shown in the top notice bar</small>
             </div>
             <div class="input-group" style="min-width:400px;">
-              <input type="text" id="announcementText" placeholder="⚡ Fast 15-Minute Grocery Delivery across your area! Use code SAVE20 for ₹50 OFF">
+              <input type="text" id="announcementText" placeholder="Fast 15-Minute Grocery Delivery across your area! Use code SAVE20 for ₹50 OFF">
               <button class="save-setting-btn" onclick="saveChargeField('announcementText', 'Announcement message')">Save</button>
             </div>
           </div>
@@ -884,7 +885,7 @@
           isStoreOpen: true,
           storeClosedNotice: 'We are currently closed for the night. Orders will resume at 7:00 AM!',
           announcementEnabled: false,
-          announcementText: '⚡ Fast 15-Minute Grocery Delivery across your neighborhood!',
+          announcementText: 'Fast 15-Minute Grocery Delivery across your neighborhood!',
           allowCod: true,
           allowOnline: true,
           adminWhatsapp: '919982239821',
@@ -1173,5 +1174,6 @@
     loadSettings();
   </script>
 <style>.sidebar-nav .material-symbols-outlined{font-size:20px;vertical-align:-4px;margin-right:6px}.sidebar-nav a{display:flex;align-items:center;gap:8px}</style>
+  <script src="js/admin-shell.js"></script>
 </body>
 </html>

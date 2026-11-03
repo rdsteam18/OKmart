@@ -37,7 +37,7 @@
     var list = allDeals.filter(function (d) {
       if (activeRetailer !== 'all') {
         var r = (d.retailer || '').toLowerCase();
-        if (activeRetailer === 'other' && (r === 'amazon' || r === 'flipkart')) return false;
+        if (activeRetailer === 'other' && (r === 'amazon' || r === 'flipkart' || r === 'myntra' || r === 'ajio')) return false;
         if (activeRetailer !== 'other' && r !== activeRetailer) return false;
       }
       if (q) {

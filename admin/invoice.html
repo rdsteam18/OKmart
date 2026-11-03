@@ -182,6 +182,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 </head>
 <body>
   
@@ -197,7 +198,7 @@
     <!-- Action Buttons -->
     <div class="invoice-actions-bar">
       <button class="action-btn back-btn" onclick="history.back()">← Back</button>
-      <button class="action-btn download-btn" onclick="downloadPDF()">📥 Download PDF</button>
+      <button class="action-btn download-btn" onclick="downloadPDF()"><span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">download</span> Download PDF</button>
       <button class="action-btn print-btn" onclick="printInvoice()">🖨️ Print</button>
       <button class="action-btn whatsapp-btn" onclick="sendWhatsApp()">💬 Send WhatsApp</button>
     </div>

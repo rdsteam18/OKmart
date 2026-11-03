@@ -127,6 +127,7 @@
       .menu-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
     }
   </style>
+  <link rel="stylesheet" href="css/admin-shell.css">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -134,35 +135,41 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
   <div class="admin-layout">
     
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
-      <nav class="sidebar-nav">
-        <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
-        <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
-        <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
-        <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
-        <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
-        <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
-        <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
-        <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
-        <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
-        <a href="manual-order.html" class="active"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
-        <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
-</nav>
-      <div class="sidebar-footer"><button onclick="adminLogout()">🚪 Logout</button></div>
-    </aside>
+    
 
-    <div class="mobile-header">
-      <button class="menu-toggle" onclick="toggleSidebar()"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button>
-      <span style="font-weight:700;">Manual Order</span>
-      <button class="menu-toggle" onclick="location.reload()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span></button>
-    </div>
+    
 
-    <main class="main-content">
+    <aside id="adminSidebar" class="admin-shell-sidebar">
+  <div class="admin-shell-brand">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="admin-shell-logo">
+    <span class="admin-shell-logo-text">OK Mart</span>
+    <span class="admin-shell-badge">Admin</span>
+    <button class="admin-shell-close" id="adminShellCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+  <nav class="admin-shell-nav">
+    <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+    <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
+    <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
+    <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
+    <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
+    <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
+    <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
+    <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
+    <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
+    <a href="manual-order.html" class="active"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
+    <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
+  </nav>
+  <div class="admin-shell-footer">
+    <button onclick="logout()"><span class="material-symbols-outlined">logout</span> Logout</button>
+    <button onclick="window.open('/','_blank')"><span class="material-symbols-outlined">storefront</span> View Store</button>
+  </div>
+</aside>
+<div id="adminShellBackdrop" class="admin-shell-backdrop"></div>
+<div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
+<main class="main-content">
       <div class="page-header"><h1>✍️ Create Manual Order</h1></div>
       
       <!-- Success Card -->
@@ -170,7 +177,7 @@
         <h3>✅ Order Created Successfully!</h3>
         <p>Order ID: <span class="order-id-display" id="successOrderId">-</span></p>
         <div class="action-buttons" style="justify-content:center;margin-top:12px;">
-          <button class="btn btn-outline" onclick="resetForm()">➕ New Order</button>
+          <button class="btn btn-outline" onclick="resetForm()"><span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">add</span> New Order</button>
           <button class="btn btn-whatsapp" onclick="sendCreatedOrderWhatsApp()">💬 Send WhatsApp</button>
           <a class="btn btn-primary" id="invoiceLink" target="_blank">🧾 View Invoice</a>
         </div>
@@ -178,7 +185,7 @@
       
       <!-- Product Search -->
       <div class="section-card">
-        <h2>🔍 Search & Add Products</h2>
+        <h2><span class="material-symbols-outlined" style="font-size:20px;vertical-align:-4px">search</span> Search &amp; Add Products</h2>
         <div class="search-box">
           <input type="text" class="search-input" id="productSearch" placeholder="Search products by name..." oninput="searchProducts()" autocomplete="off">
           <div class="search-results" id="searchResults"></div>
@@ -328,7 +335,7 @@
             <span class="qty-num">${item.qty}</span>
             <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
           </div>
-          <button class="remove-btn" onclick="removeItem('${item.id}')">🗑️</button>
+          <button class="remove-btn" onclick="removeItem('${item.id}')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
         </div>
       `).join('');
       
@@ -459,16 +466,14 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
-    window.toggleSidebar = function() {
-      document.getElementById('sidebar')?.classList.toggle('open');
-      document.getElementById('sidebarOverlay')?.classList.toggle('open');
-    };
+    
     
     // Init
     renderCart();
     console.log('✅ Manual order system ready');
   </script>
 <style>.sidebar-nav .material-symbols-outlined{font-size:20px;vertical-align:-4px;margin-right:6px}.sidebar-nav a{display:flex;align-items:center;gap:8px}</style>
+  <script src="js/admin-shell.js"></script>
 </body>
 </html>
 
