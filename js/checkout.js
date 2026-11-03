@@ -78,6 +78,7 @@
       
       loadingState.style.display = 'none';
       checkoutContent.style.display = 'grid';
+      applyDeliveryZone();
       
     } catch (error) {
       console.error('Error loading data:', error);
@@ -130,26 +131,68 @@
       const editBtn = document.getElementById('editAddressBtn');
       if (editBtn) {
         editBtn.addEventListener('click', () => {
-          window.location.href = '/profile.html';
+          renderInlineAddressForm(userAddress);
         });
       }
     } else {
-      addressDisplayDiv.innerHTML = `
-        <div class="no-address-card">
-          <div class="no-address-icon">⚠️</div>
-          <h3>Delivery Address Required</h3>
-          <p>Please add your delivery address to continue</p>
-          <button class="add-address-btn" id="addAddressBtn">Add Address →</button>
+      renderInlineAddressForm(null);
+    }  }
+
+  // ========== Inline Address Form (no profile redirect) ==========
+  // Used when no address is saved yet, and by Edit Address. Saves to the
+  // same localStorage keys checkout reads, then re-renders + re-checks zone.
+  function renderInlineAddressForm(prefill) {
+    if (!addressDisplayDiv) return;
+    const p = prefill || {};
+    addressDisplayDiv.innerHTML = `
+        <div class="address-card">
+          <h3>Delivery Address</h3>
+          <p>Order karne se pehle apna proper address daalein.</p>
+          <input id="coName" class="form-input" placeholder="Full name" value="${escapeHtml(p.name || '')}">
+          <input id="coPhone" class="form-input" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" value="${escapeHtml(p.phone || '')}">
+          <textarea id="coAddress" class="form-input" placeholder="House / Flat / Street / Area" rows="2">${escapeHtml(p.address || '')}</textarea>
+          <input id="coLandmark" class="form-input" placeholder="Landmark (optional)" value="${escapeHtml(p.landmark || '')}">
+          <input id="coCity" class="form-input" placeholder="City" value="${escapeHtml(p.city || '')}">
+          <input id="coPincode" class="form-input" placeholder="6-digit pincode" inputmode="numeric" maxlength="6" value="${escapeHtml(p.pincode || '')}">
+          <div id="coAddressError" style="display:none;color:#dc2626;font-size:.85rem;margin-top:8px;"></div>
+          <button class="add-address-btn" id="coSaveAddressBtn" style="margin-top:10px;">Save Address</button>
         </div>
       `;
-      
-      const addBtn = document.getElementById('addAddressBtn');
-      if (addBtn) {
-        addBtn.addEventListener('click', () => {
-          window.location.href = '/profile.html';
-        });
+    const saveBtn = document.getElementById('coSaveAddressBtn');
+    if (saveBtn) saveBtn.addEventListener('click', saveInlineAddress);
+  }
+  function saveInlineAddress() {
+    const val = (id) => (document.getElementById(id)?.value || '').trim();
+    const name = val('coName');
+    const phone = val('coPhone');
+    const address = val('coAddress');
+    const landmark = val('coLandmark');
+    const city = val('coCity');
+    const pincode = val('coPincode');
+    const errEl = document.getElementById('coAddressError');
+    const fail = (msg) => {
+      if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+      else showToast(msg, 'error');
+    };
+    if (!name) return fail('Please enter your full name');
+    if (!/^[6-9]\d{9}$/.test(phone)) return fail('Please enter a valid 10-digit mobile number');
+    if (!address) return fail('Please enter House / Flat / Street / Area');
+    if (!city) return fail('Please enter City');
+    if (!/^\d{6}$/.test(pincode)) return fail('Please enter a valid 6-digit pincode');
+    const addr = { name, phone, address, landmark, city, pincode };
+    try {
+      localStorage.setItem('okmart_user_address', JSON.stringify(addr));
+      const list = JSON.parse(localStorage.getItem('okmart_user_addresses') || '[]');
+      if (!list.some(a => a.address === address && a.pincode === pincode)) {
+        list.push({ id: Date.now().toString(), ...addr, isDefault: list.length === 0 });
+        localStorage.setItem('okmart_user_addresses', JSON.stringify(list));
       }
-    }
+    } catch (e) {}
+    userAddress = addr;
+    renderAddressSection();
+    renderOrderSummary();
+    applyDeliveryZone();
+    showToast('Address saved!', 'success');
   }
 
   // ========== Render Order Summary ==========
@@ -261,6 +304,33 @@
     updateDeliveryCharge();
   }
 
+  // ========== Delivery zone: quick areas vs 1-5 day standard areas ==========
+  // Pincode doc deliveryType 'scheduled' means standard delivery (1-5 days):
+  // Quick option is disabled, Scheduled becomes the only choice, and the
+  // order record + WhatsApp message carry 'Delivery in 1-5 days'.
+  let zoneIsStandard = false;
+  async function applyDeliveryZone() {
+    const note = document.getElementById('zoneDeliveryNote');
+    const quickRadio = document.querySelector('input[name="deliveryType"][value="quick"]');
+    const schedRadio = document.querySelector('input[name="deliveryType"][value="scheduled"]');
+    const schedSmall = document.getElementById('scheduledSmall');
+    if (!userAddress || !userAddress.pincode || !window.DeliverySystem) return;
+    try {
+      const info = await window.DeliverySystem.checkServiceability(userAddress.pincode);
+      if (!info.serviceable) return; // blocked/unknown: gate + fail-open handle it
+      if (info.deliveryType === 'scheduled') {
+        zoneIsStandard = true;
+        if (quickRadio) { quickRadio.disabled = true; quickRadio.closest('label').style.opacity = '0.5'; }
+        if (schedRadio) schedRadio.checked = true;
+        if (schedSmall) schedSmall.textContent = 'Delivery in 1-5 days';
+        if (deliverySlotContainer) deliverySlotContainer.style.display = 'none';
+        if (note) note.style.display = 'block';
+        currentDeliveryType = 'scheduled';
+        renderOrderSummary();
+      }
+    } catch (e) { /* fail open: leave options as-is */ }
+  }
+
   // ========== Update Payment Method ==========
   function updatePaymentMethod() {
     const selected = document.querySelector('input[name="paymentMethod"]:checked');
@@ -353,7 +423,8 @@ ${itemsList}
     // Validate address
     if (!userAddress || !userAddress.name || !userAddress.phone || !userAddress.address) {
       showToast('Please add your delivery address first', 'error');
-      window.location.href = '/profile.html';
+      renderInlineAddressForm(null);
+      if (addressDisplayDiv) addressDisplayDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     
@@ -415,7 +486,7 @@ ${itemsList}
     // Get delivery slot
     let deliverySlotValue = null;
     if (currentDeliveryType === 'scheduled') {
-      deliverySlotValue = deliverySlot.value;
+      deliverySlotValue = zoneIsStandard ? 'Delivery in 1-5 days' : deliverySlot.value;
     }
     
     // Prepare order data

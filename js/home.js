@@ -689,7 +689,7 @@
         isLocationServiceable = true;
         try { localStorage.setItem('okmart_serviceable', '1'); } catch (e) {}
         if (messageDiv) {
-          messageDiv.innerHTML = `Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
+          messageDiv.innerHTML = `Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery (1-5 days)'}`;
           messageDiv.className = 'pincode-message success';
         }
         setLocationByPincode(pincode, fromUserClick);
@@ -1085,6 +1085,27 @@
     }
     
     console.log('✅ Home page fully loaded with dynamic settings');
+
+    // First-visit proper-address prompt: if no checkout address is saved yet,
+    // open the location/address modal first, so a new (or address-less)
+    // user enters a proper address before reaching checkout. Dismissible
+    // (X) and shown at most once per tab session; checkout itself still
+    // hard-requires an address via its inline form.
+    try {
+      const hasAddr = localStorage.getItem('okmart_user_address');
+      const dismissed = sessionStorage.getItem('okmart_addr_prompt_dismissed');
+      if (!hasAddr && !dismissed) {
+        const lm = document.getElementById('locationModal');
+        if (lm) {
+          lm.classList.add('active');
+          const cm = document.getElementById('closeLocationModal');
+          if (cm && !cm.dataset.promptBound) {
+            cm.dataset.promptBound = '1';
+            cm.addEventListener('click', () => { try { sessionStorage.setItem('okmart_addr_prompt_dismissed', '1'); } catch (e) {} });
+          }
+        }
+      }
+    } catch (e) {}
   }
   
   init();

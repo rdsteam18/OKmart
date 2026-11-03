@@ -478,7 +478,7 @@ window.DeliverySystem = {
           deliveryType: doc.data().deliveryType || 'quick',
           deliveryCharge: doc.data().deliveryCharge || 39,
           freeAbove: doc.data().freeAbove || 499,
-          estimatedTime: doc.data().deliveryType === 'quick' ? '10-15 mins' : '2-4 hours'
+          estimatedTime: doc.data().deliveryType === 'quick' ? '10-15 mins' : '1-5 days'
         };
       }
       return { serviceable: false };
@@ -502,7 +502,7 @@ window.DeliverySystem = {
       const eta = new Date(now.getTime() + 15 * 60000);
       return eta.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     }
-    return 'Today, 6-8 PM';
+    return '1-5 days';
   },
   
   saveUserLocation: function(location) {

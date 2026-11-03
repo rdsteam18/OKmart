@@ -42,7 +42,7 @@
     '#okmSupportForm{display:flex;gap:8px;padding:10px;border-top:1px solid #e5e7eb;background:#fff}',
     '#okmSupportInput{flex:1;border:1px solid #d1d5db;border-radius:999px;padding:10px 14px;font-size:.9rem;outline:none}',
     '#okmSupportSend{background:#15803d;color:#fff;border:none;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer}',
-    '@media (max-width:768px){#okmSupportBtn{bottom:140px}#okmSupportPanel{bottom:196px}}'
+    '@media (max-width:768px){#okmSupportBtn{bottom:88px}#okmSupportPanel{bottom:196px}}'
   ].join('\n');
   var style = document.createElement('style');
   style.textContent = css;
@@ -118,7 +118,7 @@
   ];
 
   function startEscalation() {
-    escState = { step: 'type', type: '', phone: '', order: '', detail: '' };
+    escState = { step: 'type', type: '', phone: '', order: '', detail: '', orderId: '', orderOptions: null };
     addMsg('Theek hai, main aapki problem team tak pahuncha dunga — pehle kuch details verify kar lein taaki team turant action le sake. <b>Problem kis type ki hai?</b>', 'bot');
     setChips([
       { label: 'Damaged / galat item', value: '__type__Damaged ya galat item' },
@@ -135,7 +135,7 @@
     return '<b>Complaint ka summary — please confirm karein:</b><br>' +
       'Problem: ' + esc(escState.type) + '<br>' +
       'Phone: ' + esc(escState.phone) + '<br>' +
-      'Order: ' + esc(escState.order) + '<br>' +
+      'Order: ' + esc(escState.order) + (escState.orderId ? ' (ID: ' + esc(escState.orderId) + ')' : '') + '<br>' +
       'Detail: ' + esc(escState.detail);
   }
 
@@ -143,14 +143,14 @@
     var text = 'OK Mart Support Complaint (verified by support bot)\n' +
       'Problem: ' + escState.type + '\n' +
       'Phone: ' + escState.phone + '\n' +
-      'Order: ' + escState.order + '\n' +
+      'Order: ' + escState.order + (escState.orderId ? ' [ID: ' + escState.orderId + ']' : '') + '\n' +
       'Detail: ' + escState.detail;
     try {
       var db = window.db;
       if (db && db.collection) {
         db.collection('supportRequests').add({
           type: 'support', problemType: escState.type, phone: escState.phone,
-          order: escState.order, detail: escState.detail,
+          order: escState.order, orderId: escState.orderId || null, detail: escState.detail,
           status: 'pending', source: 'support-bot',
           createdAt: new Date().toISOString()
         }).catch(function () {});
@@ -170,6 +170,17 @@
       setChips(MAIN_CHIPS);
       return;
     }
+    if (escState.step === 'orderList') {
+      if (text.trim().length < 3) {
+        addMsg('Order par tap karein, ya order ki detail khud likhein.', 'bot');
+        return;
+      }
+      escState.order = text.trim();
+      escState.step = 'detail';
+      addMsg('Aur ab <b>problem ko thoda detail me</b> batayein — kya hua, kab hua, kya galat mila?', 'bot');
+      setChips([]);
+      return;
+    }
     if (escState.step === 'phone') {
       var digits = text.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
       if (!/^[6-9]\d{9}$/.test(digits)) {
@@ -177,9 +188,7 @@
         return;
       }
       escState.phone = digits;
-      escState.step = 'order';
-      addMsg('Shukriya. Ab <b>order ki detail</b> batayein — order ki date aur kya-kya item the (ya order id, agar ho).', 'bot');
-      setChips([]);
+      fetchUserOrders(digits);
       return;
     }
     if (escState.step === 'order') {
@@ -208,6 +217,89 @@
     }
   }
 
+  /* ---------- order list picker: tap the order that has the problem ---------- */
+  function orderTimeMs(o) {
+    try {
+      var t = o.createdAt || o.orderDate || o.date;
+      if (t && typeof t.toDate === 'function') return t.toDate().getTime();
+      var ms = new Date(t).getTime();
+      return isNaN(ms) ? 0 : ms;
+    } catch (e) { return 0; }
+  }
+  function orderLine(o) {
+    var items = Array.isArray(o.items) ? o.items : [];
+    var names = items.map(function (it) { return (it.name || 'Item') + ' x' + (it.quantity || 1); });
+    var itemsTxt = names.slice(0, 3).join(', ') + (names.length > 3 ? ' +' + (names.length - 3) + ' aur' : '');
+    var d = orderTimeMs(o) ? new Date(orderTimeMs(o)).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    var total = (o.total != null) ? o.total : ((o.subtotal != null) ? o.subtotal : '');
+    return (d ? d + ' • ' : '') + (itemsTxt || 'Order') + (total !== '' ? ' • ₹' + total : '') + (o.status ? ' • ' + o.status : '');
+  }
+  function localOrders(phone) {
+    try {
+      var saved = JSON.parse(localStorage.getItem('okmart_orders') || '[]');
+      var digits = String(phone).replace(/\D/g, '').slice(-10);
+      return saved.filter(function (o) {
+        return String(o.phone || '').replace(/\D/g, '').slice(-10) === digits;
+      });
+    } catch (e) { return []; }
+  }
+  function renderOrderList(orders) {
+    if (!msgsEl) return;
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:95%;align-self:flex-start;';
+    orders.forEach(function (o) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = orderLine(o);
+      b.style.cssText = 'text-align:left;background:#fff;border:1.5px solid #bbf7d0;border-radius:12px;padding:10px 12px;font-size:.85rem;line-height:1.4;cursor:pointer;color:#14532d;font-weight:600;';
+      b.addEventListener('click', function () {
+        escState.orderId = o.orderId || o.id || '';
+        escState.order = orderLine(o);
+        escState.step = 'detail';
+        addMsg('Chuna gaya order: <b>' + esc(orderLine(o)) + '</b>', 'user');
+        addMsg('Ab <b>problem ko thoda detail me</b> batayein — kya hua, kab hua, kya galat mila?', 'bot');
+        setChips([]);
+      });
+      wrap.appendChild(b);
+    });
+    msgsEl.appendChild(wrap);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  function fetchUserOrders(phone) {
+    addMsg('Aapke orders dhoondh raha hoon...', 'bot');
+    setChips([]);
+    var finish = function (orders) {
+      if (orders && orders.length) {
+        orders.sort(function (a, b) { return orderTimeMs(b) - orderTimeMs(a); });
+        orders = orders.slice(0, 10);
+        escState.orderOptions = orders;
+        escState.step = 'orderList';
+        addMsg('Ye rahe aapke pichhle orders — <b>jis order me problem hai, us par tap karein:</b>', 'bot');
+        renderOrderList(orders);
+        setChips([{ label: 'Order list me nahi hai — khud likhunga', value: '__manual_order__' }]);
+      } else {
+        escState.step = 'order';
+        addMsg('Aapka koi purana order nahi mila. <b>Order ki detail</b> khud batayein — order ki date aur kya-kya item the (ya order id, agar ho).', 'bot');
+      }
+    };
+    try {
+      var db = window.db;
+      if (db && db.collection) {
+        var tries = [phone, '91' + phone];
+        var attempt = function (i) {
+          if (i >= tries.length) { finish(localOrders(phone)); return; }
+          db.collection('orders').where('phone', '==', tries[i]).get().then(function (snap) {
+            var list = [];
+            snap.forEach(function (doc) { var d = doc.data(); d.id = doc.id; list.push(d); });
+            if (list.length) finish(list);
+            else attempt(i + 1);
+          }, function () { attempt(i + 1); });
+        };
+        attempt(0);
+      } else { finish(localOrders(phone)); }
+    } catch (e) { finish(localOrders(phone)); }
+  }
+
   /* ---------- intents ---------- */
   function has(text) {
     var words = Array.prototype.slice.call(arguments, 1);
@@ -219,7 +311,7 @@
     addMsg('Delivery charges bilkul clear hain:<br>• Order <b>₹' + s.threshold + ' se upar</b> ho to delivery <b>FREE</b>.<br>• Usse kam par delivery charge <b>₹' + s.base + '</b> lagta hai.<br>• Har order par Handling Fee <b>₹' + s.handling + '</b> lagti hai.<br>Ye sab cart aur checkout me total ke saath dikhta hai.', 'bot');
   }
   function answerTime() {
-    addMsg('OK Mart <b>15-minute quick delivery</b> ka vaada karta hai — ye aapke area par depend karta hai. Order WhatsApp par confirm hone ke baad rider nikalta hai. Agar order late ho raha hai to Track Order page par dekhein ya mujhe "problem hai" batayein.', 'bot');
+    addMsg('OK Mart ke <b>quick areas (Amraiwadi, Vastral, Khokhra, Rabari Colony)</b> me delivery <b>10-15 minute</b> me hoti hai. Baaki serviceable areas me delivery <b>1-5 din me</b> hoti hai (jaise Amazon/Flipkart). Apna pincode bhej kar check kar sakte ho ki aapka area kis me aata hai. Order WhatsApp par confirm hone ke baad rider nikalta hai.', 'bot');
   }
   function answerTrack() {
     addMsg('<a href="/track-order.html">Track Order page</a> par apna phone number daal kar order ki sthiti dekh sakte ho. Order WhatsApp par confirm hota hai, isliye WhatsApp par bhi update milta hai.', 'bot');
@@ -244,8 +336,25 @@
   }
   function checkPincode(pin) {
     addMsg('Pincode ' + esc(pin) + ' check kar raha hoon...', 'bot');
+    var zoneMsg = function () {
+      try {
+        var db = window.db;
+        if (db && db.collection) {
+          db.collection('pincodes').doc(pin).get().then(function (doc) {
+            var t = (doc.exists && doc.data().deliveryType) || 'quick';
+            if (t === 'scheduled') addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b> — yahan delivery <b>1-5 din me</b> hoti hai (standard delivery, jaise Amazon/Flipkart).', 'bot');
+            else if (t === 'both') addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b> — yahan <b>Quick (10-15 min)</b> aur Scheduled dono options hain.', 'bot');
+            else addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b> — yahan <b>Quick delivery (10-15 min)</b> hoti hai.', 'bot');
+            setChips(MAIN_CHIPS);
+          }, function () { addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b>. Aap order kar sakte ho.', 'bot'); setChips(MAIN_CHIPS); });
+          return;
+        }
+      } catch (e) {}
+      addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b>. Aap order kar sakte ho.', 'bot');
+      setChips(MAIN_CHIPS);
+    };
     var done = function (state) {
-      if (state === 'ok') addMsg('Good news! Pincode <b>' + esc(pin) + '</b> par delivery <b>available hai</b>. Aap order kar sakte ho.', 'bot');
+      if (state === 'ok') { zoneMsg(); return; }
       else if (state === 'blocked') addMsg('Afsoos, pincode <b>' + esc(pin) + '</b> par delivery <b>available nahi dikh rahi</b>. Aas-paas ka pincode try karein, ya team se WhatsApp par pooch lein — ho sakta hai aapka area jald jud jaye.', 'bot');
       else addMsg('Pincode check nahi ho paya (network issue). Please thodi der baad dobara try karein, ya checkout par pincode daal kar dekhein.', 'bot');
       setChips(MAIN_CHIPS);
@@ -266,9 +375,23 @@
     if (text === '__wa__') { setChips(MAIN_CHIPS); return; }
     if (text === '__confirm_yes__') { sendEscalation(); return; }
     if (text === '__confirm_no__') {
-      escState = { step: 'type', type: escState.type, phone: escState.phone, order: '', detail: '' };
-      addMsg('Theek hai, dobara batayein — <b>order ki detail</b> phir se likhein.', 'bot');
+      var prevOrders = escState.orderOptions || null;
+      escState = { step: 'type', type: escState.type, phone: escState.phone, order: '', detail: '', orderId: '', orderOptions: prevOrders };
+      if (prevOrders && prevOrders.length) {
+        escState.step = 'orderList';
+        addMsg('Theek hai, dobara chunein — <b>jis order me problem hai, us par tap karein:</b>', 'bot');
+        renderOrderList(prevOrders);
+        setChips([{ label: 'Order list me nahi hai — khud likhunga', value: '__manual_order__' }]);
+      } else {
+        addMsg('Theek hai, dobara batayein — <b>order ki detail</b> phir se likhein.', 'bot');
+        escState.step = 'order';
+        setChips([]);
+      }
+      return;
+    }
+    if (text === '__manual_order__') {
       escState.step = 'order';
+      addMsg('Theek hai, <b>order ki detail</b> khud likhein — order ki date aur kya-kya item the.', 'bot');
       setChips([]);
       return;
     }
@@ -286,7 +409,7 @@
       checkPincode(text);
       return;
     }
-    if (escState && ['phone', 'order', 'detail'].indexOf(escState.step) !== -1) {
+    if (escState && ['phone', 'order', 'orderList', 'detail'].indexOf(escState.step) !== -1) {
       onEscalationText(text);
       return;
     }

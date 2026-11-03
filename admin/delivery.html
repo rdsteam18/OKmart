@@ -915,7 +915,7 @@
       
       grid.innerHTML = filtered.map(p => {
         const isActive = p.active !== false;
-        const deliveryTypeDisplay = p.deliveryType === 'quick' ? '⚡ Quick (10-15 mins)' : (p.deliveryType === 'scheduled' ? '📅 Scheduled (2-4 hrs)' : '🚀 Both Available');
+        const deliveryTypeDisplay = p.deliveryType === 'quick' ? '⚡ Quick (10-15 mins)' : (p.deliveryType === 'scheduled' ? '📅 Scheduled (1-5 days)' : '🚀 Both Available');
         const deliveryTypeClass = p.deliveryType === 'quick' ? 'delivery-quick' : (p.deliveryType === 'scheduled' ? 'delivery-scheduled' : 'delivery-both');
         
         return `
