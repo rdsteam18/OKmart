@@ -1043,3 +1043,18 @@ window.addEventListener('beforeinstallprompt', (e) => {
     if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0' || e.key === '=')) e.preventDefault();
   });
 })();
+
+// OK Mart Support bot loader (simple on-site assistant; see js/support-bot.js)
+(function () {
+  if (!window.OKMartSupport) {
+    window.OKMartSupport = {
+      _q: [],
+      open: function () { if (this._api) this._api.open(); else this._q.push('open'); }
+    };
+  }
+  if (document.querySelector('script[src="/js/support-bot.js"]')) return;
+  var s = document.createElement('script');
+  s.src = '/js/support-bot.js';
+  s.defer = true;
+  document.head.appendChild(s);
+})();
