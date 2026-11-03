@@ -38,6 +38,7 @@
   let walletBalance = 0;
   let walletUse = false;
   let walletCapped = 0;
+  let subtotal = 0;
   // ✅ common.js का centralized threshold use करें
   const FREE_DELIVERY_THRESHOLD = window.FREE_DELIVERY_THRESHOLD || 199;
   const ADMIN_WHATSAPP = '919982239821';
@@ -197,7 +198,7 @@
 
   // ========== Render Order Summary ==========
   function renderOrderSummary() {
-    let subtotal = 0;
+    subtotal = 0;
     const items = cart.map(item => {
       const product = allProducts.find(p => p.id === item.id) || item;
       const quantity = item.quantity || 1;
