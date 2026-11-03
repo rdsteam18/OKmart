@@ -26,25 +26,30 @@
     .toast.success { background:#006d37; }
     .toast.error { background:#ba1a1a; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>@media (max-width:767px){ #adminSidebar.admin-drawer-open{ display:block !important; position:fixed; top:0; bottom:0; left:0; z-index:50; overflow-y:auto; box-shadow:0 0 24px rgba(0,0,0,.3); } }</style>
 </head>
 <body class="bg-gray-50">
+  <div class="md:hidden sticky top-0 z-40 bg-[#006d37] text-white px-4 py-3 flex items-center gap-3"><button id="adminMenuBtn" aria-label="Menu"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button><span class="font-bold">OK Mart Admin</span></div>
   <div class="flex">
     <!-- Sidebar -->
-    <aside class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
+    <aside id="adminSidebar" class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
       <h2 class="font-extrabold text-lg mb-4">OK Mart Admin</h2>
       <nav class="space-y-1">
-        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100">📊 Dashboard</a>
-        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100">📋 Orders</a>
-        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100">📦 Products</a>
-        <a href="categories.html" class="block px-3 py-2 rounded hover:bg-gray-100">🗂️ Categories</a>
-        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100">🏷️ Offers</a>
-        <a href="deals.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold">🔥 Deals</a>
-        <a href="festive.html" class="block px-3 py-2 rounded hover:bg-gray-100">🎉 Festive Banner</a>
-        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100">🚚 Delivery</a>
-        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100">👥 Customers</a>
-        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100">⚙️ Settings</a>
-      </nav>
+        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">dashboard</span> Dashboard</a>
+        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">shopping_cart</span> Orders</a>
+        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">inventory_2</span> Products</a>
+        <a href="categories.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">category</span> Categories</a>
+        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">local_offer</span> Offers</a>
+        <a href="deals.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold"><span class="material-symbols-outlined align-middle text-xl mr-1">local_fire_department</span> Deals</a>
+        <a href="festive.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">celebration</span> Festive Banner</a>
+        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">delivery_dining</span> Delivery</a>
+        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">group</span> Customers</a>
+        <a href="manual-order.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">add_shopping_cart</span> Manual Order</a>
+        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">settings</span> Settings</a>
+</nav>
     </aside>
+  <div id="adminDrawerBackdrop" class="hidden fixed inset-0 bg-black/50 z-40"></div>
 
     <!-- Main -->
     <main class="flex-1 p-4 md:p-6">
@@ -262,5 +267,17 @@
       };
     })();
   </script>
+<script>
+  (function () {
+    var btn = document.getElementById('adminMenuBtn');
+    var side = document.getElementById('adminSidebar');
+    var back = document.getElementById('adminDrawerBackdrop');
+    function open() { side.classList.add('admin-drawer-open'); back.classList.remove('hidden'); }
+    function close() { side.classList.remove('admin-drawer-open'); back.classList.add('hidden'); }
+    if (btn) btn.addEventListener('click', function () { side.classList.contains('admin-drawer-open') ? close() : open(); });
+    if (back) back.addEventListener('click', close);
+    side.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
+  })();
+</script>
 </body>
 </html>

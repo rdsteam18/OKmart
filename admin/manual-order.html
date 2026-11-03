@@ -129,6 +129,7 @@
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
@@ -140,17 +141,25 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand"><span class="sidebar-logo">🛒 OK Mart</span><span class="sidebar-badge">Admin</span></div>
       <nav class="sidebar-nav">
-        <a href="index.html">📊 Dashboard</a><a href="orders.html">📋 Orders</a>
-        <a href="products.html">📦 Products</a><a href="categories.html">🗂️ Categories</a><a href="offers.html">🏷️ Offers</a>
-        <a href="manual-order.html" class="active">✍️ Manual Order</a>
-      </nav>
+        <a href="index.html"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+        <a href="orders.html"><span class="material-symbols-outlined">shopping_cart</span> Orders</a>
+        <a href="products.html"><span class="material-symbols-outlined">inventory_2</span> Products</a>
+        <a href="categories.html"><span class="material-symbols-outlined">category</span> Categories</a>
+        <a href="offers.html"><span class="material-symbols-outlined">local_offer</span> Offers</a>
+        <a href="deals.html"><span class="material-symbols-outlined">local_fire_department</span> Deals</a>
+        <a href="festive.html"><span class="material-symbols-outlined">celebration</span> Festive Banner</a>
+        <a href="delivery.html"><span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
+        <a href="customers.html"><span class="material-symbols-outlined">group</span> Customers</a>
+        <a href="manual-order.html" class="active"><span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
+        <a href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
+</nav>
       <div class="sidebar-footer"><button onclick="adminLogout()">🚪 Logout</button></div>
     </aside>
 
     <div class="mobile-header">
-      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <button class="menu-toggle" onclick="toggleSidebar()"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button>
       <span style="font-weight:700;">Manual Order</span>
-      <button class="menu-toggle" onclick="location.reload()">🔄</button>
+      <button class="menu-toggle" onclick="location.reload()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span></button>
     </div>
 
     <main class="main-content">
@@ -204,7 +213,7 @@
         <button class="btn btn-primary" id="placeOrderBtn" onclick="placeManualOrder()">
           📋 Create Order
         </button>
-        <button class="btn btn-outline" onclick="resetForm()">🔄 Reset</button>
+        <button class="btn btn-outline" onclick="resetForm()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span> Reset</button>
       </div>
       
     </main>
@@ -459,6 +468,7 @@
     renderCart();
     console.log('✅ Manual order system ready');
   </script>
+<style>.sidebar-nav .material-symbols-outlined{font-size:20px;vertical-align:-4px;margin-right:6px}.sidebar-nav a{display:flex;align-items:center;gap:8px}</style>
 </body>
 </html>
 

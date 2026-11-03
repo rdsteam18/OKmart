@@ -13,30 +13,34 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="../js/firebase.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <style>@media (max-width:767px){ #adminSidebar.admin-drawer-open{ display:block !important; position:fixed; top:0; bottom:0; left:0; z-index:50; overflow-y:auto; box-shadow:0 0 24px rgba(0,0,0,.3); } }</style>
 </head>
 <body class="bg-gray-50">
+  <div class="md:hidden sticky top-0 z-40 bg-[#006d37] text-white px-4 py-3 flex items-center gap-3"><button id="adminMenuBtn" aria-label="Menu"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button><span class="font-bold">OK Mart Admin</span></div>
   <div class="flex">
-    <aside class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
+    <aside id="adminSidebar" class="hidden md:block w-64 bg-white border-r min-h-screen p-4">
       <h2 class="font-extrabold text-lg mb-4">OK Mart Admin</h2>
       <nav class="space-y-1">
-        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100">📊 Dashboard</a>
-        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100">📋 Orders</a>
-        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100">📦 Products</a>
-        <a href="categories.html" class="block px-3 py-2 rounded hover:bg-gray-100">🗂️ Categories</a>
-        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100">🏷️ Offers</a>
-        <a href="deals.html" class="block px-3 py-2 rounded hover:bg-gray-100">🔥 Deals</a>
-        <a href="festive.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold">🎉 Festive Banner</a>
-        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100">🚚 Delivery</a>
-        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100">👥 Customers</a>
-        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100">⚙️ Settings</a>
-      </nav>
+        <a href="index.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">dashboard</span> Dashboard</a>
+        <a href="orders.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">shopping_cart</span> Orders</a>
+        <a href="products.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">inventory_2</span> Products</a>
+        <a href="categories.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">category</span> Categories</a>
+        <a href="offers.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">local_offer</span> Offers</a>
+        <a href="deals.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">local_fire_department</span> Deals</a>
+        <a href="festive.html" class="block px-3 py-2 rounded bg-green-50 text-green-800 font-bold"><span class="material-symbols-outlined align-middle text-xl mr-1">celebration</span> Festive Banner</a>
+        <a href="delivery.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">delivery_dining</span> Delivery</a>
+        <a href="customers.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">group</span> Customers</a>
+        <a href="manual-order.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">add_shopping_cart</span> Manual Order</a>
+        <a href="settings.html" class="block px-3 py-2 rounded hover:bg-gray-100"><span class="material-symbols-outlined align-middle text-xl mr-1">settings</span> Settings</a>
+</nav>
     </aside>
+  <div id="adminDrawerBackdrop" class="hidden fixed inset-0 bg-black/50 z-40"></div>
 
     <main class="flex-1 p-4 md:p-6 max-w-2xl">
-      <h1 class="text-2xl font-extrabold mb-2">🎉 Festive Banner</h1>
+      <h1 class="text-2xl font-extrabold mb-2"><span class="material-symbols-outlined align-middle">celebration</span> Festive Banner</h1>
       <p class="text-sm text-gray-500 mb-6">
-        Homepage ka festive banner date se apne aap badalta hai (Hindu festivals only —
-        Diwali, Uttarayan, Shivaratri, Holi, Navratri). Yahan sirf <b>text / offer / CTA</b> badlo —
+        Homepage ka festive banner date se apne aap badalta hai (Hindu festivals aur jayantis). Yahan sirf <b>text / offer / CTA</b> badlo —
         background animation aur rang us din ke theme ke hisab se waise hi rahenge.
         Khali chhodne par us din ka default text dikhega.
       </p>
@@ -74,10 +78,15 @@
         <p id="fMsg" class="text-sm text-gray-500"></p>
       </div>
 
+      <div id="fLiveBox" class="bg-white border rounded-2xl p-4 mt-4 text-sm">
+  <b>Abhi live:</b> <span id="fLiveStatus">Loading…</span>
+  <div id="fLiveValues" class="text-gray-600 mt-1"></div>
+  <a href="../index.html" target="_blank" class="inline-block mt-2 font-bold text-green-800 underline">Homepage par banner dekho</a>
+</div>
+
       <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mt-4 text-sm text-amber-900">
         <b>Note:</b> Save karte hi homepage banner turant update ho jayega (agle page load par).
-        Banner band karne ke liye checkbox hatakar Save karo. Schedule: Diwali 5–9 Nov 2026,
-        Uttarayan 11–15 Jan 2027, Shivaratri 3–7 Mar 2027, Holi 19–23 Mar 2027, Navratri 7–15 Apr 2027.
+        Banner band karne ke liye checkbox hatakar Save karo. Theme apne aap festival calendar se badalta hai — yahan sirf us din ke banner ka text override hota hai, background aur rang wahi rahenge.
       </div>
     </main>
   </div>
@@ -123,5 +132,44 @@
       });
     })();
   </script>
+<script>
+  (function () {
+    var btn = document.getElementById('adminMenuBtn');
+    var side = document.getElementById('adminSidebar');
+    var back = document.getElementById('adminDrawerBackdrop');
+    function open() { side.classList.add('admin-drawer-open'); back.classList.remove('hidden'); }
+    function close() { side.classList.remove('admin-drawer-open'); back.classList.add('hidden'); }
+    if (btn) btn.addEventListener('click', function () { side.classList.contains('admin-drawer-open') ? close() : open(); });
+    if (back) back.addEventListener('click', close);
+    side.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
+  })();
+</script>
+<script>
+  (function () {
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+    function refreshLive() {
+      var st = document.getElementById('fLiveStatus'), vv = document.getElementById('fLiveValues');
+      if (!st) return;
+      firebase.firestore().collection('settings').doc('festive').get().then(function (d) {
+        var o = (d.exists && d.data()) || {};
+        var any = o.headline || o.subtext || o.offer || o.ctaText || o.ctaLink;
+        if (o.active === false) { st.textContent = 'Banner band hai — homepage par nahi dikhega.'; }
+        else if (any) { st.textContent = 'Override active hai — homepage par ye text dikhega.'; }
+        else { st.textContent = 'Default theme chal raha hai — koi override nahi hai.'; }
+        var parts = [];
+        if (o.headline) parts.push('Headline: ' + o.headline);
+        if (o.subtext) parts.push('Subtext: ' + o.subtext);
+        if (o.offer) parts.push('Offer: ' + o.offer);
+        if (o.ctaText) parts.push('CTA: ' + o.ctaText + (o.ctaLink ? ' → ' + o.ctaLink : ''));
+        vv.innerHTML = parts.length ? parts.map(function (p) { return '<div>' + esc(p) + '</div>'; }).join('') : 'Koi saved override nahi.';
+      }).catch(function () { st.textContent = 'Live status load nahi ho paya.'; });
+    }
+    document.addEventListener('DOMContentLoaded', refreshLive);
+    ['fSave', 'fClear'].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.addEventListener('click', function () { setTimeout(refreshLive, 1200); });
+    });
+  })();
+</script>
 </body>
 </html>

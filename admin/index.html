@@ -719,6 +719,7 @@
   </style>
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
@@ -726,13 +727,13 @@
   
   <!-- Mobile Top Bar -->
   <div class="mobile-top-bar">
-    <button class="menu-icon" id="mobileMenuBtn">☰</button>
+    <button class="menu-icon" id="mobileMenuBtn"><span class="material-symbols-outlined" style="vertical-align:middle">menu</span></button>
     <div class="logo-area">
       <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX" alt="OK Mart" class="logo-img-small">
       <span class="logo-text-small">OK Mart</span>
     </div>
     <div class="header-right">
-      <button class="header-icon" onclick="location.reload()">🔄</button>
+      <button class="header-icon" onclick="location.reload()"><span class="material-symbols-outlined" style="vertical-align:middle">refresh</span></button>
       <button class="header-icon" onclick="logout()">🚪</button>
     </div>
   </div>
@@ -749,39 +750,28 @@
     </div>
     <nav class="sidebar-nav">
       <a href="index.html" class="active">
-        <span>📊</span> Dashboard
-      </a>
+        <span class="material-symbols-outlined">dashboard</span> Dashboard</a>
       <a href="orders.html">
-        <span>📋</span> Orders
-      </a>
+        <span class="material-symbols-outlined">shopping_cart</span> Orders</a>
       <a href="products.html">
-        <span>📦</span> Products
-      </a>
+        <span class="material-symbols-outlined">inventory_2</span> Products</a>
       <a href="categories.html">
-        <span>🗂️</span> Categories
-      </a>
+        <span class="material-symbols-outlined">category</span> Categories</a>
       <a href="offers.html">
-        <span>🏷️</span> Offers
-      </a>
+        <span class="material-symbols-outlined">local_offer</span> Offers</a>
       <a href="deals.html">
-        <span>🔥</span> Deals
-      </a>
+        <span class="material-symbols-outlined">local_fire_department</span> Deals</a>
       <a href="festive.html">
-        <span>🎉</span> Festive Banner
-      </a>
+        <span class="material-symbols-outlined">celebration</span> Festive Banner</a>
       <a href="delivery.html">
-        <span>🚚</span> Delivery
-      </a>
+        <span class="material-symbols-outlined">delivery_dining</span> Delivery</a>
       <a href="customers.html">
-        <span>👥</span> Customers
-      </a>
-      <a href="reports.html">
-        <span>📈</span> Reports
-      </a>
+        <span class="material-symbols-outlined">group</span> Customers</a>
+      <a href="manual-order.html">
+        <span class="material-symbols-outlined">add_shopping_cart</span> Manual Order</a>
       <a href="settings.html">
-        <span>⚙️</span> Settings
-      </a>
-    </nav>
+        <span class="material-symbols-outlined">settings</span> Settings</a>
+</nav>
   </aside>
 
   <!-- Main Content -->
@@ -939,26 +929,50 @@
   <!-- Bottom Navigation (Mobile Only) -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item active">
-      <span class="nav-icon">📊</span>
-      <span class="nav-label">Home</span>
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="nav-label">Dashboard</span>
     </a>
     <a href="orders.html" class="nav-item">
-      <span class="nav-icon">📋</span>
+      <span class="material-symbols-outlined">shopping_cart</span>
       <span class="nav-label">Orders</span>
     </a>
     <a href="products.html" class="nav-item">
-      <span class="nav-icon">📦</span>
+      <span class="material-symbols-outlined">inventory_2</span>
       <span class="nav-label">Products</span>
     </a>
+    <a href="categories.html" class="nav-item">
+      <span class="material-symbols-outlined">category</span>
+      <span class="nav-label">Categories</span>
+    </a>
+    <a href="offers.html" class="nav-item">
+      <span class="material-symbols-outlined">local_offer</span>
+      <span class="nav-label">Offers</span>
+    </a>
+    <a href="deals.html" class="nav-item">
+      <span class="material-symbols-outlined">local_fire_department</span>
+      <span class="nav-label">Deals</span>
+    </a>
+    <a href="festive.html" class="nav-item">
+      <span class="material-symbols-outlined">celebration</span>
+      <span class="nav-label">Festive Banner</span>
+    </a>
+    <a href="delivery.html" class="nav-item">
+      <span class="material-symbols-outlined">delivery_dining</span>
+      <span class="nav-label">Delivery</span>
+    </a>
     <a href="customers.html" class="nav-item">
-      <span class="nav-icon">👥</span>
+      <span class="material-symbols-outlined">group</span>
       <span class="nav-label">Customers</span>
     </a>
+    <a href="manual-order.html" class="nav-item">
+      <span class="material-symbols-outlined">add_shopping_cart</span>
+      <span class="nav-label">Manual Order</span>
+    </a>
     <a href="settings.html" class="nav-item">
-      <span class="nav-icon">⚙️</span>
+      <span class="material-symbols-outlined">settings</span>
       <span class="nav-label">Settings</span>
     </a>
-  </nav>
+</nav>
 
   <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
@@ -1278,6 +1292,7 @@
     // Start
     init();
   </script>
+<style>.sidebar-nav .material-symbols-outlined{font-size:20px;vertical-align:-4px;margin-right:6px}.sidebar-nav a{display:flex;align-items:center;gap:8px}</style>
 </body>
 </html>
 
