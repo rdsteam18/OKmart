@@ -2,20 +2,6 @@
 
 (function() {
   'use strict';
-  // TEMP DEBUG (diagnostic only, remove after Place Order fix is verified)
-  function okmDebug(msg) {
-    var el = document.getElementById('okm-debug-banner');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'okm-debug-banner';
-      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b91c1c;color:#fff;padding:10px;font-size:14px;';
-      document.body.appendChild(el);
-    }
-    el.textContent = 'DEBUG: ' + msg;
-  }
-  window.addEventListener('unhandledrejection', function (e) {
-    okmDebug('unhandledrejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
-  });
 
   // ========== DOM Elements ==========
   const loadingState = document.getElementById('loadingState');
@@ -619,7 +605,6 @@ ${itemsList}
     
     // Place order button
     placeOrderBtn?.addEventListener('click', placeOrder);
-    placeOrderBtn?.addEventListener('click', function () { okmDebug('Place Order button clicked'); });
     
     // Close modal on outside click
     successModal?.addEventListener('click', (e) => {
