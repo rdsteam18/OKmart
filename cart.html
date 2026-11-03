@@ -131,7 +131,7 @@
     <!-- ========== HEADER ========== -->
     <header class="cart-header">
       <button class="back-btn" onclick="history.back()">←</button>
-      <h1 class="cart-title">🛒 My Cart</h1>
+      <h1 class="cart-title">My Cart</h1>
       <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
     </header>
 
@@ -149,6 +149,10 @@
         
         <!-- Left Column -->
         <div class="cart-left-column">
+          
+          <!-- Delivery-area note: shown only when the saved pincode is
+               not in the admin's serviceable list (checked in js/cart.js). -->
+          <div class="service-note" id="serviceabilityNote" style="display: none;"></div>
           
           <!-- Promo Banner Ad -->
           <div class="promo-banner" id="promoBanner" onclick="window.location.href='/offers'">
@@ -222,7 +226,7 @@
 
           <!-- Order Summary -->
           <div class="order-summary-section">
-            <h2 class="section-title">💰 Order Summary</h2>
+            <h2 class="section-title">Order Summary</h2>
             <div class="summary-row">
               <span>Subtotal</span>
               <span id="subtotal">₹0</span>
@@ -256,7 +260,7 @@
 
       <!-- Empty Cart State -->
       <div class="empty-cart" id="emptyCart" style="display: none;">
-        <div class="empty-cart-icon">🛒</div>
+        <div class="empty-cart-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
         <h3>Your cart is empty</h3>
         <p>Looks like you haven't added any items yet</p>
         <button class="start-shopping-btn" onclick="window.location.href='/'">Start Shopping →</button>

@@ -156,53 +156,50 @@
   margin-bottom: 2px;
 }
 
-/* ADD button overlapping bottom-right of the image */
+/* ADD button BELOW the product info (never overlapping the image), so the
+   product photo stays fully visible. The button sits after the 15-mins tag
+   at the bottom of the card. */
 .product-card .product-add-btn,
 .shelf-product-card .shelf-add-btn {
-  position: absolute !important;
-  right: 6px;
-  bottom: 6px;
-  z-index: 3;
-  width: auto !important;
-  min-width: 52px;
-  margin-top: 0 !important;
+  position: static !important;
+  width: 100% !important;
+  margin-top: 6px !important;
   background: #ffffff !important;
   border: 1.5px solid #006b22 !important;
   color: #006b22 !important;
   border-radius: 8px !important;
-  padding: 5px 10px !important;
-  font-size: 0.72rem !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14) !important;
+  padding: 6px 10px !important;
+  font-size: 0.75rem !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: none !important;
 }
 .product-card .product-add-btn:active,
 .shelf-product-card .shelf-add-btn:active {
-  transform: scale(0.94);
+  transform: scale(0.97);
 }
 .product-card .product-add-btn:disabled,
 .shelf-product-card .shelf-add-btn:disabled {
   opacity: 0.6;
 }
-/* Out-of-stock label must fit on one line over the image */
+/* Out-of-stock label must fit on one line */
 .product-card .product-add-btn:disabled {
-  min-width: 0;
   white-space: nowrap;
-  font-size: 0.6rem !important;
-  padding: 5px 7px !important;
+  font-size: 0.68rem !important;
+  padding: 6px 7px !important;
 }
 
-/* Qty stepper in the same corner once the item is in the cart */
+/* Qty stepper below the product info too (same row as the ADD button was),
+   once the item is in the cart */
 .product-card .qc-corner-stepper,
 .shelf-product-card .qc-corner-stepper {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  z-index: 3;
-  width: auto !important;
-  min-width: 76px;
-  margin-top: 0 !important;
+  position: static;
+  width: 100% !important;
+  margin-top: 6px !important;
   border-radius: 8px !important;
   padding: 4px 4px !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: none !important;
 }
 
 /* Price row: bold price + struck MRP + green % off, one line */

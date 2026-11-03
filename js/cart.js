@@ -161,6 +161,7 @@
               <div class="cart-item-name">${escapeHtml(product.name)}</div>
               <div class="cart-item-unit">${product.unit || ''}</div>
               <div class="cart-item-price">₹${product.price}</div>
+              ${product.mrp && product.mrp > product.price ? `<div class="cart-save-text">You save ₹${product.mrp - product.price}</div>` : ''}
             </div>
             <div class="cart-item-actions">
               <div class="quantity-control">
@@ -168,8 +169,8 @@
                 <span class="qty-value">${quantity}</span>
                 <button class="qty-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
               </div>
-              <button class="save-for-later-btn" onclick="saveForLater('${item.id}')">📦 Save for Later</button>
-              <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">🗑️ Remove</button>
+              <button class="save-for-later-btn" onclick="saveForLater('${item.id}')">Save for Later</button>
+              <button class="remove-item-btn" onclick="removeFromCart('${item.id}')">Remove</button>
             </div>
           </div>
         `;
@@ -589,9 +590,29 @@
   window.applyCouponCode = applyCouponCode;
 
   // ========== Initialize ==========
+  // Delivery-area note: if the saved pincode is not in the admin's
+  // serviceable list, warn on the cart itself (checkout will stop
+  // the order). 'unknown' (no pincode / Firestore unreachable) shows
+  // nothing, so a glitch never blocks browsing.
+  async function checkServiceabilityNote() {
+    const note = document.getElementById('serviceabilityNote');
+    if (!note) return;
+    let pin = '';
+    try { pin = localStorage.getItem('okmart_pincode') || ''; } catch (e) {}
+    if (!pin || !window.OKMart || !window.OKMart.getServiceablePincodeState) return;
+    const state = await window.OKMart.getServiceablePincodeState(pin);
+    if (state === 'blocked') {
+      note.textContent = 'Delivery is not available at pincode ' + pin + ' yet. Please change your location to a serviceable area before checkout, else the order cannot be placed.';
+      note.style.display = 'block';
+    } else {
+      note.style.display = 'none';
+    }
+  }
+
   function init() {
     initEventListeners();
     loadData();
+    checkServiceabilityNote();
     if (typeof window.onStoreSettingsChange === 'function') {
       window.onStoreSettingsChange(() => {
         updateOrderSummary();

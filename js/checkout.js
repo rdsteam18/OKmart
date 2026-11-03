@@ -355,6 +355,21 @@ ${itemsList}
       window.location.href = '/cart.html';
       return;
     }
+
+    // Site-wide service-area gate: the admin's `pincodes` list (managed
+    // from admin/delivery.html) applies here too. An order to a pincode
+    // the admin has not enabled (or has disabled) is stopped before it
+    // reaches WhatsApp. 'unknown' (Firestore unreachable, or no pincode
+    // on the address) never blocks an order by itself.
+    if (userAddress.pincode && window.OKMart && window.OKMart.getServiceablePincodeState) {
+      const serviceState = await window.OKMart.getServiceablePincodeState(userAddress.pincode);
+      if (serviceState === 'blocked') {
+        const msg = 'Is pincode (' + userAddress.pincode + ') par delivery available nahi hai. Kripya serviceable address chunein ya location badlein.';
+        if (window.OKModal && window.OKModal.alert) { await window.OKModal.alert(msg); }
+        else { showToast(msg, 'error'); }
+        return;
+      }
+    }
     
     const settings = typeof window.getStoreSettings === 'function' ? window.getStoreSettings() : {};
     

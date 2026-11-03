@@ -516,6 +516,31 @@ window.DeliverySystem = {
   }
 };
 
+// ===========================================
+// SITE-WIDE SERVICE-AREA GATE
+// Single source of truth: the admin's `pincodes` collection (managed from
+// admin/delivery.html). Every customer page reads the SAME collection live,
+// so an admin add/remove applies across the whole site immediately, with
+// no redeploy. Returns:
+//   'ok'      — pincode doc exists and is active: delivery allowed
+//   'blocked' — pincode doc missing or inactive: delivery NOT allowed
+//   'unknown' — no pincode, or Firestore could not be reached: callers
+//               must NOT block on this (fail open on errors, never on data)
+// ===========================================
+window.OKMart.getServiceablePincodeState = async function(pincode) {
+  try {
+    const pin = String(pincode || '').trim();
+    if (!pin) return 'unknown';
+    if (!window.db || !window.db.collection) return 'unknown';
+    const doc = await window.db.collection('pincodes').doc(pin).get();
+    if (doc.exists && doc.data().active !== false) return 'ok';
+    return 'blocked';
+  } catch (e) {
+    console.warn('Service-area check failed, not blocking:', e && e.message);
+    return 'unknown';
+  }
+};
+
 // ============================================
 // NOTIFICATION FUNCTIONS
 // ============================================

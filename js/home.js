@@ -316,8 +316,9 @@
     const wishlist = getWishlist();
     const isWishlisted = wishlist.includes(product.id);
     
-    // Quick-commerce card: unit chip + ADD overlap the image (bottom-left /
-    // bottom-right); price row carries bold price + struck MRP + green % off.
+    // Quick-commerce card: NOTHING overlaps the product image any more.
+    // The ADD button and the qty stepper sit BELOW the product info
+    // (after the 15-mins tag), so the product photo stays fully visible.
     // Hooks kept: .product-card[data-product-id], viewProduct, toggleWishlist,
     // addToCart (.add-btn class kept so the add animation lookup works),
     // updateCartItemQty, .product-image-container, .product-name-title,
@@ -329,20 +330,8 @@
         </button>
         <div class="product-image-container">
           <img src="${product.image}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200?text=OK+Mart'">
-          ${inCartQty > 0 ? `
-            <div class="qty-stepper-btn qc-corner-stepper" onclick="event.stopPropagation()">
-              <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', -1)">−</button>
-              <span class="qty-step-value">${inCartQty}</span>
-              <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', 1)">+</button>
-            </div>
-          ` : `
-            <span class="product-unit-chip">${product.unit || '1 Unit'}</span>
-            <button class="product-add-btn add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
-              ${isOutOfStock ? 'Out of Stock' : 'ADD'}
-            </button>
-          `}
         </div>
-        ${inCartQty > 0 ? `<span class="product-unit-line">${product.unit || '1 Unit'}</span>` : ''}
+        <span class="product-unit-line">${product.unit || '1 Unit'}</span>
         <div class="product-price-row">
           <span class="product-curr-price">₹${product.price}</span>
           ${product.mrp ? `<span class="product-mrp-price">₹${product.mrp}</span>` : ''}
@@ -350,6 +339,17 @@
         </div>
         <h4 class="product-name-title">${escapeHtml(product.name)}</h4>
         <div class="product-quick-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg> 15 mins</div>
+        ${inCartQty > 0 ? `
+          <div class="qty-stepper-btn" onclick="event.stopPropagation()">
+            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', -1)">−</button>
+            <span class="qty-step-value">${inCartQty}</span>
+            <button class="qty-step-action" onclick="updateCartItemQty('${product.id}', 1)">+</button>
+          </div>
+        ` : `
+          <button class="product-add-btn add-btn" onclick="event.stopPropagation(); addToCart('${product.id}')" ${isOutOfStock ? 'disabled' : ''}>
+            ${isOutOfStock ? 'Out of Stock' : 'ADD'}
+          </button>
+        `}
       </div>
     `;
   }
@@ -448,6 +448,12 @@
     // The helper lives in js/add-feedback.js and never throws into cart logic.
     const btn = document.querySelector(`.product-card[data-product-id="${productId}"] .add-btn`);
     if (window.okmartAddFeedback) window.okmartAddFeedback(btn, product.image);
+
+    // After the morph + fly animation finishes, re-render so the card swaps
+    // the ADD button for the qty stepper below the product info.
+    setTimeout(function () {
+      if (typeof renderCategorySections === 'function') renderCategorySections();
+    }, 850);
   };
 
   window.updateCartItemQty = function(productId, delta) {
@@ -679,6 +685,7 @@
 
       if (doc.exists && doc.data().active !== false) {
         isLocationServiceable = true;
+        try { localStorage.setItem('okmart_serviceable', '1'); } catch (e) {}
         if (messageDiv) {
           messageDiv.innerHTML = `Delivery available! ${doc.data().deliveryType === 'quick' ? '10-15 min delivery' : 'Scheduled delivery'}`;
           messageDiv.className = 'pincode-message success';
@@ -686,6 +693,7 @@
         setLocationByPincode(pincode, fromUserClick);
       } else {
         isLocationServiceable = false;
+        try { localStorage.setItem('okmart_serviceable', '0'); } catch (e) {}
         if (messageDiv) {
           messageDiv.innerHTML = 'Delivery not available in this pincode yet. We are expanding soon!';
           messageDiv.className = 'pincode-message error';
@@ -730,6 +738,23 @@
     // Delivery-availability check (nearby picks only — GPS/manual
     // picks keep their area display instead of being overwritten).
     if (pincode && extra.source !== 'gps' && extra.source !== 'manual') checkPincode(pincode);
+
+    // Site-wide service-area gate: the admin's `pincodes` list applies to
+    // GPS/manual picks too (they previously skipped the check entirely, so
+    // an unserviceable area could be set silently). The location still
+    // gets set so browsing stays open, but it is flagged and the user is
+    // warned clearly; checkout is where an unserviceable order is stopped.
+    if (pincode && (extra.source === 'gps' || extra.source === 'manual') &&
+        window.OKMart && window.OKMart.getServiceablePincodeState) {
+      window.OKMart.getServiceablePincodeState(pincode).then(function (state) {
+        if (state === 'ok' || state === 'blocked') {
+          try { localStorage.setItem('okmart_serviceable', state === 'blocked' ? '0' : '1'); } catch (e) {}
+        }
+        if (state === 'blocked') {
+          showToast('Is area me delivery available nahi hai. Kripya serviceable location chunein.', 'error');
+        }
+      });
+    }
   }
 
   function setLocationByPincode(pincode, saveToFirebase = false) {
