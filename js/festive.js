@@ -631,7 +631,7 @@
     var mustTitle = isFestival ? (festivalName + ' Must-Haves') : 'Aaj ke Must-Haves';
     slot.innerHTML =
       '<section class="fr-wrap">' +
-      '<div class="fr-bg" style="' + (theme.bgGif ? ('background-color:' + theme.gradient[0] + ';background-image:url(' + theme.bgGif + ');background-size:cover;background-position:center') : ('background:linear-gradient(135deg,' + theme.gradient[0] + ',' + theme.gradient[1] + ')')) + '">' +
+      '<div class="fr-bg' + (theme.bgGif ? ' has-gif' : '') + '" style="' + (theme.bgGif ? ('background-color:' + theme.gradient[0] + ';background-image:url(' + theme.bgGif + ');background-size:cover;background-position:center') : ('background:linear-gradient(135deg,' + theme.gradient[0] + ',' + theme.gradient[1] + ')')) + '">' +
       (theme.bgGif ? '<div class="fr-gif-overlay" aria-hidden="true"></div>' : '<canvas class="fr-canvas" aria-hidden="true"></canvas>') +
       '<div class="fr-art">' + (ART[theme.anim] || ART.dots) + '</div>' +
       '<div class="fr-hero">' +

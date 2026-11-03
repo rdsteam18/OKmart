@@ -91,3 +91,19 @@
 @media (min-width: 600px) {
   .fr-card { flex-basis: 150px; }
 }
+@media (max-width: 600px) {
+  /* Mobile fit for GIF backgrounds: the GIF art is landscape (640x368) but a
+     phone banner is tall, so background-size:cover crops away ~half the art
+     width and leaves only its dark, clean middle visible. Fit the full width
+     at the top instead, so diyas, sweets and fireworks stay visible; the
+     theme colour fills the rest below. (!important: festive.js sets these
+     properties inline.) Banner padding tightened so the section sits snug. */
+  .fr-bg.has-gif {
+    background-size: 100% auto !important;
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+  }
+  .fr-bg { padding: 12px 12px 24px; }
+  .fr-hero { padding-top: 4px; }
+  .fr-title { margin-top: 8px; }
+}
