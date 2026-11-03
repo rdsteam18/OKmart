@@ -391,6 +391,11 @@
     if (deliveryChargeEl) {
       deliveryChargeEl.textContent = totals.deliveryCharge === 0 ? 'FREE' : `₹${totals.deliveryCharge}`;
     }
+    const handlingRow = document.getElementById('handlingRow');
+    const handlingFeeEl = document.getElementById('handlingFee');
+    const hf = totals.handlingFee || 0;
+    if (handlingRow) handlingRow.style.display = hf > 0 ? 'flex' : 'none';
+    if (handlingFeeEl) handlingFeeEl.textContent = `₹${hf}`;
     if (totalAmountEl) {
       totalAmountEl.textContent = `₹${totals.grandTotal}`;
     }

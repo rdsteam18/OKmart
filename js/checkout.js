@@ -197,6 +197,10 @@
     
     summarySubtotal.textContent = `₹${subtotal}`;
     summaryDelivery.textContent = deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`;
+    const summaryHandlingRow = document.getElementById('summaryHandlingRow');
+    const summaryHandling = document.getElementById('summaryHandling');
+    if (summaryHandlingRow) summaryHandlingRow.style.display = handlingFee > 0 ? 'flex' : 'none';
+    if (summaryHandling) summaryHandling.textContent = `₹${handlingFee}`;
     summaryTotal.textContent = `₹${total}`;
     if (summaryReferralRow) {
       if (refCapped > 0) {
