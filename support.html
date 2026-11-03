@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+
+  <!-- SEO Meta Tags -->
+  <title>Help & Support | OK Mart Grocery Delivery</title>
+  <meta name="description" content="OK Mart customer support: delivery charges, service area, wallet and referral, order tracking, and verified complaints for real problems.">
+  <meta name="theme-color" content="#84c225">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/terms.css">
+  <link rel="stylesheet" href="/css/qc.css">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Full-page support chat layout (message/chip/form styles come from
+       js/support-bot.js, which renders into #supportPageRoot). */
+    .support-page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+    }
+    .support-page header,
+    .support-page #supportPageRoot > form {
+      flex-shrink: 0;
+    }
+    .support-page main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    #supportPageRoot {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    #supportPageRoot #okmSupportMsgs {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 200px;
+    }
+    /* Space for the fixed bottom nav on mobile (hidden on desktop). */
+    @media (max-width: 767px) {
+      .support-page {
+        padding-bottom: 88px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-container support-page">
+
+    <!-- Header -->
+    <header class="app-header terms-header">
+      <div class="header-container">
+        <div class="header-left">
+          <a href="/index.html" class="back-button" aria-label="Back to home">
+            <span class="back-icon">←</span>
+          </a>
+          <h1 class="page-title">Help & Support</h1>
+        </div>
+        <div class="header-spacer"></div>
+      </div>
+    </header>
+
+    <main>
+      <div id="supportPageRoot">
+        <div id="okmSupportMsgs"></div>
+        <div id="okmSupportChips"></div>
+        <form id="okmSupportForm"><input id="okmSupportInput" type="text" placeholder="Apna sawal ya problem likhein..." autocomplete="off"><button id="okmSupportSend" type="submit">Send</button></form>
+      </div>
+    </main>
+
+    <!-- ========== FLOATING BOTTOM NAVIGATION ========== -->
+    <nav class="qc-bottom-nav">
+      <a href="/index.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5.5h5V20"/></svg></span>
+        <span>Home</span>
+      </a>
+      <a href="/categories.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>
+        <span>Categories</span>
+      </a>
+      <a href="/buy-again.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/><path d="M17.5 4.5a3.2 3.2 0 1 1-2.4 1.1"/><path d="M17.6 2.6v1.9h-1.9"/></svg></span>
+        <span>Buy Again</span>
+      </a>
+      <a href="/cart.html" class="qc-nav-item">
+        <span class="qc-nav-icon"><svg viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11L5.5 8Z"/><path d="M9 10.5V6.5a3 3 0 0 1 6 0v4"/></svg></span>
+        <span>Basket</span>
+        <span class="qc-nav-badge" id="bottomNavCartCount">0</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/qc-nav.js"></script>
+</body>
+</html>

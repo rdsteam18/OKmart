@@ -11,7 +11,9 @@
  * 'supportRequests' for a record.
  *
  * Loaded on every storefront page via the loader at the end of
- * js/common.js. Opened programmatically with window.OKMartSupport.open().
+ * js/common.js. On support.html it renders as a full page (no popup);
+ * everywhere else the floating Help button is simply a link to
+ * /support.html. window.OKMartSupport.open() navigates there too.
  */
 (function () {
   if (window.OKMartSupport && window.OKMartSupport._api) return;
@@ -47,29 +49,31 @@
   document.head.appendChild(style);
 
   /* ---------- dom ---------- */
-  var btn = document.createElement('button');
-  btn.id = 'okmSupportBtn';
-  btn.setAttribute('aria-label', 'Help and support');
-  btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.2-1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg><span>Help</span>';
-  document.body.appendChild(btn);
-
-  var panel = document.createElement('div');
-  panel.id = 'okmSupportPanel';
-  panel.innerHTML =
-    '<div id="okmSupportHead"><div><b>OK Mart Support</b><small>Simple sawalon ka jawab turant. Asli problem hogi to verified details ke saath team ko bhej dunga.</small></div><button id="okmSupportClose" aria-label="Close">✕</button></div>' +
-    '<div id="okmSupportMsgs"></div>' +
-    '<div id="okmSupportChips"></div>' +
-    '<form id="okmSupportForm"><input id="okmSupportInput" type="text" placeholder="Apna sawal ya problem likhein..." autocomplete="off"><button id="okmSupportSend" type="submit">Send</button></form>';
-  document.body.appendChild(panel);
-
-  var msgsEl = panel.querySelector('#okmSupportMsgs');
-  var chipsEl = panel.querySelector('#okmSupportChips');
-  var inputEl = panel.querySelector('#okmSupportInput');
+  /* Page mode: support.html provides #supportPageRoot with the chat
+     elements, and the bot renders as a full page (no popup). Everywhere
+     else the floating Help button is simply a link to /support.html. */
+  var pageRoot = document.getElementById('supportPageRoot');
+  var pageMode = !!pageRoot;
+  var msgsEl, chipsEl, inputEl;
+  if (pageMode) {
+    msgsEl = pageRoot.querySelector('#okmSupportMsgs');
+    chipsEl = pageRoot.querySelector('#okmSupportChips');
+    inputEl = pageRoot.querySelector('#okmSupportInput');
+  } else {
+    var btn = document.createElement('a');
+    btn.id = 'okmSupportBtn';
+    btn.href = '/support.html';
+    btn.setAttribute('aria-label', 'Help and support');
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.2-1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg><span>Help</span>';
+    document.body.appendChild(btn);
+    msgsEl = null; chipsEl = null; inputEl = null;
+  }
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
   function addMsg(html, who) {
+    if (!msgsEl) return;
     var d = document.createElement('div');
     d.className = 'okmMsg ' + who;
     d.innerHTML = html;
@@ -77,6 +81,7 @@
     msgsEl.scrollTop = msgsEl.scrollHeight;
   }
   function setChips(list) {
+    if (!chipsEl) return;
     chipsEl.innerHTML = '';
     list.forEach(function (c) {
       var b = document.createElement('button');
@@ -321,32 +326,20 @@
   }
 
   /* ---------- wiring ---------- */
-  function open() {
-    panel.classList.add('open');
-    if (!panel.dataset.welcomed) {
-      panel.dataset.welcomed = '1';
-      addMsg('Namaste! Main <b>OK Mart Support Bot</b> hoon. Delivery charges, area, wallet, order tracking jaise sawalon ka jawab main turant de dunga. Asli problem (kharab item, payment, refund) hogi to details verify karke team ko bhej dunga.', 'bot');
-      setChips(MAIN_CHIPS);
-    }
-    setTimeout(function () { inputEl.focus(); }, 50);
+  function open() { window.location.href = '/support.html'; }
+  if (pageMode) {
+    var formEl = pageRoot.querySelector('#okmSupportForm');
+    if (formEl) formEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = inputEl.value;
+      inputEl.value = '';
+      onUserText(v, false);
+    });
+    addMsg('Namaste! Main <b>OK Mart Support Bot</b> hoon. Delivery charges, area, wallet, order tracking jaise sawalon ka jawab main turant de dunga. Asli problem (kharab item, payment, refund) hogi to details verify karke team ko bhej dunga.', 'bot');
+    setChips(MAIN_CHIPS);
   }
-  function close() { panel.classList.remove('open'); }
-  btn.addEventListener('click', function () {
-    if (panel.classList.contains('open')) close(); else open();
-  });
-  panel.querySelector('#okmSupportClose').addEventListener('click', close);
-  panel.querySelector('#okmSupportForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var v = inputEl.value;
-    inputEl.value = '';
-    onUserText(v, false);
-  });
 
-  /* profile "Help & Support" row, if present */
-  var supportRow = document.getElementById('openSupportBtn');
-  if (supportRow) supportRow.addEventListener('click', open);
-
-  var api = { open: open, close: close };
+  var api = { open: open, close: function () {} };
   var holder = window.OKMartSupport || {};
   holder._api = api;
   window.OKMartSupport = holder;
