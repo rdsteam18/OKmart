@@ -199,8 +199,11 @@
   }
 
   function showLiveSuggestions(query) {
-    const q = query.toLowerCase();
-    const matched = allProducts.filter(p => (p.name || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)).slice(0, 6);
+    // Synonym + fuzzy matcher (js/synonyms.js): "pyaj" finds onion,
+    // "onoin" finds onion. Falls back to plain substring if unavailable.
+    const matched = (window.okmartSearch
+      ? window.okmartSearch.matchProducts(allProducts, query).results
+      : allProducts.filter(p => (p.name || '').toLowerCase().includes(query.toLowerCase()) || (p.category || '').toLowerCase().includes(query.toLowerCase()))).slice(0, 6);
 
     if (matched.length === 0) {
       suggestionsList.innerHTML = `
@@ -250,12 +253,14 @@
     }
     addPastSearch(query);
 
-    const q = query.toLowerCase();
-    const results = allProducts.filter(p => 
-      (p.name || '').toLowerCase().includes(q) || 
-      (p.category || '').toLowerCase().includes(q) ||
-      (p.description || '').toLowerCase().includes(q)
-    );
+    const match = window.okmartSearch
+      ? window.okmartSearch.matchProducts(allProducts, query)
+      : { results: allProducts.filter(p =>
+          (p.name || '').toLowerCase().includes(query.toLowerCase()) ||
+          (p.category || '').toLowerCase().includes(query.toLowerCase()) ||
+          (p.description || '').toLowerCase().includes(query.toLowerCase())
+        ), didYouMean: null, suggestions: [], expandedTo: null };
+    const results = match.results;
 
     liveSuggestionsContainer.style.display = 'none';
     defaultSearchContent.style.display = 'none';
@@ -264,18 +269,43 @@
     resultsTitle.textContent = `Results for "${query}"`;
     resultsCount.textContent = `${results.length} products`;
 
+    // Hint when a single-word query was understood via a synonym
+    // ("pyaj" -> onion) or a spelling correction ("onoin" -> onion).
+    // Skip the synonym hint when the typed word already appears in a
+    // result name ("maggi" needs no explanation).
+    let hintHtml = '';
+    const singleWord = query.trim().split(/\s+/).length === 1;
+    const nameHasQuery = results.some(p => (p.name || '').toLowerCase().includes(query.toLowerCase()));
+    if (results.length > 0 && singleWord && !nameHasQuery && match.expandedTo && match.expandedTo !== query.toLowerCase()) {
+      hintHtml = `<div style="grid-column: 1 / -1; font-size: 0.82rem; color: #6b7280; padding: 2px 4px 10px;">"${escapeHtml(query)}" ke liye "${escapeHtml(match.expandedTo)}" dikhaya ja raha hai</div>`;
+    } else if (results.length > 0 && match.didYouMean) {
+      hintHtml = `<div style="grid-column: 1 / -1; font-size: 0.82rem; color: #6b7280; padding: 2px 4px 10px;">Kya aapka matlab <strong style="color:#16a34a; cursor:pointer;" onclick="executeSearch('${escapeHtml(match.didYouMean)}')">"${escapeHtml(match.didYouMean)}"</strong> tha?</div>`;
+    }
+
     if (results.length === 0) {
+      // No exact match: say so plainly, then show related suggestions
+      // (same category as the closest match, else best discounts) so the
+      // user never lands on an empty dead-end.
+      const related = (match.suggestions || []).map(p => createShelfProductCard(p)).join('');
       searchResultsGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: #6b7280;">
+        <div style="grid-column: 1 / -1; padding: 28px 20px 8px; text-align: center; color: #6b7280;">
           <div style="font-size: 2.5rem; margin-bottom: 8px;">🔍</div>
-          <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 4px;">No products found</h3>
-          <p style="font-size: 0.82rem;">Try searching for milk, bread, fruits, snacks, or drinks.</p>
+          <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 4px;">"${escapeHtml(query)}" nahi mila</h3>
+          <p style="font-size: 0.82rem;">Ye product abhi OKmart par nahi hai — neeche related products dekh lo.</p>
         </div>
+        ${related ? `
+          <div style="grid-column: 1 / -1; font-size: 0.9rem; font-weight: 700; color: #111827; padding: 14px 4px 8px;">Related products</div>
+          ${related}
+        ` : `
+          <div style="grid-column: 1 / -1; padding: 10px 20px; text-align: center; color: #6b7280;">
+            <p style="font-size: 0.82rem;">Try searching for milk, bread, fruits, snacks, or drinks.</p>
+          </div>
+        `}
       `;
       return;
     }
 
-    searchResultsGrid.innerHTML = results.map(p => createShelfProductCard(p)).join('');
+    searchResultsGrid.innerHTML = hintHtml + results.map(p => createShelfProductCard(p)).join('');
   };
 
   // 6. Voice Search
