@@ -20,7 +20,8 @@
   <link rel="stylesheet" href="css/admin-shell.css">
 </head>
 <body class="bg-gray-50">
-  
+  <div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
+
   <div class="flex">
     
   <aside id="adminSidebar" class="admin-shell-sidebar">
@@ -49,7 +50,6 @@
   </div>
 </aside>
 <div id="adminShellBackdrop" class="admin-shell-backdrop"></div>
-<div class="admin-shell-topbar"><button id="adminShellMenuBtn" aria-label="Menu"><span class="material-symbols-outlined">menu</span></button><span class="admin-shell-topbar-title">OK Mart Admin</span></div>
 <main class="admin-shell-main flex-1 p-4 md:p-6 max-w-2xl">
       <h1 class="text-2xl font-extrabold mb-2"><span class="material-symbols-outlined align-middle">celebration</span> Festive Banner</h1>
       <p class="text-sm text-gray-500 mb-6">
@@ -72,7 +72,7 @@
           <span class="text-sm font-bold">Offer chip (chhota text)</span>
           <input id="fOffer" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. Diwali Loot Coupon: DIWALI50">
         </label>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label class="block">
             <span class="text-sm font-bold">CTA button text</span>
             <input id="fCtaText" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Order Now 🛒">

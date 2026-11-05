@@ -552,7 +552,8 @@
       font-weight: 500;
     }
     
-    /* Bottom Navigation - Mobile */
+    /* Bottom Navigation - Mobile: 11 links, so it scrolls horizontally
+       instead of squeezing/cutting items off the right edge. */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -561,15 +562,25 @@
       background: var(--card);
       border-top: 1px solid var(--border);
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
       padding: 8px 12px;
       z-index: 90;
+    }
+
+    .bottom-nav::-webkit-scrollbar {
+      display: none;
     }
     
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex-shrink: 0;
+      scroll-snap-align: start;
       text-decoration: none;
       color: var(--muted);
       font-size: 10px;
@@ -766,7 +777,7 @@
       
       <!-- Page Header -->
       <div class="page-header">
-        <h1>📊 Dashboard</h1>
+        <h1><span class="material-symbols-outlined">dashboard</span> Dashboard</h1>
         <div class="date-time" id="currentDateTime"></div>
       </div>
 
@@ -959,6 +970,13 @@
       <span class="nav-label">Settings</span>
     </a>
 </nav>
+<script>
+  // Keep the active bottom-nav item visible on load (the bar scrolls).
+  (function () {
+    var a = document.querySelector('.bottom-nav .nav-item.active');
+    if (a) a.scrollIntoView({ inline: 'center', block: 'nearest' });
+  })();
+</script>
 
   <!-- Loading Overlay -->
   <div class="loading-overlay" id="loadingOverlay">
