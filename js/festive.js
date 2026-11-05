@@ -89,7 +89,6 @@
   function stripEmoji(s) {
     return String(s == null ? '' : s).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
   }
-  var CART_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>';
   var BOLT_SVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>';
 
   // ---------- shared rich-section data (real catalog, verified 2026-10-31) ----------
@@ -610,7 +609,6 @@
     var slot = document.getElementById('festiveBanner');
     if (!slot) return;
     var isFestival = !!festivalName;
-    var primary = theme.cta || { text: 'Order Now', href: '/categories.html' };
     var cards = shuffle(FR_CARDS.slice()).map(function (c) {
       return '<a class="fr-card" href="' + esc(c.href) + '">' +
         '<span class="fr-card-t">' + esc(c.t1) + '<br>' + esc(c.t2) + '</span>' +
@@ -637,12 +635,7 @@
       '<div class="fr-hero">' +
       '<span class="fr-tag" style="background:' + theme.accent + ';color:' + tagText(theme.accent) + '">' + esc(stripEmoji(theme.tag)) + '</span>' +
       '<h2 class="fr-title">' + esc(stripEmoji(theme.title)) + '</h2>' +
-      '<p class="fr-sub">' + esc(stripEmoji(theme.subtitle)) + '</p>' +
-      (theme.offer ? '<span class="fr-offer">' + esc(stripEmoji(theme.offer)) + '</span>' : '') +
-      '<div class="fr-ctas">' +
-      '<a class="fr-cta-primary" href="' + esc(primary.href) + '">' + esc(stripEmoji(primary.text)) + ' ' + CART_SVG + '</a>' +
-      '<a class="fr-cta-ghost" href="/deals.html">Grab Loot Deal ' + BOLT_SVG + '</a>' +
-      '</div></div>' +
+      '</div>' +
       '<div class="fr-cards">' + cards + '</div>' +
       '<a class="fr-strip" href="/deals.html">' +
       '<span class="fr-strip-flag">' + BOLT_SVG + '</span>' +
