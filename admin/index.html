@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>Admin Dashboard | OK Mart</title>
-  <meta name="theme-color" content="#84c225">
+  <meta name="theme-color" content="#006d37">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
@@ -680,7 +680,6 @@
       }
       
       .main-content {
-        margin-left: 260px;
         padding-top: 20px;
       }
       
@@ -705,14 +704,18 @@
       .quick-actions {
         grid-template-columns: repeat(3, 1fr);
       }
-      
-      .bottom-nav {
-        display: none;
-      }
     }
     
     /* ========== DESKTOP BREAKPOINT ========== */
     @media (min-width: 1024px) {
+      .main-content {
+        margin-left: 260px;
+      }
+
+      .bottom-nav {
+        display: none;
+      }
+
       .stats-grid {
         gap: 20px;
       }
@@ -729,6 +732,12 @@
     }
   </style>
   <link rel="stylesheet" href="css/admin-shell.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Admin">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">

@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#006d37">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Admin">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   <title>Admin Login | OK Mart</title>
   <style>
     * {
@@ -208,6 +215,10 @@
       <div class="error-message" id="errorMessage">
         Invalid email or password
       </div>
+
+      <button type="button" id="loginInstallBtn" class="login-btn" style="display:none;margin-top:12px;background:#006d37;">
+        <span>📲 Install Admin App</span>
+      </button>
       
       <div class="demo-credentials">
         <p>Default Credentials:</p>
@@ -287,6 +298,26 @@
         submitBtn.innerHTML = '<span>🔐 Login to Dashboard</span>';
       }
     });
+  </script>
+<script>
+    // Admin PWA install (separate from the customer app).
+    (function () {
+      var btn = document.getElementById('loginInstallBtn');
+      if (!btn) return;
+      var deferred = null;
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (isIOS) btn.style.display = 'block';
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferred = e;
+        btn.style.display = 'block';
+      });
+      btn.addEventListener('click', function () {
+        if (deferred) { deferred.prompt(); deferred.userChoice.then(function () { deferred = null; }); }
+        else alert('App install karne ke liye:\n\niPhone (Safari): Share button > Add to Home Screen\n\nAndroid (Chrome): menu (\u22ee) > Install app / Add to Home screen');
+      });
+      window.addEventListener('appinstalled', function () { btn.style.display = 'none'; });
+    })();
   </script>
 </body>
 </html>

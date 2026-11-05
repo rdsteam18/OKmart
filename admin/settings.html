@@ -478,8 +478,22 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Sidebar only appears at 1024px (admin-shell.css), so the 260px
+       left margin must stay off until then — not just until 900px. */
+    @media (max-width: 1023px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
   </style>
   <link rel="stylesheet" href="css/admin-shell.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Admin">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -691,7 +705,7 @@
               <strong>Store Closed Message</strong>
               <small>Custom message displayed when store is closed</small>
             </div>
-            <div class="input-group" style="min-width:400px;">
+            <div class="input-group">
               <input type="text" id="storeClosedNotice" placeholder="We are currently closed for the night. Orders resume at 7:00 AM!">
               <button class="save-setting-btn" onclick="saveChargeField('storeClosedNotice', 'Store closed message')">Save</button>
             </div>
@@ -719,7 +733,7 @@
               <strong>Announcement Message</strong>
               <small>Text shown in the top notice bar</small>
             </div>
-            <div class="input-group" style="min-width:400px;">
+            <div class="input-group">
               <input type="text" id="announcementText" placeholder="Fast 15-Minute Grocery Delivery across your area! Use code SAVE20 for ₹50 OFF">
               <button class="save-setting-btn" onclick="saveChargeField('announcementText', 'Announcement message')">Save</button>
             </div>

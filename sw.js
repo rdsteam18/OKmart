@@ -37,7 +37,7 @@ try {
   });
 } catch (e) { /* FCM unavailable in SW; raw push handler below still works */ }
 
-const CACHE_NAME = 'okmart-v1.0.35';
+const CACHE_NAME = 'okmart-v1.0.36';
 const LOGO_URL = 'https://blogger.googleusercontent.com/img/a/AVvXsEjqUODVL4iyLalUMIzsfwPSpjOSA_8OEz7zn7WiCOxVySl8TqcLxulYNt7tBT9C85tto_EoafNkIMbgV1AMPkOJjkeZ52VLY5PR02z06GFwwFPb9WQBAun4WHcd3JB2Heky3Q2WdDGPy8DGZn7suo0_8RdY7Wd7i7wTMA4osYIiL6NZ1CbuPJHGzmeX';
 
 const urlsToCache = [
@@ -60,6 +60,9 @@ const urlsToCache = [
   '/js/firebase.js',
   '/js/home.js',
   '/manifest.json',
+  '/admin/manifest.json',
+  '/admin/icons/icon-192.png',
+  '/admin/icons/icon-512.png',
   '/offline.html'
 ];
 

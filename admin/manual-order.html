@@ -126,8 +126,21 @@
       .form-row { flex-direction: column; } 
       .menu-toggle { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
     }
+
+    /* Sidebar only appears at 1024px (admin-shell.css), so the 260px
+       left margin must stay off until then — not just until 768px. */
+    @media (max-width: 1023px) {
+      .main-content { margin-left: 0; }
+    }
   </style>
   <link rel="stylesheet" href="css/admin-shell.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#006d37">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OK Admin">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
