@@ -715,6 +715,28 @@
     renderRich(theme, festivalName);
   }
 
+  // ---------- banner GIF library (Firestore bannerGifs, admin festive page) ----------
+  // If the admin selected a banner in the library, its GIF replaces the
+  // theme's background image (headline/text still come from the theme or
+  // the text override above). No active banner -> theme default.
+  function withLibraryGif(theme, festivalName) {
+    try {
+      if (typeof firebase === 'undefined' || !firebase.firestore) { render(theme, festivalName); return; }
+      firebase.firestore().collection('bannerGifs').where('active', '==', true).limit(1).get()
+        .then(function (snap) {
+          if (!snap.empty) {
+            var d = snap.docs[0].data() || {};
+            if (d.url) {
+              theme.bgGif = d.url;
+              console.log('[OKMart Festive] Library banner active: ' + (d.name || snap.docs[0].id));
+            }
+          }
+          render(theme, festivalName);
+        })
+        .catch(function () { render(theme, festivalName); });
+    } catch (e) { render(theme, festivalName); }
+  }
+
   // ---------- admin override (Firestore settings/festive) ----------
   function applyOverride(found) {
     var theme = found.theme;
@@ -722,7 +744,7 @@
       if (typeof firebase === 'undefined' || !firebase.firestore) { render(theme, found.festival && found.festival.name); return; }
       firebase.firestore().collection('settings').doc('festive').get()
         .then(function (doc) {
-          if (!doc.exists) { render(theme, found.festival && found.festival.name); return; }
+          if (!doc.exists) { withLibraryGif(theme, found.festival && found.festival.name); return; }
           var o = doc.data() || {};
           if (o.active === false) {
             var slot = document.getElementById('festiveBanner');
@@ -736,9 +758,9 @@
           if (o.ctaText || o.ctaLink) {
             theme.cta = { text: o.ctaText || 'Order Now', href: o.ctaLink || '/categories.html' };
           }
-          render(theme, found.festival && found.festival.name);
+          withLibraryGif(theme, found.festival && found.festival.name);
         })
-        .catch(function () { render(theme, found.festival && found.festival.name); });
+        .catch(function () { withLibraryGif(theme, found.festival && found.festival.name); });
     } catch (e) { render(theme, found.festival && found.festival.name); }
   }
 

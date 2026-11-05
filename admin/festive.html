@@ -12,6 +12,8 @@
   </script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
   <script src="../js/firebase.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   
@@ -95,6 +97,44 @@
   <a href="../index.html" target="_blank" class="inline-block mt-2 font-bold text-green-800 underline">Homepage par banner dekho</a>
 </div>
 
+      <!-- ========== BANNER GIF LIBRARY ========== -->
+      <div class="bg-white border rounded-2xl p-4 mt-4">
+        <h2 class="font-extrabold text-lg mb-1"><span class="material-symbols-outlined align-middle">movie</span> Banner GIF Library</h2>
+        <p class="text-sm text-gray-500 mb-3">
+          Saare banner GIF yahan dikhenge. Jise <b>Live karo</b> dabao, wahi homepage par dikhega.
+          Diwali wala hamesha yahan saved rahega — delete karne par hi jayega.
+        </p>
+        <p id="bgStatus" class="text-sm font-bold text-green-800 mb-3">Loading…</p>
+        <div id="bgGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4"></div>
+
+        <div class="border-t pt-3 space-y-4">
+          <div>
+            <div class="font-bold text-sm mb-1">Naya banner — link se add karo</div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="bgName" class="flex-1 border rounded-lg px-3 py-2" placeholder="Naam — jaise Rama Ekadashi">
+              <select id="bgKind" class="border rounded-lg px-3 py-2"><option value="festival">Festival</option><option value="common">Common theme</option></select>
+            </div>
+            <div class="flex gap-2 mt-2">
+              <input id="bgUrl" class="flex-1 border rounded-lg px-3 py-2" placeholder="GIF link — https://... ya /assets/....gif">
+              <button id="bgAddLink" class="bg-primary text-white font-bold px-4 py-2 rounded-full whitespace-nowrap">Add karo</button>
+            </div>
+          </div>
+          <div class="border-t pt-3">
+            <div class="font-bold text-sm mb-1">Naya banner — file upload karo</div>
+            <p id="bgAuthState" class="text-xs text-gray-500 mb-2">Upload ke liye ek baar Google se sign in karo.</p>
+            <button id="bgAuthBtn" class="border font-bold px-4 py-2 rounded-full text-sm mb-2">Google se sign in karo</button>
+            <div id="bgUploadRow" class="flex flex-col sm:flex-row gap-2" style="display:none">
+              <input id="bgFile" type="file" accept="image/gif" class="flex-1 border rounded-lg px-3 py-2 text-sm">
+              <input id="bgUpName" class="flex-1 border rounded-lg px-3 py-2" placeholder="Naam">
+              <select id="bgUpKind" class="border rounded-lg px-3 py-2"><option value="festival">Festival</option><option value="common">Common theme</option></select>
+              <button id="bgUploadBtn" class="bg-primary text-white font-bold px-4 py-2 rounded-full whitespace-nowrap">Upload karo</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">GIF 4 MB se chhoti rakho (12-15 fps, 480-720px) warna site slow hogi.</p>
+          </div>
+          <p id="bgMsg" class="text-sm text-gray-500"></p>
+        </div>
+      </div>
+
       <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mt-4 text-sm text-amber-900">
         <b>Note:</b> Save karte hi homepage banner turant update ho jayega (agle page load par).
         Banner band karne ke liye checkbox hatakar Save karo. Theme apne aap festival calendar se badalta hai — yahan sirf us din ke banner ka text override hota hai, background aur rang wahi rahenge.
@@ -171,6 +211,7 @@
     });
   })();
 </script>
+  <script src="js/banner-gifs.js"></script>
   <script src="js/admin-shell.js"></script>
 </body>
 </html>
